@@ -44,14 +44,15 @@ import AdminCrystalPage  from './pages/admin/AdminCrystalPage'
 import AdminProductionPage from './pages/admin/AdminProductionPage'
 import AdminAuditPage    from './pages/admin/AdminAuditPage'
 import AdminAnalyticsPage from './pages/admin/AdminAnalyticsPage'
+import AdminSettingsPage from './pages/admin/AdminSettingsPage'
 import BankReviewPage from './pages/admin/BankReviewPage'
 import SecurityCenterPage from './pages/admin/SecurityCenterPage'
 import DataGovernancePage from './pages/admin/DataGovernancePage'
 import BusinessContinuityPage from './pages/admin/BusinessContinuityPage'
 import AuditCenterPage from './pages/admin/AuditCenterPage'
-
 import './App.css'
 import LuxuryCursor from './components/LuxuryCursor'
+import AIAssistantWidget from './components/AIAssistantWidget'
 
 /** Custom cursor only on marketing home — avoids click/tracking issues in app shell */
 function useLuxuryCursorEnabled() {
@@ -65,6 +66,7 @@ function AppRoutes() {
   return (
     <>
       {luxuryCursor && <LuxuryCursor />}
+      <AIAssistantWidget />
       <Routes>
         {/* Public */}
         <Route path="/"                element={<LandingPage />} />
@@ -79,7 +81,6 @@ function AppRoutes() {
         <Route path="/referral-policy" element={<ReferralPolicyPage />} />
         <Route path="/trust" element={<TrustCenterPage />} />
         <Route path="/legal-classification" element={<LegalClassificationPage />} />
-
         {/* Auth */}
         <Route path="/login"           element={<LoginPage />} />
 
@@ -111,6 +112,7 @@ function AppRoutes() {
         <Route path="/admin/production"    element={<AdminProductionPage />} />
         <Route path="/admin/audit"         element={<AdminAuditPage />} />
         <Route path="/admin/analytics"     element={<AdminAnalyticsPage />} />
+        <Route path="/admin/settings"      element={<AdminSettingsPage />} />
 
         {/* Restricted / review centers */}
         <Route path="/bank-review" element={<BankReviewPage />} />

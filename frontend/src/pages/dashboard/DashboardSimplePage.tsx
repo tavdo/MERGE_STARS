@@ -4,13 +4,19 @@ import DashboardLayout from '../../components/DashboardLayout'
 
 interface Props {
   titleKey: string
-  description: string
-  links?: { label: string; to: string }[]
+  /** i18n key under pages.{pageKey}.* */
+  pageKey: string
+  linkKeys?: { labelKey: string; to: string }[]
 }
 
-export default function DashboardSimplePage({ titleKey, description, links = [] }: Props) {
+export default function DashboardSimplePage({ titleKey, pageKey, linkKeys = [] }: Props) {
   const { t } = useTranslation()
   const title = t(`dashboard.titles.${titleKey}`)
+  const description = t(`pages.${pageKey}.description`)
+  const links = linkKeys.map((l) => ({
+    label: t(`pages.${pageKey}.${l.labelKey}`),
+    to: l.to,
+  }))
 
   return (
     <DashboardLayout titleKey={titleKey}>

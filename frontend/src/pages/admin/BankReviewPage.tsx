@@ -1,4 +1,6 @@
-import AdminLayout from '../../components/AdminLayout'
+import { Navigate } from 'react-router-dom'
+import BankReviewLayout from '../../components/BankReviewLayout'
+import { useAuthStore } from '@/features/auth/store/auth.store'
 
 const SECTIONS = [
   'Executive Summary',
@@ -27,8 +29,14 @@ const STATUS = [
 ] as const
 
 export default function BankReviewPage() {
+  const token = useAuthStore((s) => s.accessToken)
+  const user = useAuthStore((s) => s.user)
+  const allowed = user?.roles?.some((r) => r === 'admin' || r === 'manager' || r === 'developer')
+  if (!token) return <Navigate to="/login" replace />
+  if (!allowed) return <Navigate to="/dashboard" replace />
+
   return (
-    <AdminLayout title="BANK REVIEW" subtitle="BANK REVIEW CENTER">
+    <BankReviewLayout title="BANK REVIEW CENTER">
       <div
         className="gold-card"
         style={{
@@ -67,7 +75,7 @@ export default function BankReviewPage() {
           ))}
         </div>
       </div>
-    </AdminLayout>
+    </BankReviewLayout>
   )
 }
 

@@ -1,9 +1,12 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useLayoutEffect } from 'react'
 import { socket } from '@/lib/socket'
 
 export function useWebSocket<T>(event: string, handler: (payload: T) => void) {
   const handlerRef = useRef(handler)
-  handlerRef.current = handler
+  
+  useLayoutEffect(() => {
+    handlerRef.current = handler
+  })
 
   useEffect(() => {
     const listener = (payload: T) => handlerRef.current(payload)

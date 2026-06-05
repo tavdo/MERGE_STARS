@@ -1,11 +1,18 @@
 import i18n from 'i18next'
 import { initReactI18next } from 'react-i18next'
+import { mergeLocales } from './mergeLocales'
 import en from './locales/en'
 import ru from './locales/ru'
 import fr from './locales/fr'
 import de from './locales/de'
 import tr from './locales/tr'
 import ka from './locales/ka'
+import enPages from './locales/pages/en'
+import kaPages from './locales/pages/ka'
+import ruPages from './locales/pages/ru'
+import frPages from './locales/pages/fr'
+import dePages from './locales/pages/de'
+import trPages from './locales/pages/tr'
 
 export const LANG_STORAGE_KEY = 'merge-stars-lang'
 
@@ -36,12 +43,12 @@ const saved = typeof window !== 'undefined' ? readStoredLanguage() : 'en'
 
 void i18n.use(initReactI18next).init({
   resources: {
-    en: { translation: en },
-    ru: { translation: ru },
-    fr: { translation: fr },
-    de: { translation: de },
-    tr: { translation: tr },
-    ka: { translation: ka },
+    en: { translation: mergeLocales(en, enPages) },
+    ru: { translation: mergeLocales(ru, ruPages) },
+    fr: { translation: mergeLocales(fr, frPages) },
+    de: { translation: mergeLocales(de, dePages) },
+    tr: { translation: mergeLocales(tr, trPages) },
+    ka: { translation: mergeLocales(ka, kaPages) },
   },
   lng: saved,
   fallbackLng: 'en',

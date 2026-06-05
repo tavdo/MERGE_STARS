@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next'
 import DashboardLayout from '../../components/DashboardLayout'
 import { downloadReferralQrPng, shareReferralLink, REFERRAL_QR_PATTERN } from '../../utils/referralQr'
 
@@ -25,6 +26,7 @@ function QRBox({ size = 140, color = '#000', pattern }: { size?: number; color?:
 }
 
 export default function QRIdentityPage() {
+  const { t } = useTranslation()
   const universalLink = `${window.location.origin}/login`
   const qrId = 'QR-UNIVERSAL'
 
@@ -32,24 +34,57 @@ export default function QRIdentityPage() {
     <DashboardLayout titleKey="qrIdentity">
       <div style={{ maxWidth: '1000px' }}>
         <div style={{ marginBottom: '32px' }}>
-          <p style={{ fontSize: '11px', fontWeight: 700, letterSpacing: '0.3em', color: '#c9a84c', marginBottom: '8px' }}>QR IDENTITY</p>
-          <h1 style={{ fontSize: '24px', fontWeight: 900, color: '#fff' }}>Your Digital Identity</h1>
+          <p style={{ fontSize: '11px', fontWeight: 700, letterSpacing: '0.3em', color: '#c9a84c', marginBottom: '8px' }}>
+            {t('qrIdentity.title')}
+          </p>
+          <h1 style={{ fontSize: '24px', fontWeight: 900, color: '#fff' }}>{t('qrIdentity.subtitle')}</h1>
         </div>
 
-        <div className="gold-card" style={{ padding: '20px 28px', borderRadius: '4px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '24px', flexWrap: 'wrap', gap: '12px' }}>
+        <div
+          className="gold-card"
+          style={{
+            padding: '20px 28px',
+            borderRadius: '4px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            marginBottom: '24px',
+            flexWrap: 'wrap',
+            gap: '12px',
+          }}
+        >
           <div>
-            <p style={{ fontSize: '10px', color: 'rgba(255,255,255,0.4)', letterSpacing: '0.15em', marginBottom: '4px' }}>YOUR MERGE ID</p>
+            <p style={{ fontSize: '10px', color: 'rgba(255,255,255,0.4)', letterSpacing: '0.15em', marginBottom: '4px' }}>
+              {t('qrIdentity.mergeId')}
+            </p>
             <p style={{ fontSize: '20px', fontWeight: 900, color: '#c9a84c', letterSpacing: '0.15em' }}>MERGE-000001</p>
           </div>
           <div>
-            <p style={{ fontSize: '10px', color: 'rgba(255,255,255,0.4)', letterSpacing: '0.15em', marginBottom: '4px' }}>FOUNDER ID</p>
+            <p style={{ fontSize: '10px', color: 'rgba(255,255,255,0.4)', letterSpacing: '0.15em', marginBottom: '4px' }}>
+              {t('qrIdentity.founderId')}
+            </p>
             <p style={{ fontSize: '16px', fontWeight: 700, color: '#fff' }}>FOUNDER-000001</p>
           </div>
           <div>
-            <p style={{ fontSize: '10px', color: 'rgba(255,255,255,0.4)', letterSpacing: '0.15em', marginBottom: '4px' }}>BRAND LINE ID</p>
+            <p style={{ fontSize: '10px', color: 'rgba(255,255,255,0.4)', letterSpacing: '0.15em', marginBottom: '4px' }}>
+              {t('qrIdentity.brandLineId')}
+            </p>
             <p style={{ fontSize: '16px', fontWeight: 700, color: '#fff' }}>BRAND-000001</p>
           </div>
-          <span style={{ padding: '6px 14px', background: 'rgba(34,197,94,0.1)', color: '#22c55e', border: '1px solid rgba(34,197,94,0.2)', fontSize: '10px', fontWeight: 700, letterSpacing: '0.15em', borderRadius: '2px' }}>✓ KYC VERIFIED</span>
+          <span
+            style={{
+              padding: '6px 14px',
+              background: 'rgba(34,197,94,0.1)',
+              color: '#22c55e',
+              border: '1px solid rgba(34,197,94,0.2)',
+              fontSize: '10px',
+              fontWeight: 700,
+              letterSpacing: '0.15em',
+              borderRadius: '2px',
+            }}
+          >
+            {t('qrIdentity.kycVerified')}
+          </span>
         </div>
 
         <div className="qr-cards-grid" style={{ gridTemplateColumns: 'minmax(0, 520px)', justifyContent: 'start' }}>
@@ -57,7 +92,7 @@ export default function QRIdentityPage() {
             <div className="qr-card-header">
               <span style={{ fontSize: '18px' }}>🔗</span>
               <p style={{ fontSize: '12px', fontWeight: 700, letterSpacing: '0.2em', color: '#c9a84c', margin: 0 }}>
-                UNIVERSAL QR
+                {t('qrIdentity.universalQr')}
               </p>
             </div>
 
@@ -65,14 +100,14 @@ export default function QRIdentityPage() {
 
             <div className="qr-card-body">
               <div>
-                <p style={{ fontSize: '10px', color: 'rgba(255,255,255,0.4)', marginBottom: '4px', letterSpacing: '0.1em' }}>QR ID</p>
+                <p style={{ fontSize: '10px', color: 'rgba(255,255,255,0.4)', marginBottom: '4px', letterSpacing: '0.1em' }}>
+                  {t('qrIdentity.qrId')}
+                </p>
                 <p style={{ fontSize: '12px', fontWeight: 700, color: '#c9a84c', letterSpacing: '0.05em', margin: 0 }}>{qrId}</p>
               </div>
-              <p className="qr-card-desc">
-                One QR for everyone. It opens the MERGE STARS entry point where users can log in and access the full platform.
-              </p>
+              <p className="qr-card-desc">{t('qrIdentity.universalDesc')}</p>
               <div className="qr-card-scans">
-                <span style={{ fontSize: '11px', color: 'rgba(255,255,255,0.4)' }}>Link</span>
+                <span style={{ fontSize: '11px', color: 'rgba(255,255,255,0.4)' }}>{t('qrIdentity.link')}</span>
                 <span style={{ fontSize: '11px', fontWeight: 700, color: 'rgba(255,255,255,0.7)' }}>{universalLink}</span>
               </div>
             </div>
@@ -88,10 +123,10 @@ export default function QRIdentityPage() {
                   })
                 }
               >
-                DOWNLOAD
+                {t('qrIdentity.download')}
               </button>
               <button type="button" className="gold-btn" onClick={() => void shareReferralLink(universalLink)}>
-                SHARE
+                {t('qrIdentity.share')}
               </button>
             </div>
           </div>

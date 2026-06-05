@@ -1,0 +1,1966 @@
+openapi: 3.0.3
+info:
+  title: MERGE STARS API
+  version: 1.0.0
+  description: >
+    MERGE ⭐ STARS — API Specification v1.0 (Sprint 1 scope).
+    Base URL is /api/v1. Responses use { data, meta } envelopes. Errors use { error, meta }.
+
+servers:
+  - url: http://localhost:3000/api/v1
+    description: Local (Docker / dev)
+
+tags:
+  - name: Auth
+  - name: Houses
+  - name: Public
+  - name: Catalogs
+  - name: Items
+  - name: Passports
+  - name: QR
+  - name: Referrals
+  - name: Orders
+  - name: Uploads
+  - name: Search
+  - name: Audit
+  - name: Admin
+
+paths:
+  /auth/register:
+    post:
+      tags: [Auth]
+      summary: Register user
+      operationId: authRegister
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AuthRegisterRequest'
+      responses:
+        '201':
+          description: Registered
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponseEnvelope'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+
+  /auth/login:
+    post:
+      tags: [Auth]
+      summary: Login user
+      operationId: authLogin
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AuthLoginRequest'
+      responses:
+        '200':
+          description: Logged in
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponseEnvelope'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /auth/me:
+    get:
+      tags: [Auth]
+      summary: Get current user
+      operationId: authMe
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Current user
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserEnvelope'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /houses:
+    post:
+      tags: [Houses]
+      summary: Create house
+      operationId: housesCreate
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/HouseCreateRequest'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HouseEnvelope'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+    get:
+      tags: [Houses]
+      summary: List houses (owned/membership; admin can list all)
+      operationId: housesList
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/Page'
+        - $ref: '#/components/parameters/PageSize'
+        - $ref: '#/components/parameters/Q'
+        - $ref: '#/components/parameters/Sort'
+      responses:
+        '200':
+          description: List
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HouseListEnvelope'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /houses/{houseId}:
+    parameters:
+      - $ref: '#/components/parameters/HouseId'
+    get:
+      tags: [Houses]
+      summary: Get house (owner/admin)
+      operationId: housesGet
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: House
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HouseEnvelope'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    patch:
+      tags: [Houses]
+      summary: Update house (owner/admin)
+      operationId: housesUpdate
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/HouseUpdateRequest'
+      responses:
+        '200':
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HouseEnvelope'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /houses/{houseId}/submit:
+    post:
+      tags: [Houses]
+      summary: Submit house for admin approval
+      operationId: housesSubmit
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/HouseId'
+      responses:
+        '200':
+          description: Submitted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HouseEnvelope'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /admin/houses/{houseId}/approve:
+    post:
+      tags: [Admin]
+      summary: Approve house (optionally publish)
+      operationId: adminHousesApprove
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/HouseId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AdminApproveHouseRequest'
+      responses:
+        '200':
+          description: Approved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HouseEnvelope'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /admin/houses/{houseId}/reject:
+    post:
+      tags: [Admin]
+      summary: Reject house
+      operationId: adminHousesReject
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/HouseId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AdminRejectHouseRequest'
+      responses:
+        '200':
+          description: Rejected
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HouseEnvelope'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /public/houses/{slug}:
+    get:
+      tags: [Public]
+      summary: Public house page (published houses only)
+      operationId: publicHouseBySlug
+      parameters:
+        - name: slug
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        '200':
+          description: Public house view
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PublicHouseEnvelope'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /houses/{houseId}/qr:
+    post:
+      tags: [QR]
+      summary: Create/get house QR (idempotent)
+      operationId: houseQrCreate
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/HouseId'
+      responses:
+        '200':
+          description: Existing QR returned
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HouseQREnvelope'
+        '201':
+          description: QR created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HouseQREnvelope'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    get:
+      tags: [QR]
+      summary: Get house QR
+      operationId: houseQrGet
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/HouseId'
+      responses:
+        '200':
+          description: House QR
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HouseQREnvelope'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /public/qr/scan:
+    post:
+      tags: [QR]
+      summary: Record a QR scan (public)
+      operationId: publicQrScan
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/QrScanRequest'
+      responses:
+        '200':
+          description: Scan recorded
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OkEnvelope'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+
+  /houses/{houseId}/catalogs:
+    post:
+      tags: [Catalogs]
+      summary: Create catalog in house
+      operationId: catalogsCreate
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/HouseId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CatalogCreateRequest'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CatalogEnvelope'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    get:
+      tags: [Catalogs]
+      summary: List catalogs in house
+      operationId: catalogsList
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/HouseId'
+        - $ref: '#/components/parameters/Page'
+        - $ref: '#/components/parameters/PageSize'
+        - $ref: '#/components/parameters/Q'
+        - $ref: '#/components/parameters/Sort'
+      responses:
+        '200':
+          description: List
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CatalogListEnvelope'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+  /catalogs/{catalogId}:
+    parameters:
+      - $ref: '#/components/parameters/CatalogId'
+    patch:
+      tags: [Catalogs]
+      summary: Update catalog
+      operationId: catalogsUpdate
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CatalogUpdateRequest'
+      responses:
+        '200':
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CatalogEnvelope'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    delete:
+      tags: [Catalogs]
+      summary: Delete catalog
+      operationId: catalogsDelete
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeletedEnvelope'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /catalogs/{catalogId}/items:
+    post:
+      tags: [Items]
+      summary: Create item (auto-generates passport v1)
+      operationId: itemsCreate
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/CatalogId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ItemCreateRequest'
+      responses:
+        '201':
+          description: Created (item + passport)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ItemCreateResponseEnvelope'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    get:
+      tags: [Items]
+      summary: List items in catalog
+      operationId: itemsList
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/CatalogId'
+        - $ref: '#/components/parameters/Page'
+        - $ref: '#/components/parameters/PageSize'
+        - $ref: '#/components/parameters/Q'
+        - $ref: '#/components/parameters/Sort'
+      responses:
+        '200':
+          description: List
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ItemListEnvelope'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+  /items/{itemId}:
+    parameters:
+      - $ref: '#/components/parameters/ItemId'
+    get:
+      tags: [Items]
+      summary: Get item
+      operationId: itemsGet
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Item
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ItemEnvelope'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    patch:
+      tags: [Items]
+      summary: Update item
+      operationId: itemsUpdate
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ItemUpdateRequest'
+      responses:
+        '200':
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ItemEnvelope'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    delete:
+      tags: [Items]
+      summary: Delete item
+      operationId: itemsDelete
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeletedEnvelope'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /items/{itemId}/passport:
+    get:
+      tags: [Passports]
+      summary: Get latest passport for item
+      operationId: passportsByItem
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/ItemId'
+      responses:
+        '200':
+          description: Passport
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PassportEnvelope'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /passports/{passportId}:
+    get:
+      tags: [Passports]
+      summary: Get passport (owner/admin)
+      operationId: passportsGet
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/PassportId'
+      responses:
+        '200':
+          description: Passport
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PassportEnvelope'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /public/passports/{passportId}:
+    get:
+      tags: [Public]
+      summary: Public passport view
+      operationId: publicPassportGet
+      parameters:
+        - $ref: '#/components/parameters/PassportId'
+      responses:
+        '200':
+          description: Public passport
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PassportPublicEnvelope'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /search:
+    get:
+      tags: [Search]
+      summary: Search across entities
+      operationId: search
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/Q'
+        - name: type
+          in: query
+          required: false
+          schema:
+            type: string
+            enum: [house, catalog, item, passport]
+        - name: house_id
+          in: query
+          required: false
+          schema: { type: string }
+        - $ref: '#/components/parameters/Page'
+        - $ref: '#/components/parameters/PageSize'
+      responses:
+        '200':
+          description: Results
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SearchEnvelope'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /audit/events:
+    post:
+      tags: [Audit]
+      summary: Write audit event (best-effort)
+      operationId: auditWrite
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AuditWriteRequest'
+      responses:
+        '201':
+          description: Written
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OkEnvelope'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+    get:
+      tags: [Audit]
+      summary: List audit events (admin)
+      operationId: auditList
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/Page'
+        - $ref: '#/components/parameters/PageSize'
+        - $ref: '#/components/parameters/Q'
+        - name: action
+          in: query
+          required: false
+          schema: { type: string }
+        - name: actor_id
+          in: query
+          required: false
+          schema: { type: string }
+      responses:
+        '200':
+          description: List
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuditListEnvelope'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+  /referrals/me:
+    get:
+      tags: [Referrals]
+      summary: Get my referral summary (my code, link, totals, rewards)
+      operationId: referralsMe
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Summary
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReferralMeEnvelope'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /admin/referrals/rewards:
+    get:
+      tags: [Admin, Referrals]
+      summary: List referral rewards (admin)
+      operationId: adminReferralRewardsList
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/Page'
+        - $ref: '#/components/parameters/PageSize'
+        - $ref: '#/components/parameters/Q'
+        - name: status
+          in: query
+          required: false
+          schema:
+            $ref: '#/components/schemas/ReferralRewardStatus'
+        - name: referrer_user_id
+          in: query
+          required: false
+          schema: { type: string }
+        - name: referred_user_id
+          in: query
+          required: false
+          schema: { type: string }
+      responses:
+        '200':
+          description: List
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReferralRewardListEnvelope'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+  /admin/referrals/rewards/{rewardId}/approve:
+    post:
+      tags: [Admin, Referrals]
+      summary: Approve referral reward (admin)
+      operationId: adminReferralRewardApprove
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: rewardId
+          in: path
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReferralRewardApproveRequest'
+      responses:
+        '200':
+          description: Approved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReferralRewardEnvelope'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /admin/referrals/rewards/{rewardId}/paid-out:
+    post:
+      tags: [Admin, Referrals]
+      summary: Mark referral reward as paid out (admin)
+      operationId: adminReferralRewardPaidOut
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: rewardId
+          in: path
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReferralRewardPaidOutRequest'
+      responses:
+        '200':
+          description: Paid out
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReferralRewardEnvelope'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /orders/drafts:
+    post:
+      tags: [Orders]
+      summary: Create order draft (coin purchase and/or item order)
+      operationId: ordersDraftCreate
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OrderDraftCreateRequest'
+      responses:
+        '201':
+          description: Draft created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrderEnvelope'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /orders:
+    get:
+      tags: [Orders]
+      summary: List my orders
+      operationId: ordersList
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/Page'
+        - $ref: '#/components/parameters/PageSize'
+        - $ref: '#/components/parameters/Q'
+        - name: status
+          in: query
+          required: false
+          schema:
+            $ref: '#/components/schemas/OrderStatus'
+      responses:
+        '200':
+          description: List
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrderListEnvelope'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /orders/{orderId}:
+    parameters:
+      - $ref: '#/components/parameters/OrderId'
+    get:
+      tags: [Orders]
+      summary: Get my order
+      operationId: ordersGet
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Order
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrderEnvelope'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    patch:
+      tags: [Orders]
+      summary: Update order draft (add/remove lines, shipping, notes)
+      operationId: ordersUpdate
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OrderUpdateRequest'
+      responses:
+        '200':
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrderEnvelope'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /orders/{orderId}/submit:
+    post:
+      tags: [Orders]
+      summary: Submit order (locks draft; payment comes later)
+      operationId: ordersSubmit
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/OrderId'
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OrderSubmitRequest'
+      responses:
+        '200':
+          description: Submitted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrderEnvelope'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /admin/orders:
+    get:
+      tags: [Admin, Orders]
+      summary: List all orders (admin)
+      operationId: adminOrdersList
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/Page'
+        - $ref: '#/components/parameters/PageSize'
+        - $ref: '#/components/parameters/Q'
+        - name: status
+          in: query
+          required: false
+          schema:
+            $ref: '#/components/schemas/OrderStatus'
+        - name: user_id
+          in: query
+          required: false
+          schema: { type: string }
+      responses:
+        '200':
+          description: List
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrderListEnvelope'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+  /admin/orders/{orderId}/mark-paid:
+    post:
+      tags: [Admin, Orders]
+      summary: Mark order fully paid (admin/manual until payment system added)
+      operationId: adminOrdersMarkPaid
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/OrderId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AdminOrderMarkPaidRequest'
+      responses:
+        '200':
+          description: Marked paid
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrderEnvelope'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /uploads:
+    post:
+      tags: [Uploads]
+      summary: Create upload intent (S3 signed URL)
+      operationId: uploadsCreate
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UploadCreateRequest'
+      responses:
+        '201':
+          description: Upload intent
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UploadIntentEnvelope'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /uploads/{uploadId}/complete:
+    post:
+      tags: [Uploads]
+      summary: Complete upload intent
+      operationId: uploadsComplete
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: uploadId
+          in: path
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UploadCompleteRequest'
+      responses:
+        '200':
+          description: Completed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UploadCompleteEnvelope'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  parameters:
+    Page:
+      name: page
+      in: query
+      required: false
+      schema: { type: integer, minimum: 1, default: 1 }
+    PageSize:
+      name: pageSize
+      in: query
+      required: false
+      schema: { type: integer, minimum: 1, maximum: 100, default: 20 }
+    Q:
+      name: q
+      in: query
+      required: false
+      schema: { type: string }
+    Sort:
+      name: sort
+      in: query
+      required: false
+      schema: { type: string, example: created_at:desc }
+    HouseId:
+      name: houseId
+      in: path
+      required: true
+      schema: { type: string }
+    CatalogId:
+      name: catalogId
+      in: path
+      required: true
+      schema: { type: string }
+    ItemId:
+      name: itemId
+      in: path
+      required: true
+      schema: { type: string }
+    PassportId:
+      name: passportId
+      in: path
+      required: true
+      schema: { type: string }
+    OrderId:
+      name: orderId
+      in: path
+      required: true
+      schema: { type: string }
+
+  responses:
+    ValidationError:
+      description: Validation error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorEnvelope'
+    Unauthorized:
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorEnvelope'
+    Forbidden:
+      description: Forbidden
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorEnvelope'
+    NotFound:
+      description: Not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorEnvelope'
+
+  schemas:
+    Meta:
+      type: object
+      properties:
+        request_id: { type: string }
+
+    OkEnvelope:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            ok: { type: boolean, example: true }
+        meta:
+          $ref: '#/components/schemas/Meta'
+
+    DeletedEnvelope:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            deleted: { type: boolean, example: true }
+        meta:
+          $ref: '#/components/schemas/Meta'
+
+    ErrorDetail:
+      type: object
+      properties:
+        path: { type: string }
+        reason: { type: string }
+    ErrorBody:
+      type: object
+      required: [code, message]
+      properties:
+        code: { type: string }
+        message: { type: string }
+        details:
+          type: array
+          items: { $ref: '#/components/schemas/ErrorDetail' }
+    ErrorEnvelope:
+      type: object
+      properties:
+        error: { $ref: '#/components/schemas/ErrorBody' }
+        meta: { $ref: '#/components/schemas/Meta' }
+
+    # ── Auth ──────────────────────────────────────────────────────────────────
+    AuthRegisterRequest:
+      type: object
+      required: [email, password]
+      properties:
+        email: { type: string, format: email }
+        password: { type: string, minLength: 8 }
+    AuthLoginRequest:
+      type: object
+      required: [email, password]
+      properties:
+        email: { type: string, format: email }
+        password: { type: string }
+
+    User:
+      type: object
+      properties:
+        id: { type: string }
+        email: { type: string, format: email }
+        phone: { type: string, nullable: true }
+        role: { type: string, enum: [ADMIN, USER] }
+        status: { type: string, enum: [ACTIVE, DISABLED] }
+        created_at: { type: string, format: date-time }
+        updated_at: { type: string, format: date-time, nullable: true }
+
+    AuthResponse:
+      type: object
+      properties:
+        access_token: { type: string }
+        user: { $ref: '#/components/schemas/User' }
+    AuthResponseEnvelope:
+      type: object
+      properties:
+        data: { $ref: '#/components/schemas/AuthResponse' }
+        meta: { $ref: '#/components/schemas/Meta' }
+    UserEnvelope:
+      type: object
+      properties:
+        data: { $ref: '#/components/schemas/User' }
+        meta: { $ref: '#/components/schemas/Meta' }
+
+    # ── Houses ────────────────────────────────────────────────────────────────
+    HouseApprovalStatus:
+      type: string
+      enum: [DRAFT, PENDING, APPROVED, REJECTED]
+    House:
+      type: object
+      properties:
+        id: { type: string }
+        owner_user_id: { type: string }
+        name: { type: string }
+        slug: { type: string }
+        description: { type: string, nullable: true }
+        logo_url: { type: string, nullable: true }
+        published: { type: boolean }
+        approval_status: { $ref: '#/components/schemas/HouseApprovalStatus' }
+        created_at: { type: string, format: date-time }
+        updated_at: { type: string, format: date-time }
+
+    HouseCreateRequest:
+      type: object
+      required: [name, slug]
+      properties:
+        name: { type: string }
+        slug: { type: string }
+        description: { type: string }
+        logo_url: { type: string }
+    HouseUpdateRequest:
+      type: object
+      properties:
+        name: { type: string }
+        slug: { type: string }
+        description: { type: string }
+        logo_url: { type: string }
+        published: { type: boolean }
+
+    HouseEnvelope:
+      type: object
+      properties:
+        data: { $ref: '#/components/schemas/House' }
+        meta: { $ref: '#/components/schemas/Meta' }
+    PaginatedHouses:
+      type: object
+      properties:
+        items:
+          type: array
+          items: { $ref: '#/components/schemas/House' }
+        page: { type: integer }
+        pageSize: { type: integer }
+        total: { type: integer }
+    HouseListEnvelope:
+      type: object
+      properties:
+        data: { $ref: '#/components/schemas/PaginatedHouses' }
+        meta: { $ref: '#/components/schemas/Meta' }
+
+    AdminApproveHouseRequest:
+      type: object
+      required: [publish]
+      properties:
+        publish: { type: boolean }
+    AdminRejectHouseRequest:
+      type: object
+      required: [reason]
+      properties:
+        reason: { type: string }
+
+    # ── QR ────────────────────────────────────────────────────────────────────
+    HouseQR:
+      type: object
+      properties:
+        house_id: { type: string }
+        qr_id: { type: string }
+        qr_payload: { type: string }
+        qr_image_url: { type: string, nullable: true }
+        created_at: { type: string, format: date-time }
+    HouseQREnvelope:
+      type: object
+      properties:
+        data: { $ref: '#/components/schemas/HouseQR' }
+        meta: { $ref: '#/components/schemas/Meta' }
+    QrScanRequest:
+      type: object
+      required: [qr_id]
+      properties:
+        qr_id: { type: string }
+        context:
+          type: object
+          additionalProperties: true
+
+    # ── Catalogs ──────────────────────────────────────────────────────────────
+    CatalogVisibility:
+      type: string
+      enum: [PUBLIC, PRIVATE]
+    Catalog:
+      type: object
+      properties:
+        id: { type: string }
+        house_id: { type: string }
+        title: { type: string }
+        description: { type: string, nullable: true }
+        visibility: { $ref: '#/components/schemas/CatalogVisibility' }
+        created_at: { type: string, format: date-time }
+        updated_at: { type: string, format: date-time }
+    CatalogCreateRequest:
+      type: object
+      required: [title, visibility]
+      properties:
+        title: { type: string }
+        description: { type: string }
+        visibility: { $ref: '#/components/schemas/CatalogVisibility' }
+    CatalogUpdateRequest:
+      type: object
+      properties:
+        title: { type: string }
+        description: { type: string }
+        visibility: { $ref: '#/components/schemas/CatalogVisibility' }
+    CatalogEnvelope:
+      type: object
+      properties:
+        data: { $ref: '#/components/schemas/Catalog' }
+        meta: { $ref: '#/components/schemas/Meta' }
+    PaginatedCatalogs:
+      type: object
+      properties:
+        items:
+          type: array
+          items: { $ref: '#/components/schemas/Catalog' }
+        page: { type: integer }
+        pageSize: { type: integer }
+        total: { type: integer }
+    CatalogListEnvelope:
+      type: object
+      properties:
+        data: { $ref: '#/components/schemas/PaginatedCatalogs' }
+        meta: { $ref: '#/components/schemas/Meta' }
+
+    # ── Items ─────────────────────────────────────────────────────────────────
+    MediaItem:
+      type: object
+      required: [type, url]
+      properties:
+        type: { type: string, enum: [image, video] }
+        url: { type: string }
+    Model3D:
+      type: object
+      properties:
+        url: { type: string }
+        format: { type: string, enum: [glb, gltf, usdz, usdc] }
+        size_bytes: { type: integer }
+    Item:
+      type: object
+      properties:
+        id: { type: string }
+        house_id: { type: string }
+        catalog_id: { type: string }
+        title: { type: string }
+        description: { type: string, nullable: true }
+        media:
+          type: array
+          items: { $ref: '#/components/schemas/MediaItem' }
+        model_3d: { $ref: '#/components/schemas/Model3D' }
+        status: { type: string, enum: [ACTIVE, ARCHIVED] }
+        created_at: { type: string, format: date-time }
+        updated_at: { type: string, format: date-time }
+    ItemCreateRequest:
+      type: object
+      required: [title]
+      properties:
+        title: { type: string }
+        description: { type: string }
+        media:
+          type: array
+          items: { $ref: '#/components/schemas/MediaItem' }
+        model_3d: { $ref: '#/components/schemas/Model3D' }
+    ItemUpdateRequest:
+      type: object
+      properties:
+        title: { type: string }
+        description: { type: string }
+        media:
+          type: array
+          items: { $ref: '#/components/schemas/MediaItem' }
+        model_3d: { $ref: '#/components/schemas/Model3D' }
+        status: { type: string, enum: [ACTIVE, ARCHIVED] }
+    ItemEnvelope:
+      type: object
+      properties:
+        data: { $ref: '#/components/schemas/Item' }
+        meta: { $ref: '#/components/schemas/Meta' }
+    PaginatedItems:
+      type: object
+      properties:
+        items:
+          type: array
+          items: { $ref: '#/components/schemas/Item' }
+        page: { type: integer }
+        pageSize: { type: integer }
+        total: { type: integer }
+    ItemListEnvelope:
+      type: object
+      properties:
+        data: { $ref: '#/components/schemas/PaginatedItems' }
+        meta: { $ref: '#/components/schemas/Meta' }
+
+    # ── Passports ─────────────────────────────────────────────────────────────
+    PassportState:
+      type: string
+      enum: [GENERATING, GENERATED, FAILED]
+    Passport:
+      type: object
+      properties:
+        id: { type: string }
+        item_id: { type: string }
+        house_id: { type: string }
+        version: { type: integer, minimum: 1 }
+        state: { $ref: '#/components/schemas/PassportState' }
+        public_url: { type: string, nullable: true }
+        data:
+          type: object
+          additionalProperties: true
+        created_at: { type: string, format: date-time }
+    PassportEnvelope:
+      type: object
+      properties:
+        data: { $ref: '#/components/schemas/Passport' }
+        meta: { $ref: '#/components/schemas/Meta' }
+    PassportPublicEnvelope:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            id: { type: string }
+            item_id: { type: string }
+            house_id: { type: string }
+            version: { type: integer }
+            public_url: { type: string, nullable: true }
+            data:
+              type: object
+              additionalProperties: true
+        meta: { $ref: '#/components/schemas/Meta' }
+
+    ItemCreateResponse:
+      type: object
+      properties:
+        item: { $ref: '#/components/schemas/Item' }
+        passport: { $ref: '#/components/schemas/Passport' }
+    ItemCreateResponseEnvelope:
+      type: object
+      properties:
+        data: { $ref: '#/components/schemas/ItemCreateResponse' }
+        meta: { $ref: '#/components/schemas/Meta' }
+
+    # ── Public House page ─────────────────────────────────────────────────────
+    PublicHouseView:
+      type: object
+      properties:
+        house:
+          type: object
+          properties:
+            id: { type: string }
+            name: { type: string }
+            slug: { type: string }
+            description: { type: string, nullable: true }
+            logo_url: { type: string, nullable: true }
+        catalogs:
+          type: array
+          items:
+            type: object
+            properties:
+              id: { type: string }
+              title: { type: string }
+              visibility: { $ref: '#/components/schemas/CatalogVisibility' }
+    PublicHouseEnvelope:
+      type: object
+      properties:
+        data: { $ref: '#/components/schemas/PublicHouseView' }
+        meta: { $ref: '#/components/schemas/Meta' }
+
+    # ── Search ────────────────────────────────────────────────────────────────
+    SearchResult:
+      type: object
+      properties:
+        type: { type: string, enum: [house, catalog, item, passport] }
+        id: { type: string }
+        title: { type: string, nullable: true }
+        house_id: { type: string, nullable: true }
+    SearchEnvelope:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            results:
+              type: array
+              items: { $ref: '#/components/schemas/SearchResult' }
+        meta: { $ref: '#/components/schemas/Meta' }
+
+    # ── Audit ─────────────────────────────────────────────────────────────────
+    AuditWriteRequest:
+      type: object
+      required: [action]
+      properties:
+        action: { type: string }
+        object_type: { type: string, nullable: true }
+        object_id: { type: string, nullable: true }
+        meta:
+          type: object
+          additionalProperties: true
+    AuditEvent:
+      type: object
+      properties:
+        id: { type: string }
+        actor_id: { type: string }
+        actor_role: { type: string }
+        action: { type: string }
+        object_type: { type: string, nullable: true }
+        object_id: { type: string, nullable: true }
+        result: { type: string, enum: [SUCCESS, FAILURE] }
+        ip_address: { type: string, nullable: true }
+        meta:
+          type: object
+          additionalProperties: true
+        created_at: { type: string, format: date-time }
+    PaginatedAudit:
+      type: object
+      properties:
+        items:
+          type: array
+          items: { $ref: '#/components/schemas/AuditEvent' }
+        page: { type: integer }
+        pageSize: { type: integer }
+        total: { type: integer }
+    AuditListEnvelope:
+      type: object
+      properties:
+        data: { $ref: '#/components/schemas/PaginatedAudit' }
+        meta: { $ref: '#/components/schemas/Meta' }
+
+    # ── Uploads ───────────────────────────────────────────────────────────────
+    UploadPurpose:
+      type: string
+      enum: [house_logo, item_image, item_model_3d, qr_image]
+    UploadCreateRequest:
+      type: object
+      required: [purpose, filename, content_type, size_bytes]
+      properties:
+        purpose: { $ref: '#/components/schemas/UploadPurpose' }
+        house_id: { type: string, nullable: true }
+        item_id: { type: string, nullable: true }
+        filename: { type: string }
+        content_type: { type: string }
+        size_bytes: { type: integer }
+        checksum_sha256: { type: string, nullable: true }
+    UploadIntent:
+      type: object
+      properties:
+        upload_id: { type: string }
+        bucket: { type: string }
+        key: { type: string }
+        content_type: { type: string }
+        size_bytes: { type: integer }
+        checksum_sha256: { type: string, nullable: true }
+        signed_url: { type: string }
+        expires_at: { type: string, format: date-time }
+    UploadIntentEnvelope:
+      type: object
+      properties:
+        data: { $ref: '#/components/schemas/UploadIntent' }
+        meta: { $ref: '#/components/schemas/Meta' }
+    UploadCompleteRequest:
+      type: object
+      required: [etag]
+      properties:
+        etag: { type: string }
+    UploadCompleteResponse:
+      type: object
+      properties:
+        url: { type: string }
+        key: { type: string }
+    UploadCompleteEnvelope:
+      type: object
+      properties:
+        data: { $ref: '#/components/schemas/UploadCompleteResponse' }
+        meta: { $ref: '#/components/schemas/Meta' }
+
+    # ── Orders (Sprint 1 minimal)
+    OrderStatus:
+      type: string
+      enum: [DRAFT, SUBMITTED, INVOICED, PAID, CANCELLED]
+
+    OrderLineKind:
+      type: string
+      enum: [COIN, ITEM]
+
+    OrderCoinLine:
+      type: object
+      required: [coin_type, quantity]
+      properties:
+        coin_type:
+          type: string
+          description: Human-readable coin type (can be normalized later)
+          example: MERGE GOLD COIN (1KG)
+        quantity:
+          type: integer
+          minimum: 1
+          example: 1
+        notes:
+          type: string
+          nullable: true
+
+    OrderItemLine:
+      type: object
+      required: [item_id, quantity]
+      properties:
+        item_id: { type: string }
+        quantity:
+          type: integer
+          minimum: 1
+          example: 1
+        notes:
+          type: string
+          nullable: true
+
+    OrderLine:
+      type: object
+      required: [kind]
+      properties:
+        kind: { $ref: '#/components/schemas/OrderLineKind' }
+        coin:
+          $ref: '#/components/schemas/OrderCoinLine'
+        item:
+          $ref: '#/components/schemas/OrderItemLine'
+
+    OrderShipping:
+      type: object
+      properties:
+        full_name: { type: string }
+        phone: { type: string }
+        country: { type: string }
+        city: { type: string }
+        address1: { type: string }
+        address2: { type: string, nullable: true }
+        postal_code: { type: string, nullable: true }
+
+    OrderPayment:
+      type: object
+      properties:
+        paid_in_full:
+          type: boolean
+          example: false
+        total_payment:
+          type: number
+          description: Full amount paid-in-full (set when PAID)
+          nullable: true
+        currency:
+          type: string
+          example: USD
+        paid_at:
+          type: string
+          format: date-time
+          nullable: true
+        reference:
+          type: string
+          nullable: true
+
+    Order:
+      type: object
+      properties:
+        id: { type: string }
+        user_id: { type: string }
+        house_id:
+          type: string
+          nullable: true
+          description: Optional if order is tied to a specific house
+        status: { $ref: '#/components/schemas/OrderStatus' }
+        lines:
+          type: array
+          items: { $ref: '#/components/schemas/OrderLine' }
+        shipping:
+          $ref: '#/components/schemas/OrderShipping'
+        notes:
+          type: string
+          nullable: true
+        payment:
+          $ref: '#/components/schemas/OrderPayment'
+        created_at: { type: string, format: date-time }
+        updated_at: { type: string, format: date-time }
+
+    OrderEnvelope:
+      type: object
+      properties:
+        data: { $ref: '#/components/schemas/Order' }
+        meta: { $ref: '#/components/schemas/Meta' }
+
+    PaginatedOrders:
+      type: object
+      properties:
+        items:
+          type: array
+          items: { $ref: '#/components/schemas/Order' }
+        page: { type: integer }
+        pageSize: { type: integer }
+        total: { type: integer }
+
+    OrderListEnvelope:
+      type: object
+      properties:
+        data: { $ref: '#/components/schemas/PaginatedOrders' }
+        meta: { $ref: '#/components/schemas/Meta' }
+
+    OrderDraftCreateRequest:
+      type: object
+      properties:
+        house_id: { type: string, nullable: true }
+        lines:
+          type: array
+          items: { $ref: '#/components/schemas/OrderLine' }
+        notes: { type: string, nullable: true }
+
+    OrderUpdateRequest:
+      type: object
+      properties:
+        lines:
+          type: array
+          items: { $ref: '#/components/schemas/OrderLine' }
+        shipping:
+          $ref: '#/components/schemas/OrderShipping'
+        notes:
+          type: string
+          nullable: true
+
+    OrderSubmitRequest:
+      type: object
+      properties:
+        confirm:
+          type: boolean
+          description: If true, user confirms final submission
+          example: true
+
+    AdminOrderMarkPaidRequest:
+      type: object
+      required: [total_payment, currency, reference]
+      properties:
+        total_payment:
+          type: number
+          description: FULL payment amount paid-in-full (used for referral rewards)
+        currency:
+          type: string
+          example: USD
+        reference:
+          type: string
+          description: External reference / manual note (until payment system exists)
+        paid_at:
+          type: string
+          format: date-time
+          nullable: true
+
+    # ── AI Action format (client-driven, confirm → execute)
+    # This is NOT an API endpoint; it's a contract for AI messages.
+    AIAction:
+      type: object
+      required: [id, label, kind]
+      properties:
+        id: { type: string, description: Client-generated action id }
+        label: { type: string, description: Button label shown to user }
+        kind:
+          type: string
+          enum: [NAVIGATE, API_CALL]
+        requires_confirm:
+          type: boolean
+          example: true
+        navigate_to:
+          type: string
+          nullable: true
+        api_call:
+          type: object
+          nullable: true
+          properties:
+            method: { type: string, enum: [GET, POST, PATCH, DELETE] }
+            path: { type: string, example: /orders/drafts }
+            body:
+              type: object
+              nullable: true
+              additionalProperties: true
+
+    AIActionMessage:
+      type: object
+      required: [text]
+      properties:
+        text: { type: string }
+        actions:
+          type: array
+          items: { $ref: '#/components/schemas/AIAction' }
+
+    # ── Referrals (Sprint 1 rules)
+    # Reward is created ONLY when a referred user has a FULL payment (paid-in-full) confirmed.
+    # Reward amount = 0.25 * total_payment (TOTAL_PAYMENT basis).
+    # Status lifecycle: PENDING → APPROVED → PAID_OUT.
+    ReferralRewardStatus:
+      type: string
+      enum: [PENDING, APPROVED, PAID_OUT]
+
+    ReferralMe:
+      type: object
+      properties:
+        user_id: { type: string }
+        referral_code: { type: string }
+        referral_url: { type: string }
+        percent:
+          type: number
+          example: 0.25
+        basis:
+          type: string
+          enum: [TOTAL_PAYMENT]
+          example: TOTAL_PAYMENT
+        totals:
+          type: object
+          properties:
+            rewards_count: { type: integer }
+            rewards_pending: { type: integer }
+            rewards_approved: { type: integer }
+            rewards_paid_out: { type: integer }
+            amount_total: { type: number }
+            amount_paid_out: { type: number }
+        recent_rewards:
+          type: array
+          items: { $ref: '#/components/schemas/ReferralReward' }
+
+    ReferralReward:
+      type: object
+      properties:
+        id: { type: string }
+        referrer_user_id: { type: string }
+        referred_user_id: { type: string }
+        order_id: { type: string, nullable: true }
+        payment_id: { type: string, nullable: true }
+        total_payment: { type: number, description: Full amount paid by referred user (paid-in-full) }
+        percent:
+          type: number
+          example: 0.25
+        amount:
+          type: number
+          description: Calculated reward amount = total_payment * percent
+        currency:
+          type: string
+          example: USD
+        status:
+          $ref: '#/components/schemas/ReferralRewardStatus'
+        approved_at: { type: string, format: date-time, nullable: true }
+        paid_out_at: { type: string, format: date-time, nullable: true }
+        payout_reference: { type: string, nullable: true }
+        created_at: { type: string, format: date-time }
+
+    ReferralMeEnvelope:
+      type: object
+      properties:
+        data: { $ref: '#/components/schemas/ReferralMe' }
+        meta: { $ref: '#/components/schemas/Meta' }
+
+    PaginatedReferralRewards:
+      type: object
+      properties:
+        items:
+          type: array
+          items: { $ref: '#/components/schemas/ReferralReward' }
+        page: { type: integer }
+        pageSize: { type: integer }
+        total: { type: integer }
+
+    ReferralRewardListEnvelope:
+      type: object
+      properties:
+        data: { $ref: '#/components/schemas/PaginatedReferralRewards' }
+        meta: { $ref: '#/components/schemas/Meta' }
+
+    ReferralRewardEnvelope:
+      type: object
+      properties:
+        data: { $ref: '#/components/schemas/ReferralReward' }
+        meta: { $ref: '#/components/schemas/Meta' }
+
+    ReferralRewardApproveRequest:
+      type: object
+      properties:
+        note: { type: string, nullable: true }
+
+    ReferralRewardPaidOutRequest:
+      type: object
+      required: [payout_reference]
+      properties:
+        payout_reference: { type: string }
+        paid_out_at:
+          type: string
+          format: date-time
+          description: Optional override; if omitted server sets current time
+

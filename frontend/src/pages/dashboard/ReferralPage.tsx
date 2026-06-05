@@ -50,25 +50,25 @@ export default function ReferralPage() {
       color: '#1a1a1a',
       filename: 'merge-stars-QR-REF-000001.png',
     })
-    showToast('QR code downloaded')
+    showToast(t('referral.toastDownloaded'))
   }
 
   const handleShare = async () => {
     try {
       const result = await shareReferralLink(refLink)
-      showToast(result === 'shared' ? 'Link shared' : 'Link copied — share not available')
+      showToast(result === 'shared' ? t('referral.toastShared') : t('referral.toastCopiedShare'))
     } catch (err) {
       if (err instanceof Error && err.name === 'AbortError') return
-      showToast('Could not share link')
+      showToast(t('referral.toastShareFailed'))
     }
   }
 
   const handleCopy = async () => {
     try {
       await navigator.clipboard.writeText(refLink)
-      showToast('Referral link copied')
+      showToast(t('referral.toastCopied'))
     } catch {
-      showToast('Copy failed — select the link manually')
+      showToast(t('referral.toastCopyFailed'))
     }
   }
 
@@ -78,22 +78,20 @@ export default function ReferralPage() {
 
       <div style={{ maxWidth: '1000px' }}>
         <div style={{ marginBottom: '32px' }}>
-          <p style={{ fontSize: '11px', fontWeight: 700, letterSpacing: '0.3em', color: '#c9a84c', marginBottom: '8px' }}>REFERRAL SYSTEM</p>
-          <h1 style={{ fontSize: '24px', fontWeight: 900, color: '#fff' }}>My Referrals</h1>
+          <p style={{ fontSize: '11px', fontWeight: 700, letterSpacing: '0.3em', color: '#c9a84c', marginBottom: '8px' }}>{t('referral.title')}</p>
+          <h1 style={{ fontSize: '24px', fontWeight: 900, color: '#fff' }}>{t('referral.myReferrals')}</h1>
         </div>
 
         <div style={{ padding: '14px 20px', background: 'rgba(201,168,76,0.06)', border: '1px solid rgba(201,168,76,0.15)', borderRadius: '4px', marginBottom: '24px', display: 'flex', gap: '12px' }}>
           <span style={{ fontSize: '16px' }}>ℹ</span>
           <p style={{ fontSize: '12px', color: 'rgba(255,255,255,0.5)', lineHeight: 1.6, margin: 0 }}>
-            <strong style={{ color: '#c9a84c' }}>Single-level referral only.</strong> No MLM. No recruitment compensation.
-            Referral allocation applies only after a confirmed completed platform order. No guaranteed earnings.
-            Subject to platform rules and compliance review.
+            {t('referral.policyNotice')}
           </p>
         </div>
 
         <div className="referral-tools-grid">
           <div className="gold-card referral-qr-card" style={{ borderRadius: '4px' }}>
-            <p style={{ fontSize: '11px', fontWeight: 700, letterSpacing: '0.2em', color: '#c9a84c', alignSelf: 'flex-start', margin: 0 }}>REFERRAL QR CODE</p>
+            <p style={{ fontSize: '11px', fontWeight: 700, letterSpacing: '0.2em', color: '#c9a84c', alignSelf: 'flex-start', margin: 0 }}>{t('referral.qrCode')}</p>
             <MiniQR />
             <p style={{ fontSize: '10px', color: 'rgba(255,255,255,0.4)', letterSpacing: '0.1em', margin: 0 }}>QR-REF-000001</p>
             <div className="qr-card-actions" style={{ paddingTop: 0, marginTop: 'auto' }}>
@@ -107,7 +105,7 @@ export default function ReferralPage() {
           </div>
 
           <div className="gold-card" style={{ padding: '28px', borderRadius: '4px' }}>
-            <p style={{ fontSize: '11px', fontWeight: 700, letterSpacing: '0.2em', color: '#c9a84c', marginBottom: '16px' }}>REFERRAL LINK</p>
+            <p style={{ fontSize: '11px', fontWeight: 700, letterSpacing: '0.2em', color: '#c9a84c', marginBottom: '16px' }}>{t('referral.referralLink')}</p>
             <div style={{ display: 'flex', gap: '8px', marginBottom: '20px', flexWrap: 'wrap' }}>
               <input className="gold-input" value={refLink} readOnly style={{ flex: '1 1 12rem', fontSize: '11px', color: 'rgba(255,255,255,0.5)' }} />
               <button type="button" className="gold-btn ai-chat-send" onClick={handleCopy}>
@@ -117,10 +115,10 @@ export default function ReferralPage() {
 
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
               {[
-                { label: 'Total Referrals', value: '3' },
-                { label: 'Verified', value: '2', color: '#22c55e' },
-                { label: 'QR Scans', value: '41' },
-                  { label: 'Direct Referral Allocation', value: '25%', color: '#c9a84c' },
+                { label: t('referral.statTotal'), value: '3' },
+                { label: t('referral.statVerified'), value: '2', color: '#22c55e' },
+                { label: t('referral.statScans'), value: '41' },
+                { label: t('referral.statAllocation'), value: '1/4', color: '#c9a84c' },
               ].map((s) => (
                 <div key={s.label} style={{ padding: '14px', background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)', borderRadius: '4px' }}>
                   <p style={{ fontSize: '10px', color: 'rgba(255,255,255,0.4)', marginBottom: '6px', letterSpacing: '0.1em' }}>{s.label}</p>
@@ -133,12 +131,12 @@ export default function ReferralPage() {
 
         <div className="gold-card" style={{ borderRadius: '4px', overflow: 'hidden' }}>
           <div style={{ padding: '16px 20px', borderBottom: '1px solid rgba(201,168,76,0.1)' }}>
-            <p style={{ fontSize: '11px', fontWeight: 700, letterSpacing: '0.15em', color: '#c9a84c', margin: 0 }}>MY REFERRED USERS</p>
+            <p style={{ fontSize: '11px', fontWeight: 700, letterSpacing: '0.15em', color: '#c9a84c', margin: 0 }}>{t('referral.myReferredUsers')}</p>
           </div>
           <table style={{ width: '100%', borderCollapse: 'collapse' }}>
             <thead>
               <tr style={{ borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
-                {['USER', 'DATE JOINED', 'KYC STATUS', 'ORDER'].map((h) => (
+                {[t('referral.tableUser'), t('referral.tableDate'), t('referral.tableStatus'), t('referral.tableOrder')].map((h) => (
                   <th key={h} style={{ padding: '12px 20px', textAlign: 'left', fontSize: '9px', fontWeight: 700, letterSpacing: '0.15em', color: 'rgba(255,255,255,0.3)' }}>{h}</th>
                 ))}
               </tr>

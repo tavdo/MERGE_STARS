@@ -1,3 +1,4 @@
+/* eslint-disable react-refresh/only-export-components */
 /** Ultra-thin gold line icons for the landing features bar */
 
 const stroke = '#D4AF37'

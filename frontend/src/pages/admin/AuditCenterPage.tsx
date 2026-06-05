@@ -53,13 +53,11 @@ function classify(ev: AuditEvent): { section: SectionKey; label: string } {
 export default function AuditCenterPage() {
   const [active, setActive] = useState<SectionKey>('Audit Logs')
   const [events, setEvents] = useState<AuditEvent[]>([])
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
     let mounted = true
-    setLoading(true)
-    setError(null)
     api
       .get<{ ok: boolean; data: AuditEvent[] }>('/audit/events?limit=500')
       .then((res) => {

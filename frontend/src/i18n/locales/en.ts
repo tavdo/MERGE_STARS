@@ -190,6 +190,11 @@ export default {
   ai: {
     kicker: 'AI ASSISTANT',
     title: 'Merge AI',
+    widget: {
+      open: 'Open AI assistant',
+      close: 'Close AI assistant',
+      fullPage: 'Full view',
+    },
     suggestedLabel: 'Suggested questions',
     placeholder: 'Ask about MERGE STARS...',
     welcome:

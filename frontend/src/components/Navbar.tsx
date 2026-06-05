@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import LanguageSwitcher from './LanguageSwitcher'
+import SiteLogo from './SiteLogo'
 
 const NAV_LINKS = [
   { labelKey: 'nav.home', href: '/' },
@@ -43,17 +44,12 @@ export default function Navbar({ variant = 'landing' }: NavbarProps) {
             }
       }
     >
-      <div className="flex items-center justify-between px-6 lg:px-10 h-16 max-w-[1440px] mx-auto">
+      <div className="flex items-center justify-between px-6 lg:px-10 h-16 max-w-1440 mx-auto w-full">
         <Link to="/" className="flex items-center gap-3 shrink-0 transition-opacity duration-300 hover:opacity-90">
-          <div
-            className="flex items-center justify-center w-8 h-8 border border-[rgba(212,175,55,0.4)] text-[#D4AF37] font-serif text-sm"
-            style={{ borderRadius: '2px' }}
-          >
-            ★
-          </div>
+          <SiteLogo size="md" />
           <div className="flex flex-col leading-none font-serif-display">
-            <span className="text-[9px] font-light tracking-[0.4em] text-[#D4AF37]">MERGE</span>
-            <span className="text-[9px] font-light tracking-[0.4em] text-neutral-300">STARS</span>
+            <span className="text-[9px] font-medium tracking-[0.4em] text-[#D4AF37]">MERGE</span>
+            <span className="text-[9px] font-medium tracking-[0.4em] text-neutral-300">STARS</span>
           </div>
         </Link>
 

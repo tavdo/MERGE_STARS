@@ -5,12 +5,25 @@
   --color-gold-luxury: #d4af37;
   --color-gold-light: #f5d78e;
   --color-gold-dark: #8a6914;
-  --font-serif: 'Cormorant Garamond', Georgia, serif;
-  --font-sans: 'Inter', system-ui, sans-serif;
+  --font-serif: 'Fraunces', Georgia, serif;
+  --font-sans: 'Plus Jakarta Sans', system-ui, sans-serif;
   --color-dark: #080808;
   --color-dark-card: #0f0f0f;
   --color-dark-2: #111111;
   --color-dark-3: #141414;
+}
+
+.mx-auto {
+  margin-left: auto !important;
+  margin-right: auto !important;
+}
+
+.max-w-1440 {
+  max-width: 1440px !important;
+}
+
+.w-full {
+  width: 100% !important;
 }
 
 /* Fixed navbar (~64px) + metal ticker bar — keep in sync with Navbar */
@@ -351,7 +364,7 @@
 .calc-hero-value {
   font-family: var(--font-serif);
   font-size: clamp(2.5rem, 5vw, 3.25rem);
-  font-weight: 300;
+  font-weight: 500;
   letter-spacing: 0.02em;
   color: #d4af37;
   line-height: 1.1;
@@ -545,12 +558,14 @@ html { scroll-behavior: smooth; }
 
 html[lang='ka'] body {
   font-family: 'Noto Sans Georgian', var(--font-sans);
+  font-weight: 500;
 }
 
 body {
   background-color: #080808;
   color: #ffffff;
   font-family: var(--font-sans);
+  font-weight: 400;
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
 }
@@ -558,6 +573,7 @@ body {
 /* ── Landing luxury typography & UI ── */
 .font-serif-display {
   font-family: var(--font-serif);
+  font-weight: 600;
 }
 
 .landing-page {
@@ -576,7 +592,7 @@ body {
 
 .landing-hero-title {
   font-family: var(--font-serif);
-  font-weight: 300;
+  font-weight: 600;
   letter-spacing: 0.06em;
   line-height: 1.05;
   color: #f5f2eb;
@@ -595,7 +611,7 @@ body {
 .landing-body {
   font-family: var(--font-sans);
   font-size: 0.8125rem;
-  font-weight: 400;
+  font-weight: 500;
   letter-spacing: 0.08em;
   line-height: 1.85;
   color: rgba(163, 163, 163, 0.95);
@@ -612,7 +628,7 @@ body {
 
 .landing-section-title {
   font-family: var(--font-serif);
-  font-weight: 300;
+  font-weight: 600;
   letter-spacing: 0.12em;
   color: #f5f2eb;
 }
@@ -941,6 +957,29 @@ html.luxury-cursor-active label {
   flex-shrink: 0;
 }
 
+.site-logo {
+  display: block;
+  flex-shrink: 0;
+  object-fit: contain;
+  background: transparent;
+  filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.45)) drop-shadow(0 0 10px rgba(201, 168, 76, 0.22));
+}
+
+.site-logo--sm {
+  width: 2rem;
+  height: 2rem;
+}
+
+.site-logo--md {
+  width: 2.25rem;
+  height: 2.25rem;
+}
+
+.site-logo--lg {
+  width: 2.5rem;
+  height: 2.5rem;
+}
+
 .dash-sidebar-toggle {
   margin-left: auto;
   background: none;
@@ -1061,7 +1100,7 @@ html.luxury-cursor-active label {
 .dash-header-title {
   font-family: var(--font-serif);
   font-size: 1.375rem;
-  font-weight: 300;
+  font-weight: 600;
   letter-spacing: 0.06em;
   color: #f5f2eb;
 }
@@ -1621,6 +1660,227 @@ html.luxury-cursor-active label {
   to {
     opacity: 1;
     transform: translateY(-3px);
+  }
+}
+
+.ai-chat-avatar-img {
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  flex-shrink: 0;
+  object-fit: contain;
+  background: transparent;
+  border: none;
+  box-shadow: none;
+}
+
+.ai-chat-panel--compact {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.ai-chat-panel-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.875rem 1rem;
+  border-bottom: 1px solid rgba(201, 168, 76, 0.12);
+  background: rgba(201, 168, 76, 0.04);
+  flex-shrink: 0;
+}
+
+.ai-chat-panel-header-logo {
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 50%;
+  object-fit: contain;
+  flex-shrink: 0;
+  background: transparent;
+}
+
+.ai-chat-panel-header-kicker {
+  font-size: 0.5625rem;
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  color: rgba(201, 168, 76, 0.75);
+  margin: 0 0 0.15rem;
+  text-transform: uppercase;
+}
+
+.ai-chat-panel-header-title {
+  font-size: 0.875rem;
+  font-weight: 800;
+  color: #fff;
+  margin: 0;
+}
+
+.ai-chat-panel-full-link {
+  margin-left: auto;
+  font-size: 0.625rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(245, 215, 142, 0.85);
+  text-decoration: none;
+  white-space: nowrap;
+  padding: 0.35rem 0.5rem;
+  border: 1px solid rgba(201, 168, 76, 0.25);
+  border-radius: 2px;
+  transition: border-color 0.2s ease, color 0.2s ease;
+}
+
+.ai-chat-panel-full-link:hover {
+  color: #f5d78e;
+  border-color: rgba(201, 168, 76, 0.5);
+}
+
+.ai-chat-panel-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.ai-chat-panel-body .ai-chat-messages {
+  flex: 1;
+  min-height: 0;
+}
+
+/* Floating AI widget (all pages) */
+.ai-widget {
+  position: fixed;
+  right: 1.25rem;
+  bottom: 1.25rem;
+  z-index: 9000;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.75rem;
+  pointer-events: none;
+}
+
+.ai-widget > * {
+  pointer-events: auto;
+}
+
+.ai-widget-fab {
+  position: relative;
+  width: 4.25rem;
+  height: 4.25rem;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  background: transparent;
+  box-shadow: none;
+  transition: transform 0.25s ease, filter 0.25s ease;
+}
+
+.ai-widget-fab:hover {
+  transform: scale(1.08);
+}
+
+.ai-widget-fab-logo {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+  background: transparent;
+  border-radius: 50%;
+  filter: drop-shadow(0 6px 18px rgba(0, 0, 0, 0.55)) drop-shadow(0 0 14px rgba(201, 168, 76, 0.35));
+}
+
+.ai-widget-fab:hover .ai-widget-fab-logo {
+  filter: drop-shadow(0 8px 22px rgba(0, 0, 0, 0.6)) drop-shadow(0 0 20px rgba(201, 168, 76, 0.5));
+}
+
+.ai-widget-panel {
+  position: relative;
+  width: min(calc(100vw - 2.5rem), 22rem);
+  height: min(70vh, 32rem);
+  display: flex;
+  flex-direction: column;
+  background: linear-gradient(165deg, rgba(10, 10, 10, 0.98) 0%, rgba(4, 4, 4, 1) 100%);
+  border: 1px solid rgba(201, 168, 76, 0.18);
+  border-radius: 8px;
+  box-shadow:
+    0 16px 48px rgba(0, 0, 0, 0.65),
+    0 0 40px rgba(201, 168, 76, 0.08);
+  animation: ai-widget-slide-up 0.28s ease-out;
+  overflow: hidden;
+}
+
+@keyframes ai-widget-slide-up {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.ai-widget-panel-close {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  z-index: 2;
+  width: 1.75rem;
+  height: 1.75rem;
+  padding: 0;
+  border: none;
+  border-radius: 2px;
+  background: rgba(255, 255, 255, 0.06);
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 1.125rem;
+  line-height: 1;
+  cursor: pointer;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+.ai-widget-panel-close:hover {
+  background: rgba(201, 168, 76, 0.15);
+  color: #f5d78e;
+}
+
+.ai-widget-panel .ai-chat-panel--compact {
+  height: 100%;
+  border: none;
+  border-radius: 0;
+  background: transparent;
+}
+
+.ai-widget-panel .ai-chat-input-row {
+  padding: 0.75rem 1rem 1rem;
+}
+
+.ai-widget-panel .ai-chat-messages {
+  padding: 1rem;
+}
+
+.ai-widget-panel .ai-suggested {
+  padding: 0 1rem 0.75rem;
+}
+
+@media (max-width: 480px) {
+  .ai-widget {
+    right: 0.75rem;
+    bottom: 0.75rem;
+  }
+
+  .ai-widget-panel {
+    width: calc(100vw - 1.5rem);
+    height: min(75vh, 28rem);
+  }
+
+  .ai-widget-fab {
+    width: 3.75rem;
+    height: 3.75rem;
   }
 }
 

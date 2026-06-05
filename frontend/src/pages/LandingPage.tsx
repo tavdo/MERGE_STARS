@@ -1,14 +1,12 @@
 import { Suspense } from 'react'
 import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { useGLTF } from '@react-three/drei'
 import Navbar from '../components/Navbar'
 import Footer from '../components/Footer'
-import HeroMergeCoin from '../components/HeroMergeCoin'
-import Hero3DCoin from '../components/Hero3DCoin'
-import landingCoinGlb from '../assets/3d-coin/Meshy_AI_Golden_Star_Emblem_0521090909_texture.glb?url'
+import Hero3DCoin, { landingCoinModelUrl } from '../components/Hero3DCoin'
+import { useGLTF } from '@react-three/drei'
 
-useGLTF.preload(landingCoinGlb)
+useGLTF.preload(landingCoinModelUrl)
 import {
   IconFilament3D,
   IconGlobal,
@@ -38,10 +36,10 @@ const CATEGORIES = [
 const TECH_POINT_KEYS = ['metals', 'composite', 'lightweight'] as const
 const INVEST_POINT_KEYS = ['growth', 'tech', 'partner', 'impact'] as const
 
-const METAL_SPOT_KG = [
-  { name: 'SILVER (Ag)', pricePerKgUsd: 0.897 * 1000, changePct: 1.23, up: true },
-  { name: 'GOLD (Au)', pricePerKgUsd: 67.42 * 1000, changePct: 0.85, up: true },
-  { name: 'PLATINUM (Pt)', pricePerKgUsd: 32.15 * 1000, changePct: 0.62, up: true },
+const METAL_SPOT_KEYS = [
+  { nameKey: 'landing.metalSilver', pricePerKgUsd: 0.897 * 1000, changePct: 1.23, up: true },
+  { nameKey: 'landing.metalGold', pricePerKgUsd: 67.42 * 1000, changePct: 0.85, up: true },
+  { nameKey: 'landing.metalPlatinum', pricePerKgUsd: 32.15 * 1000, changePct: 0.62, up: true },
 ] as const
 
 function formatUsd(value: number) {
@@ -69,7 +67,7 @@ export default function LandingPage() {
       <Navbar variant="landing" />
 
       {/* ── HERO ─────────────────────────────────────── */}
-      <section className="relative flex flex-col lg:flex-row items-center justify-center gap-12 lg:gap-8 min-h-screen pt-32 pb-20 px-8 lg:px-16 overflow-hidden max-w-[1440px] mx-auto">
+      <section className="relative flex flex-col lg:flex-row items-center justify-center gap-12 lg:gap-8 min-h-screen pt-32 pb-20 px-8 lg:px-16 overflow-hidden max-w-1440 mx-auto w-full">
         <div
           className="absolute pointer-events-none w-[min(90vw,640px)] h-[min(90vw,640px)] rounded-full"
           style={{
@@ -114,7 +112,7 @@ export default function LandingPage() {
           </p>
         </div>
 
-        {/* Center — 3D coin (Meshy_AI_Golden_Star_Emblem_0521090909_texture.glb) */}
+        {/* Center — 3D coin */}
         <div className="relative z-10 flex-1 flex justify-center items-center order-first lg:order-none w-full min-h-[min(72vw,420px)] lg:min-h-0">
           <div
             className="relative flex items-center justify-center w-full max-w-[500px] aspect-square"
@@ -123,17 +121,10 @@ export default function LandingPage() {
                 'radial-gradient(circle at 50% 50%, rgba(212,175,55,0.07) 0%, transparent 62%)',
             }}
           >
-            <Suspense
-              fallback={
-                <HeroMergeCoin
-                  className="w-full h-full max-w-[500px] opacity-90"
-                  aria-label="Loading MERGE STARS coin"
-                />
-              }
-            >
+            <Suspense fallback={null}>
               <Hero3DCoin
                 className="w-full h-full"
-                aria-label="MERGE STARS golden coin emblem"
+                aria-label={t('landing.coinEmblem')}
               />
             </Suspense>
           </div>
@@ -141,19 +132,19 @@ export default function LandingPage() {
 
         {/* Right — metal spot (per kg) */}
         <div className="hidden xl:flex flex-col gap-5 flex-shrink-0 w-[240px] order-3">
-          {METAL_SPOT_KG.map((m) => (
+          {METAL_SPOT_KEYS.map((m) => (
             <div
-              key={m.name}
+              key={m.nameKey}
               className="flex items-start gap-4 py-4 px-5 border border-[rgba(212,175,55,0.1)] bg-black/30 backdrop-blur-sm transition-all duration-300 ease-in-out hover:border-[rgba(212,175,55,0.28)]"
               style={{ borderRadius: '2px' }}
             >
               <IconPreciousMetals className="w-8 h-8 shrink-0 mt-0.5" />
               <div>
                 <p className="text-[10px] font-medium tracking-[0.2em] text-[#D4AF37] mb-1.5">
-                  {m.name}
+                  {t(m.nameKey)}
                 </p>
                 <p className="text-[10px] leading-relaxed tracking-wide text-neutral-500">
-                  {formatUsd(m.pricePerKgUsd)} / kg
+                  {formatUsd(m.pricePerKgUsd)} {t('landing.perKg')}
                 </p>
                 <p
                   className="text-[10px] font-medium tracking-wide mt-1"
@@ -169,9 +160,9 @@ export default function LandingPage() {
       </section>
 
       {/* ── FEATURES BAR ─────────────────────────────── */}
-      <div className="section-divider max-w-[1440px] mx-auto" />
+      <div className="section-divider max-w-1440 mx-auto w-full" />
       <section
-        className="grid grid-cols-2 lg:grid-cols-5 max-w-[1440px] mx-auto"
+        className="grid grid-cols-2 lg:grid-cols-5 max-w-1440 mx-auto w-full"
         style={{ borderBottom: '1px solid rgba(212,175,55,0.06)' }}
       >
         {FEATURES.map((f, i) => (
@@ -192,10 +183,10 @@ export default function LandingPage() {
           </div>
         ))}
       </section>
-      <div className="section-divider max-w-[1440px] mx-auto" />
+      <div className="section-divider max-w-1440 mx-auto w-full" />
 
       {/* ── CATEGORIES ───────────────────────────────── */}
-      <section className="py-24 px-8 lg:px-16 max-w-[1440px] mx-auto">
+      <section className="py-24 px-8 lg:px-16 max-w-1440 mx-auto w-full">
         <h2 className="landing-sans-head text-center mb-14">{t('landing.categoriesTitle')}</h2>
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-7 gap-4">
           {CATEGORIES.map((c) => (
@@ -216,10 +207,10 @@ export default function LandingPage() {
       </section>
 
       {/* ── TECHNOLOGY ───────────────────────────────── */}
-      <div className="section-divider max-w-[1440px] mx-auto" />
+      <div className="section-divider max-w-1440 mx-auto w-full" />
       <section
         id="technology"
-        className="grid lg:grid-cols-2 min-h-[520px] scroll-mt-32 max-w-[1440px] mx-auto"
+        className="grid lg:grid-cols-2 min-h-[520px] scroll-mt-32 max-w-1440 mx-auto w-full"
       >
         <div
           className="relative flex items-center justify-center overflow-hidden min-h-[320px] bg-[#060606]"
@@ -263,10 +254,10 @@ export default function LandingPage() {
           </div>
         </div>
       </section>
-      <div className="section-divider max-w-[1440px] mx-auto" />
+      <div className="section-divider max-w-1440 mx-auto w-full" />
 
       {/* ── INVEST ───────────────────────────────────── */}
-      <section className="grid lg:grid-cols-2 min-h-[440px] max-w-[1440px] mx-auto">
+      <section className="grid lg:grid-cols-2 min-h-[440px] max-w-1440 mx-auto w-full">
         <div className="flex flex-col justify-center px-10 lg:px-14 py-16">
           <h2 className="landing-section-title text-[clamp(1.75rem,3.5vw,2.5rem)] leading-snug mb-6">
             {t('landing.investTitle1')}
@@ -308,7 +299,7 @@ export default function LandingPage() {
           </div>
         </div>
       </section>
-      <div className="section-divider max-w-[1440px] mx-auto" />
+      <div className="section-divider max-w-1440 mx-auto w-full" />
 
       <Footer />
     </div>

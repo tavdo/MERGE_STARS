@@ -1,15 +1,5 @@
 import { useState } from 'react'
-import { Link } from 'react-router-dom'
-
-const ADMIN_NAV = [
-  { icon: '⊞', label: 'DASHBOARD',    href: '/dashboard' },
-  { icon: '👥', label: 'USERS',        href: '/admin/users' },
-  { icon: '📋', label: 'APPLICATIONS', href: '/admin',     active: true },
-  { icon: '🏦', label: 'FINANCING',    href: '/admin/financing' },
-  { icon: '💎', label: 'CRYSTAL LOG',  href: '/admin/crystal' },
-  { icon: '📊', label: 'REPORTS',      href: '/admin/reports' },
-  { icon: '⚙',  label: 'SETTINGS',    href: '/admin/settings' },
-]
+import AdminLayout from '../components/AdminLayout'
 
 const STATUS_COLORS: Record<string, { bg: string; color: string }> = {
   'Under Review':    { bg: 'rgba(245,158,11,0.12)',  color: '#f59e0b' },
@@ -50,77 +40,7 @@ export default function AdminPage() {
   const selected = APPLICATIONS.find((a) => a.id === selectedApp)
 
   return (
-    <div className="flex min-h-screen" style={{ background: '#080808' }}>
-      {/* Sidebar */}
-      <aside
-        className="w-[200px] shrink-0 flex flex-col"
-        style={{ background: '#0a0a0a', borderRight: '1px solid rgba(201,168,76,0.12)', minHeight: '100vh' }}
-      >
-        <div
-          className="flex items-center gap-2 px-5 py-5"
-          style={{ borderBottom: '1px solid rgba(201,168,76,0.1)' }}
-        >
-          <div
-            className="flex items-center justify-center text-black font-black text-base"
-            style={{ width: '30px', height: '30px', background: 'linear-gradient(135deg,#c9a84c,#f5d78e)', borderRadius: '4px' }}
-          >★</div>
-          <div>
-            <p className="text-[8px] font-black tracking-[0.35em]" style={{ color: '#c9a84c' }}>MERGE</p>
-            <p className="text-[8px] font-black tracking-[0.35em] text-white">ADMIN</p>
-          </div>
-        </div>
-
-        <nav className="flex flex-col gap-1 p-2 flex-1">
-          {ADMIN_NAV.map((item) => (
-            <Link
-              key={item.label}
-              to={item.href}
-              className="flex items-center gap-3 px-3 py-2.5 rounded transition-all"
-              style={{
-                background: item.active ? 'rgba(201,168,76,0.12)' : 'transparent',
-                color: item.active ? '#c9a84c' : 'rgba(255,255,255,0.4)',
-                textDecoration: 'none',
-                borderLeft: item.active ? '2px solid #c9a84c' : '2px solid transparent',
-              }}
-            >
-              <span className="text-base w-5 text-center shrink-0">{item.icon}</span>
-              <span className="text-[10px] font-semibold tracking-[0.1em]">{item.label}</span>
-            </Link>
-          ))}
-        </nav>
-
-        <Link
-          to="/login"
-          className="flex items-center gap-3 px-5 py-4"
-          style={{ borderTop: '1px solid rgba(201,168,76,0.1)', color: 'rgba(255,255,255,0.3)', textDecoration: 'none' }}
-        >
-          <span>🚪</span>
-          <span className="text-[10px] font-semibold tracking-[0.1em]">LOGOUT</span>
-        </Link>
-      </aside>
-
-      {/* Main */}
-      <div className="flex-1 flex flex-col">
-        {/* Header */}
-        <header
-          className="px-8 py-4 flex items-center justify-between shrink-0"
-          style={{ background: '#0a0a0a', borderBottom: '1px solid rgba(201,168,76,0.1)' }}
-        >
-          <div>
-            <p className="text-[10px] font-semibold tracking-widest" style={{ color: 'rgba(255,255,255,0.4)' }}>ADMIN PANEL</p>
-            <h2 className="text-base font-black text-white tracking-widest">APPLICATIONS MANAGEMENT</h2>
-          </div>
-          <div className="flex items-center gap-3">
-            <span
-              className="text-[10px] font-bold px-3 py-1.5"
-              style={{ background: 'rgba(239,68,68,0.1)', color: '#f87171', border: '1px solid rgba(239,68,68,0.2)' }}
-            >
-              ADMIN
-            </span>
-          </div>
-        </header>
-
-        <main className="flex-1 p-6 overflow-y-auto">
+    <AdminLayout title="ADMIN PANEL" subtitle="APPLICATIONS MANAGEMENT">
           {/* Stats */}
           <div className="grid grid-cols-2 lg:grid-cols-5 gap-4 mb-6">
             {STATS.map((s) => (
@@ -269,8 +189,7 @@ export default function AdminPage() {
               </div>
             )}
           </div>
-        </main>
-      </div>
-    </div>
+    </AdminLayout>
   )
 }
+

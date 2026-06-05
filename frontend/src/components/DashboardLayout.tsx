@@ -2,6 +2,7 @@ import { useState, type ReactNode } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import LanguageSwitcher from './LanguageSwitcher'
+import SiteLogo from './SiteLogo'
 
 const NAV = [
   { icon: '⊞', labelKey: 'dashboard.nav.dashboard', href: '/dashboard', exact: true },
@@ -53,11 +54,11 @@ export default function DashboardLayout({ children, title, titleKey }: Props) {
       <aside className={`dash-sidebar ${open ? 'dash-sidebar--open' : 'dash-sidebar--collapsed'}`}>
         <div className="dash-sidebar-head">
           <Link to="/" className="flex items-center gap-3 no-underline shrink-0">
-            <div className="dash-logo-mark">★</div>
+            <SiteLogo size="md" />
             {open && (
               <div className="font-serif-display leading-none">
-                <p className="text-[9px] font-light tracking-[0.38em] text-[#D4AF37]">MERGE</p>
-                <p className="text-[9px] font-light tracking-[0.38em] text-neutral-400">STARS</p>
+                <p className="text-[9px] font-medium tracking-[0.38em] text-[#D4AF37]">MERGE</p>
+                <p className="text-[9px] font-medium tracking-[0.38em] text-neutral-400">STARS</p>
               </div>
             )}
           </Link>

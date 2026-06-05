@@ -1,6 +1,8 @@
 import { io } from 'socket.io-client'
 
-export const socket = io(import.meta.env.VITE_WS_URL ?? 'http://localhost:3000', {
+const wsUrl = import.meta.env.VITE_WS_URL?.trim()
+
+export const socket = io(wsUrl || undefined, {
   autoConnect: false,
   withCredentials: true,
   transports: ['websocket'],

@@ -56,8 +56,8 @@ export default function Footer() {
                 ★
               </div>
               <div className="flex flex-col leading-none font-serif-display">
-                <span className="text-[9px] font-light tracking-[0.4em] text-[#D4AF37]">MERGE</span>
-                <span className="text-[9px] font-light tracking-[0.4em] text-neutral-400">STARS</span>
+                <span className="text-[9px] font-medium tracking-[0.4em] text-[#D4AF37]">MERGE</span>
+                <span className="text-[9px] font-medium tracking-[0.4em] text-neutral-400">STARS</span>
               </div>
             </div>
             <p className="landing-body max-w-[280px] !text-[11px]">{t('footer.tagline')}</p>
