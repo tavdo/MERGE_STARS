@@ -41,7 +41,7 @@ export default {
     fundingNotGuaranteed: 'Одобрение финансирования не гарантируется.',
     infoAccurate: 'Я подтверждаю достоверность всех данных.',
   },
-  legal: { legal: 'ПРАВОВАЯ ИНФОРМАЦИЯ', lastUpdated: 'Обновлено: май 2026 · Версия 2.0', termsTitle: 'УСЛОВИЯ ИСПОЛЬЗОВАНИЯ', termsIntro: 'Прочитайте условия перед регистрацией или заказом на MERGE STARS.', privacyTitle: 'ПОЛИТИКА КОНФИДЕНЦИАЛЬНОСТИ', referralPolicyTitle: 'РЕФЕРАЛЬНАЯ ПОЛИТИКА', privacyLink: 'Конфиденциальность', referralLink: 'Реферальная политика', englishOnlyNotice: 'Полный юридический текст на английском. Для перевода: legal@mergestars.com' },
+  legal: { legal: 'ПРАВОВАЯ ИНФОРМАЦИЯ', lastUpdated: 'Обновлено: май 2026 · Версия 2.0', termsTitle: 'УСЛОВИЯ ИСПОЛЬЗОВАНИЯ', termsIntro: 'Прочитайте условия перед регистрацией или заказом на MERGE STARS.', privacyTitle: 'ПОЛИТИКА КОНФИДЕНЦИАЛЬНОСТИ', referralPolicyTitle: 'РЕФЕРАЛЬНАЯ ПОЛИТИКА', privacyLink: 'Конфиденциальность', referralLink: 'Реферальная политика' },
   common: { download: 'СКАЧАТЬ', share: 'ПОДЕЛИТЬСЯ', copy: 'КОПИРОВАТЬ', send: 'ОТПРАВИТЬ', save: 'Сохранить', cancel: 'Отмена', loading: 'Загрузка…' },
   ai: {
     kicker: 'AI-АССИСТЕНТ',

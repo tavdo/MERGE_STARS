@@ -20,7 +20,6 @@ merge-stars/
 │   ├── test/
 │   │   ├── unit/
 │   │   └── e2e/
-│   ├── Dockerfile
 │   └── package.json
 │
 ├── frontend/                   # React + Vite SPA
@@ -30,11 +29,9 @@ merge-stars/
 │   │   ├── lib/                # Third-party wrappers (axios, queryClient)
 │   │   └── main.tsx
 │   ├── public/
-│   ├── Dockerfile
 │   └── package.json
 │
-├── docker-compose.yml          # Local dev: app + postgres + redis
-├── docker-compose.prod.yml     # Production overrides
+├── deploy/                     # Linux VPS: nginx, systemd, deploy scripts
 ├── .env.example                # Documented env template
 ├── readme.md                   # Vision, principles, tech stack
 └── ARCHITECTURE.md             # ← This file

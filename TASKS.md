@@ -6,9 +6,9 @@
 
 ### ⚙️ Infrastructure & DevOps
 
-- [ ] 🔴 Configurer le `docker-compose.yml` (postgres, redis, backend, frontend)
-- [ ] 🔴 Créer le fichier `.env.example` avec toutes les variables documentées
-- [ ] 🔴 Vérifier que `docker compose up --build` fonctionne de bout en bout
+- [x] 🟢 Linux VPS deploy scripts (`deploy/deploy.sh`, nginx, systemd)
+- [x] 🟢 Créer le fichier `.env.example` avec toutes les variables documentées
+- [ ] 🔴 Vérifier que `./deploy/deploy.sh` fonctionne de bout en bout sur le VPS
 - [ ] 🟠 Configurer `pg_bouncer` pour la gestion du pool de connexions PostgreSQL
 - [ ] 🟠 Mettre en place GitHub Actions — pipeline CI (lint + tests + build)
 - [ ] 🟠 Configurer ArgoCD pour le déploiement continu sur staging

@@ -6,13 +6,12 @@
 
 ---
 
-## URLs (Docker)
+## URLs
 
-| Service | URL |
-|---------|-----|
-| **Frontend** | `http://localhost:8080` |
-| **Backend** | `http://localhost:3000` |
-| **API** | `http://localhost:3000/api/v1` |
+| Environment | Frontend | Backend API |
+|-------------|----------|-------------|
+| **Local dev** | `http://localhost:5173` | `http://localhost:3000` |
+| **Linux VPS** | `http://your-server` (nginx :80) | proxied at `/api` |
 
 ---
 
@@ -44,13 +43,42 @@ The `developer` role is limited to **2 seats** and grants access to:
 
 ---
 
-## Docker
+## Linux server deploy (no Docker)
 
-| Action | Command |
-|--------|---------|
-| First run (with build) | `docker compose -f docker-compose.yaml up --build` |
-| Normal run | `docker compose -f docker-compose.yaml up` |
-| Stop | `docker compose -f docker-compose.yaml down` |
+**Requirements:** Ubuntu/Debian VPS, Node.js 20+, nginx, git.
+
+### First-time setup on the server
+
+```bash
+git clone https://github.com/tavdo/MERGE_STARS.git
+cd MERGE_STARS
+cp .env.example .env
+# edit .env — set FRONTEND_URL=https://yourdomain.com
+
+sudo apt update
+sudo apt install -y nginx
+# Node 20: https://github.com/nodesource/distributions
+
+chmod +x deploy/install-server.sh deploy/deploy.sh
+DOMAIN=yourdomain.com ./deploy/install-server.sh
+```
+
+### Re-deploy after code changes
+
+```bash
+cd MERGE_STARS
+git pull origin main
+./deploy/deploy.sh
+```
+
+GitHub Actions (push to `main`) runs the same `deploy/deploy.sh` over SSH when these secrets are set: `VPS_HOST`, `VPS_USER`, `VPS_SSH_KEY`, optional `VPS_DEPLOY_PATH`.
+
+| Service | Command |
+|---------|---------|
+| Backend status | `sudo systemctl status merge-stars-backend` |
+| Backend logs | `sudo journalctl -u merge-stars-backend -f` |
+| Nginx reload | `sudo nginx -t && sudo systemctl reload nginx` |
+| HTTPS (Let's Encrypt) | `sudo certbot --nginx -d yourdomain.com` |
 
 ---
 

@@ -41,7 +41,7 @@ export default {
     fundingNotGuaranteed: 'ფინანსირების დამტკიცება არ გარანტირებულია.',
     infoAccurate: 'ვადასტურებ, რომ ყველა ინფორმაცია ზუსტია.',
   },
-  legal: { legal: 'სამართლებრივი', lastUpdated: 'განახლებულია: მაისი 2026 · ვერსია 2.0', termsTitle: 'წესები და პირობები', termsIntro: 'გთხოვთ, წაიკითხოთ ეს წესები MERGE STARS-ზე რეგისტრაციამდე ან შეკვეთამდე.', privacyTitle: 'კონფიდენციალურობის პოლიტიკა', referralPolicyTitle: 'რეფერალის პოლიტიკა', privacyLink: 'კონფიდენციალურობა', referralLink: 'რეფერალი', englishOnlyNotice: 'სრული სამართლებრივი ტექსტი ინგლისურადაა. თარგმანისთვის: legal@mergestars.com' },
+  legal: { legal: 'სამართლებრივი', lastUpdated: 'განახლებულია: მაისი 2026 · ვერსია 2.0', termsTitle: 'წესები და პირობები', termsIntro: 'გთხოვთ, წაიკითხოთ ეს წესები MERGE STARS-ზე რეგისტრაციამდე ან შეკვეთამდე.', privacyTitle: 'კონფიდენციალურობის პოლიტიკა', referralPolicyTitle: 'რეფერალის პოლიტიკა', privacyLink: 'კონფიდენციალურობა', referralLink: 'რეფერალი' },
   common: { download: 'ჩამოტვირთვა', share: 'გაზიარება', copy: 'კოპირება', send: 'გაგზავნა', save: 'შენახვა', cancel: 'გაუქმება', loading: 'იტვირთება…' },
   ai: {
     kicker: 'AI ასისტენტი',

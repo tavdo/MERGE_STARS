@@ -25,4 +25,5 @@ jobs:
             fi
             cd "$DEPLOY_DIR"
             git pull origin main
-            docker compose --env-file .env up --build -d
+            chmod +x deploy/deploy.sh
+            ./deploy/deploy.sh

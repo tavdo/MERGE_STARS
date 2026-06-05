@@ -41,7 +41,7 @@ export default {
     fundingNotGuaranteed: 'Finansman onayı garanti edilmez.',
     infoAccurate: 'Tüm bilgilerin doğru olduğunu onaylıyorum.',
   },
-  legal: { legal: 'YASAL', lastUpdated: 'Son güncelleme: Mayıs 2026 · Sürüm 2.0', termsTitle: 'ŞARTLAR VE KOŞULLAR', termsIntro: 'MERGE STARS\'a kayıt veya sipariş vermeden önce bu şartları okuyun.', privacyTitle: 'GİZLİLİK POLİTİKASI', referralPolicyTitle: 'REFERANS POLİTİKASI', privacyLink: 'Gizlilik', referralLink: 'Referans', englishOnlyNotice: 'Tam yasal metin İngilizce sunulmaktadır. İletişim: legal@mergestars.com' },
+  legal: { legal: 'YASAL', lastUpdated: 'Son güncelleme: Mayıs 2026 · Sürüm 2.0', termsTitle: 'ŞARTLAR VE KOŞULLAR', termsIntro: 'MERGE STARS\'a kayıt veya sipariş vermeden önce bu şartları okuyun.', privacyTitle: 'GİZLİLİK POLİTİKASI', referralPolicyTitle: 'REFERANS POLİTİKASI', privacyLink: 'Gizlilik', referralLink: 'Referans' },
   common: { download: 'İNDİR', share: 'PAYLAŞ', copy: 'KOPYALA', send: 'GÖNDER', save: 'Kaydet', cancel: 'İptal', loading: 'Yükleniyor…' },
   ai: {
     kicker: 'AI ASİSTAN',

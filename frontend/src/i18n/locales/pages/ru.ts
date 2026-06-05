@@ -1,9 +1,11 @@
 import enPages from './en'
+import ruLegal from './ru-legal'
 
 const { faq, contact, howItWorks, authPanel, dashboardHome, admin, ...rest } = enPages
 
 export default {
   ...rest,
+  ...ruLegal,
   authPanel: { ...authPanel, theNext: 'СЛЕДУЮЩАЯ', eraOf: 'ЭРА', luxury: 'РОСКОШИ', heroBody: '3D-филамент с драгоценными металлами.', badgeSecure: 'БЕЗОПАСНАЯ ПЛАТФОРМА', badgeSecureSub: 'Ваши данные защищены', welcome: '★ ДОБРО ПОЖАЛОВАТЬ В MERGE STARS ★', loginTab: '★ ВХОД', registerTab: '★ СОЗДАТЬ АККАУНТ', emailOrPhone: 'EMAIL ИЛИ ТЕЛЕФОН', passwordLabel: 'ПАРОЛЬ', rememberMe: 'Запомнить', forgotPassword: 'Забыли пароль?', enterPlatform: 'ВОЙТИ', noAccount: 'Нет аккаунта?', createAccount: 'Создать аккаунт', backToHome: '← НА ГЛАВНУЮ' },
   faq: { ...faq, title: 'ЧАСТО ЗАДАВАЕМЫЕ', titleGold: 'ВОПРОСЫ', stillHaveQuestions: 'Остались вопросы?', contactUs: 'СВЯЗАТЬСЯ →' },
   contact: { ...contact, kicker: 'Контакты', title: 'СВЯЖИТЕСЬ', titleGold: 'С НАМИ', messageSent: 'СООБЩЕНИЕ ОТПРАВЛЕНО', sendButton: 'ОТПРАВИТЬ →' },

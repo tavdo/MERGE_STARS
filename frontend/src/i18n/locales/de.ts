@@ -41,7 +41,7 @@ export default {
     fundingNotGuaranteed: 'Finanzierungszusage ist nicht garantiert.',
     infoAccurate: 'Ich bestätige die Richtigkeit meiner Angaben.',
   },
-  legal: { legal: 'RECHTLICHES', lastUpdated: 'Zuletzt aktualisiert: Mai 2026 · Version 2.0', termsTitle: 'ALLGEMEINE GESCHÄFTSBEDINGUNGEN', termsIntro: 'Bitte lesen Sie diese Bedingungen vor Registrierung oder Bestellung auf MERGE STARS.', privacyTitle: 'DATENSCHUTZ', referralPolicyTitle: 'EMPFEHLUNGSRICHTLINIE', privacyLink: 'Datenschutz', referralLink: 'Empfehlung', englishOnlyNotice: 'Vollständiger Rechtstext auf Englisch. Kontakt: legal@mergestars.com' },
+  legal: { legal: 'RECHTLICHES', lastUpdated: 'Zuletzt aktualisiert: Mai 2026 · Version 2.0', termsTitle: 'ALLGEMEINE GESCHÄFTSBEDINGUNGEN', termsIntro: 'Bitte lesen Sie diese Bedingungen vor Registrierung oder Bestellung auf MERGE STARS.', privacyTitle: 'DATENSCHUTZ', referralPolicyTitle: 'EMPFEHLUNGSRICHTLINIE', privacyLink: 'Datenschutz', referralLink: 'Empfehlung' },
   common: { download: 'HERUNTERLADEN', share: 'TEILEN', copy: 'KOPIEREN', send: 'SENDEN', save: 'Speichern', cancel: 'Abbrechen', loading: 'Laden…' },
   ai: {
     kicker: 'KI-ASSISTENT',
