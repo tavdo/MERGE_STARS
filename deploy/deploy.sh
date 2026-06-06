@@ -13,11 +13,12 @@ if [ -f .env ]; then
   set +a
 fi
 
-export NODE_ENV="${NODE_ENV:-production}"
+# NODE_ENV=production in .env makes npm skip devDependencies (nest, vite, tsc).
+# Unset during build; systemd loads .env at runtime for the backend service.
+unset NODE_ENV
+
 export VITE_API_URL="${VITE_API_URL:-/api}"
 export VITE_WS_URL="${VITE_WS_URL:-}"
-
-# Helpful on small VPS during Vite build
 export NODE_OPTIONS="${NODE_OPTIONS:---max-old-space-size=2048}"
 
 echo "==> Deploy MERGE STARS from $REPO_ROOT"
@@ -34,18 +35,17 @@ fi
 
 echo "==> Backend: install & build"
 cd "$REPO_ROOT/backend"
-npm ci
+npm ci --include=dev
 npm run build
 npm prune --omit=dev
 test -f dist/main.js || { echo "ERROR: backend build failed - dist/main.js missing"; exit 1; }
 
 echo "==> Frontend: install & build"
 cd "$REPO_ROOT/frontend"
-npm ci
+npm ci --include=dev
 npm run build
-npm prune --omit=dev
 if [ ! -f dist/index.html ]; then
-  echo "ERROR: frontend build failed — dist/index.html not created"
+  echo "ERROR: frontend build failed - dist/index.html not created"
   exit 1
 fi
 echo "    frontend/dist OK ($(du -sh dist | cut -f1))"
@@ -55,7 +55,7 @@ if command -v systemctl >/dev/null 2>&1 && systemctl cat merge-stars-backend.ser
   sudo systemctl restart merge-stars-backend
   sudo systemctl status merge-stars-backend --no-pager -l || true
 else
-  echo "    (skip) merge-stars-backend.service not installed — run deploy/install-server.sh once"
+  echo "    (skip) merge-stars-backend.service not installed - run deploy/install-server.sh once"
 fi
 
 echo "==> Reload nginx"
