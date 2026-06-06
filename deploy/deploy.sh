@@ -26,6 +26,13 @@ echo "==> Deploy MERGE STARS from $REPO_ROOT"
 # nginx + systemd on first deploy (no-op if already configured)
 bash "$SCRIPT_DIR/bootstrap.sh"
 
+if [ -f .env ]; then
+  set -a
+  # shellcheck disable=SC1091
+  source .env
+  set +a
+fi
+
 if ! command -v node >/dev/null 2>&1; then
   echo "ERROR: Node.js not found. Install Node 20+ first."
   exit 1
