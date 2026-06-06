@@ -22,6 +22,7 @@ export default {
     login: 'Login',
     dashboard: 'Dashboard',
     menu: 'Menu',
+    closeMenu: 'Close menu',
   },
   footer: {
     secure: 'SECURE PLATFORM',
