@@ -47,17 +47,29 @@ jobs:
             set -euo pipefail
             DEPLOY_DIR="${{ secrets.VPS_DEPLOY_PATH }}"
             if [ -z "$DEPLOY_DIR" ]; then
-              DEPLOY_DIR="$HOME/MERGE_STARS"
+              DEPLOY_DIR="/var/www/html"
             fi
             if [ ! -d "$DEPLOY_DIR/.git" ]; then
-              echo "ERROR: $DEPLOY_DIR is not a git repo. Clone MERGE_STARS there first."
-              echo "See deploy/GITHUB-ACTIONS-SETUP.md"
+              for candidate in /var/www/html "$HOME/MERGE_STARS"; do
+                if [ -d "$candidate/.git" ]; then
+                  DEPLOY_DIR="$candidate"
+                  break
+                fi
+              done
+            fi
+            if [ ! -d "$DEPLOY_DIR/.git" ]; then
+              echo "ERROR: Git repo not found. Set VPS_DEPLOY_PATH secret (e.g. /var/www/html)"
               exit 1
             fi
+            echo "Deploy directory: $DEPLOY_DIR"
             cd "$DEPLOY_DIR"
             git fetch origin main
             git reset --hard origin/main
             sed -i 's/\r$//' deploy/*.sh
             chmod +x deploy/*.sh
+            export DEPLOY_DIR
+            export DEPLOY_USER="$(whoami)"
             bash deploy/deploy.sh
             echo "Deployed commit: $(git log -1 --oneline)"
+            test -f frontend/dist/index.html && test -f backend/dist/main.js
+            echo "Build OK: frontend/dist + backend/dist"

@@ -23,6 +23,9 @@ export NODE_OPTIONS="${NODE_OPTIONS:---max-old-space-size=2048}"
 
 echo "==> Deploy MERGE STARS from $REPO_ROOT"
 
+# nginx + systemd on first deploy (no-op if already configured)
+bash "$SCRIPT_DIR/bootstrap.sh"
+
 if ! command -v node >/dev/null 2>&1; then
   echo "ERROR: Node.js not found. Install Node 20+ first."
   exit 1
@@ -51,17 +54,17 @@ fi
 echo "    frontend/dist OK ($(du -sh dist | cut -f1))"
 
 echo "==> Restart backend service"
-if command -v systemctl >/dev/null 2>&1 && systemctl cat merge-stars-backend.service &>/dev/null; then
-  sudo systemctl restart merge-stars-backend
-  sudo systemctl status merge-stars-backend --no-pager -l || true
+if command -v systemctl >/dev/null 2>&1; then
+  systemctl restart merge-stars-backend
+  systemctl status merge-stars-backend --no-pager -l || true
 else
-  echo "    (skip) merge-stars-backend.service not installed - run deploy/install-server.sh once"
+  echo "    (skip) systemctl not found"
 fi
 
 echo "==> Reload nginx"
 if command -v nginx >/dev/null 2>&1; then
-  sudo nginx -t
-  sudo systemctl reload nginx
+  nginx -t
+  systemctl reload nginx
 else
   echo "    (skip) nginx not found"
 fi

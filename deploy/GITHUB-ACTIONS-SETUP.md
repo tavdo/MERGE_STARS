@@ -9,9 +9,9 @@ Repo → **Settings** → **Secrets and variables** → **Actions** → **New re
 | Secret | Example | Notes |
 |--------|---------|-------|
 | `VPS_HOST` | `203.0.113.10` or `mergestars.com` | Server IP or hostname |
-| `VPS_USER` | `ubuntu` / `temo` | Linux user that owns the repo |
+| `VPS_USER` | `root` | SSH user (root ok) |
 | `VPS_SSH_KEY` | full private key | See below |
-| `VPS_DEPLOY_PATH` | `/home/temo/MERGE_STARS` | Optional; default `$HOME/MERGE_STARS` on server |
+| `VPS_DEPLOY_PATH` | `/var/www/html` | Git repo root on VPS |
 
 ## 1. Create deploy SSH key (one time)
 
@@ -55,24 +55,34 @@ Must look like:
 -----END OPENSSH PRIVATE KEY-----
 ```
 
-## 4. Prepare the server (one time)
+## Automatic deploy (no manual SSH)
 
-On the VPS:
+After secrets are set, every **push to `main`** runs on the server:
+
+1. `git pull` (reset to latest)
+2. `bootstrap.sh` — nginx + systemd (first time only)
+3. `deploy.sh` — `npm ci` + build backend & frontend + restart services
+
+You only SSH manually for: Node.js first install, editing `.env`, or HTTPS certbot.
+
+### One-time on server (only if Node missing)
 
 ```bash
-git clone https://github.com/tavdo/MERGE_STARS.git
-cd MERGE_STARS
-cp .env.example .env
-nano .env   # FRONTEND_URL=https://yourdomain.com
-
-sudo apt update && sudo apt install -y nginx
-# Node.js 20+ required
-
-chmod +x deploy/install-server.sh deploy/deploy.sh
-DOMAIN=yourdomain.com ./deploy/install-server.sh
+curl -fsSL https://deb.nodesource.com/setup_20.x | bash -
+apt-get install -y nodejs git
 ```
 
-## 5. Re-run deploy
+Ensure repo exists:
+
+```bash
+cd /var/www/html
+git remote -v   # should point to github.com/tavdo/MERGE_STARS
+cp .env.example .env && nano .env   # set FRONTEND_URL=https://yourdomain.com
+```
+
+Then push to `main` — GitHub Actions does the rest.
+
+---
 
 After secrets are set:
 
