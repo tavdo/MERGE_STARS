@@ -52,7 +52,7 @@ test -f dist/main.js || { echo "ERROR: backend build failed - dist/main.js missi
 
 wait_for_backend() {
   local i
-  for i in $(seq 1 30); do
+  for i in $(seq 1 45); do
     if curl -sf --max-time 2 http://127.0.0.1:${PORT:-3000}/health >/dev/null 2>&1; then
       echo "    backend health OK"
       return 0
@@ -66,7 +66,24 @@ wait_for_backend() {
   return 1
 }
 
+wait_for_postgres() {
+  if ! command -v pg_isready >/dev/null 2>&1; then
+    return 0
+  fi
+  local i
+  for i in $(seq 1 30); do
+    if pg_isready -h 127.0.0.1 -p 5432 -q 2>/dev/null; then
+      echo "    PostgreSQL ready"
+      return 0
+    fi
+    sleep 2
+  done
+  echo "WARNING: PostgreSQL not ready — backend may fail to start"
+  return 0
+}
+
 echo "==> Restart backend (DB schema sync)"
+wait_for_postgres
 if command -v systemctl >/dev/null 2>&1; then
   systemctl restart merge-stars-backend
   wait_for_backend

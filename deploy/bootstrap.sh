@@ -75,14 +75,31 @@ export DB_USER DB_NAME DB_PASSWORD
 bash "$SCRIPT_DIR/postgres-setup.sh"
 
 ENV_FILE="$DEPLOY_DIR/.env"
-if ! grep -q '^DATABASE_URL=' "$ENV_FILE" 2>/dev/null || grep -q 'CHANGE_ME' "$ENV_FILE" 2>/dev/null; then
-  echo "    Updating .env database placeholders"
-  sed -i "s|^DATABASE_URL=.*|DATABASE_URL=postgresql://${DB_USER}:${DB_PASSWORD}@127.0.0.1:5432/${DB_NAME}|" "$ENV_FILE"
-  sed -i "s|^DB_PASSWORD=.*|DB_PASSWORD=${DB_PASSWORD}|" "$ENV_FILE"
-fi
-if grep -q 'change-this-to-a-long-random-string' "$ENV_FILE" 2>/dev/null; then
+DB_URL="postgresql://${DB_USER}:${DB_PASSWORD}@127.0.0.1:5432/${DB_NAME}"
+
+set_env() {
+  local key="$1"
+  local val="$2"
+  if grep -q "^${key}=" "$ENV_FILE" 2>/dev/null; then
+    sed -i "s|^${key}=.*|${key}=${val}|" "$ENV_FILE"
+  else
+    echo "${key}=${val}" >> "$ENV_FILE"
+  fi
+}
+
+echo "    Ensuring .env database settings"
+set_env "DATABASE_URL" "$DB_URL"
+set_env "DB_HOST" "127.0.0.1"
+set_env "DB_PORT" "5432"
+set_env "DB_USER" "$DB_USER"
+set_env "DB_PASSWORD" "$DB_PASSWORD"
+set_env "DB_NAME" "$DB_NAME"
+set_env "DB_SYNC" "true"
+set_env "DB_SSL" "false"
+
+if ! grep -q '^JWT_SECRET=' "$ENV_FILE" 2>/dev/null || grep -q 'change-this-to-a-long-random-string' "$ENV_FILE" 2>/dev/null; then
   JWT_GEN="$(openssl rand -hex 32 2>/dev/null || head -c 32 /dev/urandom | xxd -p -c 64)"
-  sed -i "s|^JWT_SECRET=.*|JWT_SECRET=${JWT_GEN}|" "$ENV_FILE"
+  set_env "JWT_SECRET" "$JWT_GEN"
   echo "    Generated JWT_SECRET in .env"
 fi
 
