@@ -38,10 +38,21 @@ nginx -t
 systemctl reload nginx
 systemctl enable nginx
 
+echo "==> Firewall (allow HTTP/HTTPS if ufw active)"
+if command -v ufw >/dev/null 2>&1 && ufw status 2>/dev/null | grep -q "Status: active"; then
+  ufw allow 80/tcp
+  ufw allow 443/tcp
+  ufw reload
+  echo "    ufw: ports 80, 443 open"
+else
+  echo "    ufw inactive — ensure cloud firewall allows 80/443"
+fi
+
+PUB_IP="$(curl -4 -s --max-time 3 ifconfig.me 2>/dev/null || echo YOUR_SERVER_IP)"
 echo ""
 echo "==> Site should be live"
-echo "    Frontend: http://$(curl -s ifconfig.me 2>/dev/null || echo 'YOUR_IP')/"
-echo "    API test: curl -s http://127.0.0.1/api/ || curl -s http://127.0.0.1:3000/"
+echo "    Try in browser: http://${PUB_IP}/"
+echo "    API test: curl -s http://127.0.0.1:3000/"
 echo ""
 echo "    Do NOT use: npm start (dev only)"
 echo "    Production backend: systemctl status merge-stars-backend"

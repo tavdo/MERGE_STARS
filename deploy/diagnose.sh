@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Quick server check — run on VPS: ./deploy/diagnose.sh
+# Full server diagnose — run on VPS: bash deploy/diagnose.sh
 set -u
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -7,89 +7,122 @@ REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 
 echo "=== MERGE STARS server diagnose ==="
 echo "Repo: $REPO_ROOT"
+echo "Time: $(date -Iseconds 2>/dev/null || date)"
 echo ""
 
 fail=0
-warn() { echo "  ⚠ $1"; }
-ok() { echo "  ✓ $1"; }
-err() { echo "  ✗ $1"; fail=1; }
+warn() { echo "  [!] $1"; }
+ok() { echo "  [OK] $1"; }
+err() { echo "  [FAIL] $1"; fail=1; }
+
+echo "-- Public IP --"
+PUB_IP="$(curl -4 -s --max-time 3 ifconfig.me 2>/dev/null || curl -4 -s --max-time 3 icanhazip.com 2>/dev/null || echo unknown)"
+echo "  Server IP: $PUB_IP"
+echo ""
 
 echo "-- Tools --"
-if command -v node >/dev/null 2>&1; then
-  ok "Node $(node -v)"
-else
-  err "Node.js not installed"
-fi
-if command -v npm >/dev/null 2>&1; then
-  ok "npm $(npm -v)"
-else
-  err "npm not installed"
-fi
-if command -v nginx >/dev/null 2>&1; then
-  ok "nginx installed"
-else
-  warn "nginx not installed"
-fi
+command -v node >/dev/null && ok "Node $(node -v)" || err "Node.js not installed"
+command -v npm >/dev/null && ok "npm $(npm -v)" || err "npm not installed"
+command -v nginx >/dev/null && ok "nginx installed" || err "nginx not installed"
 echo ""
 
-echo "-- Git --"
-if [ -d "$REPO_ROOT/.git" ]; then
-  ok "git repo OK"
-  (cd "$REPO_ROOT" && git log -1 --oneline)
-else
-  err "Not a git repo — clone MERGE_STARS first"
-fi
+echo "-- Build output --"
+[ -f "$REPO_ROOT/frontend/dist/index.html" ] && ok "frontend/dist/index.html" || err "frontend/dist missing — bash deploy/deploy.sh"
+[ -f "$REPO_ROOT/backend/dist/main.js" ] && ok "backend/dist/main.js" || err "backend/dist missing — bash deploy/deploy.sh"
 echo ""
 
-echo "-- Frontend dist --"
-DIST="$REPO_ROOT/frontend/dist"
-if [ -f "$DIST/index.html" ]; then
-  ok "frontend/dist/index.html exists"
-  echo "  Size: $(du -sh "$DIST" 2>/dev/null | cut -f1)"
-  echo "  Assets:"
-  ls -la "$DIST/assets/" 2>/dev/null | head -5 || true
-else
-  err "frontend/dist missing — run: ./deploy/deploy.sh"
-fi
-echo ""
-
-echo "-- Backend --"
-if [ -f "$REPO_ROOT/backend/dist/main.js" ]; then
-  ok "backend/dist/main.js exists"
-else
-  warn "backend not built yet"
-fi
+echo "-- Backend service --"
 if systemctl is-active merge-stars-backend &>/dev/null; then
-  ok "merge-stars-backend service running"
-elif systemctl list-unit-files merge-stars-backend.service &>/dev/null 2>&1; then
-  warn "merge-stars-backend installed but not running"
+  ok "merge-stars-backend running"
 else
-  warn "merge-stars-backend service not installed — run deploy/install-server.sh"
+  err "merge-stars-backend NOT running — bash deploy/go-live.sh"
+  journalctl -u merge-stars-backend -n 5 --no-pager 2>/dev/null || true
+fi
+if curl -sf --max-time 2 http://127.0.0.1:3000/ >/dev/null 2>&1; then
+  ok "backend responds on :3000"
+else
+  warn "backend not responding on http://127.0.0.1:3000/"
 fi
 echo ""
 
 echo "-- Nginx --"
-if [ -f /etc/nginx/sites-enabled/merge-stars.conf ]; then
-  ok "nginx site merge-stars.conf enabled"
-  grep -E "^\s*root\s" /etc/nginx/sites-enabled/merge-stars.conf 2>/dev/null || true
+if systemctl is-active nginx &>/dev/null; then
+  ok "nginx running"
 else
-  warn "nginx merge-stars.conf not found — run deploy/install-server.sh"
+  err "nginx NOT running — systemctl start nginx"
+fi
+if [ -f /etc/nginx/sites-enabled/merge-stars.conf ]; then
+  ok "merge-stars.conf enabled"
+  echo "  root: $(grep -E '^\s*root\s' /etc/nginx/sites-enabled/merge-stars.conf 2>/dev/null | head -1)"
+else
+  err "merge-stars.conf missing — bash deploy/go-live.sh"
+fi
+if curl -sf --max-time 2 -o /dev/null -w "%{http_code}" http://127.0.0.1/ | grep -qE '200|304'; then
+  ok "localhost:80 returns 200 (frontend)"
+else
+  HTTP_CODE="$(curl -s -o /dev/null -w '%{http_code}' --max-time 2 http://127.0.0.1/ 2>/dev/null || echo fail)"
+  err "localhost:80 returned $HTTP_CODE (expected 200)"
+fi
+echo ""
+
+echo "-- Ports listening --"
+if command -v ss >/dev/null; then
+  ss -tlnp 2>/dev/null | grep -E ':80 |:443 |:3000 ' || warn "ports 80/443/3000 not all listening"
+elif command -v netstat >/dev/null; then
+  netstat -tlnp 2>/dev/null | grep -E ':80 |:443 |:3000 ' || true
+fi
+echo ""
+
+echo "-- Firewall (ufw) --"
+if command -v ufw >/dev/null; then
+  UFW_STATUS="$(ufw status 2>/dev/null || echo inactive)"
+  echo "  $UFW_STATUS" | head -5
+  if echo "$UFW_STATUS" | grep -q "Status: active"; then
+    echo "$UFW_STATUS" | grep -qE '80|443' || err "ufw active but 80/443 may be blocked — run: ufw allow 80 && ufw allow 443"
+  else
+    ok "ufw inactive (ports open)"
+  fi
+else
+  warn "ufw not installed — check cloud firewall (AWS Security Group / Hetzner / etc.)"
 fi
 echo ""
 
 echo "-- .env --"
 if [ -f "$REPO_ROOT/.env" ]; then
-  ok ".env exists"
-  grep -E "^FRONTEND_URL=" "$REPO_ROOT/.env" 2>/dev/null || warn "FRONTEND_URL not set in .env"
+  grep -E "^FRONTEND_URL=|^PORT=" "$REPO_ROOT/.env" 2>/dev/null || warn "check .env FRONTEND_URL"
 else
-  warn ".env missing — cp .env.example .env"
+  warn ".env missing"
 fi
 echo ""
 
+echo "-- DNS (if domain set) --"
+if [ -f "$REPO_ROOT/.env" ]; then
+  # shellcheck disable=SC1091
+  source "$REPO_ROOT/.env" 2>/dev/null || true
+  DOMAIN="${FRONTEND_URL#https://}"
+  DOMAIN="${DOMAIN#http://}"
+  DOMAIN="${DOMAIN%%/*}"
+  if [ -n "$DOMAIN" ] && [ "$DOMAIN" != "yourdomain.com" ]; then
+    DNS_IP="$(getent ahostsv4 "$DOMAIN" 2>/dev/null | awk '{print $1; exit}' || dig +short "$DOMAIN" 2>/dev/null | head -1)"
+    echo "  Domain: $DOMAIN"
+    echo "  DNS points to: ${DNS_IP:-unknown}"
+    if [ "$DNS_IP" = "$PUB_IP" ]; then
+      ok "DNS matches server IP"
+    else
+      err "DNS ($DNS_IP) != server IP ($PUB_IP) — fix A record at domain registrar"
+    fi
+  fi
+fi
+echo ""
+
+echo "=== Summary ==="
 if [ "$fail" -eq 0 ]; then
-  echo "=== OK (or warnings only) ==="
+  echo "Local stack looks OK. If still unreachable from internet:"
+  echo "  1. Cloud panel: open inbound TCP 80 and 443"
+  echo "  2. DNS A record -> $PUB_IP"
+  echo "  3. Try: http://$PUB_IP/"
 else
-  echo "=== FIX ERRORS ABOVE, then run: ==="
-  echo "  cd $REPO_ROOT && ./deploy/deploy.sh"
+  echo "Fix [FAIL] items above, then run:"
+  echo "  cd $REPO_ROOT && bash deploy/go-live.sh"
 fi
 exit "$fail"
