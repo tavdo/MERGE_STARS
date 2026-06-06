@@ -50,10 +50,26 @@ npm run build
 npm prune --omit=dev
 test -f dist/main.js || { echo "ERROR: backend build failed - dist/main.js missing"; exit 1; }
 
+wait_for_backend() {
+  local i
+  for i in $(seq 1 30); do
+    if curl -sf --max-time 2 http://127.0.0.1:${PORT:-3000}/health >/dev/null 2>&1; then
+      echo "    backend health OK"
+      return 0
+    fi
+    sleep 2
+  done
+  echo "ERROR: backend did not respond on /health"
+  if command -v journalctl >/dev/null 2>&1; then
+    journalctl -u merge-stars-backend -n 40 --no-pager || true
+  fi
+  return 1
+}
+
 echo "==> Restart backend (DB schema sync)"
 if command -v systemctl >/dev/null 2>&1; then
-  systemctl restart merge-stars-backend || true
-  sleep 2
+  systemctl restart merge-stars-backend
+  wait_for_backend
 fi
 
 echo "==> Import users from MySQL dump (if present)"
@@ -78,6 +94,7 @@ echo "    frontend/dist OK ($(du -sh dist | cut -f1))"
 echo "==> Restart backend service"
 if command -v systemctl >/dev/null 2>&1; then
   systemctl restart merge-stars-backend
+  wait_for_backend
   systemctl status merge-stars-backend --no-pager -l || true
 else
   echo "    (skip) systemctl not found"
