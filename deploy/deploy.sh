@@ -82,8 +82,26 @@ wait_for_postgres() {
   return 0
 }
 
+verify_db_connection() {
+  if [ -z "${DATABASE_URL:-}" ]; then
+    echo "ERROR: DATABASE_URL is not set in .env"
+    return 1
+  fi
+  cd "$REPO_ROOT/backend"
+  node -e "
+    const { Client } = require('pg');
+    const c = new Client({ connectionString: process.env.DATABASE_URL });
+    c.connect()
+      .then(() => c.query('SELECT 1'))
+      .then(() => { console.log('    DATABASE_URL connection OK'); return c.end(); })
+      .catch((err) => { console.error('ERROR: DATABASE_URL failed:', err.message); process.exit(1); });
+  "
+  cd "$REPO_ROOT"
+}
+
 echo "==> Restart backend (DB schema sync)"
 wait_for_postgres
+verify_db_connection
 if command -v systemctl >/dev/null 2>&1; then
   systemctl restart merge-stars-backend
   wait_for_backend
