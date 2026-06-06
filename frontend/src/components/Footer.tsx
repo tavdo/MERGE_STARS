@@ -17,6 +17,14 @@ const SUPPORT = [
   { labelKey: 'footer.privacy', to: '/privacy' },
 ] as const
 
+const SOCIAL = [
+  { label: 'Facebook', icon: 'f' },
+  { label: 'LinkedIn', icon: 'in' },
+  { label: 'YouTube', icon: '▶' },
+  { label: 'Instagram', icon: 'ig' },
+  { label: 'X', icon: '𝕏' },
+] as const
+
 export default function Footer() {
   const { t } = useTranslation()
   const year = new Date().getFullYear()
@@ -31,7 +39,7 @@ export default function Footer() {
   return (
     <footer className="bg-[#030303] border-t border-[rgba(212,175,55,0.1)]">
       <div
-        className="grid grid-cols-2 lg:grid-cols-4 gap-px"
+        className="footer-badges-grid grid grid-cols-2 lg:grid-cols-4 gap-px"
         style={{ background: 'rgba(212,175,55,0.04)' }}
       >
         {badges.map((b) => (
@@ -45,8 +53,8 @@ export default function Footer() {
         ))}
       </div>
 
-      <div className="px-8 lg:px-16 py-16 max-w-[1440px] mx-auto">
-        <div className="grid grid-cols-1 lg:grid-cols-5 gap-12">
+      <div className="footer-main px-8 lg:px-16 py-16 max-w-[1440px] mx-auto">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-10 lg:gap-12">
           <div className="lg:col-span-2">
             <div className="flex items-center gap-3 mb-5">
               <div
@@ -61,21 +69,22 @@ export default function Footer() {
               </div>
             </div>
             <p className="landing-body max-w-[280px] !text-[11px]">{t('footer.tagline')}</p>
-            <div className="flex gap-2 mt-8">
-              {['f', 'in', '▶', 'li', '𝕏'].map((s, i) => (
+            <div className="flex flex-wrap gap-2.5 mt-8">
+              {SOCIAL.map((s) => (
                 <button
-                  key={i}
+                  key={s.label}
                   type="button"
-                  className="w-9 h-9 flex items-center justify-center text-[10px] font-medium text-neutral-500 border border-[rgba(212,175,55,0.15)] transition-all duration-300 ease-in-out hover:border-[rgba(212,175,55,0.4)] hover:text-[#D4AF37]"
+                  aria-label={s.label}
+                  className="footer-social-btn w-9 h-9 flex items-center justify-center text-[10px] font-medium text-neutral-500 border border-[rgba(212,175,55,0.15)] transition-all duration-300 ease-in-out hover:border-[rgba(212,175,55,0.4)] hover:text-[#D4AF37]"
                   style={{ borderRadius: '2px' }}
                 >
-                  {s}
+                  {s.icon}
                 </button>
               ))}
             </div>
           </div>
 
-          <div>
+          <div className="footer-link-col">
             <h4 className="landing-sans-head mb-6">{t('footer.company')}</h4>
             <ul className="flex flex-col gap-3">
               {COMPANY.map((item) => (
@@ -91,7 +100,7 @@ export default function Footer() {
             </ul>
           </div>
 
-          <div>
+          <div className="footer-link-col">
             <h4 className="landing-sans-head mb-6">{t('footer.support')}</h4>
             <ul className="flex flex-col gap-3">
               {SUPPORT.map((item) => (
@@ -107,7 +116,7 @@ export default function Footer() {
             </ul>
           </div>
 
-          <div>
+          <div className="footer-link-col sm:col-span-2 lg:col-span-1">
             <h4 className="landing-sans-head mb-6">{t('footer.contact')}</h4>
             <ul className="flex flex-col gap-3">
               {['info@mergestars.com', '+1 (555) 123 4567', 'Global Headquarters'].map((text) => (
@@ -120,7 +129,7 @@ export default function Footer() {
         </div>
       </div>
 
-      <div className="px-8 lg:px-16 py-5 flex flex-col sm:flex-row items-center justify-between gap-2 max-w-[1440px] mx-auto border-t border-[rgba(212,175,55,0.06)]">
+      <div className="footer-bottom px-8 lg:px-16 py-5 flex flex-col sm:flex-row items-center justify-between gap-2 max-w-[1440px] mx-auto border-t border-[rgba(212,175,55,0.06)]">
         <p className="text-[9px] tracking-[0.12em] text-neutral-600">
           © {year} MERGE STARS. {t('footer.rights')}
         </p>

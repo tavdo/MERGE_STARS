@@ -12,7 +12,10 @@ export default function AIAssistantWidget() {
   const [open, setOpen] = useState(false)
   const chat = useAIChat()
 
-  const hiddenOnRoute = pathname === '/dashboard/ai' || pathname.startsWith('/bank-review')
+  const hiddenOnRoute =
+    pathname === '/dashboard/ai' ||
+    pathname.startsWith('/bank-review') ||
+    pathname === '/login'
 
   useEffect(() => {
     if (hiddenOnRoute) setOpen(false)

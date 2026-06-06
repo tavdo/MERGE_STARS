@@ -83,7 +83,7 @@ export default function LoginPage() {
         </p>
       </div>
 
-      <div className="flex-1 flex flex-col justify-center items-center px-8 lg:px-16 py-12 overflow-y-auto relative" style={{ maxWidth: '640px', margin: '0 auto' }}>
+      <div className="auth-page-panel flex-1 flex flex-col justify-center items-center px-8 lg:px-16 py-12 overflow-y-auto relative" style={{ maxWidth: '640px', margin: '0 auto' }}>
         <div className="absolute top-6 right-6 lg:right-10">
           <LanguageSwitcher variant="compact" />
         </div>
@@ -154,7 +154,7 @@ export default function LoginPage() {
 
             {step === 1 && (
               <div className="flex flex-col gap-4">
-                <div className="grid grid-cols-2 gap-4">
+                <div className="auth-name-grid grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
                     <label className="text-[10px] font-semibold tracking-widest block mb-2" style={{ color: 'rgba(255,255,255,0.4)' }}>{t('auth.firstName')}</label>
                     <input className="gold-input" placeholder={t('authPanel.firstNamePlaceholder')} />
@@ -170,8 +170,8 @@ export default function LoginPage() {
                 </div>
                 <div>
                   <label className="text-[10px] font-semibold tracking-widest block mb-2" style={{ color: 'rgba(255,255,255,0.4)' }}>{t('auth.phone')}</label>
-                  <div className="flex gap-2">
-                    <select className="gold-input" style={{ width: '90px', flexShrink: 0 }}>
+                  <div className="auth-phone-row flex gap-2">
+                    <select className="gold-input" style={{ flexShrink: 0 }}>
                       <option>🇬🇪 +995</option>
                       <option>🇺🇸 +1</option>
                       <option>🇬🇧 +44</option>

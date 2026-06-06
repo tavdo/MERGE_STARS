@@ -67,7 +67,7 @@ export default function LandingPage() {
       <Navbar variant="landing" />
 
       {/* ── HERO ─────────────────────────────────────── */}
-      <section className="relative flex flex-col lg:flex-row items-center justify-center gap-12 lg:gap-8 min-h-screen pt-32 pb-20 px-8 lg:px-16 overflow-hidden max-w-1440 mx-auto w-full">
+      <section className="landing-hero-section relative flex flex-col lg:flex-row items-center justify-center gap-12 lg:gap-8 min-h-screen pt-32 pb-20 px-8 lg:px-16 overflow-hidden max-w-1440 mx-auto w-full">
         <div
           className="absolute pointer-events-none w-[min(90vw,640px)] h-[min(90vw,640px)] rounded-full"
           style={{
@@ -79,7 +79,7 @@ export default function LandingPage() {
         />
 
         {/* Left — editorial headline */}
-        <div className="relative z-10 flex-1 max-w-[440px] animate-fade-in-up order-2 lg:order-none">
+        <div className="landing-hero-copy relative z-10 flex-1 max-w-[440px] animate-fade-in-up order-2 lg:order-none">
           <p className="landing-hero-kicker mb-6">{t('landing.heroKicker')}</p>
           <h1
             className="landing-hero-title mb-2"
@@ -92,7 +92,7 @@ export default function LandingPage() {
           <p className="landing-tagline mt-6 mb-4">{t('landing.tagline')}</p>
           <p className="landing-body max-w-[340px] mb-10">{t('landing.heroBody')}</p>
 
-          <div className="flex flex-wrap items-center gap-4">
+          <div className="landing-hero-actions flex flex-wrap items-center gap-4">
             <Link to="/apply" className="luxury-btn-glass">
               {t('landing.exploreCollection')}
             </Link>
@@ -113,7 +113,7 @@ export default function LandingPage() {
         </div>
 
         {/* Center — 3D coin */}
-        <div className="relative z-10 flex-1 flex justify-center items-center order-first lg:order-none w-full min-h-[min(72vw,420px)] lg:min-h-0">
+        <div className="landing-hero-coin-wrap relative z-10 flex-1 flex justify-center items-center order-first lg:order-none w-full min-h-[min(72vw,420px)] lg:min-h-0">
           <div
             className="relative flex items-center justify-center w-full max-w-[500px] aspect-square"
             style={{
@@ -227,7 +227,7 @@ export default function LandingPage() {
           </div>
         </div>
 
-        <div className="flex flex-col justify-center px-10 lg:px-14 py-16 bg-[#050505]">
+        <div className="landing-tech-section flex flex-col justify-center px-10 lg:px-14 py-16 bg-[#050505]">
           <h2
             className="landing-section-title text-[clamp(1.75rem,3vw,2.25rem)] leading-snug mb-5"
           >
@@ -258,7 +258,7 @@ export default function LandingPage() {
 
       {/* ── INVEST ───────────────────────────────────── */}
       <section className="grid lg:grid-cols-2 min-h-[440px] max-w-1440 mx-auto w-full">
-        <div className="flex flex-col justify-center px-10 lg:px-14 py-16">
+        <div className="landing-invest-section flex flex-col justify-center px-10 lg:px-14 py-16">
           <h2 className="landing-section-title text-[clamp(1.75rem,3.5vw,2.5rem)] leading-snug mb-6">
             {t('landing.investTitle1')}
             {t('landing.investTitle2') ? (
@@ -277,7 +277,7 @@ export default function LandingPage() {
           </Link>
         </div>
 
-        <div className="relative flex items-center px-10 lg:px-14 py-16 overflow-hidden bg-[#060606]">
+        <div className="landing-invest-points relative flex items-center px-10 lg:px-14 py-16 overflow-hidden bg-[#060606]">
           <div
             className="absolute w-[400px] h-[400px] rounded-full pointer-events-none"
             style={{

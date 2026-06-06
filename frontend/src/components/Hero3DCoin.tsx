@@ -103,7 +103,7 @@ export default function Hero3DCoin({
 
   return (
     <div
-      className={`relative flex flex-col items-center justify-center ${className}`.trim()}
+      className={`hero-3d-coin relative flex flex-col items-center justify-center ${className}`.trim()}
       role="img"
       aria-label={ariaLabel}
       style={{

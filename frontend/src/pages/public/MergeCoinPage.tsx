@@ -52,7 +52,7 @@ export default function MergeCoinPage() {
       `}</style>
 
       <div style={{ paddingTop: '100px', paddingBottom: '40px' }}>
-        <div className="admin-inner w-full mx-auto" style={{ maxWidth: '1320px', padding: '0 20px' }}>
+        <div className="admin-inner merge-page-inner w-full mx-auto" style={{ maxWidth: '1320px', padding: '0 20px' }}>
 
           {/* ========================================================================= */}
           {/* ZONE 1: HEADER ZONE (STAR CIVILIZATION BRANDING) */}
@@ -286,7 +286,7 @@ export default function MergeCoinPage() {
               THE CORE FORMULA ECOLOGY
             </p>
 
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '16px', flexWrap: 'wrap' }}>
+            <div className="merge-ecology-flow" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '16px', flexWrap: 'wrap' }}>
               
               {/* Box 1: Human buys */}
               <div style={{ flex: '1 1 140px', textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px' }}>
@@ -298,7 +298,7 @@ export default function MergeCoinPage() {
               </div>
 
               {/* Arrow */}
-              <div style={{ color: '#c9a84c', fontSize: '18px', fontWeight: 900 }}>➔</div>
+              <div className="merge-ecology-arrow" style={{ color: '#c9a84c', fontSize: '18px', fontWeight: 900 }}>➔</div>
 
               {/* Box 2: Star Brand Coin */}
               <div style={{ flex: '1 1 140px', textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px' }}>
@@ -310,7 +310,7 @@ export default function MergeCoinPage() {
               </div>
 
               {/* Arrow */}
-              <div style={{ color: '#c9a84c', fontSize: '18px', fontWeight: 900 }}>➔</div>
+              <div className="merge-ecology-arrow" style={{ color: '#c9a84c', fontSize: '18px', fontWeight: 900 }}>➔</div>
 
               {/* Box 3: Star Jewelry House */}
               <div className="animate-pulse-gold" style={{ flex: '1 2 240px', padding: '16px', background: 'rgba(201,168,76,0.03)', border: '1px solid rgba(201,168,76,0.2)', borderRadius: '6px', textAlign: 'center' }}>
@@ -325,7 +325,7 @@ export default function MergeCoinPage() {
               </div>
 
               {/* Arrow */}
-              <div style={{ color: '#c9a84c', fontSize: '18px', fontWeight: 900 }}>➔</div>
+              <div className="merge-ecology-arrow" style={{ color: '#c9a84c', fontSize: '18px', fontWeight: 900 }}>➔</div>
 
               {/* Box 4: Mega Constellation */}
               <div style={{ flex: '1 1 140px', textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px' }}>
@@ -337,7 +337,7 @@ export default function MergeCoinPage() {
               </div>
 
               {/* Arrow */}
-              <div style={{ color: '#c9a84c', fontSize: '18px', fontWeight: 900 }}>➔</div>
+              <div className="merge-ecology-arrow" style={{ color: '#c9a84c', fontSize: '18px', fontWeight: 900 }}>➔</div>
 
               {/* Box 5: The Jewelry World */}
               <div style={{ flex: '1 1 140px', textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px' }}>

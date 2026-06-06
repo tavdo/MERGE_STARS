@@ -19,19 +19,19 @@ export default function FAQPage() {
         </h1>
       </div>
 
-      <div className="site-container site-container-narrow page-section">
+      <div className="site-container site-container-narrow page-section faq-list">
         {faqs.map((faq, i) => (
           <div
             key={i}
-            className="border-b border-[rgba(201,168,76,0.12)] cursor-pointer"
+            className="faq-item border-b border-[rgba(201,168,76,0.12)] cursor-pointer"
             onClick={() => setOpen(open === i ? null : i)}
           >
-            <div className="flex justify-between items-center gap-4 py-5">
+            <div className="faq-item-header flex justify-between items-center gap-4 py-5">
               <h2 className="text-base font-bold text-white flex-1 leading-snug pr-2" style={{ color: open === i ? '#c9a84c' : '#fff' }}>
                 {faq.q}
               </h2>
               <span
-                className="text-xl shrink-0 transition-transform duration-200"
+                className="faq-item-toggle text-xl shrink-0 transition-transform duration-200"
                 style={{ color: '#c9a84c', transform: open === i ? 'rotate(45deg)' : 'none' }}
               >
                 +
