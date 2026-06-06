@@ -37,7 +37,7 @@ cd "$REPO_ROOT/backend"
 npm ci
 npm run build
 npm prune --omit=dev
-test -f dist/main.js || { echo "ERROR: backend build failed — dist/main.js missing"; exit 1; }
+test -f dist/main.js || { echo "ERROR: backend build failed - dist/main.js missing"; exit 1; }
 
 echo "==> Frontend: install & build"
 cd "$REPO_ROOT/frontend"

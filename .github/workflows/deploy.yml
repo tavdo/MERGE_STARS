@@ -57,6 +57,7 @@ jobs:
             cd "$DEPLOY_DIR"
             git fetch origin main
             git reset --hard origin/main
-            chmod +x deploy/deploy.sh
-            ./deploy/deploy.sh
+            sed -i 's/\r$//' deploy/*.sh
+            chmod +x deploy/*.sh
+            bash deploy/deploy.sh
             echo "Deployed commit: $(git log -1 --oneline)"
