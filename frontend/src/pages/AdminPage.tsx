@@ -1,43 +1,62 @@
 import { useState } from 'react'
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import AdminLayout from '../components/AdminLayout'
-
-const STATUS_COLORS: Record<string, { bg: string; color: string }> = {
-  'Under Review':    { bg: 'rgba(245,158,11,0.12)',  color: '#f59e0b' },
-  'Approved':        { bg: 'rgba(34,197,94,0.12)',   color: '#22c55e' },
-  'Sent to Crystal': { bg: 'rgba(59,130,246,0.12)',  color: '#60a5fa' },
-  'Funds Received':  { bg: 'rgba(20,184,166,0.12)',  color: '#2dd4bf' },
-  'Rejected':        { bg: 'rgba(239,68,68,0.12)',   color: '#f87171' },
-  'In Production':   { bg: 'rgba(139,92,246,0.12)',  color: '#a78bfa' },
-}
-
-const APPLICATIONS = [
-  { id: 'APP-2024-000567', user: 'Giorgi T.', coin: 'Silver (1KG)', qty: 1, value: '$2,450.00', status: 'Under Review',    crystal: '—' },
-  { id: 'APP-2024-000566', user: 'Nino M.',   coin: 'Silver 500g',  qty: 2, value: '$1,340.00', status: 'Sent to Crystal', crystal: 'Yes' },
-  { id: 'APP-2024-000565', user: 'David K.',  coin: 'Gold 1KG',     qty: 1, value: '$8,900.00', status: 'Approved',        crystal: 'Yes' },
-  { id: 'APP-2024-000564', user: 'Mariam L.', coin: 'Silver 1KG',   qty: 1, value: '$2,450.00', status: 'Funds Received',  crystal: 'Yes' },
-  { id: 'APP-2024-000563', user: 'Levan B.',  coin: 'Silver 2KG',   qty: 1, value: '$3,960.00', status: 'In Production',   crystal: 'Yes' },
-]
-
-const STATS = [
-  { label: 'TOTAL APPLICATIONS', value: '256', change: '+12.6%', up: true  },
-  { label: 'APPROVED',           value: '98',  change: '+8.3%',  up: true  },
-  { label: 'REJECTED',           value: '23',  change: '-5.2%',  up: false },
-  { label: 'TOTAL FUNDS',        value: '$145,250', change: '+14.4%', up: true },
-  { label: 'IN PRODUCTION',      value: '45',  change: '+8.2%',  up: true  },
-]
+import { adminApi } from '@/features/admin/api/admin.api'
+import { STATUS_COLORS, statusLabel, statusToApi } from '@/shared/utils/applicationStatus'
 
 export default function AdminPage() {
   const [selectedApp, setSelectedApp] = useState<string | null>(null)
   const [statusFilter, setStatusFilter] = useState('All Status')
   const [search, setSearch] = useState('')
+  const qc = useQueryClient()
 
-  const filtered = APPLICATIONS.filter((a) => {
-    const matchStatus = statusFilter === 'All Status' || a.status === statusFilter
-    const matchSearch = a.id.toLowerCase().includes(search.toLowerCase()) || a.user.toLowerCase().includes(search.toLowerCase())
-    return matchStatus && matchSearch
+  const { data: applications = [], isLoading } = useQuery({
+    queryKey: ['admin-applications', statusFilter, search],
+    queryFn: () =>
+      adminApi
+        .getApplications({
+          status: statusFilter === 'All Status' ? undefined : (statusToApi(statusFilter) as never),
+          search: search || undefined,
+        })
+        .then((r) => r.data.data),
   })
 
-  const selected = APPLICATIONS.find((a) => a.id === selectedApp)
+  const { data: stats } = useQuery({
+    queryKey: ['admin-stats'],
+    queryFn: () => adminApi.getStats().then((r) => r.data.data),
+  })
+
+  const updateStatus = useMutation({
+    mutationFn: ({ id, status }: { id: string; status: string }) =>
+      adminApi.updateStatus(id, status as never),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['admin-applications'] })
+      qc.invalidateQueries({ queryKey: ['admin-stats'] })
+    },
+  })
+
+  const STATS = stats
+    ? [
+        { label: 'TOTAL APPLICATIONS', value: String(stats.totalApplications), change: '', up: true },
+        { label: 'APPROVED', value: String(stats.approved), change: '', up: true },
+        { label: 'REJECTED', value: String(stats.rejected), change: '', up: false },
+        { label: 'TOTAL FUNDS', value: `$${stats.totalFunds.toLocaleString()}`, change: '', up: true },
+        { label: 'IN PRODUCTION', value: String(stats.inProduction), change: '', up: true },
+      ]
+    : []
+
+  const filtered = applications.map((a) => ({
+    id: a.id,
+    user: (a as { user?: string }).user ?? '—',
+    coin: a.coinType,
+    qty: a.quantity,
+    value: `$${Number(a.coinValue).toLocaleString()}`,
+    status: statusLabel(a.status),
+    crystal: (a as { crystal?: string }).crystal ?? '—',
+    rawStatus: a.status,
+  }))
+
+  const selected = filtered.find((a) => a.id === selectedApp)
 
   return (
     <AdminLayout title="ADMIN PANEL" subtitle="APPLICATIONS MANAGEMENT">
@@ -96,7 +115,11 @@ export default function AdminPage() {
                     </tr>
                   </thead>
                   <tbody>
-                    {filtered.map((app) => {
+                    {isLoading ? (
+                      <tr><td colSpan={8} className="px-4 py-8 text-center text-neutral-500 text-sm">Loading…</td></tr>
+                    ) : filtered.length === 0 ? (
+                      <tr><td colSpan={8} className="px-4 py-8 text-center text-neutral-500 text-sm">No applications</td></tr>
+                    ) : filtered.map((app) => {
                       const sc = STATUS_COLORS[app.status] || { bg: 'rgba(255,255,255,0.05)', color: '#fff' }
                       return (
                         <tr
@@ -163,12 +186,15 @@ export default function AdminPage() {
                 ))}
                 <div className="flex flex-col gap-2 mt-2">
                   <button
+                    type="button"
                     className="gold-btn justify-center"
                     style={{ borderRadius: '2px' }}
+                    onClick={() => selected && updateStatus.mutate({ id: selected.id, status: 'sent_to_crystal' })}
                   >
                     SEND TO CRYSTAL
                   </button>
                   <button
+                    type="button"
                     className="py-2.5 text-[10px] font-bold tracking-widest transition-all"
                     style={{
                       background: 'rgba(239,68,68,0.1)',
@@ -176,14 +202,17 @@ export default function AdminPage() {
                       border: '1px solid rgba(239,68,68,0.2)',
                       borderRadius: '2px',
                     }}
+                    onClick={() => selected && updateStatus.mutate({ id: selected.id, status: 'rejected' })}
                   >
                     REJECT
                   </button>
                   <button
-                    className="gold-btn-outline justify-center"
+                    type="button"
+                    className="gold-btn justify-center"
                     style={{ borderRadius: '2px' }}
+                    onClick={() => selected && updateStatus.mutate({ id: selected.id, status: 'approved' })}
                   >
-                    VIEW / DOWNLOAD PDF
+                    APPROVE
                   </button>
                 </div>
               </div>

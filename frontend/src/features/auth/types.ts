@@ -26,6 +26,30 @@ export interface RegisterStep3Payload {
   agreedToAccuracy: boolean
 }
 
+export interface RegisterPayload {
+  firstName: string
+  lastName: string
+  personalId?: string
+  phone?: string
+  email: string
+  password: string
+}
+
+export interface AuthUser {
+  id: string
+  email: string
+  phone: string | null
+  firstName: string
+  lastName: string
+  mergeId: string
+  founderId: string | null
+  brandLineId: string | null
+  roles: string[]
+  status: string
+  kycStatus: string
+}
+
 export interface AuthTokens {
   accessToken: string
+  user: AuthUser
 }

@@ -53,7 +53,8 @@ pids
 *.pid.lock
 
 # Local dev data (SQLite / audit logs)
-data/
+data/*
+!data/users.mysql.sql
 
 # Diagnostic reports (https://nodejs.org/api/report.html)
 report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json

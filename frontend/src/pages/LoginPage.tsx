@@ -1,7 +1,8 @@
 import { useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import LanguageSwitcher from '../components/LanguageSwitcher'
+import { useLogin, useRegister } from '@/features/auth/hooks/useAuth'
 
 type Tab = 'login' | 'register'
 type Step = 1 | 2 | 3
@@ -10,11 +11,25 @@ const TERM_COUNT = 6
 
 export default function LoginPage() {
   const { t } = useTranslation()
+  const login = useLogin()
+  const register = useRegister()
   const [tab, setTab] = useState<Tab>('login')
   const [step, setStep] = useState<Step>(1)
   const [checked, setChecked] = useState<boolean[]>(() => Array(TERM_COUNT).fill(false))
   const [showPw, setShowPw] = useState(false)
-  const navigate = useNavigate()
+  const [authError, setAuthError] = useState<string | null>(null)
+
+  const [identifier, setIdentifier] = useState('')
+  const [password, setPassword] = useState('')
+
+  const [firstName, setFirstName] = useState('')
+  const [lastName, setLastName] = useState('')
+  const [personalId, setPersonalId] = useState('')
+  const [phoneCode, setPhoneCode] = useState('+995')
+  const [phone, setPhone] = useState('')
+  const [email, setEmail] = useState('')
+  const [regPassword, setRegPassword] = useState('')
+  const [confirmPassword, setConfirmPassword] = useState('')
 
   const toggleCheck = (i: number) =>
     setChecked((prev) => prev.map((v, idx) => (idx === i ? !v : v)))
@@ -35,6 +50,34 @@ export default function LoginPage() {
     t('auth.fundingNotGuaranteed'),
     t('auth.infoAccurate'),
   ]
+
+  const handleLogin = (e: React.FormEvent) => {
+    e.preventDefault()
+    setAuthError(null)
+    login.mutate(
+      { identifier, password },
+      { onError: () => setAuthError(t('authPanel.loginFailed', { defaultValue: 'Invalid email/phone or password' })) },
+    )
+  }
+
+  const handleRegister = () => {
+    if (regPassword !== confirmPassword) {
+      setAuthError(t('authPanel.passwordMismatch', { defaultValue: 'Passwords do not match' }))
+      return
+    }
+    setAuthError(null)
+    register.mutate(
+      {
+        firstName,
+        lastName,
+        personalId: personalId || undefined,
+        phone: phone ? `${phoneCode}${phone.replace(/\D/g, '')}` : undefined,
+        email,
+        password: regPassword,
+      },
+      { onError: () => setAuthError(t('authPanel.registerFailed', { defaultValue: 'Registration failed. Email may already exist.' })) },
+    )
+  }
 
   return (
     <div className="min-h-screen flex" style={{ background: '#080808' }}>
@@ -110,16 +153,20 @@ export default function LoginPage() {
           ))}
         </div>
 
+        {authError && (
+          <p className="w-full max-w-md text-center text-[12px] mb-4" style={{ color: '#f87171' }}>{authError}</p>
+        )}
+
         {tab === 'login' && (
-          <form className="w-full max-w-md flex flex-col gap-5" onSubmit={(e) => { e.preventDefault(); navigate('/dashboard') }}>
+          <form className="w-full max-w-md flex flex-col gap-5" onSubmit={handleLogin}>
             <div>
               <label className="text-[11px] font-semibold tracking-[0.12em] block mb-2" style={{ color: 'rgba(255,255,255,0.5)' }}>{t('authPanel.emailOrPhone')}</label>
-              <input className="gold-input" placeholder={t('authPanel.emailOrPhonePlaceholder')} />
+              <input className="gold-input" value={identifier} onChange={(e) => setIdentifier(e.target.value)} placeholder={t('authPanel.emailOrPhonePlaceholder')} required />
             </div>
             <div>
               <label className="text-[11px] font-semibold tracking-[0.12em] block mb-2" style={{ color: 'rgba(255,255,255,0.5)' }}>{t('authPanel.passwordLabel')}</label>
               <div className="relative">
-                <input className="gold-input pr-12" type={showPw ? 'text' : 'password'} placeholder={t('authPanel.passwordPlaceholder')} />
+                <input className="gold-input pr-12" type={showPw ? 'text' : 'password'} value={password} onChange={(e) => setPassword(e.target.value)} placeholder={t('authPanel.passwordPlaceholder')} required />
                 <button type="button" onClick={() => setShowPw(!showPw)} className="absolute right-4 top-1/2 -translate-y-1/2 text-[13px]" style={{ color: 'rgba(255,255,255,0.4)' }}>
                   {showPw ? '🙈' : '👁'}
                 </button>
@@ -132,7 +179,7 @@ export default function LoginPage() {
               </label>
               <button type="button" className="text-[12px]" style={{ color: '#c9a84c' }}>{t('authPanel.forgotPassword')}</button>
             </div>
-            <button type="submit" className="gold-btn w-full justify-center mt-2">{t('authPanel.enterPlatform')}</button>
+            <button type="submit" disabled={login.isPending} className="gold-btn w-full justify-center mt-2">{login.isPending ? '…' : t('authPanel.enterPlatform')}</button>
             <p className="text-center text-[12px]" style={{ color: 'rgba(255,255,255,0.4)' }}>
               {t('authPanel.noAccount')}{' '}
               <button type="button" onClick={() => setTab('register')} style={{ color: '#c9a84c' }}>{t('authPanel.createAccount')}</button>
@@ -157,26 +204,26 @@ export default function LoginPage() {
                 <div className="auth-name-grid grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
                     <label className="text-[10px] font-semibold tracking-widest block mb-2" style={{ color: 'rgba(255,255,255,0.4)' }}>{t('auth.firstName')}</label>
-                    <input className="gold-input" placeholder={t('authPanel.firstNamePlaceholder')} />
+                    <input className="gold-input" value={firstName} onChange={(e) => setFirstName(e.target.value)} placeholder={t('authPanel.firstNamePlaceholder')} required />
                   </div>
                   <div>
                     <label className="text-[10px] font-semibold tracking-widest block mb-2" style={{ color: 'rgba(255,255,255,0.4)' }}>{t('auth.lastName')}</label>
-                    <input className="gold-input" placeholder={t('authPanel.lastNamePlaceholder')} />
+                    <input className="gold-input" value={lastName} onChange={(e) => setLastName(e.target.value)} placeholder={t('authPanel.lastNamePlaceholder')} required />
                   </div>
                 </div>
                 <div>
                   <label className="text-[10px] font-semibold tracking-widest block mb-2" style={{ color: 'rgba(255,255,255,0.4)' }}>{t('auth.personalId')}</label>
-                  <input className="gold-input" placeholder={t('authPanel.personalIdPlaceholder')} />
+                  <input className="gold-input" value={personalId} onChange={(e) => setPersonalId(e.target.value)} placeholder={t('authPanel.personalIdPlaceholder')} />
                 </div>
                 <div>
                   <label className="text-[10px] font-semibold tracking-widest block mb-2" style={{ color: 'rgba(255,255,255,0.4)' }}>{t('auth.phone')}</label>
                   <div className="auth-phone-row flex gap-2">
-                    <select className="gold-input" style={{ flexShrink: 0 }}>
-                      <option>🇬🇪 +995</option>
-                      <option>🇺🇸 +1</option>
-                      <option>🇬🇧 +44</option>
+                    <select className="gold-input" style={{ flexShrink: 0 }} value={phoneCode} onChange={(e) => setPhoneCode(e.target.value)}>
+                      <option value="+995">🇬🇪 +995</option>
+                      <option value="+1">🇺🇸 +1</option>
+                      <option value="+44">🇬🇧 +44</option>
                     </select>
-                    <input className="gold-input" placeholder={t('authPanel.phonePlaceholder')} />
+                    <input className="gold-input" value={phone} onChange={(e) => setPhone(e.target.value)} placeholder={t('authPanel.phonePlaceholder')} />
                   </div>
                 </div>
                 <button onClick={() => setStep(2)} className="gold-btn w-full justify-center mt-2" style={{ borderRadius: '2px' }}>{t('auth.nextStep')} ›</button>
@@ -187,15 +234,15 @@ export default function LoginPage() {
               <div className="flex flex-col gap-4">
                 <div>
                   <label className="text-[10px] font-semibold tracking-widest block mb-2" style={{ color: 'rgba(255,255,255,0.4)' }}>{t('auth.email')}</label>
-                  <input className="gold-input" type="email" placeholder={t('authPanel.emailPlaceholder')} />
+                  <input className="gold-input" type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder={t('authPanel.emailPlaceholder')} required />
                 </div>
                 <div>
                   <label className="text-[10px] font-semibold tracking-widest block mb-2" style={{ color: 'rgba(255,255,255,0.4)' }}>{t('auth.password')}</label>
-                  <input className="gold-input" type="password" placeholder={t('authPanel.passwordCreatePlaceholder')} />
+                  <input className="gold-input" type="password" value={regPassword} onChange={(e) => setRegPassword(e.target.value)} placeholder={t('authPanel.passwordCreatePlaceholder')} required minLength={8} />
                 </div>
                 <div>
                   <label className="text-[10px] font-semibold tracking-widest block mb-2" style={{ color: 'rgba(255,255,255,0.4)' }}>{t('auth.confirmPassword')}</label>
-                  <input className="gold-input" type="password" placeholder={t('authPanel.passwordConfirmPlaceholder')} />
+                  <input className="gold-input" type="password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} placeholder={t('authPanel.passwordConfirmPlaceholder')} required minLength={8} />
                 </div>
                 <div>
                   <label className="text-[10px] font-semibold tracking-widest block mb-2" style={{ color: 'rgba(255,255,255,0.4)' }}>{t('auth.verificationCode')}</label>
@@ -232,7 +279,7 @@ export default function LoginPage() {
                 ))}
                 <div className="flex gap-3 mt-4">
                   <button onClick={() => setStep(2)} className="gold-btn-outline flex-1 justify-center" style={{ borderRadius: '2px' }}>‹ {t('auth.back')}</button>
-                  <button disabled={!allChecked} onClick={() => navigate('/dashboard')} className="gold-btn flex-1 justify-center" style={{ borderRadius: '2px', opacity: allChecked ? 1 : 0.4, cursor: allChecked ? 'pointer' : 'not-allowed' }}>{t('auth.activate')}</button>
+                  <button disabled={!allChecked || register.isPending} onClick={handleRegister} className="gold-btn flex-1 justify-center" style={{ borderRadius: '2px', opacity: allChecked && !register.isPending ? 1 : 0.4, cursor: allChecked ? 'pointer' : 'not-allowed' }}>{register.isPending ? '…' : t('auth.activate')}</button>
                 </div>
               </div>
             )}

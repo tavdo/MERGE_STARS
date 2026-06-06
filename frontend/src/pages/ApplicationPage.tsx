@@ -1,9 +1,11 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
+import { useMutation } from '@tanstack/react-query'
 import DashboardLayout from '../components/DashboardLayout'
 import FlowStepper from '../components/FlowStepper'
 import CustomSelect from '../components/CustomSelect'
+import { coinsApi } from '@/features/coins/api/coins.api'
 
 type Step = 1 | 2 | 3 | 4
 
@@ -22,6 +24,17 @@ export default function ApplicationPage() {
   const downPayment = coinValue * 0.2
   const toFinance = coinValue - downPayment
   const monthly = (toFinance / 12).toFixed(2)
+
+  const submitApp = useMutation({
+    mutationFn: () =>
+      coinsApi.submitApplication({
+        coinType,
+        quantity,
+        metalPurity: 999,
+        coinValue: coinValue,
+      }),
+    onSuccess: () => navigate('/status'),
+  })
 
   const idx = step - 1
 
@@ -261,10 +274,11 @@ export default function ApplicationPage() {
                   ) : (
                     <button
                       type="button"
-                      onClick={() => navigate('/status')}
+                      disabled={submitApp.isPending}
+                      onClick={() => submitApp.mutate()}
                       className={`luxury-btn-glass justify-center ${step > 1 ? 'flex-1' : 'w-full sm:flex-1'}`}
                     >
-                      {t('application.submitBtn')}
+                      {submitApp.isPending ? '…' : t('application.submitBtn')}
                     </button>
                   )}
                 </div>

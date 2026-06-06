@@ -1,6 +1,8 @@
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import { useMutation } from '@tanstack/react-query'
 import SiteLayout from '../../components/SiteLayout'
+import { contactApi } from '@/features/contact/api/contact.api'
 
 const LABEL = 'font-semibold tracking-[0.12em] text-[11px] block mb-2'
 const labelStyle = { color: 'rgba(255,255,255,0.45)' } as const
@@ -44,6 +46,18 @@ function ContactIcon({ type }: { type: 'email' | 'phone' | 'location' | 'clock' 
 export default function ContactPage() {
   const { t } = useTranslation()
   const [sent, setSent] = useState(false)
+  const [form, setForm] = useState({
+    firstName: '',
+    lastName: '',
+    email: '',
+    subject: 'General Inquiry',
+    message: '',
+  })
+
+  const send = useMutation({
+    mutationFn: () => contactApi.sendMessage(form),
+    onSuccess: () => setSent(true),
+  })
 
   const subjectKeys = ['general', 'order', 'kyc', 'payment', 'partnership', 'technical'] as const
 
@@ -72,25 +86,25 @@ export default function ContactPage() {
               <p className="prose-block">{t('contact.messageSentBody')}</p>
             </div>
           ) : (
-            <form onSubmit={(e) => { e.preventDefault(); setSent(true) }} className="flex flex-col gap-5">
+            <form onSubmit={(e) => { e.preventDefault(); send.mutate() }} className="flex flex-col gap-5">
               <h3 className="text-xs font-bold tracking-[0.2em]" style={{ color: '#c9a84c' }}>{t('contact.sendMessage')}</h3>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label className={LABEL} style={labelStyle}>{t('contact.firstName')}</label>
-                  <input className="gold-input" placeholder={t('contact.firstNamePlaceholder')} required />
+                  <input className="gold-input" value={form.firstName} onChange={(e) => setForm((f) => ({ ...f, firstName: e.target.value }))} placeholder={t('contact.firstNamePlaceholder')} required />
                 </div>
                 <div>
                   <label className={LABEL} style={labelStyle}>{t('contact.lastName')}</label>
-                  <input className="gold-input" placeholder={t('contact.lastNamePlaceholder')} required />
+                  <input className="gold-input" value={form.lastName} onChange={(e) => setForm((f) => ({ ...f, lastName: e.target.value }))} placeholder={t('contact.lastNamePlaceholder')} required />
                 </div>
               </div>
               <div>
                 <label className={LABEL} style={labelStyle}>{t('contact.email')}</label>
-                <input className="gold-input" type="email" placeholder={t('contact.emailPlaceholder')} required />
+                <input className="gold-input" type="email" value={form.email} onChange={(e) => setForm((f) => ({ ...f, email: e.target.value }))} placeholder={t('contact.emailPlaceholder')} required />
               </div>
               <div>
                 <label className={LABEL} style={labelStyle}>{t('contact.subject')}</label>
-                <select className="gold-input">
+                <select className="gold-input" value={form.subject} onChange={(e) => setForm((f) => ({ ...f, subject: e.target.value }))}>
                   {subjectKeys.map((key) => (
                     <option key={key}>{t(`contact.subjects.${key}`)}</option>
                   ))}
@@ -98,10 +112,10 @@ export default function ContactPage() {
               </div>
               <div>
                 <label className={LABEL} style={labelStyle}>{t('contact.message')}</label>
-                <textarea className="gold-input resize-none" rows={5} placeholder={t('contact.messagePlaceholder')} required />
+                <textarea className="gold-input resize-none" rows={5} value={form.message} onChange={(e) => setForm((f) => ({ ...f, message: e.target.value }))} placeholder={t('contact.messagePlaceholder')} required />
               </div>
-              <button type="submit" className="gold-btn w-full justify-center">
-                {t('contact.sendButton')}
+              <button type="submit" disabled={send.isPending} className="gold-btn w-full justify-center">
+                {send.isPending ? '…' : t('contact.sendButton')}
               </button>
             </form>
           )}

@@ -1,23 +1,28 @@
 import { useState, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
+import { useQuery } from '@tanstack/react-query'
 import Navbar from '../../components/Navbar'
 import Footer from '../../components/Footer'
+import { metalsApi } from '@/features/coins/api/metals.api'
 
 export default function PriceIndicatorPage() {
   const { t } = useTranslation()
-  const [silverSpot, setSilverSpot] = useState(0.897)
+  const { data: metals } = useQuery({
+    queryKey: ['metals-live'],
+    queryFn: () => metalsApi.getLive().then((r) => r.data.data),
+    refetchInterval: 60_000,
+  })
+
+  const silver = metals?.find((m) => m.metal === 'silver')
+  const silverSpot = silver?.priceUsd ?? 0.897
   const [lastUpdated, setLastUpdated] = useState(t('prices.justNow'))
   const indicator = (silverSpot * 1000 * 2).toFixed(2)
   const methodologySteps = t('prices.methodologySteps', { returnObjects: true }) as string[]
   const disclaimerItems = t('prices.disclaimerItems', { returnObjects: true }) as string[]
 
   useEffect(() => {
-    const id = setInterval(() => {
-      setSilverSpot((p) => +(p + (Math.random() - 0.5) * 0.002).toFixed(4))
-      setLastUpdated(t('prices.justNow'))
-    }, 8000)
-    return () => clearInterval(id)
-  }, [t])
+    if (metals) setLastUpdated(t('prices.justNow'))
+  }, [metals, t])
 
   return (
     <div style={{ background: '#080808', minHeight: '100vh' }}>

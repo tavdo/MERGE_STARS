@@ -1,11 +1,23 @@
 import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
+import { useQuery } from '@tanstack/react-query'
 import DashboardLayout from '../components/DashboardLayout'
+import { dashboardApi } from '@/features/dashboard/api/dashboard.api'
+import { statusLabel } from '@/shared/utils/applicationStatus'
 
 export default function DashboardPage() {
   const { t } = useTranslation()
   const activity = t('dashboardHome.activity', { returnObjects: true }) as { text: string; time: string }[]
   const tones = ['gold', 'green', 'blue', 'amber', 'green'] as const
+
+  const { data, isLoading } = useQuery({
+    queryKey: ['dashboard-summary'],
+    queryFn: () => dashboardApi.getSummary().then((r) => r.data.data),
+  })
+
+  const app = data?.application
+  const registeredValue = data?.registeredValue ?? 0
+  const coinBalance = data?.coinBalance ?? 0
 
   return (
     <DashboardLayout titleKey="dashboard">
@@ -16,7 +28,9 @@ export default function DashboardPage() {
             <div className="flex items-end gap-4">
               <div className="dash-coin-badge text-xl">★</div>
               <div>
-                <p className="font-serif-display text-3xl text-[#D4AF37] tracking-wide leading-none">12,450</p>
+                <p className="font-serif-display text-3xl text-[#D4AF37] tracking-wide leading-none">
+                  {isLoading ? '…' : coinBalance.toLocaleString()}
+                </p>
                 <p className="text-[10px] tracking-[0.2em] text-neutral-500 mt-1">MGS</p>
               </div>
             </div>
@@ -27,15 +41,21 @@ export default function DashboardPage() {
             <p className="dash-label mb-4">{t('dashboardHome.applicationStatus')}</p>
             <div className="flex items-center gap-2 mb-2">
               <span className="dash-pulse-dot" />
-              <p className="text-lg font-medium tracking-wide text-amber-400/90">{t('dashboardHome.underReview')}</p>
+              <p className="text-lg font-medium tracking-wide text-amber-400/90">
+                {app ? statusLabel(app.status) : t('dashboardHome.noApplication', { defaultValue: 'No application yet' })}
+              </p>
             </div>
-            <p className="text-[11px] text-neutral-500 tracking-wide leading-relaxed">{t('dashboardHome.underReviewBody')}</p>
+            <p className="text-[11px] text-neutral-500 tracking-wide leading-relaxed">
+              {app ? app.id : t('dashboardHome.underReviewBody')}
+            </p>
             <Link to="/status" className="dash-text-link mt-5 inline-block">{t('dashboardHome.viewDetails')}</Link>
           </div>
 
           <div className="dash-panel">
             <p className="dash-label mb-4">{t('dashboardHome.registeredValue')}</p>
-            <p className="font-serif-display text-3xl text-neutral-100 tracking-wide">$24,850</p>
+            <p className="font-serif-display text-3xl text-neutral-100 tracking-wide">
+              ${isLoading ? '…' : registeredValue.toLocaleString()}
+            </p>
             <p className="text-[11px] mt-2 text-neutral-500 tracking-wide">{t('dashboardHome.valueIndicator')}</p>
             <div className="mt-5 h-9 flex items-end gap-1">
               {[40, 55, 45, 70, 65, 80, 90, 85, 95].map((h, i) => (
@@ -51,10 +71,12 @@ export default function DashboardPage() {
             <div className="flex gap-4 items-start">
               <div className="dash-coin-badge text-2xl shrink-0">★</div>
               <div className="min-w-0">
-                <h3 className="text-sm font-medium tracking-wide text-[#D4AF37] mb-2">{t('dashboardHome.coinName')}</h3>
-                <p className="text-[11px] text-neutral-500 tracking-wide">{t('dashboardHome.quantity')}</p>
+                <h3 className="text-sm font-medium tracking-wide text-[#D4AF37] mb-2">{app?.coinType ?? t('dashboardHome.coinName')}</h3>
+                <p className="text-[11px] text-neutral-500 tracking-wide">{t('dashboardHome.quantity')}: {app?.quantity ?? '—'}</p>
                 <p className="text-[11px] text-neutral-500 tracking-wide mt-0.5">{t('dashboardHome.purity')}</p>
-                <span className="dash-status dash-status--blue mt-3">{t('dashboardHome.inProduction')}</span>
+                {app && (
+                  <span className="dash-status dash-status--blue mt-3">{statusLabel(app.status)}</span>
+                )}
               </div>
             </div>
             <div className="flex flex-wrap gap-3 mt-6 pt-5 border-t border-white/[0.06]">
@@ -78,14 +100,19 @@ export default function DashboardPage() {
             </ul>
           </div>
 
-          <div className="dash-panel lg:col-span-3">
-            <p className="dash-label mb-5">{t('dashboardHome.quickActions')}</p>
-            <div className="flex flex-col gap-2.5">
-              <Link to="/apply" className="luxury-btn-glass w-full justify-center text-center">{t('dashboardHome.newApplication')}</Link>
-              <Link to="/calculator" className="luxury-btn-ghost w-full justify-center text-center">{t('dashboardHome.calculator')}</Link>
-              <Link to="/dashboard/orders" className="luxury-btn-ghost w-full justify-center text-center">{t('dashboardHome.myOrders')}</Link>
-              <Link to="/dashboard/support" className="luxury-btn-ghost w-full justify-center text-center">{t('dashboardHome.support')}</Link>
+          <div className="dash-panel lg:col-span-3 flex flex-col justify-between">
+            <div>
+              <p className="dash-label mb-4">{t('dashboardHome.quickActions')}</p>
+              <div className="flex flex-col gap-2">
+                <Link to="/apply" className="luxury-btn-glass justify-center text-center">{t('dashboardHome.newApplication')}</Link>
+                <Link to="/dashboard/payment" className="luxury-btn-ghost justify-center text-center">{t('dashboardHome.makePayment')}</Link>
+              </div>
             </div>
+            {data?.user && (
+              <p className="text-[10px] text-neutral-600 mt-6 tracking-wide">
+                ID: {data.user.mergeId}
+              </p>
+            )}
           </div>
         </div>
       </div>

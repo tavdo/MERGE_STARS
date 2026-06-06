@@ -43,6 +43,21 @@ npm run build
 npm prune --omit=dev
 test -f dist/main.js || { echo "ERROR: backend build failed - dist/main.js missing"; exit 1; }
 
+echo "==> Restart backend (DB schema sync)"
+if command -v systemctl >/dev/null 2>&1; then
+  systemctl restart merge-stars-backend || true
+  sleep 2
+fi
+
+echo "==> Import users from MySQL dump (if present)"
+if [ -f "$REPO_ROOT/backend/data/users.mysql.sql" ] && [ -n "${DATABASE_URL:-}" ]; then
+  cd "$REPO_ROOT/backend"
+  node scripts/import-users-sql.js data/users.mysql.sql || echo "WARNING: user import failed — check DATABASE_URL and PostgreSQL"
+  cd "$REPO_ROOT"
+else
+  echo "    (skip) backend/data/users.mysql.sql or DATABASE_URL not set"
+fi
+
 echo "==> Frontend: install & build"
 cd "$REPO_ROOT/frontend"
 npm ci --include=dev

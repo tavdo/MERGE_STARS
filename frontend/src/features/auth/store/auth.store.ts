@@ -1,4 +1,5 @@
 import { create } from 'zustand'
+import { persist } from 'zustand/middleware'
 import type { Role } from '@/shared/types/api.types'
 
 interface AuthUser {
@@ -17,9 +18,14 @@ interface AuthStore {
   clearSession: () => void
 }
 
-export const useAuthStore = create<AuthStore>((set) => ({
-  accessToken: null,
-  user: null,
-  setSession: (accessToken, user) => set({ accessToken, user }),
-  clearSession: () => set({ accessToken: null, user: null }),
-}))
+export const useAuthStore = create<AuthStore>()(
+  persist(
+    (set) => ({
+      accessToken: null,
+      user: null,
+      setSession: (accessToken, user) => set({ accessToken, user }),
+      clearSession: () => set({ accessToken: null, user: null }),
+    }),
+    { name: 'merge-stars-auth' },
+  ),
+)
