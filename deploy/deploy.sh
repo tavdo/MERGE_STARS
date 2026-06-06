@@ -27,17 +27,23 @@ if ! command -v node >/dev/null 2>&1; then
   exit 1
 fi
 echo "    Node $(node -v) | npm $(npm -v)"
+NODE_MAJOR="$(node -p "process.versions.node.split('.')[0]")"
+if [ "$NODE_MAJOR" -lt 20 ]; then
+  echo "WARNING: Node 20+ recommended (current: $(node -v)). Upgrade with NodeSource if builds fail."
+fi
 
 echo "==> Backend: install & build"
 cd "$REPO_ROOT/backend"
-npm ci --omit=dev
+npm ci
 npm run build
+npm prune --omit=dev
 test -f dist/main.js || { echo "ERROR: backend build failed — dist/main.js missing"; exit 1; }
 
 echo "==> Frontend: install & build"
 cd "$REPO_ROOT/frontend"
 npm ci
 npm run build
+npm prune --omit=dev
 if [ ! -f dist/index.html ]; then
   echo "ERROR: frontend build failed — dist/index.html not created"
   exit 1

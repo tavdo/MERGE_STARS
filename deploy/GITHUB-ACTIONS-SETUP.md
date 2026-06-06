@@ -109,4 +109,6 @@ ls -la frontend/dist/index.html
 | `Permission denied (publickey)` | Public key not on server | `ssh-copy-id` again |
 | `cd: ... No such file` | Repo not cloned on VPS | Clone repo to `VPS_DEPLOY_PATH` |
 | `npm: command not found` | Node not installed on VPS | Install Node 20+ |
+| `nest: not found` | Dev deps skipped during build | Fixed in deploy.sh — run latest `git pull` |
+| `EBADENGINE` / Node 18 | Server Node too old | Upgrade to Node 20: NodeSource setup script |
 | Build OK but site old | Browser cache | Hard refresh Ctrl+Shift+R |
