@@ -103,4 +103,6 @@ if ! grep -q '^JWT_SECRET=' "$ENV_FILE" 2>/dev/null || grep -q 'change-this-to-a
   echo "    Generated JWT_SECRET in .env"
 fi
 
+sed -i 's/\r$//' "$ENV_FILE" 2>/dev/null || true
+
 echo "    Bootstrap done."

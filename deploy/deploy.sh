@@ -63,6 +63,10 @@ wait_for_backend() {
   if command -v journalctl >/dev/null 2>&1; then
     journalctl -u merge-stars-backend -n 40 --no-pager || true
   fi
+  echo "==> Manual backend start (diagnostics, 20s)"
+  cd "$REPO_ROOT/backend"
+  timeout 20 node dist/main.js 2>&1 || true
+  cd "$REPO_ROOT"
   return 1
 }
 
@@ -85,10 +89,12 @@ wait_for_postgres() {
 verify_db_connection() {
   if [ -z "${DATABASE_URL:-}" ]; then
     echo "ERROR: DATABASE_URL is not set in .env"
+    grep -E '^DATABASE|^DB_' "$REPO_ROOT/.env" 2>/dev/null || true
     return 1
   fi
+  echo "    DATABASE_URL host: $(echo "$DATABASE_URL" | sed -E 's|.*@([^/]+)/.*|\1|')"
   cd "$REPO_ROOT/backend"
-  node -e "
+  DATABASE_URL="$DATABASE_URL" node -e "
     const { Client } = require('pg');
     const c = new Client({ connectionString: process.env.DATABASE_URL });
     c.connect()

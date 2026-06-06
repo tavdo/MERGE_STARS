@@ -66,6 +66,7 @@ jobs:
             git fetch origin main
             git reset --hard origin/main
             sed -i 's/\r$//' deploy/*.sh
+            sed -i 's/\r$//' .env 2>/dev/null || true
             chmod +x deploy/*.sh
             export DEPLOY_DIR
             export DEPLOY_USER="$(whoami)"
