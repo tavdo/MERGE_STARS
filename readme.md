@@ -71,7 +71,9 @@ git pull origin main
 ./deploy/deploy.sh
 ```
 
-GitHub Actions (push to `main`) runs the same `deploy/deploy.sh` over SSH when these secrets are set: `VPS_HOST`, `VPS_USER`, `VPS_SSH_KEY`, optional `VPS_DEPLOY_PATH`.
+GitHub Actions (`push` → `main`) runs `./deploy/deploy.sh` over SSH when these secrets are set: `VPS_HOST`, `VPS_USER`, `VPS_SSH_KEY`, optional `VPS_DEPLOY_PATH`.
+
+If Actions shows a **red X in ~5 seconds**, SSH secrets are missing or wrong — see **`deploy/GITHUB-ACTIONS-SETUP.md`**.
 
 | Service | Command |
 |---------|---------|

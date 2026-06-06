@@ -17,17 +17,32 @@ export NODE_ENV="${NODE_ENV:-production}"
 export VITE_API_URL="${VITE_API_URL:-/api}"
 export VITE_WS_URL="${VITE_WS_URL:-}"
 
+# Helpful on small VPS during Vite build
+export NODE_OPTIONS="${NODE_OPTIONS:---max-old-space-size=2048}"
+
 echo "==> Deploy MERGE STARS from $REPO_ROOT"
+
+if ! command -v node >/dev/null 2>&1; then
+  echo "ERROR: Node.js not found. Install Node 20+ first."
+  exit 1
+fi
+echo "    Node $(node -v) | npm $(npm -v)"
 
 echo "==> Backend: install & build"
 cd "$REPO_ROOT/backend"
 npm ci --omit=dev
 npm run build
+test -f dist/main.js || { echo "ERROR: backend build failed — dist/main.js missing"; exit 1; }
 
 echo "==> Frontend: install & build"
 cd "$REPO_ROOT/frontend"
 npm ci
 npm run build
+if [ ! -f dist/index.html ]; then
+  echo "ERROR: frontend build failed — dist/index.html not created"
+  exit 1
+fi
+echo "    frontend/dist OK ($(du -sh dist | cut -f1))"
 
 echo "==> Restart backend service"
 if command -v systemctl >/dev/null 2>&1 && systemctl cat merge-stars-backend.service &>/dev/null; then
@@ -45,6 +60,9 @@ else
   echo "    (skip) nginx not found"
 fi
 
+echo ""
 echo "==> Deploy complete"
-echo "    Frontend static files: $REPO_ROOT/frontend/dist"
-echo "    Backend listening on:  ${PORT:-3000}"
+echo "    Commit: $(git log -1 --oneline)"
+echo "    Frontend: $REPO_ROOT/frontend/dist"
+echo "    Backend:  port ${PORT:-3000}"
+ls -la "$REPO_ROOT/frontend/dist/index.html"
