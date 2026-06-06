@@ -50,7 +50,7 @@
 }
 
 .nav-burger {
-  display: flex;
+  display: none;
   flex-direction: column;
   justify-content: center;
   align-items: center;
@@ -63,6 +63,12 @@
   background: rgba(255, 255, 255, 0.04);
   cursor: pointer;
   transition: border-color 0.2s ease, background 0.2s ease;
+}
+
+@media (max-width: 1023px) {
+  .nav-burger {
+    display: flex;
+  }
 }
 
 .nav-burger:hover {
@@ -199,6 +205,13 @@
   padding: 0.875rem 1rem !important;
   font-size: 0.6875rem !important;
   min-height: 2.75rem;
+}
+
+@media (min-width: 1024px) {
+  .nav-mobile-backdrop,
+  .nav-mobile-panel {
+    display: none !important;
+  }
 }
 
 .site-main {

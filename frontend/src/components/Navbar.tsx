@@ -34,6 +34,16 @@ export default function Navbar({ variant = 'landing' }: NavbarProps) {
   }, [location.pathname])
 
   useEffect(() => {
+    const mq = window.matchMedia('(min-width: 1024px)')
+    const closeOnDesktop = () => {
+      if (mq.matches) setMobileOpen(false)
+    }
+    closeOnDesktop()
+    mq.addEventListener('change', closeOnDesktop)
+    return () => mq.removeEventListener('change', closeOnDesktop)
+  }, [])
+
+  useEffect(() => {
     if (!mobileOpen) return
     const prev = document.body.style.overflow
     document.body.style.overflow = 'hidden'
@@ -120,7 +130,7 @@ export default function Navbar({ variant = 'landing' }: NavbarProps) {
         <>
           <button
             type="button"
-            className="nav-mobile-backdrop lg:hidden"
+            className="nav-mobile-backdrop"
             onClick={closeMobile}
             aria-label={t('nav.closeMenu')}
           />
