@@ -13,7 +13,7 @@ export default function PrivacyPage() {
       <Navbar />
       <div style={{ paddingTop: '110px' }}>
         <section style={{ textAlign: 'center', padding: '80px 32px 60px', maxWidth: '700px', margin: '0 auto' }}>
-          <p style={{ fontSize: '11px', fontWeight: 700, letterSpacing: '0.3em', color: '#c9a84c', marginBottom: '16px' }}>{t('legal.legal')}</p>
+          <p style={{ fontSize: '11px', fontWeight: 700, letterSpacing: '0.3em', color: '#c9a84c', marginBottom: '16px' }}>{t('privacyPage.kicker')}</p>
           <h1 style={{ fontSize: 'clamp(28px,4vw,48px)', fontWeight: 900, color: '#fff', lineHeight: 1.1 }}>{t('privacyPage.title')} {t('privacyPage.titleGold')}</h1>
           <p style={{ fontSize: '12px', color: 'rgba(255,255,255,0.35)', marginTop: '16px' }}>{t('privacyPage.lastUpdated')}</p>
         </section>

@@ -1,10 +1,12 @@
 import { Suspense } from 'react'
 import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
+import { useQuery } from '@tanstack/react-query'
 import Navbar from '../components/Navbar'
 import Footer from '../components/Footer'
 import Hero3DCoin, { landingCoinModelUrl } from '../components/Hero3DCoin'
 import { useGLTF } from '@react-three/drei'
+import { metalsApi } from '@/features/coins/api/metals.api'
 
 useGLTF.preload(landingCoinModelUrl)
 import {
@@ -36,10 +38,10 @@ const CATEGORIES = [
 const TECH_POINT_KEYS = ['metals', 'composite', 'lightweight'] as const
 const INVEST_POINT_KEYS = ['growth', 'tech', 'partner', 'impact'] as const
 
-const METAL_SPOT_KEYS = [
-  { nameKey: 'landing.metalSilver', pricePerKgUsd: 0.897 * 1000, changePct: 1.23, up: true },
-  { nameKey: 'landing.metalGold', pricePerKgUsd: 67.42 * 1000, changePct: 0.85, up: true },
-  { nameKey: 'landing.metalPlatinum', pricePerKgUsd: 32.15 * 1000, changePct: 0.62, up: true },
+const METAL_KEYS = [
+  { metal: 'silver', nameKey: 'landing.metalSilver' },
+  { metal: 'gold', nameKey: 'landing.metalGold' },
+  { metal: 'platinum', nameKey: 'landing.metalPlatinum' },
 ] as const
 
 function formatUsd(value: number) {
@@ -61,6 +63,18 @@ function PlayIcon() {
 
 export default function LandingPage() {
   const { t } = useTranslation()
+  const { data: metals } = useQuery({
+    queryKey: ['metals-live'],
+    queryFn: () => metalsApi.getLive().then((r) => r.data.data),
+    refetchInterval: 60_000,
+  })
+
+  const metalCards = METAL_KEYS.map(({ metal, nameKey }) => {
+    const live = metals?.find((m) => m.metal === metal)
+    const pricePerKgUsd = live?.pricePerKgUsd ?? 0
+    const changePct = live?.changePct ?? 0
+    return { nameKey, pricePerKgUsd, changePct, up: changePct >= 0 }
+  })
 
   return (
     <div className="landing-page">
@@ -130,9 +144,9 @@ export default function LandingPage() {
           </div>
         </div>
 
-        {/* Right — metal spot (per kg) */}
+        {/* Right — metal spot (desktop) */}
         <div className="hidden xl:flex flex-col gap-5 flex-shrink-0 w-[240px] order-3">
-          {METAL_SPOT_KEYS.map((m) => (
+          {metalCards.map((m) => (
             <div
               key={m.nameKey}
               className="flex items-start gap-4 py-4 px-5 border border-[rgba(212,175,55,0.1)] bg-black/30 backdrop-blur-sm transition-all duration-300 ease-in-out hover:border-[rgba(212,175,55,0.28)]"
@@ -144,17 +158,45 @@ export default function LandingPage() {
                   {t(m.nameKey)}
                 </p>
                 <p className="text-[10px] leading-relaxed tracking-wide text-neutral-500">
-                  {formatUsd(m.pricePerKgUsd)} {t('landing.perKg')}
+                  {m.pricePerKgUsd > 0 ? formatUsd(m.pricePerKgUsd) : '—'} {t('landing.perKg')}
                 </p>
-                <p
-                  className="text-[10px] font-medium tracking-wide mt-1"
-                  style={{ color: m.up ? '#4ade80' : '#f87171' }}
-                >
-                  {m.changePct > 0 ? '+' : ''}
-                  {m.changePct.toFixed(2)}%
-                </p>
+                {m.pricePerKgUsd > 0 && (
+                  <p
+                    className="text-[10px] font-medium tracking-wide mt-1"
+                    style={{ color: m.up ? '#4ade80' : '#f87171' }}
+                  >
+                    {m.changePct > 0 ? '+' : ''}
+                    {m.changePct.toFixed(2)}%
+                  </p>
+                )}
               </div>
             </div>
+          ))}
+        </div>
+      </section>
+
+      {/* Mobile / tablet — live metal prices */}
+      <section className="landing-metal-strip xl:hidden max-w-1440 mx-auto w-full px-4 sm:px-8 pb-6">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          {metalCards.map((m) => (
+            <Link
+              key={m.nameKey}
+              to="/price-indicator"
+              className="landing-metal-card flex items-center justify-between gap-3 py-3 px-4 no-underline"
+            >
+              <div>
+                <p className="text-[10px] font-medium tracking-[0.16em] text-[#D4AF37] mb-1">{t(m.nameKey)}</p>
+                <p className="text-[11px] text-neutral-400">
+                  {m.pricePerKgUsd > 0 ? formatUsd(m.pricePerKgUsd) : '—'} {t('landing.perKg')}
+                </p>
+              </div>
+              {m.pricePerKgUsd > 0 && (
+                <span className="text-[10px] font-medium" style={{ color: m.up ? '#4ade80' : '#f87171' }}>
+                  {m.changePct > 0 ? '+' : ''}
+                  {m.changePct.toFixed(2)}%
+                </span>
+              )}
+            </Link>
           ))}
         </div>
       </section>
@@ -168,7 +210,7 @@ export default function LandingPage() {
         {FEATURES.map((f, i) => (
           <div
             key={f.id}
-            className="landing-feature-cell flex flex-col items-center text-center py-14 px-5"
+            className={`landing-feature-cell flex flex-col items-center text-center py-14 px-5${i === FEATURES.length - 1 ? ' landing-feature-cell--last' : ''}`}
             style={{
               borderRight: i < FEATURES.length - 1 ? '1px solid rgba(212,175,55,0.06)' : 'none',
             }}
@@ -188,12 +230,12 @@ export default function LandingPage() {
       {/* ── CATEGORIES ───────────────────────────────── */}
       <section className="py-24 px-8 lg:px-16 max-w-1440 mx-auto w-full">
         <h2 className="landing-sans-head text-center mb-14">{t('landing.categoriesTitle')}</h2>
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-7 gap-4">
-          {CATEGORIES.map((c) => (
+        <div className="landing-categories-grid grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-7 gap-4">
+          {CATEGORIES.map((c, i) => (
             <Link
               key={c.key}
               to={c.to}
-              className="landing-category-card flex flex-col items-center justify-center py-12 px-3 text-center no-underline group min-h-[148px]"
+              className={`landing-category-card flex flex-col items-center justify-center py-12 px-3 text-center no-underline group min-h-[148px]${i === CATEGORIES.length - 1 ? ' landing-category-card--last' : ''}`}
               style={{ borderRadius: '2px' }}
             >
               <span
@@ -291,7 +333,7 @@ export default function LandingPage() {
             {INVEST_POINT_KEYS.map((key) => (
               <div
                 key={key}
-                className="flex items-center gap-4 py-4 px-5 border-l border-[rgba(212,175,55,0.25)] transition-all duration-300 ease-in-out hover:border-[rgba(212,175,55,0.5)] hover:bg-black/20"
+                className="landing-invest-point flex items-center gap-4 py-4 px-5 border-l border-[rgba(212,175,55,0.25)] transition-all duration-300 ease-in-out hover:border-[rgba(212,175,55,0.5)] hover:bg-black/20"
               >
                 <p className="text-[10px] font-medium tracking-[0.18em] text-neutral-300">{t(`landing.investPoints.${key}`)}</p>
               </div>

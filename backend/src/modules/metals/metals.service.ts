@@ -20,25 +20,44 @@ export class MetalsService implements OnModuleInit {
     await this.refreshPrices();
   }
 
+  private readonly troyOzGrams = 31.1034768;
+
+  private async fetchMetalSpot(
+    metal: string,
+    symbol: string,
+  ): Promise<Spot | null> {
+    try {
+      const res = await fetch(`https://api.gold-api.com/price/${symbol}`, {
+        headers: {
+          Accept: 'application/json',
+          'User-Agent': 'MERGE-STARS/1.0 (+https://mergestars.com)',
+        },
+      });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const json = (await res.json()) as { price?: number };
+      if (!json.price || json.price <= 0) throw new Error('Invalid price');
+      return {
+        metal,
+        priceUsd: +(json.price / this.troyOzGrams).toFixed(4),
+        changePct: 0,
+      };
+    } catch (e) {
+      this.log.warn(`${metal} fetch failed: ${(e as Error).message}`);
+      return null;
+    }
+  }
+
   @Cron(CronExpression.EVERY_MINUTE)
   async refreshPrices() {
     try {
-      const res = await fetch('https://data-asg.goldprice.org/dbXRates/USD', {
-        headers: { Accept: 'application/json' },
-      });
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      const json = (await res.json()) as {
-        items?: Array<{ curr: string; xauPrice: number; xagPrice: number; xptPrice: number; xpdPrice: number }>;
-      };
-      const item = json.items?.[0];
-      if (!item) throw new Error('No price data');
-
-      const spots: Spot[] = [
-        { metal: 'gold', priceUsd: item.xauPrice / 31.1035, changePct: 0 },
-        { metal: 'silver', priceUsd: item.xagPrice / 31.1035, changePct: 0 },
-        { metal: 'platinum', priceUsd: item.xptPrice / 31.1035, changePct: 0 },
-        { metal: 'palladium', priceUsd: item.xpdPrice / 31.1035, changePct: 0 },
-      ];
+      const fetched = await Promise.all([
+        this.fetchMetalSpot('gold', 'XAU'),
+        this.fetchMetalSpot('silver', 'XAG'),
+        this.fetchMetalSpot('platinum', 'XPT'),
+        this.fetchMetalSpot('palladium', 'XPD'),
+      ]);
+      const spots = fetched.filter((s): s is Spot => s !== null);
+      if (!spots.length) throw new Error('No live metal prices');
 
       for (const s of spots) {
         const prev = await this.prices.findOne({
@@ -64,8 +83,8 @@ export class MetalsService implements OnModuleInit {
       this.log.warn(`Metal price fetch failed: ${(e as Error).message}`);
       if (!this.cache.length) {
         this.cache = [
-          { metal: 'silver', priceUsd: 0.897, changePct: 0 },
-          { metal: 'gold', priceUsd: 67.42, changePct: 0 },
+          { metal: 'silver', priceUsd: 1.09, changePct: 0 },
+          { metal: 'gold', priceUsd: 139.1, changePct: 0 },
           { metal: 'platinum', priceUsd: 32.15, changePct: 0 },
           { metal: 'palladium', priceUsd: 28.5, changePct: 0 },
         ];

@@ -1,5 +1,13 @@
 import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
+import SiteLogo from './SiteLogo'
+import {
+  IconFacebook,
+  IconInstagram,
+  IconLinkedIn,
+  IconX,
+  IconYouTube,
+} from './SocialIcons'
 
 const COMPANY = [
   { labelKey: 'nav.howItWorks', to: '/how-it-works' },
@@ -18,11 +26,11 @@ const SUPPORT = [
 ] as const
 
 const SOCIAL = [
-  { label: 'Facebook', icon: 'f' },
-  { label: 'LinkedIn', icon: 'in' },
-  { label: 'YouTube', icon: '▶' },
-  { label: 'Instagram', icon: 'ig' },
-  { label: 'X', icon: '𝕏' },
+  { label: 'Facebook', Icon: IconFacebook },
+  { label: 'LinkedIn', Icon: IconLinkedIn },
+  { label: 'YouTube', Icon: IconYouTube },
+  { label: 'Instagram', Icon: IconInstagram },
+  { label: 'X', Icon: IconX },
 ] as const
 
 export default function Footer() {
@@ -57,12 +65,7 @@ export default function Footer() {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-10 lg:gap-12">
           <div className="lg:col-span-2">
             <div className="flex items-center gap-3 mb-5">
-              <div
-                className="flex items-center justify-center w-8 h-8 border border-[rgba(212,175,55,0.35)] text-[#D4AF37] font-serif text-sm"
-                style={{ borderRadius: '2px' }}
-              >
-                ★
-              </div>
+              <SiteLogo size="sm" />
               <div className="flex flex-col leading-none font-serif-display">
                 <span className="text-[9px] font-medium tracking-[0.4em] text-[#D4AF37]">MERGE</span>
                 <span className="text-[9px] font-medium tracking-[0.4em] text-neutral-400">STARS</span>
@@ -70,15 +73,15 @@ export default function Footer() {
             </div>
             <p className="landing-body max-w-[280px] !text-[11px]">{t('footer.tagline')}</p>
             <div className="flex flex-wrap gap-2.5 mt-8">
-              {SOCIAL.map((s) => (
+              {SOCIAL.map(({ label, Icon }) => (
                 <button
-                  key={s.label}
+                  key={label}
                   type="button"
-                  aria-label={s.label}
-                  className="footer-social-btn w-9 h-9 flex items-center justify-center text-[10px] font-medium text-neutral-500 border border-[rgba(212,175,55,0.15)] transition-all duration-300 ease-in-out hover:border-[rgba(212,175,55,0.4)] hover:text-[#D4AF37]"
+                  aria-label={label}
+                  className="footer-social-btn w-9 h-9 flex items-center justify-center text-neutral-500 border border-[rgba(212,175,55,0.15)] transition-all duration-300 ease-in-out hover:border-[rgba(212,175,55,0.4)] hover:text-[#D4AF37]"
                   style={{ borderRadius: '2px' }}
                 >
-                  {s.icon}
+                  <Icon className="w-4 h-4" />
                 </button>
               ))}
             </div>
@@ -89,10 +92,7 @@ export default function Footer() {
             <ul className="flex flex-col gap-3">
               {COMPANY.map((item) => (
                 <li key={item.to}>
-                  <Link
-                    to={item.to}
-                    className="text-[11px] tracking-wide text-neutral-500 no-underline transition-all duration-300 ease-in-out hover:text-neutral-200"
-                  >
+                  <Link to={item.to} className="footer-nav-link">
                     {t(item.labelKey)}
                   </Link>
                 </li>
@@ -105,10 +105,7 @@ export default function Footer() {
             <ul className="flex flex-col gap-3">
               {SUPPORT.map((item) => (
                 <li key={item.to}>
-                  <Link
-                    to={item.to}
-                    className="text-[11px] tracking-wide text-neutral-500 no-underline transition-all duration-300 ease-in-out hover:text-neutral-200"
-                  >
+                  <Link to={item.to} className="footer-nav-link">
                     {t(item.labelKey)}
                   </Link>
                 </li>
@@ -121,7 +118,7 @@ export default function Footer() {
             <ul className="flex flex-col gap-3">
               {['info@mergestars.com', '+1 (555) 123 4567', 'Global Headquarters'].map((text) => (
                 <li key={text}>
-                  <span className="text-[11px] tracking-wide text-neutral-500">{text}</span>
+                  <span className="footer-nav-link footer-nav-link--static">{text}</span>
                 </li>
               ))}
             </ul>
