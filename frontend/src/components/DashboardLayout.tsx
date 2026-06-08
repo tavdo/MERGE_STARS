@@ -1,4 +1,4 @@
-import { useState, type ReactNode } from 'react'
+import { useState, useEffect, type ReactNode } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import LanguageSwitcher from './LanguageSwitcher'
@@ -41,7 +41,8 @@ interface Props {
 
 export default function DashboardLayout({ children, title, titleKey }: Props) {
   const { t } = useTranslation()
-  const [open, setOpen] = useState(true)
+  const [sidebarExpanded, setSidebarExpanded] = useState(true)
+  const [mobileNavOpen, setMobileNavOpen] = useState(false)
   const location = useLocation()
   const navigate = useNavigate()
 
@@ -49,13 +50,51 @@ export default function DashboardLayout({ children, title, titleKey }: Props) {
     ? t(`dashboard.titles.${titleKey}`)
     : title || t('dashboard.titles.dashboard')
 
+  const showLabels = sidebarExpanded || mobileNavOpen
+
+  useEffect(() => {
+    setMobileNavOpen(false)
+  }, [location.pathname])
+
+  useEffect(() => {
+    const mq = window.matchMedia('(min-width: 1024px)')
+    const closeOnDesktop = () => {
+      if (mq.matches) setMobileNavOpen(false)
+    }
+    closeOnDesktop()
+    mq.addEventListener('change', closeOnDesktop)
+    return () => mq.removeEventListener('change', closeOnDesktop)
+  }, [])
+
+  useEffect(() => {
+    if (!mobileNavOpen) return
+    const prev = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+    return () => {
+      document.body.style.overflow = prev
+    }
+  }, [mobileNavOpen])
+
+  const closeMobileNav = () => setMobileNavOpen(false)
+
   return (
     <div className="dash-shell flex min-h-screen">
-      <aside className={`dash-sidebar ${open ? 'dash-sidebar--open' : 'dash-sidebar--collapsed'}`}>
+      {mobileNavOpen && (
+        <button
+          type="button"
+          className="dash-sidebar-backdrop"
+          onClick={closeMobileNav}
+          aria-label={t('nav.closeMenu')}
+        />
+      )}
+
+      <aside
+        className={`dash-sidebar ${sidebarExpanded ? 'dash-sidebar--open' : 'dash-sidebar--collapsed'}${mobileNavOpen ? ' dash-sidebar--mobile-open' : ''}`}
+      >
         <div className="dash-sidebar-head">
-          <Link to="/" className="flex items-center gap-3 no-underline shrink-0">
+          <Link to="/" className="flex items-center gap-3 no-underline shrink-0" onClick={closeMobileNav}>
             <SiteLogo size="md" />
-            {open && (
+            {showLabels && (
               <div className="font-serif-display leading-none">
                 <p className="text-[9px] font-medium tracking-[0.38em] text-[#D4AF37]">MERGE</p>
                 <p className="text-[9px] font-medium tracking-[0.38em] text-neutral-400">STARS</p>
@@ -64,11 +103,19 @@ export default function DashboardLayout({ children, title, titleKey }: Props) {
           </Link>
           <button
             type="button"
-            onClick={() => setOpen(!open)}
-            className="dash-sidebar-toggle"
-            aria-label={open ? t('dashboard.collapseMenu') : t('dashboard.expandMenu')}
+            onClick={closeMobileNav}
+            className="dash-sidebar-close"
+            aria-label={t('nav.closeMenu')}
           >
-            {open ? '◂' : '▸'}
+            ×
+          </button>
+          <button
+            type="button"
+            onClick={() => setSidebarExpanded(!sidebarExpanded)}
+            className="dash-sidebar-toggle"
+            aria-label={sidebarExpanded ? t('dashboard.collapseMenu') : t('dashboard.expandMenu')}
+          >
+            {sidebarExpanded ? '◂' : '▸'}
           </button>
         </div>
 
@@ -80,11 +127,12 @@ export default function DashboardLayout({ children, title, titleKey }: Props) {
               <Link
                 key={item.href + item.labelKey}
                 to={item.href}
-                title={!open ? label : undefined}
+                title={!showLabels ? label : undefined}
+                onClick={closeMobileNav}
                 className={`dash-nav-link ${active ? 'dash-nav-link--active' : ''}`}
               >
                 <span className="dash-nav-icon">{item.icon}</span>
-                {open && (
+                {showLabels && (
                   <>
                     <span className="dash-nav-label">{label}</span>
                     {'badge' in item && item.badge != null && (
@@ -97,19 +145,39 @@ export default function DashboardLayout({ children, title, titleKey }: Props) {
           })}
         </nav>
 
-        <button type="button" onClick={() => navigate('/login')} className="dash-logout">
+        <button
+          type="button"
+          onClick={() => {
+            closeMobileNav()
+            navigate('/login')
+          }}
+          className="dash-logout"
+        >
           <span>↗</span>
-          {open && <span>{t('dashboard.logout')}</span>}
+          {showLabels && <span>{t('dashboard.logout')}</span>}
         </button>
       </aside>
 
       <div className="dash-main flex-1 flex flex-col min-w-0">
         <header className="dash-header">
-          <div>
-            <p className="dash-header-kicker">{t('dashboard.welcomeBack')}</p>
-            <div className="flex items-center gap-3 flex-wrap mt-1">
-              <h1 className="dash-header-title">{headerTitle}</h1>
-              <span className="dash-id-pill">MS-782456</span>
+          <div className="dash-header-start">
+            <button
+              type="button"
+              className="dash-menu-btn"
+              onClick={() => setMobileNavOpen(true)}
+              aria-label={t('nav.menu')}
+              aria-expanded={mobileNavOpen}
+            >
+              <span className="dash-menu-btn-line" />
+              <span className="dash-menu-btn-line" />
+              <span className="dash-menu-btn-line" />
+            </button>
+            <div className="min-w-0">
+              <p className="dash-header-kicker">{t('dashboard.welcomeBack')}</p>
+              <div className="flex items-center gap-3 flex-wrap mt-1">
+                <h1 className="dash-header-title">{headerTitle}</h1>
+                <span className="dash-id-pill">MS-782456</span>
+              </div>
             </div>
           </div>
           <nav className="dash-header-actions" aria-label="Quick links">

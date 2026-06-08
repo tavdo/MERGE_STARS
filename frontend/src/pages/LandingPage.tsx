@@ -203,46 +203,31 @@ export default function LandingPage() {
 
       {/* ── FEATURES BAR ─────────────────────────────── */}
       <div className="section-divider max-w-1440 mx-auto w-full" />
-      <section
-        className="grid grid-cols-2 lg:grid-cols-5 max-w-1440 mx-auto w-full"
-        style={{ borderBottom: '1px solid rgba(212,175,55,0.06)' }}
-      >
+      <section className="landing-features-bar max-w-1440 mx-auto w-full">
         {FEATURES.map((f, i) => (
           <div
             key={f.id}
-            className={`landing-feature-cell flex flex-col items-center text-center py-14 px-5${i === FEATURES.length - 1 ? ' landing-feature-cell--last' : ''}`}
-            style={{
-              borderRight: i < FEATURES.length - 1 ? '1px solid rgba(212,175,55,0.06)' : 'none',
-            }}
+            className={`landing-feature-cell${i === FEATURES.length - 1 ? ' landing-feature-cell--last' : ''}`}
           >
-            <f.Icon className="w-10 h-10 mb-5 opacity-90" />
-            <p className="text-[10px] font-medium tracking-[0.22em] text-[#D4AF37] mb-2 uppercase">
-              {t(`landing.features.${f.id}.title`)}
-            </p>
-            <p className="text-[9px] tracking-[0.12em] text-neutral-500 leading-relaxed max-w-[140px]">
-              {t(`landing.features.${f.id}.sub`)}
-            </p>
+            <f.Icon className="landing-feature-icon" />
+            <p className="landing-feature-title">{t(`landing.features.${f.id}.title`)}</p>
+            <p className="landing-feature-sub">{t(`landing.features.${f.id}.sub`)}</p>
           </div>
         ))}
       </section>
       <div className="section-divider max-w-1440 mx-auto w-full" />
 
       {/* ── CATEGORIES ───────────────────────────────── */}
-      <section className="py-24 px-8 lg:px-16 max-w-1440 mx-auto w-full">
-        <h2 className="landing-sans-head text-center mb-14">{t('landing.categoriesTitle')}</h2>
-        <div className="landing-categories-grid grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-7 gap-4">
+      <section className="landing-categories-section max-w-1440 mx-auto w-full">
+        <h2 className="landing-categories-heading">{t('landing.categoriesTitle')}</h2>
+        <div className="landing-categories-grid">
           {CATEGORIES.map((c, i) => (
             <Link
               key={c.key}
               to={c.to}
-              className={`landing-category-card flex flex-col items-center justify-center py-12 px-3 text-center no-underline group min-h-[148px]${i === CATEGORIES.length - 1 ? ' landing-category-card--last' : ''}`}
-              style={{ borderRadius: '2px' }}
+              className={`landing-category-card group${i === CATEGORIES.length - 1 ? ' landing-category-card--last' : ''}`}
             >
-              <span
-                className="text-[10px] font-medium tracking-[0.2em] text-neutral-400 group-hover:text-[#D4AF37] transition-all duration-300 ease-in-out leading-relaxed"
-              >
-                {t(`landing.categories.${c.key}`)}
-              </span>
+              <span className="landing-category-label">{t(`landing.categories.${c.key}`)}</span>
             </Link>
           ))}
         </div>
@@ -250,46 +235,32 @@ export default function LandingPage() {
 
       {/* ── TECHNOLOGY ───────────────────────────────── */}
       <div className="section-divider max-w-1440 mx-auto w-full" />
-      <section
-        id="technology"
-        className="grid lg:grid-cols-2 min-h-[520px] scroll-mt-32 max-w-1440 mx-auto w-full"
-      >
-        <div
-          className="relative flex items-center justify-center overflow-hidden min-h-[320px] bg-[#060606]"
-        >
-          <div
-            className="absolute inset-0"
-            style={{
-              background: 'radial-gradient(ellipse at 60% 50%, rgba(212,175,55,0.06) 0%, transparent 65%)',
-            }}
-          />
-          <div className="relative z-10 text-center px-8">
-            <IconFilament3D className="w-16 h-16 mx-auto mb-6 opacity-80" />
-            <p className="landing-sans-head">{t('landing.techPanel')}</p>
-          </div>
+      <section id="technology" className="landing-split landing-split--tech scroll-mt-32 max-w-1440 mx-auto w-full">
+        <div className="landing-split-visual">
+          <div className="landing-split-visual-glow" aria-hidden />
+          <IconFilament3D className="landing-split-visual-icon" />
+          <p className="landing-split-visual-kicker">{t('landing.techPanel')}</p>
         </div>
 
-        <div className="landing-tech-section flex flex-col justify-center px-10 lg:px-14 py-16 bg-[#050505]">
-          <h2
-            className="landing-section-title text-[clamp(1.75rem,3vw,2.25rem)] leading-snug mb-5"
-          >
+        <div className="landing-split-content landing-tech-section">
+          <h2 className="landing-section-title landing-split-title">
             {t('landing.techTitle1')}
             <br />
             <span className="landing-hero-gold not-italic font-normal">{t('landing.techTitle2')}</span>
             <br />
             {t('landing.techTitle3')}
           </h2>
-          <p className="landing-body max-w-[380px] mb-10">{t('landing.techBody')}</p>
-          <Link to="/how-it-works" className="luxury-btn-glass self-start mb-12">
+          <p className="landing-body landing-split-lead">{t('landing.techBody')}</p>
+          <Link to="/how-it-works" className="luxury-btn-glass landing-split-cta">
             {t('landing.discoverTech')}
           </Link>
-          <div className="flex flex-col gap-6">
+          <div className="landing-tech-points">
             {TECH_POINT_KEYS.map((key) => (
-              <div key={key} className="flex items-start gap-4">
-                <div className="w-px h-10 bg-[rgba(212,175,55,0.35)] shrink-0 mt-0.5" />
+              <div key={key} className="landing-tech-point">
+                <div className="landing-tech-point-bar" aria-hidden />
                 <div>
-                  <p className="text-[10px] font-medium tracking-[0.2em] text-[#D4AF37] mb-1">{t(`landing.techPoints.${key}.title`)}</p>
-                  <p className="text-[10px] tracking-wide text-neutral-500 leading-relaxed">{t(`landing.techPoints.${key}.sub`)}</p>
+                  <p className="landing-tech-point-title">{t(`landing.techPoints.${key}.title`)}</p>
+                  <p className="landing-tech-point-sub">{t(`landing.techPoints.${key}.sub`)}</p>
                 </div>
               </div>
             ))}
@@ -299,9 +270,9 @@ export default function LandingPage() {
       <div className="section-divider max-w-1440 mx-auto w-full" />
 
       {/* ── INVEST ───────────────────────────────────── */}
-      <section className="grid lg:grid-cols-2 min-h-[440px] max-w-1440 mx-auto w-full">
-        <div className="landing-invest-section flex flex-col justify-center px-10 lg:px-14 py-16">
-          <h2 className="landing-section-title text-[clamp(1.75rem,3.5vw,2.5rem)] leading-snug mb-6">
+      <section className="landing-split landing-split--invest max-w-1440 mx-auto w-full">
+        <div className="landing-split-content landing-invest-section">
+          <h2 className="landing-section-title landing-split-title">
             {t('landing.investTitle1')}
             {t('landing.investTitle2') ? (
               <>
@@ -313,29 +284,17 @@ export default function LandingPage() {
             )}
             <span className="landing-hero-gold not-italic">{t('landing.investTitleGold')}</span>
           </h2>
-          <p className="landing-body max-w-[360px] mb-10">{t('landing.investBody')}</p>
-          <Link to="/merge-coin" className="luxury-btn-glass self-start">
+          <p className="landing-body landing-split-lead">{t('landing.investBody')}</p>
+          <Link to="/merge-coin" className="luxury-btn-glass landing-split-cta">
             {t('landing.learnMore')}
           </Link>
         </div>
 
-        <div className="landing-invest-points relative flex items-center px-10 lg:px-14 py-16 overflow-hidden bg-[#060606]">
-          <div
-            className="absolute w-[400px] h-[400px] rounded-full pointer-events-none"
-            style={{
-              background: 'radial-gradient(circle, rgba(212,175,55,0.05) 0%, transparent 70%)',
-              right: '-80px',
-              top: '50%',
-              transform: 'translateY(-50%)',
-            }}
-          />
-          <div className="relative z-10 flex flex-col gap-4 w-full">
+        <div className="landing-split-aside landing-invest-points">
+          <div className="landing-invest-grid">
             {INVEST_POINT_KEYS.map((key) => (
-              <div
-                key={key}
-                className="landing-invest-point flex items-center gap-4 py-4 px-5 border-l border-[rgba(212,175,55,0.25)] transition-all duration-300 ease-in-out hover:border-[rgba(212,175,55,0.5)] hover:bg-black/20"
-              >
-                <p className="text-[10px] font-medium tracking-[0.18em] text-neutral-300">{t(`landing.investPoints.${key}`)}</p>
+              <div key={key} className="landing-invest-point">
+                <p>{t(`landing.investPoints.${key}`)}</p>
               </div>
             ))}
           </div>

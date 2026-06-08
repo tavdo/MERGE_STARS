@@ -61,7 +61,7 @@ export default function AdminPage() {
   return (
     <AdminLayout title="ADMIN PANEL" subtitle="APPLICATIONS MANAGEMENT">
           {/* Stats */}
-          <div className="grid grid-cols-2 lg:grid-cols-5 gap-4 mb-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 mb-6">
             {STATS.map((s) => (
               <div key={s.label} className="gold-card p-4" style={{ borderRadius: '4px' }}>
                 <p className="text-[9px] font-bold tracking-[0.15em] mb-2" style={{ color: 'rgba(255,255,255,0.35)' }}>{s.label}</p>

@@ -77,14 +77,14 @@ export default function Navbar({ variant = 'landing' }: NavbarProps) {
           </div>
         </Link>
 
-        <div className="hidden lg:flex items-center gap-8">
+        <div className="site-nav-links hidden lg:flex items-center">
           {NAV_LINKS.map((link) => {
             const active = location.pathname === link.href
             return (
               <Link
                 key={link.href}
                 to={link.href}
-                className={`text-[10px] font-medium tracking-[0.18em] uppercase transition-all duration-300 ease-in-out pb-0.5 border-b ${
+                className={`site-nav-link text-[10px] font-medium tracking-[0.18em] uppercase transition-all duration-300 ease-in-out pb-0.5 border-b ${
                   active
                     ? 'text-[#D4AF37] border-[#D4AF37]'
                     : 'text-neutral-400 border-transparent hover:text-neutral-200 hover:border-neutral-600'
