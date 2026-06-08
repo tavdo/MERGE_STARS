@@ -72,6 +72,9 @@ export class CoinApplication {
   @Column({ name: 'additional_notes', type: 'text', nullable: true })
   additionalNotes: string | null;
 
+  @Column({ name: 'status_note', type: 'text', nullable: true })
+  statusNote: string | null;
+
   @Column({ name: 'crystal_sent', default: false })
   crystalSent: boolean;
 
@@ -103,6 +106,7 @@ export function applicationView(app: CoinApplication, userName?: string) {
     financingTermMonths: app.financingTermMonths,
     deliveryAddress: app.deliveryAddress,
     additionalNotes: app.additionalNotes,
+    statusNote: app.statusNote,
     submittedAt: app.submittedAt.toISOString(),
     updatedAt: app.updatedAt.toISOString(),
   };

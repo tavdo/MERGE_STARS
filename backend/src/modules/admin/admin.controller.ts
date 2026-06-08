@@ -17,6 +17,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User, userPublicView } from '../../database/entities/user.entity';
 import { Order, orderView } from '../../database/entities/order.entity';
+import { UsersService } from '../users/users.service';
 
 @Controller('admin')
 @UseGuards(JwtAuthGuard, RolesGuard)
@@ -24,6 +25,7 @@ import { Order, orderView } from '../../database/entities/order.entity';
 export class AdminController {
   constructor(
     private readonly coins: CoinsService,
+    private readonly usersService: UsersService,
     @InjectRepository(User) private readonly users: Repository<User>,
     @InjectRepository(Order) private readonly orders: Repository<Order>,
   ) {}
@@ -67,11 +69,17 @@ export class AdminController {
     @Param('id') id: string,
     @Body() body: { status: ApplicationStatus; note?: string; crystalSent?: boolean },
   ) {
-    return this.coins.updateStatus(id, body.status, body.crystalSent);
+    return this.coins.updateStatus(id, body.status, {
+      note: body.note,
+      crystalSent: body.crystalSent,
+    });
   }
 
   @Get('users')
-  async listUsers(@Query('search') search?: string) {
+  async listUsers(
+    @Query('search') search?: string,
+    @Query('kycStatus') kycStatus?: string,
+  ) {
     const qb = this.users.createQueryBuilder('u').orderBy('u.createdAt', 'DESC');
     if (search?.trim()) {
       const q = `%${search.trim().toLowerCase()}%`;
@@ -79,6 +87,9 @@ export class AdminController {
         '(LOWER(u.email) LIKE :q OR LOWER(u.firstName) LIKE :q OR LOWER(u.lastName) LIKE :q OR LOWER(u.mergeId) LIKE :q)',
         { q },
       );
+    }
+    if (kycStatus?.trim()) {
+      qb.andWhere('u.kycStatus = :kycStatus', { kycStatus: kycStatus.toLowerCase() });
     }
     const rows = await qb.take(100).getMany();
     return rows.map((u) => ({
@@ -88,16 +99,33 @@ export class AdminController {
     }));
   }
 
+  @Patch('users/:id/kyc')
+  async updateUserKyc(
+    @Param('id') id: string,
+    @Body() body: { kycStatus: string },
+  ) {
+    const user = await this.usersService.updateKycStatus(id, body.kycStatus);
+    return {
+      ...user,
+      name: `${user.firstName} ${user.lastName}`,
+      joined: user.createdAt.slice(0, 10),
+    };
+  }
+
   @Get('orders')
   async listOrders() {
     const rows = await this.orders.find({
-      relations: { user: true },
+      relations: { user: true, application: true },
       order: { createdAt: 'DESC' },
       take: 100,
     });
     return rows.map((o) => ({
       ...orderView(o),
       user: o.user ? `${o.user.firstName} ${o.user.lastName}` : o.userId,
+      userEmail: o.user?.email ?? null,
+      coinType: o.application?.coinType ?? null,
+      crystalSent: o.application?.crystalSent ?? false,
+      appStatus: o.application?.status ?? null,
     }));
   }
 }

@@ -8,6 +8,7 @@ import {
 import { User } from '../../database/entities/user.entity';
 import { SubmitApplicationDto } from './dto/submit-application.dto';
 import { UsersService } from '../users/users.service';
+import { MailService } from '../mail/mail.service';
 
 @Injectable()
 export class CoinsService {
@@ -15,6 +16,7 @@ export class CoinsService {
     @InjectRepository(CoinApplication)
     private readonly apps: Repository<CoinApplication>,
     private readonly usersService: UsersService,
+    private readonly mail: MailService,
   ) {}
 
   private nextPublicId() {
@@ -77,6 +79,12 @@ export class CoinsService {
       crystalSent: false,
     });
     await this.apps.save(app);
+
+    const freshUser = await this.usersService.findById(user.id);
+    const email = dto.contactEmail ?? freshUser.email;
+    const name = `${dto.firstName ?? freshUser.firstName} ${dto.lastName ?? freshUser.lastName}`.trim();
+    await this.mail.sendApplicationReceived(email, name, publicId);
+
     return applicationView(app);
   }
 
@@ -115,12 +123,40 @@ export class CoinsService {
     };
   }
 
-  async updateStatus(publicId: string, status: CoinApplication['status'], crystalSent?: boolean) {
+  async updateStatus(
+    publicId: string,
+    status: CoinApplication['status'],
+    options?: { crystalSent?: boolean; note?: string },
+  ) {
     const app = await this.apps.findOne({ where: { publicId }, relations: { user: true } });
     if (!app) throw new NotFoundException('Application not found');
+
+    const previousStatus = app.status;
     app.status = status;
-    if (crystalSent !== undefined) app.crystalSent = crystalSent;
+
+    if (status === 'sent_to_crystal') {
+      app.crystalSent = true;
+    }
+    if (options?.crystalSent !== undefined) {
+      app.crystalSent = options.crystalSent;
+    }
+    if (options?.note !== undefined) {
+      app.statusNote = options.note || null;
+    }
+
     await this.apps.save(app);
+
+    if (app.user && previousStatus !== status) {
+      const name = `${app.user.firstName} ${app.user.lastName}`.trim();
+      await this.mail.sendApplicationStatusUpdate(
+        app.user.email,
+        name,
+        publicId,
+        status,
+        options?.note,
+      );
+    }
+
     return applicationView(
       app,
       `${app.user?.firstName ?? ''} ${app.user?.lastName ?? ''}`.trim(),

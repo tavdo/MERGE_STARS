@@ -76,6 +76,7 @@ export function userPublicView(user: User) {
     roles: user.roles,
     status: user.status,
     kycStatus: user.kycStatus,
+    personalId: user.personalId,
     createdAt: user.createdAt.toISOString(),
   };
 }

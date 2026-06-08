@@ -73,4 +73,53 @@ export class MailService {
       </div>`;
     await this.send(email, subject, html, text);
   }
+
+  async sendApplicationReceived(email: string, name: string, appId: string) {
+    const subject = 'MERGE STARS — Application received';
+    const text = `Hello ${name},\n\nYour coin application ${appId} has been received and is under review.\n\nTrack status: https://mergestars.com/status`;
+    const html = this.statusEmailHtml(
+      'Application received',
+      `Hello ${name},<br/><br/>Your coin application <strong>${appId}</strong> has been received and is now under review.`,
+    );
+    await this.send(email, subject, html, text);
+  }
+
+  async sendApplicationStatusUpdate(
+    email: string,
+    name: string,
+    appId: string,
+    status: string,
+    note?: string,
+  ) {
+    const label = status.replace(/_/g, ' ').toUpperCase();
+    const subject = `MERGE STARS — Application ${label}`;
+    const noteLine = note ? `\n\nNote: ${note}` : '';
+    const text = `Hello ${name},\n\nYour application ${appId} status is now: ${label}.${noteLine}\n\nTrack: https://mergestars.com/status`;
+    const html = this.statusEmailHtml(
+      `Status: ${label}`,
+      `Hello ${name},<br/><br/>Application <strong>${appId}</strong> is now <strong>${label}</strong>.${note ? `<br/><br/>Note: ${note}` : ''}`,
+    );
+    await this.send(email, subject, html, text);
+  }
+
+  async sendKycDecision(email: string, name: string, kycStatus: string) {
+    const label = kycStatus.toUpperCase();
+    const subject = `MERGE STARS — KYC ${label}`;
+    const text = `Hello ${name},\n\nYour KYC verification status is now: ${label}.`;
+    const html = this.statusEmailHtml(
+      `KYC ${label}`,
+      `Hello ${name},<br/><br/>Your identity verification (KYC) status is now <strong>${label}</strong>.`,
+    );
+    await this.send(email, subject, html, text);
+  }
+
+  private statusEmailHtml(title: string, body: string) {
+    return `
+      <div style="font-family:sans-serif;max-width:480px;margin:0 auto;padding:24px;background:#080808;color:#fff;border:1px solid #c9a84c">
+        <h2 style="color:#c9a84c;letter-spacing:0.2em;font-size:14px">MERGE STARS</h2>
+        <h3 style="color:#f5d78e;font-size:16px;margin:16px 0 8px">${title}</h3>
+        <p style="color:#ccc;line-height:1.6;font-size:14px">${body}</p>
+        <p style="margin-top:24px"><a href="https://mergestars.com/status" style="color:#c9a84c">View status →</a></p>
+      </div>`;
+  }
 }

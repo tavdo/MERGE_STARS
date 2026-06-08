@@ -17,7 +17,7 @@ export default function AdminUsersPage() {
 
   const { data: users = [], isLoading } = useQuery({
     queryKey: ['admin-users', search],
-    queryFn: () => adminApi.getUsers(search.trim() || undefined).then((r) => r.data.data),
+    queryFn: () => adminApi.getUsers(search.trim() ? { search: search.trim() } : undefined).then((r) => r.data.data),
   })
 
   const filtered = useMemo(() => {
