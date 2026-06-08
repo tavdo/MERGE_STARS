@@ -33,7 +33,6 @@ export interface RegisterPayload {
   phone?: string
   email: string
   password: string
-  verificationCode: string
 }
 
 export interface AuthUser {

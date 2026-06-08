@@ -3,7 +3,6 @@ import {
   IsNotEmpty,
   IsOptional,
   IsString,
-  Length,
   MinLength,
 } from 'class-validator';
 
@@ -44,10 +43,6 @@ export class RegisterDto {
   @IsString()
   @MinLength(8)
   password: string;
-
-  @IsString()
-  @Length(6, 6)
-  verificationCode: string;
 }
 
 export class SendVerificationCodeDto {

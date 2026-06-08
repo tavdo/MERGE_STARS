@@ -131,8 +131,6 @@ export class AuthService {
       throw new BadRequestException('Personal ID is required');
     }
 
-    await this.consumeVerificationCode(email, dto.verificationCode);
-
     const existingEmail = await this.users.findOne({ where: { email } });
     if (existingEmail) {
       throw new ConflictException('Email already registered');
