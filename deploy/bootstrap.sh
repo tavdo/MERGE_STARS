@@ -7,6 +7,9 @@ REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 DEPLOY_DIR="${DEPLOY_DIR:-$REPO_ROOT}"
 DEPLOY_USER="${DEPLOY_USER:-$(whoami)}"
 
+# shellcheck disable=SC1091
+source "$SCRIPT_DIR/load-env.sh"
+
 domain_from_env() {
   local url="${FRONTEND_URL:-}"
   url="${url#https://}"
@@ -26,8 +29,7 @@ if [ ! -f "$DEPLOY_DIR/.env" ]; then
   cp "$DEPLOY_DIR/.env.example" "$DEPLOY_DIR/.env"
 fi
 
-# shellcheck disable=SC1091
-source "$DEPLOY_DIR/.env" 2>/dev/null || true
+load_env_file "$DEPLOY_DIR/.env"
 DOMAIN="$(domain_from_env)"
 
 echo "    nginx server_name: $DOMAIN"
@@ -75,15 +77,17 @@ export DB_USER DB_NAME DB_PASSWORD
 bash "$SCRIPT_DIR/postgres-setup.sh"
 
 ENV_FILE="$DEPLOY_DIR/.env"
-DB_URL="postgresql://${DB_USER}:${DB_PASSWORD}@127.0.0.1:5432/${DB_NAME}"
+ENC_PASS="$(node -e "console.log(encodeURIComponent(process.argv[1]))" "$DB_PASSWORD")"
+DB_URL="postgresql://${DB_USER}:${ENC_PASS}@127.0.0.1:5432/${DB_NAME}"
 
 set_env() {
   local key="$1"
   local val="$2"
+  local escaped="${val//\'/\'\\\'\'}"
   if grep -q "^${key}=" "$ENV_FILE" 2>/dev/null; then
-    sed -i "s|^${key}=.*|${key}=${val}|" "$ENV_FILE"
+    sed -i "s|^${key}=.*|${key}='${escaped}'|" "$ENV_FILE"
   else
-    echo "${key}=${val}" >> "$ENV_FILE"
+    echo "${key}='${escaped}'" >> "$ENV_FILE"
   fi
 }
 

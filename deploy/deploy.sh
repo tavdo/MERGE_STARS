@@ -6,10 +6,12 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 cd "$REPO_ROOT"
 
+# shellcheck disable=SC1091
+source "$SCRIPT_DIR/load-env.sh"
+
 if [ -f .env ]; then
   set -a
-  # shellcheck disable=SC1091
-  source .env
+  load_env_file .env
   set +a
 fi
 
@@ -28,8 +30,7 @@ bash "$SCRIPT_DIR/bootstrap.sh"
 
 if [ -f .env ]; then
   set -a
-  # shellcheck disable=SC1091
-  source .env
+  load_env_file .env
   set +a
 fi
 
