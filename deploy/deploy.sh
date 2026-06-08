@@ -54,13 +54,13 @@ test -f dist/main.js || { echo "ERROR: backend build failed - dist/main.js missi
 wait_for_backend() {
   local i
   for i in $(seq 1 45); do
-    if curl -sf --max-time 2 http://127.0.0.1:${PORT:-3000}/health >/dev/null 2>&1; then
+    if curl -sf --max-time 2 http://127.0.0.1:${PORT:-3000}/api/health >/dev/null 2>&1; then
       echo "    backend health OK"
       return 0
     fi
     sleep 2
   done
-  echo "ERROR: backend did not respond on /health"
+  echo "ERROR: backend did not respond on /api/health"
   if command -v journalctl >/dev/null 2>&1; then
     journalctl -u merge-stars-backend -n 40 --no-pager || true
   fi

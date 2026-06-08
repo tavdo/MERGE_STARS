@@ -14,6 +14,9 @@ function parseCorsOrigins(raw: string | undefined): string[] {
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
+  // Match frontend VITE_API_URL=/api and nginx proxy (full /api/... path)
+  app.setGlobalPrefix('api');
+
   app.use(cookieParser());
   app.useGlobalPipes(
     new ValidationPipe({ whitelist: true, transform: true, forbidNonWhitelisted: false }),
