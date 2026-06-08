@@ -2922,3 +2922,32 @@ textarea.gold-input {
     color: rgba(255, 255, 255, 0.42);
   }
 }
+
+/* RTL — Arabic */
+[dir="rtl"] {
+  text-align: right;
+}
+
+[dir="rtl"] .dash-sidebar {
+  border-right: none;
+  border-left: 1px solid rgba(212, 175, 55, 0.1);
+}
+
+[dir="rtl"] .dash-sidebar-toggle {
+  margin-left: 0;
+  margin-right: auto;
+}
+
+[dir="rtl"] .gold-input.pr-12 {
+  padding-right: 18px;
+  padding-left: 3rem;
+}
+
+[dir="rtl"] .landing-hero-copy {
+  text-align: right;
+}
+
+[dir="rtl"] .auth-page-panel .auth-hero,
+[dir="rtl"] .auth-page-panel .auth-tabs {
+  text-align: center;
+}

@@ -1,5 +1,5 @@
 export default {
-  lang: { label: 'ენა', en: 'English', ru: 'Русский', fr: 'Français', de: 'Deutsch', tr: 'Türkçe', ka: 'ქართული' },
+  lang: { label: 'ენა', en: 'English', ru: 'Русский', fr: 'Français', de: 'Deutsch', tr: 'Türkçe', ka: 'ქართული', ar: 'العربية' },
   nav: { home: 'მთავარი', howItWorks: 'როგორ მუშაობს', mergeCoin: 'Merge Coin', prices: 'ფასები', apply: 'განაცხადი', faq: 'FAQ', contact: 'კონტაქტი', trust: 'Trust Center', legalClassification: 'Legal Classification', login: 'შესვლა', dashboard: 'პანელი', menu: 'მენიუ', closeMenu: 'მენიუს დახურვა' },
   footer: {
     secure: 'უსაფრთხო პლატფორმა', secureSub: 'თქვენი მონაცემები დაცულია', fast: 'სწრაფი და საიმედო', fastSub: 'უნაკლო გამოცდილება',

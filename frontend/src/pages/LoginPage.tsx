@@ -166,7 +166,7 @@ export default function LoginPage() {
       </div>
 
       <div className="auth-page-panel flex-1 flex flex-col justify-center items-center px-8 lg:px-16 py-12 overflow-y-auto relative" style={{ maxWidth: '640px', margin: '0 auto' }}>
-        <div className="absolute top-6 right-6 lg:right-10">
+        <div className="absolute top-6 end-6 lg:end-10">
           <LanguageSwitcher variant="compact" />
         </div>
 
@@ -204,7 +204,7 @@ export default function LoginPage() {
               <label className="auth-field-label">{t('authPanel.passwordLabel')}</label>
               <div className="relative">
                 <input className="gold-input pr-12" type={showPw ? 'text' : 'password'} value={password} onChange={(e) => setPassword(e.target.value)} placeholder={t('authPanel.passwordPlaceholder')} required />
-                <button type="button" onClick={() => setShowPw(!showPw)} className="absolute right-4 top-1/2 -translate-y-1/2 text-[13px]" style={{ color: 'rgba(255,255,255,0.4)' }}>
+                <button type="button" onClick={() => setShowPw(!showPw)} className="absolute end-4 top-1/2 -translate-y-1/2 text-[13px]" style={{ color: 'rgba(255,255,255,0.4)' }}>
                   {showPw ? '🙈' : '👁'}
                 </button>
               </div>

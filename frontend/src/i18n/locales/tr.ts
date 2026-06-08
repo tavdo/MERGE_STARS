@@ -1,5 +1,5 @@
 export default {
-  lang: { label: 'Dil', en: 'English', ru: 'Русский', fr: 'Français', de: 'Deutsch', tr: 'Türkçe', ka: 'ქართული' },
+  lang: { label: 'Dil', en: 'English', ru: 'Русский', fr: 'Français', de: 'Deutsch', tr: 'Türkçe', ka: 'ქართული', ar: 'العربية' },
   nav: { home: 'Ana Sayfa', howItWorks: 'Nasıl Çalışır', mergeCoin: 'Merge Coin', prices: 'Fiyatlar', apply: 'Başvuru', faq: 'SSS', contact: 'İletişim', trust: 'Trust Center', legalClassification: 'Legal Classification', login: 'Giriş', dashboard: 'Panel', menu: 'Menü' },
   footer: {
     secure: 'GÜVENLİ PLATFORM', secureSub: 'Verileriniz korunur', fast: 'HIZLI VE GÜVENİLİR', fastSub: 'Kusursuz deneyim',

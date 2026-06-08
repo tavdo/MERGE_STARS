@@ -8,6 +8,7 @@ export default {
     de: 'German',
     tr: 'Turkish',
     ka: 'Georgian',
+    ar: 'Arabic',
   },
   nav: {
     home: 'Home',

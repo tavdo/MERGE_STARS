@@ -1,5 +1,5 @@
 export default {
-  lang: { label: 'Sprache', en: 'English', ru: 'Русский', fr: 'Français', de: 'Deutsch', tr: 'Türkçe', ka: 'ქართული' },
+  lang: { label: 'Sprache', en: 'English', ru: 'Русский', fr: 'Français', de: 'Deutsch', tr: 'Türkçe', ka: 'ქართული', ar: 'العربية' },
   nav: { home: 'Startseite', howItWorks: 'So funktioniert\'s', mergeCoin: 'Merge Coin', prices: 'Preise', apply: 'Bewerbung', faq: 'FAQ', contact: 'Kontakt', trust: 'Trust Center', legalClassification: 'Legal Classification', login: 'Anmelden', dashboard: 'Dashboard', menu: 'Menü' },
   footer: {
     secure: 'SICHERE PLATTFORM', secureSub: 'Ihre Daten sind geschützt', fast: 'SCHNELL & ZUVERLÄSSIG', fastSub: 'Nahtlose Erfahrung',

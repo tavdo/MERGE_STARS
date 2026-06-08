@@ -50,7 +50,7 @@ export default function LanguageSwitcher({ variant = 'navbar' }: LanguageSwitche
       {open && (
         <ul
           role="listbox"
-          className="absolute right-0 top-full mt-1 min-w-[10.5rem] py-1 z-[100] border border-[rgba(201,168,76,0.2)] rounded-sm shadow-lg"
+          className="absolute end-0 top-full mt-1 min-w-[10.5rem] py-1 z-[100] border border-[rgba(201,168,76,0.2)] rounded-sm shadow-lg"
           style={{ background: 'rgba(10,10,10,0.98)' }}
         >
           {SUPPORTED_LANGUAGES.map(({ code, labelKey }) => (
@@ -58,7 +58,7 @@ export default function LanguageSwitcher({ variant = 'navbar' }: LanguageSwitche
               <button
                 type="button"
                 onClick={() => select(code)}
-                className={`w-full text-left px-4 py-2.5 text-[11px] tracking-wide transition-colors ${
+                className={`w-full text-start px-4 py-2.5 text-[11px] tracking-wide transition-colors ${
                   code === current
                     ? 'text-[#D4AF37] bg-[rgba(201,168,76,0.08)]'
                     : 'text-neutral-400 hover:text-neutral-200 hover:bg-white/[0.03]'
