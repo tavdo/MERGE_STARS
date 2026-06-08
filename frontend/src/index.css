@@ -2395,6 +2395,27 @@ textarea.gold-input {
   color: rgba(255,255,255,0.3);
 }
 
+.auth-phone-row {
+  display: flex;
+  gap: 0.5rem;
+  align-items: stretch;
+}
+
+.auth-phone-row select.gold-input {
+  width: 8.75rem;
+  min-width: 6.5rem;
+  max-width: 8.75rem;
+  flex: 0 0 auto;
+  padding-left: 0.75rem;
+  padding-right: 1.75rem;
+}
+
+.auth-phone-row input.gold-input {
+  flex: 1 1 0;
+  min-width: 0;
+  width: auto;
+}
+
 @keyframes ticker-scroll {
   0% { transform: translateX(0); }
   100% { transform: translateX(-50%); }
@@ -2608,11 +2629,6 @@ textarea.gold-input {
 
   .auth-name-grid {
     grid-template-columns: 1fr !important;
-  }
-
-  .auth-phone-row select.gold-input {
-    width: 6.5rem !important;
-    min-width: 6.5rem !important;
   }
 
   /* FAQ */

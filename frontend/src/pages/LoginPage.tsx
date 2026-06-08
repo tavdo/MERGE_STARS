@@ -256,13 +256,13 @@ export default function LoginPage() {
                 </div>
                 <div>
                   <label className="text-[10px] font-semibold tracking-widest block mb-2" style={{ color: 'rgba(255,255,255,0.4)' }}>{t('auth.phone')}</label>
-                  <div className="auth-phone-row flex gap-2">
-                    <select className="gold-input" style={{ flexShrink: 0 }} value={phoneCode} onChange={(e) => setPhoneCode(e.target.value)}>
+                  <div className="auth-phone-row">
+                    <select className="gold-input" value={phoneCode} onChange={(e) => setPhoneCode(e.target.value)} aria-label={t('auth.phone')}>
                       <option value="+995">🇬🇪 +995</option>
                       <option value="+1">🇺🇸 +1</option>
                       <option value="+44">🇬🇧 +44</option>
                     </select>
-                    <input className="gold-input" value={phone} onChange={(e) => setPhone(e.target.value)} placeholder={t('authPanel.phonePlaceholder')} />
+                    <input className="gold-input" type="tel" inputMode="tel" autoComplete="tel-national" value={phone} onChange={(e) => setPhone(e.target.value)} placeholder={t('authPanel.phonePlaceholder')} />
                   </div>
                 </div>
                 <button type="button" onClick={goToRegisterStep2} className="gold-btn w-full justify-center mt-2" style={{ borderRadius: '2px' }}>{t('auth.nextStep')} ›</button>
