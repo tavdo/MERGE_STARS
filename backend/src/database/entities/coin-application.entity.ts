@@ -57,6 +57,21 @@ export class CoinApplication {
   @Column({ type: 'text', nullable: true })
   notes: string | null;
 
+  @Column({ name: 'metal_type', type: 'varchar', nullable: true })
+  metalType: string | null;
+
+  @Column({ name: 'financing_preference', type: 'varchar', nullable: true })
+  financingPreference: string | null;
+
+  @Column({ name: 'financing_term_months', type: 'int', nullable: true })
+  financingTermMonths: number | null;
+
+  @Column({ name: 'delivery_address', type: 'text', nullable: true })
+  deliveryAddress: string | null;
+
+  @Column({ name: 'additional_notes', type: 'text', nullable: true })
+  additionalNotes: string | null;
+
   @Column({ name: 'crystal_sent', default: false })
   crystalSent: boolean;
 
@@ -83,6 +98,11 @@ export function applicationView(app: CoinApplication, userName?: string) {
     status: app.status,
     crystal: app.crystalSent ? 'Yes' : '—',
     notes: app.notes,
+    metalType: app.metalType,
+    financingPreference: app.financingPreference,
+    financingTermMonths: app.financingTermMonths,
+    deliveryAddress: app.deliveryAddress,
+    additionalNotes: app.additionalNotes,
     submittedAt: app.submittedAt.toISOString(),
     updatedAt: app.updatedAt.toISOString(),
   };

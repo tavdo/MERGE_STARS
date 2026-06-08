@@ -12,6 +12,30 @@ export interface CoinApplication {
   updatedAt?: string
   user?: string
   crystal?: string
+  notes?: string | null
+  metalType?: string | null
+  financingPreference?: string | null
+  financingTermMonths?: number | null
+  deliveryAddress?: string | null
+  additionalNotes?: string | null
+}
+
+export interface SubmitApplicationPayload {
+  coinType: string
+  quantity: number
+  metalPurity?: number
+  metalType?: string
+  coinValue: number
+  notes?: string
+  firstName?: string
+  lastName?: string
+  personalId?: string
+  phone?: string
+  contactEmail?: string
+  financingPreference?: string
+  financingTermMonths?: number
+  deliveryAddress?: string
+  additionalNotes?: string
 }
 
 export const coinsApi = {
@@ -24,6 +48,6 @@ export const coinsApi = {
   getApplication: (id: string) =>
     api.get<ApiResponse<CoinApplication>>(`/coins/applications/${id}`),
 
-  submitApplication: (payload: Omit<CoinApplication, 'id' | 'status' | 'submittedAt'>) =>
+  submitApplication: (payload: SubmitApplicationPayload) =>
     api.post<ApiResponse<CoinApplication>>('/coins/applications', payload),
 }

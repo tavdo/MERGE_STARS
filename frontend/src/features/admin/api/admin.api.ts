@@ -21,6 +21,23 @@ export const adminApi = {
   updateStatus: (id: string, status: ApplicationStatus, note?: string) =>
     api.patch<ApiResponse<CoinApplication>>(`/admin/applications/${id}/status`, { status, note }),
 
+  getUsers: (search?: string) =>
+    api.get<ApiResponse<AdminUser[]>>('/admin/users', { params: search ? { search } : undefined }),
+
   exportCsv: () =>
     api.get('/admin/applications/export', { responseType: 'blob' }),
+}
+
+export interface AdminUser {
+  id: string
+  email: string
+  phone: string | null
+  firstName: string
+  lastName: string
+  mergeId: string
+  name: string
+  joined: string
+  roles: string[]
+  status: string
+  kycStatus: string
 }

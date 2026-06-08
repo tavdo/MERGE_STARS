@@ -22,9 +22,14 @@ export class OrdersService {
   async listForUser(userId: string) {
     const rows = await this.orders.find({
       where: { userId },
+      relations: { application: true },
       order: { createdAt: 'DESC' },
     });
-    return rows.map(orderView);
+    return rows.map((o) => ({
+      ...orderView(o),
+      coinType: o.application?.coinType ?? null,
+      quantity: o.application?.quantity ?? null,
+    }));
   }
 
   async createForApplication(user: User, applicationPublicId: string, paymentMethod: string) {

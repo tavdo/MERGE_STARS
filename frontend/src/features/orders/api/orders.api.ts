@@ -7,6 +7,8 @@ export interface Order {
   paymentMethod: string
   status: string
   applicationId: string | null
+  coinType: string | null
+  quantity: number | null
   createdAt: string
 }
 

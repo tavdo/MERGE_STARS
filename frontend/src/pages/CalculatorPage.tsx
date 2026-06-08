@@ -1,19 +1,18 @@
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
+import { useQuery } from '@tanstack/react-query'
 import DashboardLayout from '../components/DashboardLayout'
 import CustomSelect from '../components/CustomSelect'
+import { metalsApi } from '@/features/coins/api/metals.api'
+import {
+  MFG_FEE_USD,
+  PLATFORM_FEE_USD,
+  financingPreview,
+  metalForCoinIndex,
+} from '@/shared/utils/coinPricing'
 
-const COIN_META = [
-  { metalPrice: 0.897, metalKey: 'application.metals.silver' as const },
-  { metalPrice: 67.42, metalKey: 'application.metals.gold' as const },
-  { metalPrice: 32.15, metalKey: 'application.metals.platinum' as const },
-]
-
-const LIVE_PRICES = [
-  { nameKey: 'application.metals.silver' as const, price: 0.897, change: '+1.23%' },
-  { nameKey: 'application.metals.gold' as const, price: 67.42, change: '+0.85%' },
-]
+const METAL_KEYS = ['application.metals.silver', 'application.metals.gold', 'application.metals.platinum'] as const
 
 export default function CalculatorPage() {
   const { t } = useTranslation()
@@ -23,15 +22,30 @@ export default function CalculatorPage() {
   const [weight, setWeight] = useState(1000)
   const [purity, setPurity] = useState(99.9)
 
-  const coin = COIN_META[coinIdx] ?? COIN_META[0]
-  const metalValue = (coin.metalPrice * weight * purity) / 100
-  const mfgFee = 1200
-  const platformFee = 153
-  const totalValue = metalValue + mfgFee + platformFee
+  const { data: metals } = useQuery({
+    queryKey: ['metals-live'],
+    queryFn: () => metalsApi.getLive().then((r) => r.data.data),
+    refetchInterval: 60_000,
+  })
 
-  const downPayment = totalValue * 0.2
-  const toFinance = totalValue - downPayment
-  const monthly = (toFinance / 12).toFixed(2)
+  const metal = metalForCoinIndex(coinIdx)
+  const spot = metals?.find((m) => m.metal === metal)?.priceUsd ?? (metal === 'gold' ? 139.1 : metal === 'platinum' ? 32.15 : 1.09)
+
+  const metalValue = useMemo(
+    () => (spot * weight * purity) / 100,
+    [spot, weight, purity],
+  )
+  const totalValue = metalValue + MFG_FEE_USD + PLATFORM_FEE_USD
+  const { downPayment, toFinance, monthly } = financingPreview(totalValue, 12)
+
+  const liveFeed = (['silver', 'gold'] as const).map((m) => {
+    const live = metals?.find((p) => p.metal === m)
+    return {
+      nameKey: m === 'silver' ? METAL_KEYS[0] : METAL_KEYS[1],
+      price: live?.priceUsd ?? 0,
+      change: live?.changePct ?? 0,
+    }
+  })
 
   return (
     <DashboardLayout titleKey="calculator">
@@ -65,7 +79,7 @@ export default function CalculatorPage() {
                     aria-label={t('calculator.coinType')}
                     value={coinIdx}
                     onChange={(v) => setCoinIdx(Number(v))}
-                    options={COIN_META.map((_, i) => ({
+                    options={METAL_KEYS.map((_, i) => ({
                       value: i,
                       label: coinLabels[i] ?? `Coin ${i + 1}`,
                     }))}
@@ -118,14 +132,16 @@ export default function CalculatorPage() {
                 <span className="text-[9px] tracking-[0.14em] uppercase text-emerald-400/80">{t('calculator.live')}</span>
               </div>
               <ul className="space-y-3">
-                {LIVE_PRICES.map((p) => (
+                {liveFeed.map((p) => (
                   <li key={p.nameKey} className="flex justify-between items-baseline gap-4">
                     <span className="text-[11px] text-neutral-400 tracking-wide">{t(p.nameKey)}</span>
                     <div className="text-right">
                       <p className="text-[11px] font-medium text-[#D4AF37]">
-                        {t('calculator.perGram', { price: p.price })}
+                        {t('calculator.perGram', { price: p.price.toFixed(3) })}
                       </p>
-                      <p className="text-[10px] text-emerald-400/80">{p.change}</p>
+                      <p className={`text-[10px] ${p.change >= 0 ? 'text-emerald-400/80' : 'text-red-400/80'}`}>
+                        {p.change >= 0 ? '+' : ''}{p.change.toFixed(2)}%
+                      </p>
                     </div>
                   </li>
                 ))}
@@ -142,14 +158,14 @@ export default function CalculatorPage() {
               ${totalValue.toLocaleString(undefined, { maximumFractionDigits: 2 })}
             </p>
             <p className="text-center text-[11px] tracking-wide text-neutral-500 mt-2 mb-10">
-              {weight.toLocaleString()} g · {t(coin.metalKey)}
+              {weight.toLocaleString()} g · {t(METAL_KEYS[coinIdx] ?? METAL_KEYS[0])}
             </p>
 
             <div className="space-y-0 flex-1">
               {[
                 { label: t('calculator.metalValue'), value: `$${metalValue.toFixed(2)}` },
-                { label: t('calculator.manufacturing'), value: `$${mfgFee.toLocaleString()}` },
-                { label: t('calculator.platformFee'), value: `$${platformFee}` },
+                { label: t('calculator.manufacturing'), value: `$${MFG_FEE_USD.toLocaleString()}` },
+                { label: t('calculator.platformFee'), value: `$${PLATFORM_FEE_USD}` },
               ].map((r) => (
                 <div key={r.label} className="preview-row">
                   <span className="preview-muted">{r.label}</span>
@@ -172,7 +188,7 @@ export default function CalculatorPage() {
               { label: t('application.downPayment20'), value: `$${downPayment.toFixed(2)}` },
               { label: t('application.amountFinance'), value: `$${toFinance.toFixed(2)}` },
               { label: t('calculator.term'), value: t('application.term12') },
-              { label: t('application.estMonthly'), value: `$${monthly}` },
+              { label: t('application.estMonthly'), value: `$${monthly.toFixed(2)}` },
             ].map((r) => (
               <div key={r.label} className="preview-row">
                 <span className="preview-muted">{r.label}</span>

@@ -1,24 +1,60 @@
 import { useState } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
+import { useMutation, useQuery } from '@tanstack/react-query'
 import DashboardLayout from '../../components/DashboardLayout'
+import { coinsApi } from '@/features/coins/api/coins.api'
+import { ordersApi } from '@/features/orders/api/orders.api'
+import { financingPreview } from '@/shared/utils/coinPricing'
 
 type Method = 'full' | 'bank'
 
 export default function PaymentPage() {
   const { t } = useTranslation()
+  const navigate = useNavigate()
   const [method, setMethod] = useState<Method>('bank')
-  const coinValue = 2450
-  const downPayment = coinValue * 0.2
-  const toFinance = coinValue - downPayment
-  const monthly12 = (toFinance / 12).toFixed(2)
-  const monthly24 = (toFinance / 24).toFixed(2)
+  const [termMonths, setTermMonths] = useState(12)
+
+  const { data: app, isLoading } = useQuery({
+    queryKey: ['application-latest'],
+    queryFn: () => coinsApi.getLatestApplication().then((r) => r.data.data),
+  })
+
+  const createOrder = useMutation({
+    mutationFn: () =>
+      ordersApi.create(app!.id, method === 'full' ? 'full' : 'bank'),
+    onSuccess: () => navigate('/dashboard/orders'),
+  })
+
+  const coinValue = app ? Number(app.coinValue) : 0
+  const { downPayment, toFinance } = financingPreview(coinValue, termMonths)
+
+  if (isLoading) {
+    return (
+      <DashboardLayout titleKey="payment">
+        <p className="text-neutral-500 text-sm">{t('common.loading', { defaultValue: 'Loading…' })}</p>
+      </DashboardLayout>
+    )
+  }
+
+  if (!app) {
+    return (
+      <DashboardLayout titleKey="payment">
+        <div className="max-w-lg space-y-4">
+          <p className="apply-lead">{t('payment.noApplication', { defaultValue: 'Submit a coin application before payment.' })}</p>
+          <Link to="/apply" className="luxury-btn-glass">{t('orders.newOrder')}</Link>
+        </div>
+      </DashboardLayout>
+    )
+  }
 
   return (
     <DashboardLayout titleKey="payment">
       <div style={{ maxWidth: '900px' }}>
         <div style={{ marginBottom: '32px' }}>
           <p style={{ fontSize: '11px', fontWeight: 700, letterSpacing: '0.3em', color: '#c9a84c', marginBottom: '8px' }}>{t('payment.kicker')}</p>
-          <h1 style={{ fontSize: '24px', fontWeight: 900, color: '#fff' }}>{t('payment.orderLabel', { id: 'ORD-2024-000123' })}</h1>
+          <h1 style={{ fontSize: '24px', fontWeight: 900, color: '#fff' }}>{t('payment.orderLabel', { id: app.id })}</h1>
+          <p style={{ fontSize: '12px', color: 'rgba(255,255,255,0.45)', marginTop: '8px' }}>{app.coinType}</p>
         </div>
 
         <div style={{ padding: '16px 20px', background: 'rgba(245,158,11,0.06)', border: '1px solid rgba(245,158,11,0.2)', borderRadius: '4px', marginBottom: '24px', display: 'flex', gap: '12px', alignItems: 'flex-start' }}>
@@ -74,7 +110,14 @@ export default function PaymentPage() {
                     <span style={{ fontSize: '12px', fontWeight: 700, color: '#fff' }}>{r.value}</span>
                   </div>
                 ))}
-                <button type="button" className="gold-btn w-full justify-center mt-5">{t('payment.proceed')}</button>
+                <button
+                  type="button"
+                  className="gold-btn w-full justify-center mt-5"
+                  disabled={createOrder.isPending}
+                  onClick={() => createOrder.mutate()}
+                >
+                  {createOrder.isPending ? '…' : t('payment.proceed')}
+                </button>
               </div>
             ) : (
               <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
@@ -90,14 +133,29 @@ export default function PaymentPage() {
                 ))}
                 <p style={{ fontSize: '11px', color: 'rgba(255,255,255,0.3)', margin: '8px 0' }}>{t('payment.chooseTerm')}</p>
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', margin: '4px 0 16px' }}>
-                  {[{ months: 12, monthly: monthly12 }, { months: 24, monthly: monthly24 }].map((opt) => (
-                    <div key={opt.months} className="gold-card" style={{ padding: '12px', textAlign: 'center', cursor: 'pointer', borderRadius: '4px' }}>
-                      <p style={{ fontSize: '16px', fontWeight: 900, color: '#c9a84c' }}>{t('payment.months', { n: opt.months })}</p>
-                      <p style={{ fontSize: '11px', color: 'rgba(255,255,255,0.5)', marginTop: '4px' }}>{t('payment.perMonth', { amount: opt.monthly })}</p>
-                    </div>
+                  {[12, 24].map((months) => (
+                    <button
+                      key={months}
+                      type="button"
+                      className="gold-card"
+                      style={{ padding: '12px', textAlign: 'center', cursor: 'pointer', borderRadius: '4px', borderColor: termMonths === months ? '#c9a84c' : undefined }}
+                      onClick={() => setTermMonths(months)}
+                    >
+                      <p style={{ fontSize: '16px', fontWeight: 900, color: '#c9a84c' }}>{t('payment.months', { n: months })}</p>
+                      <p style={{ fontSize: '11px', color: 'rgba(255,255,255,0.5)', marginTop: '4px' }}>
+                        {t('payment.perMonth', { amount: (toFinance / months).toFixed(2) })}
+                      </p>
+                    </button>
                   ))}
                 </div>
-                <button type="button" className="gold-btn w-full justify-center">{t('payment.applyFinancing')}</button>
+                <button
+                  type="button"
+                  className="gold-btn w-full justify-center"
+                  disabled={createOrder.isPending}
+                  onClick={() => createOrder.mutate()}
+                >
+                  {createOrder.isPending ? '…' : t('payment.applyFinancing')}
+                </button>
                 <p style={{ fontSize: '10px', color: 'rgba(255,255,255,0.25)', textAlign: 'center', marginTop: '12px', lineHeight: 1.6 }}>{t('payment.crystalNote')}</p>
               </div>
             )}

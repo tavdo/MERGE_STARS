@@ -3,6 +3,7 @@ import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import LanguageSwitcher from './LanguageSwitcher'
 import SiteLogo from './SiteLogo'
+import { useAuthStore } from '@/features/auth/store/auth.store'
 
 const NAV = [
   { icon: '⊞', labelKey: 'dashboard.nav.dashboard', href: '/dashboard', exact: true },
@@ -49,6 +50,8 @@ export default function DashboardLayout({ children, title, titleKey }: Props) {
   const headerTitle = titleKey
     ? t(`dashboard.titles.${titleKey}`)
     : title || t('dashboard.titles.dashboard')
+
+  const authUser = useAuthStore((s) => s.user)
 
   const showLabels = sidebarExpanded || mobileNavOpen
 
@@ -176,7 +179,7 @@ export default function DashboardLayout({ children, title, titleKey }: Props) {
               <p className="dash-header-kicker">{t('dashboard.welcomeBack')}</p>
               <div className="flex items-center gap-3 flex-wrap mt-1">
                 <h1 className="dash-header-title">{headerTitle}</h1>
-                <span className="dash-id-pill">MS-782456</span>
+                <span className="dash-id-pill">{authUser?.mergeId ?? '—'}</span>
               </div>
             </div>
           </div>

@@ -52,11 +52,13 @@ import SecurityCenterPage from './pages/admin/SecurityCenterPage'
 import DataGovernancePage from './pages/admin/DataGovernancePage'
 import BusinessContinuityPage from './pages/admin/BusinessContinuityPage'
 import AuditCenterPage from './pages/admin/AuditCenterPage'
+
 import './App.css'
 import LuxuryCursor from './components/LuxuryCursor'
 import AIAssistantWidget from './components/AIAssistantWidget'
+import AuthGuard from './router/guards/AuthGuard'
+import RoleGuard from './router/guards/RoleGuard'
 
-/** Custom cursor only on marketing home — avoids click/tracking issues in app shell */
 function useLuxuryCursorEnabled() {
   const { pathname } = useLocation()
   return pathname === '/'
@@ -83,48 +85,51 @@ function AppRoutes() {
         <Route path="/referral-policy" element={<ReferralPolicyPage />} />
         <Route path="/trust" element={<TrustCenterPage />} />
         <Route path="/legal-classification" element={<LegalClassificationPage />} />
-        {/* Auth */}
         <Route path="/login"           element={<LoginPage />} />
         <Route path="/register"        element={<Navigate to="/login?tab=register" replace />} />
         <Route path="/forgot-password" element={<ForgotPasswordPage />} />
         <Route path="/reset-password"  element={<ResetPasswordPage />} />
 
-        {/* User */}
-        <Route path="/dashboard"              element={<DashboardPage />} />
-        <Route path="/dashboard/profile"      element={<ProfilePage />} />
-        <Route path="/dashboard/coins"        element={<CoinsPage />} />
-        <Route path="/dashboard/investments"  element={<InvestmentsPage />} />
-        <Route path="/dashboard/messages"     element={<MessagesPage />} />
-        <Route path="/dashboard/settings"     element={<SettingsPage />} />
-        <Route path="/dashboard/support"      element={<SupportPage />} />
-        <Route path="/dashboard/brand"        element={<BrandLinePage />} />
-        <Route path="/dashboard/qr"           element={<QRIdentityPage />} />
-        <Route path="/dashboard/orders"       element={<OrdersPage />} />
-        <Route path="/dashboard/payment"      element={<PaymentPage />} />
-        <Route path="/dashboard/delivery"      element={<DeliveryPage />} />
-        <Route path="/dashboard/referral"      element={<ReferralPage />} />
-        <Route path="/dashboard/ai"            element={<AIAssistantPage />} />
-        <Route path="/apply"              element={<ApplicationPage />} />
-        <Route path="/calculator"         element={<CalculatorPage />} />
-        <Route path="/status"             element={<StatusPage />} />
+        {/* Authenticated — user area */}
+        <Route element={<AuthGuard />}>
+          <Route path="/dashboard"              element={<DashboardPage />} />
+          <Route path="/dashboard/profile"      element={<ProfilePage />} />
+          <Route path="/dashboard/coins"        element={<CoinsPage />} />
+          <Route path="/dashboard/investments"  element={<InvestmentsPage />} />
+          <Route path="/dashboard/messages"     element={<MessagesPage />} />
+          <Route path="/dashboard/settings"     element={<SettingsPage />} />
+          <Route path="/dashboard/support"      element={<SupportPage />} />
+          <Route path="/dashboard/brand"        element={<BrandLinePage />} />
+          <Route path="/dashboard/qr"           element={<QRIdentityPage />} />
+          <Route path="/dashboard/orders"       element={<OrdersPage />} />
+          <Route path="/dashboard/payment"      element={<PaymentPage />} />
+          <Route path="/dashboard/delivery"      element={<DeliveryPage />} />
+          <Route path="/dashboard/referral"      element={<ReferralPage />} />
+          <Route path="/dashboard/ai"            element={<AIAssistantPage />} />
+          <Route path="/apply"              element={<ApplicationPage />} />
+          <Route path="/calculator"         element={<CalculatorPage />} />
+          <Route path="/status"             element={<StatusPage />} />
+        </Route>
 
-        {/* Admin */}
-        <Route path="/admin"               element={<AdminPage />} />
-        <Route path="/admin/users"         element={<AdminUsersPage />} />
-        <Route path="/admin/kyc"           element={<AdminKYCPage />} />
-        <Route path="/admin/finance"       element={<AdminFinancePage />} />
-        <Route path="/admin/crystal"       element={<AdminCrystalPage />} />
-        <Route path="/admin/production"    element={<AdminProductionPage />} />
-        <Route path="/admin/audit"         element={<AdminAuditPage />} />
-        <Route path="/admin/analytics"     element={<AdminAnalyticsPage />} />
-        <Route path="/admin/settings"      element={<AdminSettingsPage />} />
-
-        {/* Restricted / review centers */}
-        <Route path="/bank-review" element={<BankReviewPage />} />
-        <Route path="/audit" element={<AuditCenterPage />} />
-        <Route path="/security" element={<SecurityCenterPage />} />
-        <Route path="/data-governance" element={<DataGovernancePage />} />
-        <Route path="/business-continuity" element={<BusinessContinuityPage />} />
+        {/* Authenticated — admin & compliance */}
+        <Route element={<AuthGuard />}>
+          <Route element={<RoleGuard allowedRoles={['admin', 'manager']} />}>
+            <Route path="/admin"               element={<AdminPage />} />
+            <Route path="/admin/users"         element={<AdminUsersPage />} />
+            <Route path="/admin/kyc"           element={<AdminKYCPage />} />
+            <Route path="/admin/finance"       element={<AdminFinancePage />} />
+            <Route path="/admin/crystal"       element={<AdminCrystalPage />} />
+            <Route path="/admin/production"    element={<AdminProductionPage />} />
+            <Route path="/admin/audit"         element={<AdminAuditPage />} />
+            <Route path="/admin/analytics"     element={<AdminAnalyticsPage />} />
+            <Route path="/admin/settings"      element={<AdminSettingsPage />} />
+            <Route path="/bank-review" element={<BankReviewPage />} />
+            <Route path="/audit" element={<AuditCenterPage />} />
+            <Route path="/security" element={<SecurityCenterPage />} />
+            <Route path="/data-governance" element={<DataGovernancePage />} />
+            <Route path="/business-continuity" element={<BusinessContinuityPage />} />
+          </Route>
+        </Route>
       </Routes>
     </>
   )

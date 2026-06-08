@@ -7,12 +7,14 @@ import {
 } from '../../database/entities/coin-application.entity';
 import { User } from '../../database/entities/user.entity';
 import { SubmitApplicationDto } from './dto/submit-application.dto';
+import { UsersService } from '../users/users.service';
 
 @Injectable()
 export class CoinsService {
   constructor(
     @InjectRepository(CoinApplication)
     private readonly apps: Repository<CoinApplication>,
+    private readonly usersService: UsersService,
   ) {}
 
   private nextPublicId() {
@@ -45,6 +47,14 @@ export class CoinsService {
   }
 
   async submit(user: User, dto: SubmitApplicationDto) {
+    if (dto.firstName || dto.lastName || dto.phone) {
+      await this.usersService.updateMe(user.id, {
+        firstName: dto.firstName,
+        lastName: dto.lastName,
+        phone: dto.phone,
+      });
+    }
+
     let publicId = this.nextPublicId();
     while (await this.apps.findOne({ where: { publicId } })) {
       publicId = this.nextPublicId();
@@ -56,8 +66,13 @@ export class CoinsService {
       coinType: dto.coinType,
       quantity: dto.quantity,
       metalPurity: dto.metalPurity ?? 999,
+      metalType: dto.metalType ?? null,
       coinValue: dto.coinValue,
       notes: dto.notes ?? null,
+      financingPreference: dto.financingPreference ?? null,
+      financingTermMonths: dto.financingTermMonths ?? null,
+      deliveryAddress: dto.deliveryAddress ?? null,
+      additionalNotes: dto.additionalNotes ?? null,
       status: 'submitted',
       crystalSent: false,
     });
