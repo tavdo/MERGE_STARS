@@ -1,11 +1,11 @@
 import enPages from './en'
-import trLegal from './tr-legal'
+import officialTerms from './official-terms'
 
 const { faq, contact, howItWorks, authPanel, dashboardHome, admin, ...rest } = enPages
 
 export default {
   ...rest,
-  ...trLegal,
+  ...officialTerms,
   authPanel: { ...authPanel, theNext: 'YENİ', eraOf: 'LÜKS', luxury: 'ÇAĞI', welcome: '★ MERGE STARS\'A HOŞ GELDİNİZ ★', loginTab: '★ GİRİŞ', registerTab: '★ HESAP OLUŞTUR', enterPlatform: 'PLATFORMa GİR', backToHome: '← ANA SAYFA' },
   faq: { ...faq, title: 'SIKÇA SORULAN', titleGold: 'SORULAR', stillHaveQuestions: 'Başka sorularınız var mı?', contactUs: 'İLETİŞİM →' },
   contact: { ...contact, messageSent: 'MESAJ GÖNDERİLDİ', sendButton: 'GÖNDER →' },

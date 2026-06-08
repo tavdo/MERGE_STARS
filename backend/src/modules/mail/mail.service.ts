@@ -6,6 +6,7 @@ import type { Transporter } from 'nodemailer';
 export class MailService {
   private readonly log = new Logger(MailService.name);
   private transporter: Transporter | null = null;
+  private readonly sendTimeoutMs = Number(process.env.SMTP_TIMEOUT_MS ?? 15_000);
 
   private getTransporter(): Transporter | null {
     if (this.transporter) return this.transporter;
@@ -25,8 +26,18 @@ export class MailService {
       port,
       secure: port === 465,
       auth: { user, pass },
+      connectionTimeout: this.sendTimeoutMs,
+      greetingTimeout: this.sendTimeoutMs,
+      socketTimeout: this.sendTimeoutMs,
     });
     return this.transporter;
+  }
+
+  /** Send without blocking the HTTP response (e.g. password reset). */
+  sendInBackground(to: string, subject: string, html: string, text: string) {
+    void this.send(to, subject, html, text).catch((err) => {
+      this.log.error(`Background mail to ${to} failed: ${(err as Error).message}`);
+    });
   }
 
   private fromAddress() {
@@ -47,13 +58,25 @@ export class MailService {
       this.log.log(`[MAIL-DEV] To: ${to} | ${subject}\n${text}`);
       return;
     }
-    await transport.sendMail({
+
+    const sendPromise = transport.sendMail({
       from: this.fromAddress(),
       to,
       subject,
       html,
       text,
     });
+
+    const timeoutPromise = new Promise<never>((_, reject) => {
+      setTimeout(() => reject(new Error(`SMTP timeout after ${this.sendTimeoutMs}ms`)), this.sendTimeoutMs);
+    });
+
+    try {
+      await Promise.race([sendPromise, timeoutPromise]);
+    } catch (err) {
+      this.log.error(`Mail to ${to} failed: ${(err as Error).message}`);
+      throw err;
+    }
   }
 
   async sendVerificationCode(email: string, code: string) {
@@ -79,7 +102,7 @@ export class MailService {
         <p><a href="${resetUrl}" style="color:#f5d78e">${resetUrl}</a></p>
         <p style="color:#888;font-size:12px">Valid for 1 hour.</p>
       </div>`;
-    await this.send(email, subject, html, text);
+    this.sendInBackground(email, subject, html, text);
   }
 
   async sendApplicationReceived(email: string, name: string, appId: string) {

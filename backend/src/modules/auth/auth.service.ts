@@ -236,7 +236,7 @@ export class AuthService {
         this.resetTokens.create({ email: normalized, token, expiresAt, used: false }),
       );
       const base = (process.env.FRONTEND_URL ?? 'http://localhost:5173').replace(/\/$/, '');
-      await this.mail.sendPasswordReset(normalized, `${base}/reset-password?token=${token}`);
+      this.mail.sendPasswordReset(normalized, `${base}/reset-password?token=${token}`);
     }
 
     return { ok: true, message: 'If that email exists, a reset link was sent' };

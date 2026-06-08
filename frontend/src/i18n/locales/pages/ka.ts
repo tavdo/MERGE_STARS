@@ -4,15 +4,13 @@ import kaDashboard from './ka-dashboard'
 import kaAdmin from './ka-admin'
 import kaLegal from './ka-legal'
 import kaPrivacy from './ka-privacy'
-import enLegal from './en-legal'
 
-/** Georgian pages — terms & privacy localized; referral/trust from English source */
+/** Georgian pages — official terms (ka-legal) + privacy localized */
 export default {
   ...kaAuth,
   ...kaPublic,
   ...kaDashboard,
   ...kaAdmin,
-  ...enLegal,
   ...kaLegal,
   ...kaPrivacy,
 }

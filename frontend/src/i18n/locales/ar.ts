@@ -177,8 +177,6 @@ export default {
     referralPolicyTitle: 'سياسة الإحالة',
     privacyLink: 'سياسة الخصوصية',
     referralLink: 'سياسة الإحالة',
-    englishOnlyNotice:
-      'النص القانوني الكامل متاح حاليًا باللغة الإنجليزية. تواصل مع legal@mergestars.com للحصول على ترجمات معتمدة.',
   },
   common: {
     download: 'تنزيل',

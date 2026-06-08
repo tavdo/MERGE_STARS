@@ -1,6 +1,10 @@
 # MERGE STARS — Task Board
 
+## 📌 Next (2026-06-09)
 
+- [ ] 🔴 **SMTP / Forgot password 504** — VPS `.env` Gmail App Password, test port 587/465, deploy mail timeout fix
+
+---
 
 ## PHASE 1 — Foundation 
 

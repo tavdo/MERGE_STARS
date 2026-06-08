@@ -179,8 +179,6 @@ export default {
     referralPolicyTitle: 'REFERRAL POLICY',
     privacyLink: 'Privacy Policy',
     referralLink: 'Referral Policy',
-    englishOnlyNotice:
-      'Full legal text is currently provided in English. Contact legal@mergestars.com for certified translations.',
   },
   common: {
     download: 'DOWNLOAD',

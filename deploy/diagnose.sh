@@ -38,10 +38,10 @@ else
   err "merge-stars-backend NOT running — bash deploy/go-live.sh"
   journalctl -u merge-stars-backend -n 5 --no-pager 2>/dev/null || true
 fi
-if curl -sf --max-time 2 http://127.0.0.1:3000/ >/dev/null 2>&1; then
-  ok "backend responds on :3000"
+if curl -sf --max-time 2 http://127.0.0.1:3000/api/health >/dev/null 2>&1; then
+  ok "backend responds on :3000/api/health"
 else
-  warn "backend not responding on http://127.0.0.1:3000/"
+  warn "backend not responding on http://127.0.0.1:3000/api/health"
 fi
 echo ""
 
