@@ -116,11 +116,18 @@ export default function Footer() {
           <div className="footer-link-col sm:col-span-2 lg:col-span-1">
             <h4 className="landing-sans-head mb-6">{t('footer.contact')}</h4>
             <ul className="flex flex-col gap-3">
-              {['info@mergestars.com', '+1 (555) 123 4567', 'Global Headquarters'].map((text) => (
-                <li key={text}>
-                  <span className="footer-nav-link footer-nav-link--static">{text}</span>
-                </li>
-              ))}
+              <li>
+                <a href={`mailto:${t('footer.contactEmail')}`} className="footer-nav-link">{t('footer.contactEmail')}</a>
+              </li>
+              <li>
+                <a href={`tel:${t('footer.contactPhone').replace(/\s/g, '')}`} className="footer-nav-link">{t('footer.contactPhone')}</a>
+              </li>
+              <li>
+                <span className="footer-nav-link footer-nav-link--static">{t('footer.contactAddress')}</span>
+              </li>
+              <li>
+                <span className="footer-nav-link footer-nav-link--static">{t('footer.companyId')}</span>
+              </li>
             </ul>
           </div>
         </div>
@@ -128,7 +135,7 @@ export default function Footer() {
 
       <div className="footer-bottom px-8 lg:px-16 py-5 flex flex-col sm:flex-row items-center justify-between gap-2 max-w-[1440px] mx-auto border-t border-[rgba(212,175,55,0.06)]">
         <p className="text-[9px] tracking-[0.12em] text-neutral-600">
-          © {year} MERGE STARS. {t('footer.rights')}
+          © {year} {t('footer.legalName')}. {t('footer.rights')}
         </p>
         <p className="text-[9px] tracking-[0.12em] text-neutral-600">{t('footer.slogan')}</p>
       </div>

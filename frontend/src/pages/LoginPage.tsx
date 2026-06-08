@@ -8,7 +8,7 @@ import { getApiErrorMessage } from '@/shared/utils/apiError'
 type Tab = 'login' | 'register'
 type Step = 1 | 2 | 3
 
-const TERM_COUNT = 6
+const TERM_COUNT = 3
 
 export default function LoginPage() {
   const { t } = useTranslation()
@@ -49,13 +49,6 @@ export default function LoginPage() {
   ]
 
   const stepLabel = step === 1 ? t('auth.step1') : step === 2 ? t('auth.step2') : t('auth.step3')
-
-  const termTexts = [
-    t('auth.notLender'),
-    t('auth.crystalPartner'),
-    t('auth.fundingNotGuaranteed'),
-    t('auth.infoAccurate'),
-  ]
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault()
@@ -301,12 +294,10 @@ export default function LoginPage() {
                     </span>
                   </label>
                 ))}
-                {termTexts.map((text, i) => (
-                  <label key={text} className="flex items-start gap-3 cursor-pointer">
-                    <input type="checkbox" checked={checked[i + 2]} onChange={() => toggleCheck(i + 2)} className="mt-0.5 accent-[#c9a84c] shrink-0" />
-                    <span className="text-[12px] leading-5" style={{ color: 'rgba(255,255,255,0.6)' }}>{text}</span>
-                  </label>
-                ))}
+                <label className="flex items-start gap-3 cursor-pointer">
+                  <input type="checkbox" checked={checked[2]} onChange={() => toggleCheck(2)} className="mt-0.5 accent-[#c9a84c] shrink-0" />
+                  <span className="text-[12px] leading-5" style={{ color: 'rgba(255,255,255,0.6)' }}>{t('auth.consentFull')}</span>
+                </label>
                 <div className="flex gap-3 mt-4">
                   <button onClick={() => setStep(2)} className="gold-btn-outline flex-1 justify-center" style={{ borderRadius: '2px' }}>‹ {t('auth.back')}</button>
                   <button type="button" disabled={!allChecked || register.isPending} onClick={handleRegister} className="gold-btn flex-1 justify-center" style={{ borderRadius: '2px', opacity: allChecked && !register.isPending ? 1 : 0.4, cursor: allChecked ? 'pointer' : 'not-allowed' }}>{register.isPending ? '…' : t('auth.activate')}</button>

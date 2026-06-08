@@ -16,6 +16,11 @@ export default function PrivacyPage() {
           <p style={{ fontSize: '11px', fontWeight: 700, letterSpacing: '0.3em', color: '#c9a84c', marginBottom: '16px' }}>{t('privacyPage.kicker')}</p>
           <h1 style={{ fontSize: 'clamp(28px,4vw,48px)', fontWeight: 900, color: '#fff', lineHeight: 1.1 }}>{t('privacyPage.title')} {t('privacyPage.titleGold')}</h1>
           <p style={{ fontSize: '12px', color: 'rgba(255,255,255,0.35)', marginTop: '16px' }}>{t('privacyPage.lastUpdated')}</p>
+          {t('privacyPage.intro', { defaultValue: '' }) && (
+            <p style={{ fontSize: '13px', color: 'rgba(255,255,255,0.45)', marginTop: '20px', lineHeight: 1.7, maxWidth: '640px', marginInline: 'auto' }}>
+              {t('privacyPage.intro')}
+            </p>
+          )}
         </section>
         <section style={{ maxWidth: '800px', margin: '0 auto', padding: '0 32px 80px', display: 'flex', flexDirection: 'column', gap: '24px' }}>
           {sections.map((s) => (

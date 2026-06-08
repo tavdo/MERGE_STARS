@@ -42,6 +42,11 @@ export default {
     privacy: 'Privacy Policy',
     rights: 'All Rights Reserved.',
     slogan: 'Where Luxury Meets Innovation',
+    legalName: 'MERGE STARS LLC „Merge Varskvlavebi"',
+    companyId: 'ID 406286424',
+    contactEmail: 'Mergestar01@gmail.com',
+    contactPhone: '+995 557 513 613',
+    contactAddress: 'Tbilisi, Isani District, B. Gabriels Salosi Ave. N120',
   },
   landing: {
     heroKicker: 'The Next Era Of',
@@ -162,10 +167,7 @@ export default {
     termsLink: 'Terms & Conditions',
     agreePrivacy: 'I agree to the',
     privacyLink: 'Privacy Policy',
-    notLender: 'I understand that MERGE STARS is not a lender or financial institution.',
-    crystalPartner: 'I understand that funding is provided by our financial partner (Crystal).',
-    fundingNotGuaranteed: 'I agree that funding approval is subject to evaluation and not guaranteed.',
-    infoAccurate: 'I confirm that all information provided is accurate.',
+    consentFull: 'I confirm that I am of legal age, have read and agree to the Terms & Conditions and Privacy Policy of MERGE STARS LLC „Merge Varskvlavebi". I hereby declare my free and informed consent to the processing of my personal data for registration and platform services.',
   },
   legal: {
     legal: 'LEGAL',

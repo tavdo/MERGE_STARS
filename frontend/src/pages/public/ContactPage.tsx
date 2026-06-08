@@ -62,8 +62,8 @@ export default function ContactPage() {
   const subjectKeys = ['general', 'order', 'kyc', 'payment', 'partnership', 'technical'] as const
 
   const cards = [
-    { type: 'email' as const, titleKey: 'emailTitle', lines: ['info@mergestars.com', 'support@mergestars.com'] },
-    { type: 'phone' as const, titleKey: 'phoneTitle', lines: ['+1 (555) 123 4567', t('contact.phoneHours')] },
+    { type: 'email' as const, titleKey: 'emailTitle', lines: [t('contact.emailPrimary'), t('contact.emailSecondary')] },
+    { type: 'phone' as const, titleKey: 'phoneTitle', lines: [t('contact.phonePrimary'), t('contact.phoneHours')] },
     { type: 'location' as const, titleKey: 'hqTitle', lines: [t('contact.hqLine1'), t('contact.hqLine2')] },
     { type: 'clock' as const, titleKey: 'hoursTitle', lines: [t('contact.aiSupport'), t('contact.humanSupport')] },
   ]
