@@ -41,7 +41,7 @@ export default {
     fundingNotGuaranteed: 'L\'approbation du financement n\'est pas garantie.',
     infoAccurate: 'Je confirme l\'exactitude de mes informations.',
   },
-  legal: { legal: 'JURIDIQUE', lastUpdated: 'Dernière révision : mai 2026 · Version 2.0', termsTitle: 'CONDITIONS GÉNÉRALES', termsIntro: 'Veuillez lire ces conditions avant de vous inscrire ou commander sur MERGE STARS.', privacyTitle: 'POLITIQUE DE CONFIDENTIALITÉ', referralPolicyTitle: 'POLITIQUE DE PARRAINAGE', privacyLink: 'Confidentialité', referralLink: 'Parrainage' },
+  legal: { legal: 'JURIDIQUE', lastUpdated: 'Dernière révision : 2026 · Version 3.0', termsTitle: 'CONDITIONS GÉNÉRALES', termsIntro: 'LLC „Merge Varskvlavebi" (ID 406286424). Veuillez lire ces conditions intégralement avant de vous inscrire ou commander. En cas de désaccord, cessez immédiatement d\'utiliser la Plateforme.', privacyTitle: 'POLITIQUE DE CONFIDENTIALITÉ', referralPolicyTitle: 'POLITIQUE DE PARRAINAGE', privacyLink: 'Confidentialité', referralLink: 'Parrainage' },
   common: { download: 'TÉLÉCHARGER', share: 'PARTAGER', copy: 'COPIER', send: 'ENVOYER', save: 'Enregistrer', cancel: 'Annuler', loading: 'Chargement…' },
   ai: {
     kicker: 'ASSISTANT IA',

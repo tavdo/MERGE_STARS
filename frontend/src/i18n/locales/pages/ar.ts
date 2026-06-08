@@ -3,7 +3,6 @@ import arPublic from './ar-public'
 import arDashboard from './ar-dashboard'
 import arAdmin from './ar-admin'
 import arLegal from './ar-legal'
-import officialTerms from './official-terms'
 import arRemaining from './ar-remaining'
 
 export default {
@@ -12,6 +11,5 @@ export default {
   ...arDashboard,
   ...arAdmin,
   ...arLegal,
-  ...officialTerms,
   ...arRemaining,
 }

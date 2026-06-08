@@ -171,10 +171,10 @@ export default {
   },
   legal: {
     legal: 'LEGAL',
-    lastUpdated: 'Last revised: May 2026 · Version 2.0',
+    lastUpdated: 'Last revised: 2026 · Version 3.0',
     termsTitle: 'TERMS & CONDITIONS',
     termsIntro:
-      'Please read these Terms carefully before registering, applying, or placing an order on MERGE STARS.',
+      'LLC „Merge Varskvlavebi" (ID 406286424). Please read these Terms fully before registering or placing an order. If you do not agree, stop using the Platform immediately.',
     privacyTitle: 'PRIVACY POLICY',
     referralPolicyTitle: 'REFERRAL POLICY',
     privacyLink: 'Privacy Policy',
