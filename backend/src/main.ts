@@ -1,9 +1,18 @@
 import { NestFactory } from '@nestjs/core';
 import { ValidationPipe } from '@nestjs/common';
 import { IoAdapter } from '@nestjs/platform-socket.io';
+import * as Sentry from '@sentry/nestjs';
 import cookieParser = require('cookie-parser');
 import { AppModule } from './app.module';
 import { AuditService } from './audit/audit.service';
+
+if (process.env.SENTRY_DSN) {
+  Sentry.init({
+    dsn: process.env.SENTRY_DSN,
+    environment: process.env.NODE_ENV ?? 'development',
+    tracesSampleRate: Number(process.env.SENTRY_TRACES_SAMPLE_RATE ?? 0.1),
+  });
+}
 
 function parseCorsOrigins(raw: string | undefined): string[] {
   if (!raw?.trim()) {

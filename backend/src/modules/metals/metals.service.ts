@@ -6,10 +6,13 @@ import { MetalPrice } from '../../database/entities/metal-price.entity';
 
 type Spot = { metal: string; priceUsd: number; changePct: number };
 
+type MetalsGatewayLike = { broadcastPrices(data: unknown): void };
+
 @Injectable()
 export class MetalsService implements OnModuleInit {
   private readonly log = new Logger(MetalsService.name);
   private cache: Spot[] = [];
+  private gateway: MetalsGatewayLike | null = null;
 
   constructor(
     @InjectRepository(MetalPrice)
@@ -18,6 +21,10 @@ export class MetalsService implements OnModuleInit {
 
   async onModuleInit() {
     await this.refreshPrices();
+  }
+
+  setGateway(gateway: MetalsGatewayLike) {
+    this.gateway = gateway;
   }
 
   private readonly troyOzGrams = 31.1034768;
@@ -79,6 +86,7 @@ export class MetalsService implements OnModuleInit {
         );
       }
       this.cache = spots;
+      this.gateway?.broadcastPrices(this.getLive());
     } catch (e) {
       this.log.warn(`Metal price fetch failed: ${(e as Error).message}`);
       if (!this.cache.length) {

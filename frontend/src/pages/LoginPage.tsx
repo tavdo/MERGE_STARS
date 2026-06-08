@@ -1,8 +1,10 @@
 import { useEffect, useState } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
+import { useMutation } from '@tanstack/react-query'
 import LanguageSwitcher from '../components/LanguageSwitcher'
 import { useLogin, useRegister } from '@/features/auth/hooks/useAuth'
+import { authApi } from '@/features/auth/api/auth.api'
 import { getApiErrorMessage } from '@/shared/utils/apiError'
 
 type Tab = 'login' | 'register'
@@ -36,6 +38,18 @@ export default function LoginPage() {
   const [email, setEmail] = useState('')
   const [regPassword, setRegPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
+  const [verificationCode, setVerificationCode] = useState('')
+  const [codeSent, setCodeSent] = useState(false)
+
+  const sendCode = useMutation({
+    mutationFn: (addr: string) => authApi.sendEmailVerificationCode(addr).then((r) => r.data),
+    onSuccess: () => {
+      setCodeSent(true)
+      setAuthError(null)
+    },
+    onError: (err) =>
+      setAuthError(getApiErrorMessage(err, t('authPanel.sendCodeFailed', { defaultValue: 'Could not send verification code' }))),
+  })
 
   const toggleCheck = (i: number) =>
     setChecked((prev) => prev.map((v, idx) => (idx === i ? !v : v)))
@@ -88,8 +102,21 @@ export default function LoginPage() {
       setAuthError(t('authPanel.passwordMismatch', { defaultValue: 'Passwords do not match' }))
       return
     }
+    if (!/^\d{6}$/.test(verificationCode.trim())) {
+      setAuthError(t('authPanel.codeRequired', { defaultValue: 'Enter the 6-digit verification code sent to your email' }))
+      return
+    }
     setAuthError(null)
     setStep(3)
+  }
+
+  const handleSendCode = () => {
+    const addr = email.trim().toLowerCase()
+    if (!addr || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(addr)) {
+      setAuthError(t('authPanel.emailInvalid', { defaultValue: 'Enter a valid email address' }))
+      return
+    }
+    sendCode.mutate(addr)
   }
 
   const handleRegister = () => {
@@ -103,6 +130,7 @@ export default function LoginPage() {
         phone: phone.trim() ? `${phoneCode}${phone.replace(/\D/g, '')}` : undefined,
         email: email.trim().toLowerCase(),
         password: regPassword,
+        verificationCode: verificationCode.trim(),
         referralCode: searchParams.get('ref')?.trim() || undefined,
       },
       {
@@ -265,7 +293,21 @@ export default function LoginPage() {
               <div className="flex flex-col gap-4">
                 <div>
                   <label className="auth-field-label">{t('auth.email')}</label>
-                  <input className="gold-input" type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder={t('authPanel.emailPlaceholder')} required />
+                  <div className="flex gap-2">
+                    <input className="gold-input flex-1" type="email" value={email} onChange={(e) => { setEmail(e.target.value); setCodeSent(false) }} placeholder={t('authPanel.emailPlaceholder')} required />
+                    <button type="button" onClick={handleSendCode} disabled={sendCode.isPending} className="gold-btn-outline shrink-0 px-4" style={{ borderRadius: '2px', whiteSpace: 'nowrap' }}>
+                      {sendCode.isPending ? '…' : t('authPanel.sendCode', { defaultValue: 'Send code' })}
+                    </button>
+                  </div>
+                  {codeSent && (
+                    <p className="text-[11px] mt-1" style={{ color: '#86efac' }}>
+                      {t('authPanel.codeSent', { defaultValue: 'Verification code sent — check your inbox' })}
+                    </p>
+                  )}
+                </div>
+                <div>
+                  <label className="auth-field-label">{t('authPanel.verificationCode', { defaultValue: 'Verification code' })}</label>
+                  <input className="gold-input" inputMode="numeric" maxLength={6} value={verificationCode} onChange={(e) => setVerificationCode(e.target.value.replace(/\D/g, '').slice(0, 6))} placeholder={t('authPanel.codePlaceholder')} required />
                 </div>
                 <div>
                   <label className="auth-field-label">{t('auth.password')}</label>

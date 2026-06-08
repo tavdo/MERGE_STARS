@@ -1,10 +1,9 @@
 import { useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { useQuery } from '@tanstack/react-query'
 import DashboardLayout from '../components/DashboardLayout'
 import CustomSelect from '../components/CustomSelect'
-import { metalsApi } from '@/features/coins/api/metals.api'
+import { useLiveMetalPrices } from '@/features/coins/hooks/useLiveMetalPrice'
 import {
   MFG_FEE_USD,
   PLATFORM_FEE_USD,
@@ -22,11 +21,7 @@ export default function CalculatorPage() {
   const [weight, setWeight] = useState(1000)
   const [purity, setPurity] = useState(99.9)
 
-  const { data: metals } = useQuery({
-    queryKey: ['metals-live'],
-    queryFn: () => metalsApi.getLive().then((r) => r.data.data),
-    refetchInterval: 60_000,
-  })
+  const metals = useLiveMetalPrices()
 
   const metal = metalForCoinIndex(coinIdx)
   const spot = metals?.find((m) => m.metal === metal)?.priceUsd ?? (metal === 'gold' ? 139.1 : metal === 'platinum' ? 32.15 : 1.09)

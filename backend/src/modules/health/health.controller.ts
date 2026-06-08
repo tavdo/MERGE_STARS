@@ -1,8 +1,10 @@
 import { Controller, Get } from '@nestjs/common';
+import { SkipThrottle } from '@nestjs/throttler';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
 import { MailService } from '../mail/mail.service';
 
+@SkipThrottle()
 @Controller('health')
 export class HealthController {
   constructor(

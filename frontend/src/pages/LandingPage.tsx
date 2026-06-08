@@ -1,12 +1,11 @@
 import { Suspense } from 'react'
 import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { useQuery } from '@tanstack/react-query'
 import Navbar from '../components/Navbar'
 import Footer from '../components/Footer'
 import Hero3DCoin, { landingCoinModelUrl } from '../components/Hero3DCoin'
 import { useGLTF } from '@react-three/drei'
-import { metalsApi } from '@/features/coins/api/metals.api'
+import { useLiveMetalPrices } from '@/features/coins/hooks/useLiveMetalPrice'
 
 useGLTF.preload(landingCoinModelUrl)
 import {
@@ -63,11 +62,7 @@ function PlayIcon() {
 
 export default function LandingPage() {
   const { t } = useTranslation()
-  const { data: metals } = useQuery({
-    queryKey: ['metals-live'],
-    queryFn: () => metalsApi.getLive().then((r) => r.data.data),
-    refetchInterval: 60_000,
-  })
+  const metals = useLiveMetalPrices()
 
   const metalCards = METAL_KEYS.map(({ metal, nameKey }) => {
     const live = metals?.find((m) => m.metal === metal)

@@ -34,6 +34,7 @@ export interface RegisterPayload {
   email: string
   password: string
   referralCode?: string
+  verificationCode?: string
 }
 
 export interface AuthUser {

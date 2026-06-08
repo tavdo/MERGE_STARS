@@ -1,17 +1,12 @@
 import { useState, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
-import { useQuery } from '@tanstack/react-query'
 import Navbar from '../../components/Navbar'
 import Footer from '../../components/Footer'
-import { metalsApi } from '@/features/coins/api/metals.api'
+import { useLiveMetalPrices } from '@/features/coins/hooks/useLiveMetalPrice'
 
 export default function PriceIndicatorPage() {
   const { t } = useTranslation()
-  const { data: metals } = useQuery({
-    queryKey: ['metals-live'],
-    queryFn: () => metalsApi.getLive().then((r) => r.data.data),
-    refetchInterval: 60_000,
-  })
+  const metals = useLiveMetalPrices()
 
   const silver = metals?.find((m) => m.metal === 'silver')
   const gold = metals?.find((m) => m.metal === 'gold')

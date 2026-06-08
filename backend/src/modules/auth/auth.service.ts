@@ -152,6 +152,14 @@ export class AuthService {
       throw new ConflictException('Personal ID already registered — one account per ID');
     }
 
+    const emailVerify = process.env.EMAIL_VERIFY !== 'false';
+    if (emailVerify) {
+      if (!dto.verificationCode?.trim()) {
+        throw new BadRequestException('Email verification code is required');
+      }
+      await this.consumeVerificationCode(email, dto.verificationCode.trim());
+    }
+
     const ids = await this.nextUserIds();
     if (await this.users.findOne({ where: { mergeId: ids.mergeId } })) {
       throw new ConflictException('Could not allocate user ID, try again');

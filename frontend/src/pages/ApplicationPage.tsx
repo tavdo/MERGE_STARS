@@ -1,12 +1,12 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { useMutation, useQuery } from '@tanstack/react-query'
+import { useMutation } from '@tanstack/react-query'
 import DashboardLayout from '../components/DashboardLayout'
 import FlowStepper from '../components/FlowStepper'
 import CustomSelect from '../components/CustomSelect'
 import { coinsApi } from '@/features/coins/api/coins.api'
-import { metalsApi } from '@/features/coins/api/metals.api'
+import { useLiveMetalPrices } from '@/features/coins/hooks/useLiveMetalPrice'
 import { useAuthStore } from '@/features/auth/store/auth.store'
 import { estimateCoinValue, financingPreview, metalForCoinIndex } from '@/shared/utils/coinPricing'
 
@@ -44,10 +44,7 @@ export default function ApplicationPage() {
   const [confirmed, setConfirmed] = useState(false)
   const navigate = useNavigate()
 
-  const { data: metals } = useQuery({
-    queryKey: ['metals-live'],
-    queryFn: () => metalsApi.getLive().then((r) => r.data.data),
-  })
+  const metals = useLiveMetalPrices()
 
   useEffect(() => {
     if (!authUser) return
