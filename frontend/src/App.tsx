@@ -3,6 +3,8 @@ import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-route
 // Core pages
 import LandingPage       from './pages/LandingPage'
 import LoginPage         from './pages/LoginPage'
+import ForgotPasswordPage from './pages/ForgotPasswordPage'
+import ResetPasswordPage from './pages/ResetPasswordPage'
 import DashboardPage     from './pages/DashboardPage'
 import ApplicationPage   from './pages/ApplicationPage'
 import CalculatorPage    from './pages/CalculatorPage'
@@ -84,6 +86,8 @@ function AppRoutes() {
         {/* Auth */}
         <Route path="/login"           element={<LoginPage />} />
         <Route path="/register"        element={<Navigate to="/login?tab=register" replace />} />
+        <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+        <Route path="/reset-password"  element={<ResetPasswordPage />} />
 
         {/* User */}
         <Route path="/dashboard"              element={<DashboardPage />} />

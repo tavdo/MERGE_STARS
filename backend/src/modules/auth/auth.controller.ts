@@ -9,7 +9,13 @@ import {
 } from '@nestjs/common';
 import { Response, Request } from 'express';
 import { AuthService } from './auth.service';
-import { LoginDto, RegisterDto } from './dto/auth.dto';
+import {
+  ForgotPasswordDto,
+  LoginDto,
+  RegisterDto,
+  ResetPasswordDto,
+  SendVerificationCodeDto,
+} from './dto/auth.dto';
 
 const REFRESH_COOKIE = 'refresh_token';
 
@@ -32,6 +38,12 @@ function clearRefreshCookie(res: Response) {
 export class AuthController {
   constructor(private readonly auth: AuthService) {}
 
+  @Post('send-verification-code')
+  @UsePipes(new ValidationPipe({ whitelist: true, transform: true }))
+  sendVerificationCode(@Body() dto: SendVerificationCodeDto) {
+    return this.auth.sendVerificationCode(dto.email);
+  }
+
   @Post('register')
   @UsePipes(new ValidationPipe({ whitelist: true, transform: true }))
   async register(
@@ -49,6 +61,18 @@ export class AuthController {
     const result = await this.auth.login(dto);
     setRefreshCookie(res, result.refreshToken);
     return { accessToken: result.accessToken, user: result.user };
+  }
+
+  @Post('forgot-password')
+  @UsePipes(new ValidationPipe({ whitelist: true, transform: true }))
+  forgotPassword(@Body() dto: ForgotPasswordDto) {
+    return this.auth.forgotPassword(dto.email);
+  }
+
+  @Post('reset-password')
+  @UsePipes(new ValidationPipe({ whitelist: true, transform: true }))
+  resetPassword(@Body() dto: ResetPasswordDto) {
+    return this.auth.resetPassword(dto.token, dto.password);
   }
 
   @Post('refresh')

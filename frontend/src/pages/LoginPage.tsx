@@ -3,6 +3,7 @@ import { Link, useSearchParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import LanguageSwitcher from '../components/LanguageSwitcher'
 import { useLogin, useRegister } from '@/features/auth/hooks/useAuth'
+import { authApi } from '@/features/auth/api/auth.api'
 import { getApiErrorMessage } from '@/shared/utils/apiError'
 
 type Tab = 'login' | 'register'
@@ -36,6 +37,9 @@ export default function LoginPage() {
   const [email, setEmail] = useState('')
   const [regPassword, setRegPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
+  const [verificationCode, setVerificationCode] = useState('')
+  const [codeSending, setCodeSending] = useState(false)
+  const [codeSent, setCodeSent] = useState(false)
 
   const toggleCheck = (i: number) =>
     setChecked((prev) => prev.map((v, idx) => (idx === i ? !v : v)))
@@ -74,13 +78,44 @@ export default function LoginPage() {
       setAuthError(t('authPanel.nameRequired', { defaultValue: 'First and last name are required' }))
       return
     }
+    if (!personalId.trim()) {
+      setAuthError(t('authPanel.personalIdRequired', { defaultValue: 'Personal ID is required' }))
+      return
+    }
     setAuthError(null)
+    setVerificationCode('')
+    setCodeSent(false)
     setStep(2)
+  }
+
+  const sendEmailCode = async () => {
+    if (!email.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) {
+      setAuthError(t('authPanel.emailInvalid', { defaultValue: 'Enter a valid email address' }))
+      return
+    }
+    setAuthError(null)
+    setCodeSending(true)
+    try {
+      await authApi.sendEmailVerificationCode(email.trim().toLowerCase())
+      setCodeSent(true)
+    } catch (err) {
+      setAuthError(getApiErrorMessage(err, t('authPanel.codeSendFailed', { defaultValue: 'Could not send verification code' })))
+    } finally {
+      setCodeSending(false)
+    }
   }
 
   const goToRegisterStep3 = () => {
     if (!email.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) {
       setAuthError(t('authPanel.emailInvalid', { defaultValue: 'Enter a valid email address' }))
+      return
+    }
+    if (!codeSent) {
+      setAuthError(t('authPanel.codeRequired', { defaultValue: 'Send and enter the email verification code' }))
+      return
+    }
+    if (!/^\d{6}$/.test(verificationCode.trim())) {
+      setAuthError(t('authPanel.codeInvalid', { defaultValue: 'Enter the 6-digit code from your email' }))
       return
     }
     if (regPassword.length < 8) {
@@ -102,10 +137,11 @@ export default function LoginPage() {
       {
         firstName: firstName.trim(),
         lastName: lastName.trim(),
-        personalId: personalId.trim() || undefined,
+        personalId: personalId.trim(),
         phone: phone.trim() ? `${phoneCode}${phone.replace(/\D/g, '')}` : undefined,
         email: email.trim().toLowerCase(),
         password: regPassword,
+        verificationCode: verificationCode.trim(),
       },
       {
         onError: (err) =>
@@ -212,7 +248,7 @@ export default function LoginPage() {
                 <input type="checkbox" className="accent-[#c9a84c]" />
                 <span className="text-[12px]" style={{ color: 'rgba(255,255,255,0.5)' }}>{t('authPanel.rememberMe')}</span>
               </label>
-              <button type="button" className="text-[12px]" style={{ color: '#c9a84c' }}>{t('authPanel.forgotPassword')}</button>
+              <Link to="/forgot-password" className="text-[12px]" style={{ color: '#c9a84c', textDecoration: 'none' }}>{t('authPanel.forgotPassword')}</Link>
             </div>
             <button type="submit" disabled={login.isPending} className="gold-btn w-full justify-center mt-2">{login.isPending ? '…' : t('authPanel.enterPlatform')}</button>
             <p className="text-center text-[12px]" style={{ color: 'rgba(255,255,255,0.4)' }}>
@@ -248,7 +284,7 @@ export default function LoginPage() {
                 </div>
                 <div>
                   <label className="text-[10px] font-semibold tracking-widest block mb-2" style={{ color: 'rgba(255,255,255,0.4)' }}>{t('auth.personalId')}</label>
-                  <input className="gold-input" value={personalId} onChange={(e) => setPersonalId(e.target.value)} placeholder={t('authPanel.personalIdPlaceholder')} />
+                  <input className="gold-input" value={personalId} onChange={(e) => setPersonalId(e.target.value)} placeholder={t('authPanel.personalIdPlaceholder')} required />
                 </div>
                 <div>
                   <label className="text-[10px] font-semibold tracking-widest block mb-2" style={{ color: 'rgba(255,255,255,0.4)' }}>{t('auth.phone')}</label>
@@ -278,6 +314,33 @@ export default function LoginPage() {
                 <div>
                   <label className="text-[10px] font-semibold tracking-widest block mb-2" style={{ color: 'rgba(255,255,255,0.4)' }}>{t('auth.confirmPassword')}</label>
                   <input className="gold-input" type="password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} placeholder={t('authPanel.passwordConfirmPlaceholder')} required minLength={8} />
+                </div>
+                <div>
+                  <label className="text-[10px] font-semibold tracking-widest block mb-2" style={{ color: 'rgba(255,255,255,0.4)' }}>{t('auth.verificationCode')}</label>
+                  <div className="flex gap-2">
+                    <input
+                      className="gold-input"
+                      value={verificationCode}
+                      onChange={(e) => setVerificationCode(e.target.value.replace(/\D/g, '').slice(0, 6))}
+                      placeholder={t('authPanel.codePlaceholder')}
+                      inputMode="numeric"
+                      maxLength={6}
+                    />
+                    <button
+                      type="button"
+                      onClick={sendEmailCode}
+                      disabled={codeSending}
+                      className="gold-btn-outline shrink-0"
+                      style={{ borderRadius: '2px', whiteSpace: 'nowrap' }}
+                    >
+                      {codeSending ? '…' : codeSent ? t('auth.resendCode', { defaultValue: 'Resend' }) : t('auth.sendCode')}
+                    </button>
+                  </div>
+                  {codeSent && (
+                    <p className="text-[10px] mt-2" style={{ color: 'rgba(201,168,76,0.7)' }}>
+                      {t('authPanel.codeSent', { defaultValue: 'Code sent to your email' })}
+                    </p>
+                  )}
                 </div>
                 <div className="flex gap-3 mt-2">
                   <button type="button" onClick={() => setStep(1)} className="gold-btn-outline flex-1 justify-center" style={{ borderRadius: '2px' }}>‹ {t('auth.back')}</button>

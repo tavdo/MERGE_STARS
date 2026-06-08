@@ -15,8 +15,14 @@ export const authApi = {
 
   me: () => api.get<ApiResponse<AuthUser>>('/users/me'),
 
-  sendVerificationCode: (phone: string) =>
-    api.post('/auth/send-code', { phone }),
+  sendEmailVerificationCode: (email: string) =>
+    api.post<ApiResponse<{ ok: boolean; message: string }>>('/auth/send-verification-code', { email }),
+
+  forgotPassword: (email: string) =>
+    api.post<ApiResponse<{ ok: boolean; message: string }>>('/auth/forgot-password', { email }),
+
+  resetPassword: (token: string, password: string) =>
+    api.post<ApiResponse<{ ok: boolean; message: string }>>('/auth/reset-password', { token, password }),
 
   refresh: () =>
     api.post<ApiResponse<AuthTokens>>('/auth/refresh'),

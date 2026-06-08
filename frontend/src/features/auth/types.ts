@@ -29,10 +29,11 @@ export interface RegisterStep3Payload {
 export interface RegisterPayload {
   firstName: string
   lastName: string
-  personalId?: string
+  personalId: string
   phone?: string
   email: string
   password: string
+  verificationCode: string
 }
 
 export interface AuthUser {

@@ -3,6 +3,7 @@ import {
   IsNotEmpty,
   IsOptional,
   IsString,
+  Length,
   MinLength,
 } from 'class-validator';
 
@@ -29,9 +30,9 @@ export class RegisterDto {
   @IsNotEmpty()
   lastName: string;
 
-  @IsOptional()
   @IsString()
-  personalId?: string;
+  @IsNotEmpty()
+  personalId: string;
 
   @IsOptional()
   @IsString()
@@ -39,6 +40,30 @@ export class RegisterDto {
 
   @IsEmail()
   email: string;
+
+  @IsString()
+  @MinLength(8)
+  password: string;
+
+  @IsString()
+  @Length(6, 6)
+  verificationCode: string;
+}
+
+export class SendVerificationCodeDto {
+  @IsEmail()
+  email: string;
+}
+
+export class ForgotPasswordDto {
+  @IsEmail()
+  email: string;
+}
+
+export class ResetPasswordDto {
+  @IsString()
+  @IsNotEmpty()
+  token: string;
 
   @IsString()
   @MinLength(8)

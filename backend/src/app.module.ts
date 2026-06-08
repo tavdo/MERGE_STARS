@@ -16,6 +16,9 @@ import { MetalPrice } from './database/entities/metal-price.entity';
 import { RefreshToken } from './database/entities/refresh-token.entity';
 import { ContactMessage } from './database/entities/contact-message.entity';
 import { Referral } from './database/entities/referral.entity';
+import { EmailVerificationCode } from './database/entities/email-verification-code.entity';
+import { PasswordResetToken } from './database/entities/password-reset-token.entity';
+import { MailModule } from './modules/mail/mail.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { UsersModule } from './modules/users/users.module';
 import { CoinsModule } from './modules/coins/coins.module';
@@ -30,6 +33,7 @@ import { HealthModule } from './modules/health/health.module';
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
+    MailModule,
     ScheduleModule.forRoot(),
     TypeOrmModule.forRoot(
       process.env.DATABASE_URL
@@ -44,6 +48,8 @@ import { HealthModule } from './modules/health/health.module';
               RefreshToken,
               ContactMessage,
               Referral,
+              EmailVerificationCode,
+              PasswordResetToken,
             ],
             synchronize: process.env.DB_SYNC !== 'false',
             ssl: process.env.DB_SSL === 'true' ? { rejectUnauthorized: false } : false,
@@ -63,6 +69,8 @@ import { HealthModule } from './modules/health/health.module';
               RefreshToken,
               ContactMessage,
               Referral,
+              EmailVerificationCode,
+              PasswordResetToken,
             ],
             synchronize: process.env.DB_SYNC !== 'false',
             ssl: process.env.DB_SSL === 'true' ? { rejectUnauthorized: false } : false,

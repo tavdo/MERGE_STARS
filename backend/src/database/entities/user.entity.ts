@@ -29,7 +29,7 @@ export class User {
   @Column({ name: 'last_name' })
   lastName: string;
 
-  @Column({ name: 'personal_id', type: 'varchar', nullable: true })
+  @Column({ name: 'personal_id', type: 'varchar', nullable: true, unique: true })
   personalId: string | null;
 
   @Column({ name: 'merge_id', unique: true })

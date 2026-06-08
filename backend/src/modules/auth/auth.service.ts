@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   ConflictException,
   Injectable,
   UnauthorizedException,
@@ -7,9 +8,12 @@ import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt';
-import { randomBytes } from 'crypto';
+import { randomBytes, randomInt } from 'crypto';
 import { User, userPublicView } from '../../database/entities/user.entity';
 import { RefreshToken } from '../../database/entities/refresh-token.entity';
+import { EmailVerificationCode } from '../../database/entities/email-verification-code.entity';
+import { PasswordResetToken } from '../../database/entities/password-reset-token.entity';
+import { MailService } from '../mail/mail.service';
 import { LoginDto, RegisterDto } from './dto/auth.dto';
 
 @Injectable()
@@ -18,7 +22,12 @@ export class AuthService {
     @InjectRepository(User) private readonly users: Repository<User>,
     @InjectRepository(RefreshToken)
     private readonly refreshTokens: Repository<RefreshToken>,
+    @InjectRepository(EmailVerificationCode)
+    private readonly emailCodes: Repository<EmailVerificationCode>,
+    @InjectRepository(PasswordResetToken)
+    private readonly resetTokens: Repository<PasswordResetToken>,
     private readonly jwt: JwtService,
+    private readonly mail: MailService,
   ) {}
 
   private async hashPassword(password: string) {
@@ -54,6 +63,10 @@ export class AuthService {
     return token;
   }
 
+  private normalizePersonalId(id: string) {
+    return id.trim().replace(/\s+/g, '');
+  }
+
   private async nextUserIds() {
     const rows = await this.users.find({ select: { mergeId: true } });
     let max = 0;
@@ -70,15 +83,71 @@ export class AuthService {
     };
   }
 
+  async sendVerificationCode(email: string) {
+    const normalized = email.trim().toLowerCase();
+    const existing = await this.users.findOne({ where: { email: normalized } });
+    if (existing) {
+      throw new ConflictException('Email already registered');
+    }
+
+    const recent = await this.emailCodes.findOne({
+      where: { email: normalized },
+      order: { createdAt: 'DESC' },
+    });
+    if (recent && Date.now() - recent.createdAt.getTime() < 60_000) {
+      throw new BadRequestException('Please wait 60 seconds before requesting a new code');
+    }
+
+    await this.emailCodes.delete({ email: normalized });
+
+    const code = String(randomInt(100000, 999999));
+    const expiresAt = new Date(Date.now() + 15 * 60_000);
+    await this.emailCodes.save(
+      this.emailCodes.create({ email: normalized, code, expiresAt, used: false }),
+    );
+    await this.mail.sendVerificationCode(normalized, code);
+    return { ok: true, message: 'Verification code sent' };
+  }
+
+  private async consumeVerificationCode(email: string, code: string) {
+    const normalized = email.trim().toLowerCase();
+    const row = await this.emailCodes.findOne({
+      where: { email: normalized, code, used: false },
+      order: { createdAt: 'DESC' },
+    });
+    if (!row || row.expiresAt < new Date()) {
+      throw new BadRequestException('Invalid or expired verification code');
+    }
+    row.used = true;
+    await this.emailCodes.save(row);
+  }
+
   async register(dto: RegisterDto) {
     const email = dto.email.trim().toLowerCase();
     const phone = dto.phone?.trim() || null;
+    const personalId = this.normalizePersonalId(dto.personalId);
 
-    const existing = await this.users.findOne({
-      where: [{ email }, ...(phone ? [{ phone }] : [])],
-    });
-    if (existing) {
-      throw new ConflictException('Email or phone already registered');
+    if (!personalId) {
+      throw new BadRequestException('Personal ID is required');
+    }
+
+    await this.consumeVerificationCode(email, dto.verificationCode);
+
+    const existingEmail = await this.users.findOne({ where: { email } });
+    if (existingEmail) {
+      throw new ConflictException('Email already registered');
+    }
+
+    if (phone) {
+      const existingPhone = await this.users.findOne({ where: { phone } });
+      if (existingPhone) {
+        throw new ConflictException('Phone already registered');
+      }
+    }
+
+    const existingPersonalId = await this.users.findOne({ where: { personalId } });
+    if (existingPersonalId) {
+      throw new ConflictException('Personal ID already registered — one account per ID');
     }
 
     const ids = await this.nextUserIds();
@@ -92,7 +161,7 @@ export class AuthService {
       passwordHash: await this.hashPassword(dto.password),
       firstName: dto.firstName.trim(),
       lastName: dto.lastName.trim(),
-      personalId: dto.personalId?.trim() || null,
+      personalId,
       mergeId: ids.mergeId,
       founderId: ids.founderId,
       brandLineId: ids.brandLineId,
@@ -135,6 +204,44 @@ export class AuthService {
       refreshToken,
       user: userPublicView(user),
     };
+  }
+
+  async forgotPassword(email: string) {
+    const normalized = email.trim().toLowerCase();
+    const user = await this.users.findOne({ where: { email: normalized } });
+
+    if (user) {
+      await this.resetTokens.delete({ email: normalized });
+      const token = randomBytes(32).toString('hex');
+      const expiresAt = new Date(Date.now() + 60 * 60_000);
+      await this.resetTokens.save(
+        this.resetTokens.create({ email: normalized, token, expiresAt, used: false }),
+      );
+      const base = (process.env.FRONTEND_URL ?? 'http://localhost:5173').replace(/\/$/, '');
+      await this.mail.sendPasswordReset(normalized, `${base}/reset-password?token=${token}`);
+    }
+
+    return { ok: true, message: 'If that email exists, a reset link was sent' };
+  }
+
+  async resetPassword(token: string, password: string) {
+    const row = await this.resetTokens.findOne({ where: { token, used: false } });
+    if (!row || row.expiresAt < new Date()) {
+      throw new BadRequestException('Invalid or expired reset link');
+    }
+
+    const user = await this.users.findOne({ where: { email: row.email } });
+    if (!user) {
+      throw new BadRequestException('Invalid or expired reset link');
+    }
+
+    user.passwordHash = await this.hashPassword(password);
+    await this.users.save(user);
+    row.used = true;
+    await this.resetTokens.save(row);
+    await this.refreshTokens.delete({ userId: user.id });
+
+    return { ok: true, message: 'Password updated' };
   }
 
   async refresh(refreshToken: string) {
