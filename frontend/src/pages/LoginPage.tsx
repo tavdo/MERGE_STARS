@@ -170,22 +170,20 @@ export default function LoginPage() {
           <LanguageSwitcher variant="compact" />
         </div>
 
-        <div className="text-center mb-8 w-full">
-          <h2 className="text-[11px] font-bold tracking-[0.3em] mb-1" style={{ color: '#c9a84c' }}>
-            {t('authPanel.welcome')}
-          </h2>
-        </div>
+        <header className="auth-hero">
+          <h1 className="auth-hero-kicker">{t('authPanel.welcome')}</h1>
+          <p className="auth-hero-sub">{t('authPanel.journeyTagline')}</p>
+        </header>
 
-        <div className="flex w-full max-w-md mb-8" style={{ border: '1px solid rgba(201,168,76,0.2)', borderRadius: '4px', overflow: 'hidden' }}>
+        <div className="auth-tabs" role="tablist" aria-label={t('authPanel.welcome')}>
           {(['login', 'register'] as Tab[]).map((tabKey) => (
             <button
               key={tabKey}
-              onClick={() => { setTab(tabKey); setStep(1) }}
-              className="flex-1 py-3 text-[12px] font-bold tracking-[0.15em] uppercase transition-all"
-              style={{
-                background: tab === tabKey ? 'linear-gradient(135deg,#c9a84c,#f5d78e)' : 'transparent',
-                color: tab === tabKey ? '#000' : 'rgba(255,255,255,0.5)',
-              }}
+              type="button"
+              role="tab"
+              aria-selected={tab === tabKey}
+              onClick={() => { setTab(tabKey); setStep(1); setAuthError(null) }}
+              className={`auth-tab${tab === tabKey ? ' auth-tab--active' : ''}`}
             >
               {tabKey === 'login' ? t('authPanel.loginTab') : t('authPanel.registerTab')}
             </button>
@@ -199,11 +197,11 @@ export default function LoginPage() {
         {tab === 'login' && (
           <form className="w-full max-w-md flex flex-col gap-5" onSubmit={handleLogin}>
             <div>
-              <label className="text-[11px] font-semibold tracking-[0.12em] block mb-2" style={{ color: 'rgba(255,255,255,0.5)' }}>{t('authPanel.emailOrPhone')}</label>
+              <label className="auth-field-label">{t('authPanel.emailOrPhone')}</label>
               <input className="gold-input" value={identifier} onChange={(e) => setIdentifier(e.target.value)} placeholder={t('authPanel.emailOrPhonePlaceholder')} required />
             </div>
             <div>
-              <label className="text-[11px] font-semibold tracking-[0.12em] block mb-2" style={{ color: 'rgba(255,255,255,0.5)' }}>{t('authPanel.passwordLabel')}</label>
+              <label className="auth-field-label">{t('authPanel.passwordLabel')}</label>
               <div className="relative">
                 <input className="gold-input pr-12" type={showPw ? 'text' : 'password'} value={password} onChange={(e) => setPassword(e.target.value)} placeholder={t('authPanel.passwordPlaceholder')} required />
                 <button type="button" onClick={() => setShowPw(!showPw)} className="absolute right-4 top-1/2 -translate-y-1/2 text-[13px]" style={{ color: 'rgba(255,255,255,0.4)' }}>
@@ -236,26 +234,26 @@ export default function LoginPage() {
                 </div>
               ))}
             </div>
-            <p className="text-[11px] font-bold tracking-[0.2em] mb-6" style={{ color: '#c9a84c' }}>{stepLabel}</p>
+            <p className="auth-field-label mb-6" style={{ color: '#c9a84c', fontSize: '0.8125rem' }}>{stepLabel}</p>
 
             {step === 1 && (
               <div className="flex flex-col gap-4">
                 <div className="auth-name-grid grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
-                    <label className="text-[10px] font-semibold tracking-widest block mb-2" style={{ color: 'rgba(255,255,255,0.4)' }}>{t('auth.firstName')}</label>
+                    <label className="auth-field-label">{t('auth.firstName')}</label>
                     <input className="gold-input" value={firstName} onChange={(e) => setFirstName(e.target.value)} placeholder={t('authPanel.firstNamePlaceholder')} required />
                   </div>
                   <div>
-                    <label className="text-[10px] font-semibold tracking-widest block mb-2" style={{ color: 'rgba(255,255,255,0.4)' }}>{t('auth.lastName')}</label>
+                    <label className="auth-field-label">{t('auth.lastName')}</label>
                     <input className="gold-input" value={lastName} onChange={(e) => setLastName(e.target.value)} placeholder={t('authPanel.lastNamePlaceholder')} required />
                   </div>
                 </div>
                 <div>
-                  <label className="text-[10px] font-semibold tracking-widest block mb-2" style={{ color: 'rgba(255,255,255,0.4)' }}>{t('auth.personalId')}</label>
+                  <label className="auth-field-label">{t('auth.personalId')}</label>
                   <input className="gold-input" value={personalId} onChange={(e) => setPersonalId(e.target.value)} placeholder={t('authPanel.personalIdPlaceholder')} required />
                 </div>
                 <div>
-                  <label className="text-[10px] font-semibold tracking-widest block mb-2" style={{ color: 'rgba(255,255,255,0.4)' }}>{t('auth.phone')}</label>
+                  <label className="auth-field-label">{t('auth.phone')}</label>
                   <div className="auth-phone-row">
                     <select className="gold-input" value={phoneCode} onChange={(e) => setPhoneCode(e.target.value)} aria-label={t('auth.phone')}>
                       <option value="+995">🇬🇪 +995</option>
@@ -272,15 +270,15 @@ export default function LoginPage() {
             {step === 2 && (
               <div className="flex flex-col gap-4">
                 <div>
-                  <label className="text-[10px] font-semibold tracking-widest block mb-2" style={{ color: 'rgba(255,255,255,0.4)' }}>{t('auth.email')}</label>
+                  <label className="auth-field-label">{t('auth.email')}</label>
                   <input className="gold-input" type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder={t('authPanel.emailPlaceholder')} required />
                 </div>
                 <div>
-                  <label className="text-[10px] font-semibold tracking-widest block mb-2" style={{ color: 'rgba(255,255,255,0.4)' }}>{t('auth.password')}</label>
+                  <label className="auth-field-label">{t('auth.password')}</label>
                   <input className="gold-input" type="password" value={regPassword} onChange={(e) => setRegPassword(e.target.value)} placeholder={t('authPanel.passwordCreatePlaceholder')} required minLength={8} />
                 </div>
                 <div>
-                  <label className="text-[10px] font-semibold tracking-widest block mb-2" style={{ color: 'rgba(255,255,255,0.4)' }}>{t('auth.confirmPassword')}</label>
+                  <label className="auth-field-label">{t('auth.confirmPassword')}</label>
                   <input className="gold-input" type="password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} placeholder={t('authPanel.passwordConfirmPlaceholder')} required minLength={8} />
                 </div>
                 <div className="flex gap-3 mt-2">
@@ -320,7 +318,6 @@ export default function LoginPage() {
               {t('authPanel.hasAccount')}{' '}
               <button onClick={() => setTab('login')} style={{ color: '#c9a84c' }}>{t('authPanel.loginLink')}</button>
             </p>
-            <p className="text-center text-[11px] mt-4" style={{ color: 'rgba(255,255,255,0.25)' }}>{t('authPanel.journeyTagline')}</p>
           </div>
         )}
 
