@@ -50,6 +50,12 @@ export class User {
   @Column({ name: 'kyc_status', default: 'pending' })
   kycStatus: string;
 
+  @Column({ name: 'referred_by_id', type: 'uuid', nullable: true })
+  referredById: string | null;
+
+  @Column({ name: 'terms_accepted_at', type: 'timestamptz', nullable: true })
+  termsAcceptedAt: Date | null;
+
   @OneToMany(() => CoinApplication, (a) => a.user)
   applications: CoinApplication[];
 

@@ -33,6 +33,14 @@ export class MailService {
     return process.env.MAIL_FROM ?? 'MERGE STARS <noreply@mergestars.com>';
   }
 
+  isConfigured() {
+    return !!(
+      process.env.SMTP_HOST?.trim() &&
+      process.env.SMTP_USER?.trim() &&
+      process.env.SMTP_PASS?.trim()
+    );
+  }
+
   async send(to: string, subject: string, html: string, text: string) {
     const transport = this.getTransporter();
     if (!transport) {

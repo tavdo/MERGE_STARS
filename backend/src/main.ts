@@ -1,5 +1,6 @@
 import { NestFactory } from '@nestjs/core';
 import { ValidationPipe } from '@nestjs/common';
+import { IoAdapter } from '@nestjs/platform-socket.io';
 import cookieParser = require('cookie-parser');
 import { AppModule } from './app.module';
 import { AuditService } from './audit/audit.service';
@@ -13,6 +14,7 @@ function parseCorsOrigins(raw: string | undefined): string[] {
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+  app.useWebSocketAdapter(new IoAdapter(app));
 
   // Match frontend VITE_API_URL=/api and nginx proxy (full /api/... path)
   app.setGlobalPrefix('api');

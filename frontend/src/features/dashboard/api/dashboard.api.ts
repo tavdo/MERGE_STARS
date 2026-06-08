@@ -10,6 +10,7 @@ export interface DashboardSummary {
     mergeId: string
     founderId: string | null
     brandLineId: string | null
+    kycStatus?: string
   }
   coinBalance: number
   registeredValue: number

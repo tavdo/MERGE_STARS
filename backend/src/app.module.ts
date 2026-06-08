@@ -9,15 +9,7 @@ import { TransformInterceptor } from './common/interceptors/transform.intercepto
 import { HttpExceptionFilter } from './common/filters/http-exception.filter';
 import { APP_FILTER, APP_INTERCEPTOR } from '@nestjs/core';
 import { DatabaseModule } from './database/database.module';
-import { User } from './database/entities/user.entity';
-import { CoinApplication } from './database/entities/coin-application.entity';
-import { Order } from './database/entities/order.entity';
-import { MetalPrice } from './database/entities/metal-price.entity';
-import { RefreshToken } from './database/entities/refresh-token.entity';
-import { ContactMessage } from './database/entities/contact-message.entity';
-import { Referral } from './database/entities/referral.entity';
-import { EmailVerificationCode } from './database/entities/email-verification-code.entity';
-import { PasswordResetToken } from './database/entities/password-reset-token.entity';
+import { buildTypeOrmOptions } from './database/typeorm.options';
 import { MailModule } from './modules/mail/mail.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { UsersModule } from './modules/users/users.module';
@@ -29,53 +21,16 @@ import { AdminModule } from './modules/admin/admin.module';
 import { ContactModule } from './modules/contact/contact.module';
 import { DashboardModule } from './modules/dashboard/dashboard.module';
 import { HealthModule } from './modules/health/health.module';
+import { NotificationsModule } from './modules/notifications/notifications.module';
+import { KycModule } from './modules/kyc/kyc.module';
+import { ReferralsModule } from './modules/referrals/referrals.module';
 
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
     MailModule,
     ScheduleModule.forRoot(),
-    TypeOrmModule.forRoot(
-      process.env.DATABASE_URL
-        ? {
-            type: 'postgres',
-            url: process.env.DATABASE_URL,
-            entities: [
-              User,
-              CoinApplication,
-              Order,
-              MetalPrice,
-              RefreshToken,
-              ContactMessage,
-              Referral,
-              EmailVerificationCode,
-              PasswordResetToken,
-            ],
-            synchronize: process.env.DB_SYNC !== 'false',
-            ssl: process.env.DB_SSL === 'true' ? { rejectUnauthorized: false } : false,
-          }
-        : {
-            type: 'postgres',
-            host: process.env.DB_HOST ?? 'localhost',
-            port: Number(process.env.DB_PORT ?? 5432),
-            username: process.env.DB_USER ?? 'merge_stars',
-            password: process.env.DB_PASSWORD ?? 'merge_stars',
-            database: process.env.DB_NAME ?? 'merge_stars',
-            entities: [
-              User,
-              CoinApplication,
-              Order,
-              MetalPrice,
-              RefreshToken,
-              ContactMessage,
-              Referral,
-              EmailVerificationCode,
-              PasswordResetToken,
-            ],
-            synchronize: process.env.DB_SYNC !== 'false',
-            ssl: process.env.DB_SSL === 'true' ? { rejectUnauthorized: false } : false,
-          },
-    ),
+    TypeOrmModule.forRoot(buildTypeOrmOptions()),
     DatabaseModule,
     AuditModule,
     AuthModule,
@@ -88,6 +43,9 @@ import { HealthModule } from './modules/health/health.module';
     ContactModule,
     DashboardModule,
     HealthModule,
+    NotificationsModule,
+    KycModule,
+    ReferralsModule,
   ],
   controllers: [AppController],
   providers: [

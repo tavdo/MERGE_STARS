@@ -31,6 +31,7 @@ export class DashboardController {
         mergeId: user.mergeId,
         founderId: user.founderId,
         brandLineId: user.brandLineId,
+        kycStatus: user.kycStatus,
       },
       coinBalance: inv.totalUsd > 0 ? Math.round(inv.totalUsd / 2) : 0,
       registeredValue: inv.totalUsd,

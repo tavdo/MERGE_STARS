@@ -4,6 +4,7 @@ import { Repository } from 'typeorm';
 import { User, userPublicView } from '../../database/entities/user.entity';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { MailService } from '../mail/mail.service';
+import { NotificationsService } from '../notifications/notifications.service';
 
 const KYC_STATUSES = new Set(['pending', 'verified', 'rejected']);
 
@@ -12,6 +13,7 @@ export class UsersService {
   constructor(
     @InjectRepository(User) private readonly users: Repository<User>,
     private readonly mail: MailService,
+    private readonly notifications: NotificationsService,
   ) {}
 
   async findById(userId: string) {
@@ -43,6 +45,14 @@ export class UsersService {
 
     const name = `${user.firstName} ${user.lastName}`.trim();
     await this.mail.sendKycDecision(user.email, name, normalized);
+
+    await this.notifications.create({
+      userId: user.id,
+      type: 'kyc_decision',
+      title: 'KYC update',
+      body: `Your KYC status is now: ${normalized}`,
+      meta: { kycStatus: normalized },
+    });
 
     return userPublicView(user);
   }

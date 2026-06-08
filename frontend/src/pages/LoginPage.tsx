@@ -103,6 +103,7 @@ export default function LoginPage() {
         phone: phone.trim() ? `${phoneCode}${phone.replace(/\D/g, '')}` : undefined,
         email: email.trim().toLowerCase(),
         password: regPassword,
+        referralCode: searchParams.get('ref')?.trim() || undefined,
       },
       {
         onError: (err) =>

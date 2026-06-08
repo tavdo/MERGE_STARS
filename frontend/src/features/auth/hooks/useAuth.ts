@@ -2,7 +2,7 @@ import { useMutation } from '@tanstack/react-query'
 import { useNavigate } from 'react-router-dom'
 import { authApi } from '../api/auth.api'
 import { useAuthStore } from '../store/auth.store'
-import { connectSocket } from '@/lib/socket'
+import { connectSocket, disconnectSocket } from '@/lib/socket'
 import { ROUTES } from '@/router/routes'
 import type { LoginPayload, RegisterPayload } from '../types'
 import type { Role } from '@/shared/types/api.types'
@@ -60,6 +60,7 @@ export function useLogout() {
   const navigate = useNavigate()
 
   return () => {
+    disconnectSocket()
     authApi.logout().finally(() => {
       clearSession()
       navigate(ROUTES.LOGIN)

@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import AdminLayout from '../../components/AdminLayout'
 import { adminApi, type AdminUser } from '../../features/admin/api/admin.api'
+import { kycApi } from '@/features/kyc/api/kyc.api'
 
 const KYC_COLORS: Record<string, { bg: string; color: string }> = {
   pending: { bg: 'rgba(245,158,11,0.1)', color: '#f59e0b' },
@@ -41,6 +42,12 @@ export default function AdminKYCPage() {
   }), [allUsers])
 
   const item = pendingUsers.find((q) => q.id === selected)
+
+  const { data: kycDocs = [] } = useQuery({
+    queryKey: ['admin-kyc-docs', item?.id],
+    queryFn: () => kycApi.adminList(item!.id).then((r) => r.data.data),
+    enabled: !!item?.id,
+  })
 
   const decide = (user: AdminUser, decision: 'verified' | 'rejected') => {
     updateKyc.mutate({ id: user.id, kycStatus: decision })
@@ -113,10 +120,22 @@ export default function AdminKYCPage() {
             ))}
 
             <div style={{ marginTop: '16px', padding: '12px', background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '4px' }}>
-              <p style={{ fontSize: '10px', color: 'rgba(255,255,255,0.4)', marginBottom: '8px' }}>ID DOCUMENT</p>
-              <div style={{ height: '80px', background: 'rgba(255,255,255,0.04)', borderRadius: '4px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <p style={{ fontSize: '11px', color: 'rgba(255,255,255,0.25)' }}>Document upload — coming soon</p>
-              </div>
+              <p style={{ fontSize: '10px', color: 'rgba(255,255,255,0.4)', marginBottom: '8px' }}>ID DOCUMENTS</p>
+              {kycDocs.length === 0 ? (
+                <p style={{ fontSize: '11px', color: 'rgba(255,255,255,0.25)' }}>No documents uploaded yet</p>
+              ) : (
+                kycDocs.map((d) => (
+                  <a
+                    key={d.id}
+                    href={kycApi.adminFileUrl(d.id)}
+                    target="_blank"
+                    rel="noreferrer"
+                    style={{ display: 'block', fontSize: '12px', color: '#c9a84c', padding: '6px 0', textDecoration: 'none' }}
+                  >
+                    📄 {d.originalName}
+                  </a>
+                ))
+              )}
             </div>
 
             <div style={{ display: 'flex', gap: '10px', marginTop: '20px' }}>

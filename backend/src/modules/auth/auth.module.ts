@@ -7,6 +7,8 @@ import { RefreshToken } from '../../database/entities/refresh-token.entity';
 import { EmailVerificationCode } from '../../database/entities/email-verification-code.entity';
 import { PasswordResetToken } from '../../database/entities/password-reset-token.entity';
 import { MailModule } from '../mail/mail.module';
+import { ReferralsModule } from '../referrals/referrals.module';
+import { NotificationsModule } from '../notifications/notifications.module';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { JwtStrategy } from './jwt.strategy';
@@ -14,6 +16,8 @@ import { JwtStrategy } from './jwt.strategy';
 @Module({
   imports: [
     MailModule,
+    ReferralsModule,
+    NotificationsModule,
     TypeOrmModule.forFeature([
       User,
       RefreshToken,

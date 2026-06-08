@@ -9,6 +9,7 @@ import { User } from '../../database/entities/user.entity';
 import { SubmitApplicationDto } from './dto/submit-application.dto';
 import { UsersService } from '../users/users.service';
 import { MailService } from '../mail/mail.service';
+import { NotificationsService } from '../notifications/notifications.service';
 
 @Injectable()
 export class CoinsService {
@@ -17,6 +18,7 @@ export class CoinsService {
     private readonly apps: Repository<CoinApplication>,
     private readonly usersService: UsersService,
     private readonly mail: MailService,
+    private readonly notifications: NotificationsService,
   ) {}
 
   private nextPublicId() {
@@ -84,6 +86,14 @@ export class CoinsService {
     const email = dto.contactEmail ?? freshUser.email;
     const name = `${dto.firstName ?? freshUser.firstName} ${dto.lastName ?? freshUser.lastName}`.trim();
     await this.mail.sendApplicationReceived(email, name, publicId);
+
+    await this.notifications.create({
+      userId: user.id,
+      type: 'application_submitted',
+      title: 'Application received',
+      body: `Your application ${publicId} was submitted successfully.`,
+      meta: { applicationId: publicId },
+    });
 
     return applicationView(app);
   }
@@ -155,6 +165,13 @@ export class CoinsService {
         status,
         options?.note,
       );
+      await this.notifications.create({
+        userId: app.userId,
+        type: 'application_status',
+        title: 'Application status updated',
+        body: `${publicId}: ${status.replace(/_/g, ' ')}`,
+        meta: { applicationId: publicId, status, note: options?.note ?? null },
+      });
     }
 
     return applicationView(

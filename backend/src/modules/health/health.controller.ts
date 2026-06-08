@@ -1,10 +1,14 @@
 import { Controller, Get } from '@nestjs/common';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
+import { MailService } from '../mail/mail.service';
 
 @Controller('health')
 export class HealthController {
-  constructor(@InjectDataSource() private readonly db: DataSource) {}
+  constructor(
+    @InjectDataSource() private readonly db: DataSource,
+    private readonly mail: MailService,
+  ) {}
 
   @Get()
   async check() {
@@ -18,7 +22,9 @@ export class HealthController {
     return {
       ok: dbOk,
       db: dbOk ? 'up' : 'down',
-      version: '1.0.0',
+      mail: this.mail.isConfigured() ? 'smtp' : 'dev-log',
+      ws: 'socket.io',
+      version: '1.1.0',
       timestamp: new Date().toISOString(),
     };
   }

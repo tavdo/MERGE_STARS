@@ -14,6 +14,8 @@ import { RefreshToken } from '../../database/entities/refresh-token.entity';
 import { EmailVerificationCode } from '../../database/entities/email-verification-code.entity';
 import { PasswordResetToken } from '../../database/entities/password-reset-token.entity';
 import { MailService } from '../mail/mail.service';
+import { ReferralsService } from '../referrals/referrals.service';
+import { NotificationsService } from '../notifications/notifications.service';
 import { LoginDto, RegisterDto } from './dto/auth.dto';
 
 @Injectable()
@@ -28,6 +30,8 @@ export class AuthService {
     private readonly resetTokens: Repository<PasswordResetToken>,
     private readonly jwt: JwtService,
     private readonly mail: MailService,
+    private readonly referrals: ReferralsService,
+    private readonly notifications: NotificationsService,
   ) {}
 
   private async hashPassword(password: string) {
@@ -166,9 +170,17 @@ export class AuthService {
       roles: ['user'],
       status: 'active',
       kycStatus: 'pending',
+      termsAcceptedAt: new Date(),
     });
 
     await this.users.save(user);
+    await this.referrals.attachReferral(user, dto.referralCode);
+    await this.notifications.create({
+      userId: user.id,
+      type: 'welcome',
+      title: 'Welcome to MERGE STARS',
+      body: `Your account ${ids.mergeId} is ready. Complete KYC to unlock full platform access.`,
+    });
     const accessToken = this.signAccessToken(user);
     const refreshToken = await this.createRefreshToken(user.id);
     return {

@@ -1,22 +1,13 @@
 import { useCallback, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import { useQuery } from '@tanstack/react-query'
 import DashboardLayout from '../../components/DashboardLayout'
-import { downloadReferralQrPng, REFERRAL_QR_PATTERN, shareReferralLink } from '../../utils/referralQr'
+import { referralsApi } from '@/features/referrals/api/referrals.api'
+import { downloadReferralQrPng, shareReferralLink, REFERRAL_QR_PATTERN } from '../../utils/referralQr'
 
 function MiniQR({ color = '#1a1a1a' }: { color?: string }) {
   return (
-    <div
-      style={{
-        display: 'grid',
-        gridTemplateColumns: 'repeat(12, 1fr)',
-        gap: '2px',
-        width: '120px',
-        height: '120px',
-        padding: '8px',
-        background: '#fff',
-        borderRadius: '4px',
-      }}
-    >
+    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(12, 1fr)', gap: '2px', width: '120px', height: '120px', padding: '8px', background: '#fff', borderRadius: '4px' }}>
       {REFERRAL_QR_PATTERN.slice(0, 144).map((f, i) => (
         <div key={i} style={{ background: f ? color : 'transparent', borderRadius: '1px' }} />
       ))}
@@ -24,136 +15,103 @@ function MiniQR({ color = '#1a1a1a' }: { color?: string }) {
   )
 }
 
-const REFERRALS = [
-  { user: 'Giorgi T.', date: '10/05/2024', status: 'VERIFIED', order: 'ORD-2024-000567' },
-  { user: 'Nino M.', date: '08/05/2024', status: 'PENDING', order: '—' },
-  { user: 'David K.', date: '01/05/2024', status: 'VERIFIED', order: 'ORD-2024-000544' },
-]
-
 export default function ReferralPage() {
   const { t } = useTranslation()
-  const refLink = 'https://mergestars.com/ref/QR-REF-000001'
   const [toast, setToast] = useState<string | null>(null)
 
-  const showToast = useCallback((message: string) => {
-    setToast(message)
-  }, [])
+  const { data: stats } = useQuery({
+    queryKey: ['referral-stats'],
+    queryFn: () => referralsApi.stats().then((r) => r.data.data),
+  })
+
+  const { data: referrals = [], isLoading } = useQuery({
+    queryKey: ['referrals'],
+    queryFn: () => referralsApi.list().then((r) => r.data.data),
+  })
+
+  const refLink = stats?.shareLink ?? `${window.location.origin}/login?tab=register`
+  const qrRef = stats?.qrRef ?? 'QR-REF'
+
+  const showToast = useCallback((message: string) => setToast(message), [])
 
   useEffect(() => {
     if (!toast) return
-    const t = window.setTimeout(() => setToast(null), 2800)
-    return () => window.clearTimeout(t)
+    const id = window.setTimeout(() => setToast(null), 2800)
+    return () => window.clearTimeout(id)
   }, [toast])
 
   const handleDownload = () => {
-    downloadReferralQrPng(REFERRAL_QR_PATTERN, {
-      color: '#1a1a1a',
-      filename: 'merge-stars-QR-REF-000001.png',
-    })
-    showToast(t('referral.toastDownloaded'))
+    downloadReferralQrPng(REFERRAL_QR_PATTERN, { color: '#1a1a1a', filename: `merge-stars-${qrRef}.png` })
+    showToast(t('referral.toastDownloaded', { defaultValue: 'QR downloaded' }))
   }
 
   const handleShare = async () => {
     try {
       const result = await shareReferralLink(refLink)
-      showToast(result === 'shared' ? t('referral.toastShared') : t('referral.toastCopiedShare'))
-    } catch (err) {
-      if (err instanceof Error && err.name === 'AbortError') return
-      showToast(t('referral.toastShareFailed'))
+      showToast(result === 'shared' ? t('referral.toastShared', { defaultValue: 'Shared' }) : t('referral.toastCopiedShare', { defaultValue: 'Link copied' }))
+    } catch {
+      showToast('Could not share')
     }
   }
 
-  const handleCopy = async () => {
-    try {
-      await navigator.clipboard.writeText(refLink)
-      showToast(t('referral.toastCopied'))
-    } catch {
-      showToast(t('referral.toastCopyFailed'))
-    }
+  const copyLink = async () => {
+    await navigator.clipboard.writeText(refLink)
+    showToast(t('referral.toastCopiedShare', { defaultValue: 'Link copied' }))
   }
 
   return (
     <DashboardLayout titleKey="referral">
-      {toast && <div className="referral-toast" role="status">{toast}</div>}
+      {toast && (
+        <div style={{ position: 'fixed', bottom: '24px', right: '24px', zIndex: 100, padding: '12px 18px', background: '#111', border: '1px solid rgba(201,168,76,0.3)', borderRadius: '4px', color: '#c9a84c', fontSize: '12px' }}>
+          {toast}
+        </div>
+      )}
 
-      <div style={{ maxWidth: '1000px' }}>
-        <div style={{ marginBottom: '32px' }}>
-          <p style={{ fontSize: '11px', fontWeight: 700, letterSpacing: '0.3em', color: '#c9a84c', marginBottom: '8px' }}>{t('referral.title')}</p>
-          <h1 style={{ fontSize: '24px', fontWeight: 900, color: '#fff' }}>{t('referral.myReferrals')}</h1>
+      <div style={{ maxWidth: '900px' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(140px,1fr))', gap: '16px', marginBottom: '24px' }}>
+          {[
+            { label: 'TOTAL', value: stats?.total ?? 0 },
+            { label: 'VERIFIED', value: stats?.verified ?? 0 },
+            { label: 'PENDING', value: stats?.pending ?? 0 },
+            { label: 'YOUR SHARE', value: stats?.platformShare ?? '1/4' },
+          ].map((s) => (
+            <div key={s.label} className="gold-card" style={{ padding: '16px 18px', borderRadius: '4px' }}>
+              <p style={{ fontSize: '9px', color: 'rgba(255,255,255,0.35)', marginBottom: '6px' }}>{s.label}</p>
+              <p style={{ fontSize: '22px', fontWeight: 900, color: '#c9a84c' }}>{s.value}</p>
+            </div>
+          ))}
         </div>
 
-        <div style={{ padding: '14px 20px', background: 'rgba(201,168,76,0.06)', border: '1px solid rgba(201,168,76,0.15)', borderRadius: '4px', marginBottom: '24px', display: 'flex', gap: '12px' }}>
-          <span style={{ fontSize: '16px' }}>ℹ</span>
-          <p style={{ fontSize: '12px', color: 'rgba(255,255,255,0.5)', lineHeight: 1.6, margin: 0 }}>
-            {t('referral.policyNotice')}
-          </p>
-        </div>
-
-        <div className="referral-tools-grid">
-          <div className="gold-card referral-qr-card" style={{ borderRadius: '4px' }}>
-            <p style={{ fontSize: '11px', fontWeight: 700, letterSpacing: '0.2em', color: '#c9a84c', alignSelf: 'flex-start', margin: 0 }}>{t('referral.qrCode')}</p>
-            <MiniQR />
-            <p style={{ fontSize: '10px', color: 'rgba(255,255,255,0.4)', letterSpacing: '0.1em', margin: 0 }}>QR-REF-000001</p>
-            <div className="qr-card-actions" style={{ paddingTop: 0, marginTop: 'auto' }}>
-              <button type="button" className="gold-btn-outline" onClick={handleDownload}>
-                {t('common.download')}
-              </button>
-              <button type="button" className="gold-btn" onClick={handleShare}>
-                {t('common.share')}
-              </button>
-            </div>
-          </div>
-
-          <div className="gold-card" style={{ padding: '28px', borderRadius: '4px' }}>
-            <p style={{ fontSize: '11px', fontWeight: 700, letterSpacing: '0.2em', color: '#c9a84c', marginBottom: '16px' }}>{t('referral.referralLink')}</p>
-            <div style={{ display: 'flex', gap: '8px', marginBottom: '20px', flexWrap: 'wrap' }}>
-              <input className="gold-input" value={refLink} readOnly style={{ flex: '1 1 12rem', fontSize: '11px', color: 'rgba(255,255,255,0.5)' }} />
-              <button type="button" className="gold-btn ai-chat-send" onClick={handleCopy}>
-                {t('common.copy')}
-              </button>
-            </div>
-
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
-              {[
-                { label: t('referral.statTotal'), value: '3' },
-                { label: t('referral.statVerified'), value: '2', color: '#22c55e' },
-                { label: t('referral.statScans'), value: '41' },
-                { label: t('referral.statAllocation'), value: '1/4', color: '#c9a84c' },
-              ].map((s) => (
-                <div key={s.label} style={{ padding: '14px', background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)', borderRadius: '4px' }}>
-                  <p style={{ fontSize: '10px', color: 'rgba(255,255,255,0.4)', marginBottom: '6px', letterSpacing: '0.1em' }}>{s.label}</p>
-                  <p style={{ fontSize: '22px', fontWeight: 900, color: s.color || '#fff', margin: 0 }}>{s.value}</p>
-                </div>
-              ))}
+        <div className="gold-card" style={{ padding: '24px', borderRadius: '4px', marginBottom: '24px', display: 'flex', gap: '24px', flexWrap: 'wrap', alignItems: 'center' }}>
+          <MiniQR />
+          <div style={{ flex: 1, minWidth: '200px' }}>
+            <p style={{ fontSize: '10px', color: 'rgba(255,255,255,0.4)', marginBottom: '8px' }}>{qrRef}</p>
+            <p style={{ fontSize: '12px', color: '#fff', wordBreak: 'break-all', marginBottom: '12px' }}>{refLink}</p>
+            <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+              <button type="button" className="gold-btn" onClick={copyLink}>Copy link</button>
+              <button type="button" className="gold-btn-outline" onClick={handleShare}>Share</button>
+              <button type="button" className="gold-btn-outline" onClick={handleDownload}>Download QR</button>
             </div>
           </div>
         </div>
 
         <div className="gold-card" style={{ borderRadius: '4px', overflow: 'hidden' }}>
-          <div style={{ padding: '16px 20px', borderBottom: '1px solid rgba(201,168,76,0.1)' }}>
-            <p style={{ fontSize: '11px', fontWeight: 700, letterSpacing: '0.15em', color: '#c9a84c', margin: 0 }}>{t('referral.myReferredUsers')}</p>
+          <div style={{ padding: '14px 20px', borderBottom: '1px solid rgba(201,168,76,0.1)' }}>
+            <p style={{ fontSize: '11px', fontWeight: 700, letterSpacing: '0.15em', color: '#c9a84c' }}>DIRECT REFERRALS</p>
           </div>
-          <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-            <thead>
-              <tr style={{ borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
-                {[t('referral.tableUser'), t('referral.tableDate'), t('referral.tableStatus'), t('referral.tableOrder')].map((h) => (
-                  <th key={h} style={{ padding: '12px 20px', textAlign: 'left', fontSize: '9px', fontWeight: 700, letterSpacing: '0.15em', color: 'rgba(255,255,255,0.3)' }}>{h}</th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {REFERRALS.map((r) => (
-                <tr key={r.user} style={{ borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
-                  <td style={{ padding: '12px 20px', fontSize: '13px', color: '#fff', fontWeight: 600 }}>{r.user}</td>
-                  <td style={{ padding: '12px 20px', fontSize: '12px', color: 'rgba(255,255,255,0.4)' }}>{r.date}</td>
-                  <td style={{ padding: '12px 20px' }}>
-                    <span style={{ fontSize: '10px', fontWeight: 700, padding: '3px 8px', background: r.status === 'VERIFIED' ? 'rgba(34,197,94,0.1)' : 'rgba(245,158,11,0.1)', color: r.status === 'VERIFIED' ? '#22c55e' : '#f59e0b', borderRadius: '2px' }}>{r.status}</span>
-                  </td>
-                  <td style={{ padding: '12px 20px', fontSize: '12px', color: r.order === '—' ? 'rgba(255,255,255,0.3)' : '#c9a84c', fontWeight: r.order !== '—' ? 700 : 400 }}>{r.order}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+          {isLoading ? (
+            <p style={{ padding: '24px', color: 'rgba(255,255,255,0.5)' }}>Loading…</p>
+          ) : referrals.length === 0 ? (
+            <p style={{ padding: '24px', color: 'rgba(255,255,255,0.5)' }}>No referrals yet. Share your link to invite users.</p>
+          ) : referrals.map((r) => (
+            <div key={r.id} style={{ padding: '14px 20px', borderBottom: '1px solid rgba(255,255,255,0.04)', display: 'flex', justifyContent: 'space-between', gap: '12px' }}>
+              <div>
+                <p style={{ fontSize: '13px', fontWeight: 700, color: '#fff' }}>{r.user}</p>
+                <p style={{ fontSize: '11px', color: 'rgba(255,255,255,0.4)' }}>{r.date} · {r.order}</p>
+              </div>
+              <span style={{ fontSize: '10px', fontWeight: 700, padding: '4px 10px', background: 'rgba(201,168,76,0.1)', color: '#c9a84c', borderRadius: '2px', height: 'fit-content' }}>{r.status}</span>
+            </div>
+          ))}
         </div>
       </div>
     </DashboardLayout>
