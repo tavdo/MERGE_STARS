@@ -83,6 +83,7 @@ function AppRoutes() {
         <Route path="/legal-classification" element={<LegalClassificationPage />} />
         {/* Auth */}
         <Route path="/login"           element={<LoginPage />} />
+        <Route path="/register"        element={<Navigate to="/login?tab=register" replace />} />
 
         {/* User */}
         <Route path="/dashboard"              element={<DashboardPage />} />

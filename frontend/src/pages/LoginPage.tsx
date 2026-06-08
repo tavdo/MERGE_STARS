@@ -1,8 +1,9 @@
-import { useState } from 'react'
-import { Link } from 'react-router-dom'
+import { useEffect, useState } from 'react'
+import { Link, useSearchParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import LanguageSwitcher from '../components/LanguageSwitcher'
 import { useLogin, useRegister } from '@/features/auth/hooks/useAuth'
+import { getApiErrorMessage } from '@/shared/utils/apiError'
 
 type Tab = 'login' | 'register'
 type Step = 1 | 2 | 3
@@ -11,9 +12,14 @@ const TERM_COUNT = 6
 
 export default function LoginPage() {
   const { t } = useTranslation()
+  const [searchParams] = useSearchParams()
   const login = useLogin()
   const register = useRegister()
-  const [tab, setTab] = useState<Tab>('login')
+  const [tab, setTab] = useState<Tab>(() => (searchParams.get('tab') === 'register' ? 'register' : 'login'))
+
+  useEffect(() => {
+    if (searchParams.get('tab') === 'register') setTab('register')
+  }, [searchParams])
   const [step, setStep] = useState<Step>(1)
   const [checked, setChecked] = useState<boolean[]>(() => Array(TERM_COUNT).fill(false))
   const [showPw, setShowPw] = useState(false)
@@ -56,26 +62,55 @@ export default function LoginPage() {
     setAuthError(null)
     login.mutate(
       { identifier, password },
-      { onError: () => setAuthError(t('authPanel.loginFailed', { defaultValue: 'Invalid email/phone or password' })) },
+      {
+        onError: (err) =>
+          setAuthError(getApiErrorMessage(err, t('authPanel.loginFailed', { defaultValue: 'Invalid email/phone or password' }))),
+      },
     )
   }
 
-  const handleRegister = () => {
+  const goToRegisterStep2 = () => {
+    if (!firstName.trim() || !lastName.trim()) {
+      setAuthError(t('authPanel.nameRequired', { defaultValue: 'First and last name are required' }))
+      return
+    }
+    setAuthError(null)
+    setStep(2)
+  }
+
+  const goToRegisterStep3 = () => {
+    if (!email.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) {
+      setAuthError(t('authPanel.emailInvalid', { defaultValue: 'Enter a valid email address' }))
+      return
+    }
+    if (regPassword.length < 8) {
+      setAuthError(t('authPanel.passwordTooShort', { defaultValue: 'Password must be at least 8 characters' }))
+      return
+    }
     if (regPassword !== confirmPassword) {
       setAuthError(t('authPanel.passwordMismatch', { defaultValue: 'Passwords do not match' }))
       return
     }
     setAuthError(null)
+    setStep(3)
+  }
+
+  const handleRegister = () => {
+    if (!allChecked) return
+    setAuthError(null)
     register.mutate(
       {
-        firstName,
-        lastName,
-        personalId: personalId || undefined,
-        phone: phone ? `${phoneCode}${phone.replace(/\D/g, '')}` : undefined,
-        email,
+        firstName: firstName.trim(),
+        lastName: lastName.trim(),
+        personalId: personalId.trim() || undefined,
+        phone: phone.trim() ? `${phoneCode}${phone.replace(/\D/g, '')}` : undefined,
+        email: email.trim().toLowerCase(),
         password: regPassword,
       },
-      { onError: () => setAuthError(t('authPanel.registerFailed', { defaultValue: 'Registration failed. Email may already exist.' })) },
+      {
+        onError: (err) =>
+          setAuthError(getApiErrorMessage(err, t('authPanel.registerFailed', { defaultValue: 'Registration failed. Email may already exist.' }))),
+      },
     )
   }
 
@@ -226,7 +261,7 @@ export default function LoginPage() {
                     <input className="gold-input" value={phone} onChange={(e) => setPhone(e.target.value)} placeholder={t('authPanel.phonePlaceholder')} />
                   </div>
                 </div>
-                <button onClick={() => setStep(2)} className="gold-btn w-full justify-center mt-2" style={{ borderRadius: '2px' }}>{t('auth.nextStep')} ›</button>
+                <button type="button" onClick={goToRegisterStep2} className="gold-btn w-full justify-center mt-2" style={{ borderRadius: '2px' }}>{t('auth.nextStep')} ›</button>
               </div>
             )}
 
@@ -244,16 +279,9 @@ export default function LoginPage() {
                   <label className="text-[10px] font-semibold tracking-widest block mb-2" style={{ color: 'rgba(255,255,255,0.4)' }}>{t('auth.confirmPassword')}</label>
                   <input className="gold-input" type="password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} placeholder={t('authPanel.passwordConfirmPlaceholder')} required minLength={8} />
                 </div>
-                <div>
-                  <label className="text-[10px] font-semibold tracking-widest block mb-2" style={{ color: 'rgba(255,255,255,0.4)' }}>{t('auth.verificationCode')}</label>
-                  <div className="flex gap-2">
-                    <input className="gold-input" placeholder={t('authPanel.codePlaceholder')} />
-                    <button className="gold-btn-outline shrink-0" style={{ borderRadius: '2px', whiteSpace: 'nowrap' }}>{t('auth.sendCode')}</button>
-                  </div>
-                </div>
                 <div className="flex gap-3 mt-2">
-                  <button onClick={() => setStep(1)} className="gold-btn-outline flex-1 justify-center" style={{ borderRadius: '2px' }}>‹ {t('auth.back')}</button>
-                  <button onClick={() => setStep(3)} className="gold-btn flex-1 justify-center" style={{ borderRadius: '2px' }}>{t('auth.nextStep')} ›</button>
+                  <button type="button" onClick={() => setStep(1)} className="gold-btn-outline flex-1 justify-center" style={{ borderRadius: '2px' }}>‹ {t('auth.back')}</button>
+                  <button type="button" onClick={goToRegisterStep3} className="gold-btn flex-1 justify-center" style={{ borderRadius: '2px' }}>{t('auth.nextStep')} ›</button>
                 </div>
               </div>
             )}
@@ -279,7 +307,7 @@ export default function LoginPage() {
                 ))}
                 <div className="flex gap-3 mt-4">
                   <button onClick={() => setStep(2)} className="gold-btn-outline flex-1 justify-center" style={{ borderRadius: '2px' }}>‹ {t('auth.back')}</button>
-                  <button disabled={!allChecked || register.isPending} onClick={handleRegister} className="gold-btn flex-1 justify-center" style={{ borderRadius: '2px', opacity: allChecked && !register.isPending ? 1 : 0.4, cursor: allChecked ? 'pointer' : 'not-allowed' }}>{register.isPending ? '…' : t('auth.activate')}</button>
+                  <button type="button" disabled={!allChecked || register.isPending} onClick={handleRegister} className="gold-btn flex-1 justify-center" style={{ borderRadius: '2px', opacity: allChecked && !register.isPending ? 1 : 0.4, cursor: allChecked ? 'pointer' : 'not-allowed' }}>{register.isPending ? '…' : t('auth.activate')}</button>
                 </div>
               </div>
             )}

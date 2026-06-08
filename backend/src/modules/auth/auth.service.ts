@@ -54,42 +54,48 @@ export class AuthService {
     return token;
   }
 
-  private nextMergeId() {
-    const n = Math.floor(100000 + Math.random() * 899999);
-    return `MERGE-${n}`;
-  }
-
-  private nextFounderId() {
-    return `FND-${Date.now().toString(36).toUpperCase()}`;
-  }
-
-  private nextBrandLineId() {
-    return `BL-${Date.now().toString(36).toUpperCase()}`;
+  private async nextUserIds() {
+    const rows = await this.users.find({ select: { mergeId: true } });
+    let max = 0;
+    for (const row of rows) {
+      const match = /^MERGE-(\d+)$/.exec(row.mergeId);
+      if (match) max = Math.max(max, Number(match[1]));
+    }
+    const n = max + 1;
+    const padded = String(n).padStart(6, '0');
+    return {
+      mergeId: `MERGE-${padded}`,
+      founderId: `FND-${padded}`,
+      brandLineId: `BL-${padded}`,
+    };
   }
 
   async register(dto: RegisterDto) {
+    const email = dto.email.trim().toLowerCase();
+    const phone = dto.phone?.trim() || null;
+
     const existing = await this.users.findOne({
-      where: [{ email: dto.email.toLowerCase() }, ...(dto.phone ? [{ phone: dto.phone }] : [])],
+      where: [{ email }, ...(phone ? [{ phone }] : [])],
     });
     if (existing) {
       throw new ConflictException('Email or phone already registered');
     }
 
-    let mergeId = this.nextMergeId();
-    while (await this.users.findOne({ where: { mergeId } })) {
-      mergeId = this.nextMergeId();
+    const ids = await this.nextUserIds();
+    if (await this.users.findOne({ where: { mergeId: ids.mergeId } })) {
+      throw new ConflictException('Could not allocate user ID, try again');
     }
 
     const user = this.users.create({
-      email: dto.email.toLowerCase(),
-      phone: dto.phone ?? null,
+      email,
+      phone,
       passwordHash: await this.hashPassword(dto.password),
-      firstName: dto.firstName,
-      lastName: dto.lastName,
-      personalId: dto.personalId ?? null,
-      mergeId,
-      founderId: this.nextFounderId(),
-      brandLineId: this.nextBrandLineId(),
+      firstName: dto.firstName.trim(),
+      lastName: dto.lastName.trim(),
+      personalId: dto.personalId?.trim() || null,
+      mergeId: ids.mergeId,
+      founderId: ids.founderId,
+      brandLineId: ids.brandLineId,
       roles: ['user'],
       status: 'active',
       kycStatus: 'pending',
