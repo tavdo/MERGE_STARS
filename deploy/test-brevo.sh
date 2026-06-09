@@ -6,7 +6,12 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 # shellcheck source=load-env.sh
 source "$SCRIPT_DIR/load-env.sh"
-load_env_file "$REPO_ROOT/.env"
+if [ -f "$REPO_ROOT/.env" ]; then
+  load_env_file "$REPO_ROOT/.env"
+fi
+if [ -z "${BREVO_API_KEY:-}" ] && [ -f "$REPO_ROOT/backend/.env" ]; then
+  load_env_file "$REPO_ROOT/backend/.env"
+fi
 
 KEY="${BREVO_API_KEY:-}"
 if [ -z "$KEY" ]; then
