@@ -24,7 +24,7 @@ export class HealthController {
     return {
       ok: dbOk,
       db: dbOk ? 'up' : 'down',
-      mail: this.mail.isConfigured() ? 'smtp' : 'dev-log',
+      mail: this.mail.mailMode(),
       ws: 'socket.io',
       version: '1.1.0',
       timestamp: new Date().toISOString(),

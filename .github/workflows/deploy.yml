@@ -67,6 +67,13 @@ jobs:
             git reset --hard origin/main
             sed -i 's/\r$//' deploy/*.sh
             sed -i 's/\r$//' .env 2>/dev/null || true
+            if [ -n "${{ secrets.BREVO_API_KEY }}" ]; then
+              if grep -q '^BREVO_API_KEY=' .env 2>/dev/null; then
+                sed -i 's|^BREVO_API_KEY=.*|BREVO_API_KEY=${{ secrets.BREVO_API_KEY }}|' .env
+              else
+                echo 'BREVO_API_KEY=${{ secrets.BREVO_API_KEY }}' >> .env
+              fi
+            fi
             if [ -n "${{ secrets.SMTP_PASS }}" ]; then
               grep -q '^SMTP_HOST=' .env 2>/dev/null || echo 'SMTP_HOST=smtp.gmail.com' >> .env
               grep -q '^SMTP_USER=' .env 2>/dev/null || echo 'SMTP_USER=mergestars01@gmail.com' >> .env

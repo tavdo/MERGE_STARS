@@ -9,8 +9,12 @@ export class MailService implements OnModuleInit {
   private readonly sendTimeoutMs = Number(process.env.SMTP_TIMEOUT_MS ?? 30_000);
 
   async onModuleInit() {
-    if (!this.isConfigured()) {
-      this.log.warn('SMTP not configured — outbound email disabled');
+    if (this.useBrevo()) {
+      this.log.log('Brevo API mail transport ready (HTTPS — works when VPS blocks SMTP ports)');
+      return;
+    }
+    if (!this.isSmtpConfigured()) {
+      this.log.warn('Mail not configured — emails will be logged only');
       return;
     }
     try {
@@ -20,6 +24,44 @@ export class MailService implements OnModuleInit {
     } catch (err) {
       this.transporter = null;
       this.log.error(`SMTP verify failed on startup: ${(err as Error).message}`);
+    }
+  }
+
+  private useBrevo() {
+    return !!process.env.BREVO_API_KEY?.trim();
+  }
+
+  private isSmtpConfigured() {
+    return !!(
+      process.env.SMTP_HOST?.trim() &&
+      process.env.SMTP_USER?.trim() &&
+      process.env.SMTP_PASS?.trim()
+    );
+  }
+
+  private parseFromAddress(from: string) {
+    const m = from.match(/^(.+?)\s*<([^>]+)>$/);
+    if (m) return { name: m[1].trim(), email: m[2].trim().toLowerCase() };
+    return { name: 'MERGE STARS', email: from.trim().toLowerCase() };
+  }
+
+  private async sendViaBrevo(to: string, subject: string, html: string, text: string) {
+    const key = process.env.BREVO_API_KEY!.trim();
+    const sender = this.parseFromAddress(this.fromAddress());
+    const res = await fetch('https://api.brevo.com/v3/smtp/email', {
+      method: 'POST',
+      headers: { 'api-key': key, 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        sender,
+        to: [{ email: to }],
+        subject,
+        htmlContent: html,
+        textContent: text,
+      }),
+    });
+    if (!res.ok) {
+      const body = await res.text();
+      throw new Error(`Brevo API ${res.status}: ${body.slice(0, 200)}`);
     }
   }
 
@@ -69,14 +111,26 @@ export class MailService implements OnModuleInit {
   }
 
   isConfigured() {
-    return !!(
-      process.env.SMTP_HOST?.trim() &&
-      process.env.SMTP_USER?.trim() &&
-      process.env.SMTP_PASS?.trim()
-    );
+    return this.useBrevo() || this.isSmtpConfigured();
+  }
+
+  mailMode() {
+    if (this.useBrevo()) return 'brevo';
+    if (this.isSmtpConfigured()) return 'smtp';
+    return 'dev-log';
   }
 
   async send(to: string, subject: string, html: string, text: string) {
+    if (this.useBrevo()) {
+      try {
+        await this.sendViaBrevo(to, subject, html, text);
+        return;
+      } catch (err) {
+        this.log.error(`Brevo mail to ${to} failed: ${(err as Error).message}`);
+        throw err;
+      }
+    }
+
     const transport = this.getTransporter();
     if (!transport) {
       this.log.log(`[MAIL-DEV] To: ${to} | ${subject}\n${text}`);
