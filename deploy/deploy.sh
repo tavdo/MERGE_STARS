@@ -166,7 +166,14 @@ fi
 
 echo "==> SMTP verify (registration / forgot-password emails)"
 if [ -f "$SCRIPT_DIR/test-smtp.sh" ]; then
-  bash "$SCRIPT_DIR/test-smtp.sh" --verify-only
+  if ! bash "$SCRIPT_DIR/test-smtp.sh" --verify-only; then
+    echo "    Retrying SMTP on port 587..."
+    sed -i 's/^SMTP_PORT=.*/SMTP_PORT=587/' .env
+    set -a
+    load_env_file .env
+    set +a
+    bash "$SCRIPT_DIR/test-smtp.sh" --verify-only
+  fi
 fi
 
 echo ""

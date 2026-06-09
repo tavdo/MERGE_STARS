@@ -68,11 +68,15 @@ jobs:
             sed -i 's/\r$//' deploy/*.sh
             sed -i 's/\r$//' .env 2>/dev/null || true
             if [ -n "${{ secrets.SMTP_PASS }}" ]; then
+              grep -q '^SMTP_HOST=' .env 2>/dev/null || echo 'SMTP_HOST=smtp.gmail.com' >> .env
+              grep -q '^SMTP_USER=' .env 2>/dev/null || echo 'SMTP_USER=mergestars01@gmail.com' >> .env
+              grep -q '^SMTP_PORT=' .env 2>/dev/null || echo 'SMTP_PORT=465' >> .env
               if grep -q '^SMTP_PASS=' .env 2>/dev/null; then
                 sed -i 's|^SMTP_PASS=.*|SMTP_PASS=${{ secrets.SMTP_PASS }}|' .env
               else
                 echo 'SMTP_PASS=${{ secrets.SMTP_PASS }}' >> .env
               fi
+              grep -q '^MAIL_FROM=' .env 2>/dev/null || echo 'MAIL_FROM="MERGE STARS <mergestars01@gmail.com>"' >> .env
             fi
             chmod +x deploy/*.sh
             export DEPLOY_DIR
