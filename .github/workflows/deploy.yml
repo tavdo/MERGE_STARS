@@ -67,6 +67,20 @@ jobs:
             git reset --hard origin/main
             sed -i 's/\r$//' deploy/*.sh
             sed -i 's/\r$//' .env 2>/dev/null || true
+            if [ -n "${{ secrets.RESEND_API_KEY }}" ]; then
+              if grep -q '^RESEND_API_KEY=' .env 2>/dev/null; then
+                sed -i 's|^RESEND_API_KEY=.*|RESEND_API_KEY=${{ secrets.RESEND_API_KEY }}|' .env
+              else
+                echo 'RESEND_API_KEY=${{ secrets.RESEND_API_KEY }}' >> .env
+              fi
+              if [ -n "${{ secrets.RESEND_FROM }}" ]; then
+                if grep -q '^RESEND_FROM=' .env 2>/dev/null; then
+                  sed -i 's|^RESEND_FROM=.*|RESEND_FROM=${{ secrets.RESEND_FROM }}|' .env
+                else
+                  echo 'RESEND_FROM=${{ secrets.RESEND_FROM }}' >> .env
+                fi
+              fi
+            fi
             if [ -n "${{ secrets.BREVO_API_KEY }}" ]; then
               if grep -q '^BREVO_API_KEY=' .env 2>/dev/null; then
                 sed -i 's|^BREVO_API_KEY=.*|BREVO_API_KEY=${{ secrets.BREVO_API_KEY }}|' .env

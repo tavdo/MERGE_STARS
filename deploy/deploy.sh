@@ -171,7 +171,10 @@ fi
 echo "==> Mail verify (Brevo HTTPS or SMTP)"
 ENV_FILE="$REPO_ROOT/.env"
 cd "$REPO_ROOT"
-if [ -f "$ENV_FILE" ] && grep -qE '^BREVO_API_KEY=.+' "$ENV_FILE"; then
+if [ -f "$ENV_FILE" ] && grep -qE '^RESEND_API_KEY=.+' "$ENV_FILE"; then
+  bash "$SCRIPT_DIR/test-resend.sh" --verify-only || \
+    echo "WARNING: Resend API failed — check RESEND_API_KEY GitHub secret"
+elif [ -f "$ENV_FILE" ] && grep -qE '^BREVO_API_KEY=.+' "$ENV_FILE"; then
   bash "$SCRIPT_DIR/test-brevo.sh" --verify-only || \
     echo "WARNING: Brevo API failed — check BREVO_API_KEY GitHub secret"
 elif [ -f "$SCRIPT_DIR/test-smtp.sh" ] && [ -f "$ENV_FILE" ]; then

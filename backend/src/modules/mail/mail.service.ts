@@ -9,6 +9,10 @@ export class MailService implements OnModuleInit {
   private readonly sendTimeoutMs = Number(process.env.SMTP_TIMEOUT_MS ?? 30_000);
 
   async onModuleInit() {
+    if (this.useResend()) {
+      this.log.log(`Resend API mail transport ready (from: ${this.resendFrom()})`);
+      return;
+    }
     if (this.useBrevo()) {
       this.log.log('Brevo API mail transport ready (HTTPS — works when VPS blocks SMTP ports)');
       return;
@@ -27,8 +31,41 @@ export class MailService implements OnModuleInit {
     }
   }
 
+  private useResend() {
+    return !!process.env.RESEND_API_KEY?.trim();
+  }
+
   private useBrevo() {
     return !!process.env.BREVO_API_KEY?.trim();
+  }
+
+  /** Resend "from" — must be a verified domain/email in Resend dashboard. */
+  private resendFrom() {
+    const custom = process.env.RESEND_FROM?.trim();
+    if (custom) return custom.replace(/^['"]|['"]$/g, '');
+    return this.fromAddress();
+  }
+
+  private async sendViaResend(to: string, subject: string, html: string, text: string) {
+    const key = process.env.RESEND_API_KEY!.trim();
+    const res = await fetch('https://api.resend.com/emails', {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${key}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        from: this.resendFrom(),
+        to: [to],
+        subject,
+        html,
+        text,
+      }),
+    });
+    if (!res.ok) {
+      const body = await res.text();
+      throw new Error(`Resend API ${res.status}: ${body.slice(0, 200)}`);
+    }
   }
 
   private isSmtpConfigured() {
@@ -111,16 +148,27 @@ export class MailService implements OnModuleInit {
   }
 
   isConfigured() {
-    return this.useBrevo() || this.isSmtpConfigured();
+    return this.useResend() || this.useBrevo() || this.isSmtpConfigured();
   }
 
   mailMode() {
+    if (this.useResend()) return 'resend';
     if (this.useBrevo()) return 'brevo';
     if (this.isSmtpConfigured()) return 'smtp';
     return 'dev-log';
   }
 
   async send(to: string, subject: string, html: string, text: string) {
+    if (this.useResend()) {
+      try {
+        await this.sendViaResend(to, subject, html, text);
+        return;
+      } catch (err) {
+        this.log.error(`Resend mail to ${to} failed: ${(err as Error).message}`);
+        throw err;
+      }
+    }
+
     if (this.useBrevo()) {
       try {
         await this.sendViaBrevo(to, subject, html, text);
