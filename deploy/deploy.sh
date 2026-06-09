@@ -12,6 +12,18 @@ source "$SCRIPT_DIR/load-env.sh"
 if [ -f .env ]; then
   sed -i 's/Mergestar01@gmail.com/mergestars01@gmail.com/g' .env
   sed -i 's/\r$//' .env
+  # systemd EnvironmentFile: quote MAIL_FROM (spaces) and ensure EMAIL_VERIFY on
+  if grep -q '^MAIL_FROM=' .env; then
+    sed -i 's/^MAIL_FROM=.*/MAIL_FROM="MERGE STARS <mergestars01@gmail.com>"/' .env
+  fi
+  if ! grep -q '^EMAIL_VERIFY=' .env; then
+    echo 'EMAIL_VERIFY=true' >> .env
+  else
+    sed -i 's/^EMAIL_VERIFY=.*/EMAIL_VERIFY=true/' .env
+  fi
+  if ! grep -q '^SMTP_PORT=' .env; then
+    echo 'SMTP_PORT=465' >> .env
+  fi
   set -a
   load_env_file .env
   set +a
@@ -154,8 +166,7 @@ fi
 
 echo "==> SMTP verify (registration / forgot-password emails)"
 if [ -f "$SCRIPT_DIR/test-smtp.sh" ]; then
-  bash "$SCRIPT_DIR/test-smtp.sh" --verify-only || \
-    echo "WARNING: SMTP login failed — set SMTP_USER=mergestars01@gmail.com SMTP_PORT=465 in .env, then: systemctl restart merge-stars-backend"
+  bash "$SCRIPT_DIR/test-smtp.sh" --verify-only
 fi
 
 echo ""

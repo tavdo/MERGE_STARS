@@ -1,12 +1,27 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import * as nodemailer from 'nodemailer';
 import type { Transporter } from 'nodemailer';
 
 @Injectable()
-export class MailService {
+export class MailService implements OnModuleInit {
   private readonly log = new Logger(MailService.name);
   private transporter: Transporter | null = null;
   private readonly sendTimeoutMs = Number(process.env.SMTP_TIMEOUT_MS ?? 15_000);
+
+  async onModuleInit() {
+    if (!this.isConfigured()) {
+      this.log.warn('SMTP not configured — outbound email disabled');
+      return;
+    }
+    try {
+      const transport = this.getTransporter();
+      await transport?.verify();
+      this.log.log(`SMTP ready (${process.env.SMTP_USER?.trim().toLowerCase()}, port ${process.env.SMTP_PORT ?? 587})`);
+    } catch (err) {
+      this.transporter = null;
+      this.log.error(`SMTP verify failed on startup: ${(err as Error).message}`);
+    }
+  }
 
   private getTransporter(): Transporter | null {
     if (this.transporter) return this.transporter;
