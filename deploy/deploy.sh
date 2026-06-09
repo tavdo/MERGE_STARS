@@ -168,10 +168,13 @@ else
   echo "    (skip) nginx not found"
 fi
 
-echo "==> SMTP verify (registration / forgot-password emails)"
+echo "==> Mail verify (Brevo HTTPS or SMTP)"
 ENV_FILE="$REPO_ROOT/.env"
-if [ -f "$SCRIPT_DIR/test-smtp.sh" ] && [ -f "$ENV_FILE" ]; then
-  cd "$REPO_ROOT"
+cd "$REPO_ROOT"
+if [ -f "$ENV_FILE" ] && grep -qE '^BREVO_API_KEY=.+' "$ENV_FILE"; then
+  bash "$SCRIPT_DIR/test-brevo.sh" --verify-only || \
+    echo "WARNING: Brevo API failed — check BREVO_API_KEY GitHub secret"
+elif [ -f "$SCRIPT_DIR/test-smtp.sh" ] && [ -f "$ENV_FILE" ]; then
   if ! bash "$SCRIPT_DIR/test-smtp.sh" --verify-only; then
     echo "    Retrying SMTP on port 587..."
     sed -i 's/^SMTP_PORT=.*/SMTP_PORT=587/' "$ENV_FILE"
@@ -182,9 +185,8 @@ if [ -f "$SCRIPT_DIR/test-smtp.sh" ] && [ -f "$ENV_FILE" ]; then
       systemctl restart merge-stars-backend
       wait_for_backend || true
     fi
-    if ! bash "$SCRIPT_DIR/test-smtp.sh" --verify-only; then
-      echo "WARNING: SMTP still failing — add GitHub secret SMTP_PASS and ensure outbound port 587 is open"
-    fi
+    bash "$SCRIPT_DIR/test-smtp.sh" --verify-only || \
+      echo "WARNING: SMTP failing — use BREVO_API_KEY on DigitalOcean VPS"
   fi
 fi
 
