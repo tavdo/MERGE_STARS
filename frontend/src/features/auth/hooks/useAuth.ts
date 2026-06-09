@@ -1,5 +1,5 @@
 import { useMutation } from '@tanstack/react-query'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import { authApi } from '../api/auth.api'
 import { useAuthStore } from '../store/auth.store'
 import { connectSocket, disconnectSocket } from '@/lib/socket'
@@ -55,7 +55,37 @@ export function useRegister() {
   })
 }
 
-export function useLogout() {
+export function useAdminLogin() {
+  const setSession = useAuthStore((s) => s.setSession)
+  const navigate = useNavigate()
+  const [searchParams] = useSearchParams()
+
+  return useMutation({
+    mutationFn: async (payload: LoginPayload) => {
+      const res = await authApi.login(payload)
+      const user = res.data.data.user
+      const allowed = user.roles.some((r) => r === 'admin' || r === 'manager')
+      if (!allowed) {
+        await authApi.logout()
+        const err = new Error('ADMIN_ACCESS_DENIED') as Error & { code: string }
+        err.code = 'ADMIN_ACCESS_DENIED'
+        throw err
+      }
+      return res
+    },
+    onSuccess: ({ data }) => {
+      const { accessToken, user } = data.data
+      setSession(accessToken, mapUser(user))
+      connectSocket(accessToken)
+      const next = searchParams.get('next')
+      const dest =
+        next && next.startsWith('/admin') && next !== '/admin/login' ? next : ROUTES.ADMIN
+      navigate(dest, { replace: true })
+    },
+  })
+}
+
+export function useLogout(redirectTo: string = ROUTES.LOGIN) {
   const clearSession = useAuthStore((s) => s.clearSession)
   const navigate = useNavigate()
 
@@ -63,7 +93,11 @@ export function useLogout() {
     disconnectSocket()
     authApi.logout().finally(() => {
       clearSession()
-      navigate(ROUTES.LOGIN)
+      navigate(redirectTo)
     })
   }
+}
+
+export function useAdminLogout() {
+  return useLogout('/admin/login')
 }

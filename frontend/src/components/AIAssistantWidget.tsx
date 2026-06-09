@@ -14,7 +14,7 @@ export default function AIAssistantWidget() {
 
   const hiddenOnRoute =
     pathname === '/dashboard/ai' ||
-    pathname.startsWith('/bank-review') ||
+    pathname.startsWith('/admin') ||
     pathname === '/login'
 
   useEffect(() => {

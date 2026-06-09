@@ -13,7 +13,7 @@ export class MailService {
 
     const host = process.env.SMTP_HOST?.trim();
     const port = Number(process.env.SMTP_PORT ?? 587);
-    const user = process.env.SMTP_USER?.trim();
+    const user = process.env.SMTP_USER?.trim().toLowerCase();
     const pass = process.env.SMTP_PASS?.trim();
 
     if (!host || !user || !pass) {
@@ -25,6 +25,7 @@ export class MailService {
       host,
       port,
       secure: port === 465,
+      requireTLS: port === 587,
       auth: { user, pass },
       connectionTimeout: this.sendTimeoutMs,
       greetingTimeout: this.sendTimeoutMs,

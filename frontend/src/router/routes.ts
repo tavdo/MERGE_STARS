@@ -16,10 +16,13 @@ export const ROUTES = {
   SUPPORT:      '/dashboard/support',
   SETTINGS:     '/dashboard/settings',
 
-  // Admin
+  // Admin zone (separate secured area)
   ADMIN:             '/admin',
+  ADMIN_LOGIN:       '/admin/login',
+  ADMIN_USERS:       '/admin/users',
+  ADMIN_KYC:         '/admin/kyc',
+  ADMIN_FINANCE:     '/admin/finance',
   ADMIN_APPS:        '/admin/applications',
   ADMIN_APP_DETAIL:  '/admin/applications/:id',
-  ADMIN_USERS:       '/admin/users',
   ADMIN_STATS:       '/admin/stats',
 } as const

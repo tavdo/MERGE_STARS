@@ -39,6 +39,7 @@ export default {
     sendCode: 'კოდის გაგზავნა',
     codeSent: 'ვერიფიკაციის კოდი გაიგზავნა — შეამოწმეთ ელფოსტა',
     codeRequired: 'შეიყვანეთ ელფოსტაზე მიღებული 6-ნიშნა კოდი',
+    sendCodeFirst: 'ჯერ დააჭირეთ „კოდის გაგზავნა“ და შეამოწმეთ ელფოსტა',
     sendCodeFailed: 'ვერიფიკაციის კოდის გაგზავნა ვერ მოხერხდა',
     agreeTermsPrefix: 'ვეთანხმები',
     agreePrivacyPrefix: 'ვეთანხმები',

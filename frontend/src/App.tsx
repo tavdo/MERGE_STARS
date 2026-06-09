@@ -57,20 +57,27 @@ import './App.css'
 import LuxuryCursor from './components/LuxuryCursor'
 import AIAssistantWidget from './components/AIAssistantWidget'
 import AuthGuard from './router/guards/AuthGuard'
-import RoleGuard from './router/guards/RoleGuard'
+import AdminGuard from './router/guards/AdminGuard'
+import AdminLoginPage from './pages/admin/AdminLoginPage'
 
 function useLuxuryCursorEnabled() {
   const { pathname } = useLocation()
-  return pathname === '/'
+  return pathname === '/' && !pathname.startsWith('/admin')
+}
+
+function useAdminZone() {
+  const { pathname } = useLocation()
+  return pathname.startsWith('/admin')
 }
 
 function AppRoutes() {
   const luxuryCursor = useLuxuryCursorEnabled()
+  const adminZone = useAdminZone()
 
   return (
     <>
       {luxuryCursor && <LuxuryCursor />}
-      <AIAssistantWidget />
+      {!adminZone && <AIAssistantWidget />}
       <Routes>
         {/* Public */}
         <Route path="/"                element={<LandingPage />} />
@@ -111,24 +118,29 @@ function AppRoutes() {
           <Route path="/status"             element={<StatusPage />} />
         </Route>
 
-        {/* Authenticated — admin & compliance */}
-        <Route element={<AuthGuard />}>
-          <Route element={<RoleGuard allowedRoles={['admin', 'manager']} />}>
-            <Route path="/admin"               element={<AdminPage />} />
-            <Route path="/admin/users"         element={<AdminUsersPage />} />
-            <Route path="/admin/kyc"           element={<AdminKYCPage />} />
-            <Route path="/admin/finance"       element={<AdminFinancePage />} />
-            <Route path="/admin/crystal"       element={<AdminCrystalPage />} />
-            <Route path="/admin/production"    element={<AdminProductionPage />} />
-            <Route path="/admin/audit"         element={<AdminAuditPage />} />
-            <Route path="/admin/analytics"     element={<AdminAnalyticsPage />} />
-            <Route path="/admin/settings"      element={<AdminSettingsPage />} />
-            <Route path="/bank-review" element={<BankReviewPage />} />
-            <Route path="/audit" element={<AuditCenterPage />} />
-            <Route path="/security" element={<SecurityCenterPage />} />
-            <Route path="/data-governance" element={<DataGovernancePage />} />
-            <Route path="/business-continuity" element={<BusinessContinuityPage />} />
-          </Route>
+        {/* Admin zone — separate secured area at /admin/* */}
+        <Route path="/admin/login" element={<AdminLoginPage />} />
+        <Route path="/bank-review" element={<Navigate to="/admin/bank-review" replace />} />
+        <Route path="/audit" element={<Navigate to="/admin/audit-center" replace />} />
+        <Route path="/security" element={<Navigate to="/admin/security" replace />} />
+        <Route path="/data-governance" element={<Navigate to="/admin/data-governance" replace />} />
+        <Route path="/business-continuity" element={<Navigate to="/admin/business-continuity" replace />} />
+
+        <Route element={<AdminGuard />}>
+          <Route path="/admin" element={<AdminPage />} />
+          <Route path="/admin/users" element={<AdminUsersPage />} />
+          <Route path="/admin/kyc" element={<AdminKYCPage />} />
+          <Route path="/admin/finance" element={<AdminFinancePage />} />
+          <Route path="/admin/crystal" element={<AdminCrystalPage />} />
+          <Route path="/admin/production" element={<AdminProductionPage />} />
+          <Route path="/admin/audit" element={<AdminAuditPage />} />
+          <Route path="/admin/analytics" element={<AdminAnalyticsPage />} />
+          <Route path="/admin/settings" element={<AdminSettingsPage />} />
+          <Route path="/admin/bank-review" element={<BankReviewPage />} />
+          <Route path="/admin/audit-center" element={<AuditCenterPage />} />
+          <Route path="/admin/security" element={<SecurityCenterPage />} />
+          <Route path="/admin/data-governance" element={<DataGovernancePage />} />
+          <Route path="/admin/business-continuity" element={<BusinessContinuityPage />} />
         </Route>
       </Routes>
     </>

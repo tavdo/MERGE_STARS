@@ -1,12 +1,17 @@
-import { Body, Controller, Get, Post, Query, Req } from '@nestjs/common'
+import { Body, Controller, Get, Post, Query, Req, UseGuards } from '@nestjs/common'
 import { AuditService } from './audit.service'
 import { AuditActorRole, AuditEvent } from './audit.types'
+import { JwtAuthGuard } from '../common/guards/jwt-auth.guard'
+import { RolesGuard } from '../common/guards/roles.guard'
+import { Roles } from '../common/decorators/roles.decorator'
 
 @Controller('audit')
 export class AuditController {
   constructor(private readonly audit: AuditService) {}
 
   @Get('events')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('admin', 'manager')
   list(@Query('limit') limit?: string) {
     const n = Math.max(1, Math.min(2000, Number(limit ?? 200)))
     return { ok: true, data: this.audit.listLast(n) }

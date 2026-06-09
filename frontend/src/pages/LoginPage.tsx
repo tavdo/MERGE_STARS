@@ -102,6 +102,10 @@ export default function LoginPage() {
       setAuthError(t('authPanel.passwordMismatch', { defaultValue: 'Passwords do not match' }))
       return
     }
+    if (!codeSent) {
+      setAuthError(t('authPanel.sendCodeFirst', { defaultValue: 'Click “Send code” and check your email first' }))
+      return
+    }
     if (!/^\d{6}$/.test(verificationCode.trim())) {
       setAuthError(t('authPanel.codeRequired', { defaultValue: 'Enter the 6-digit verification code sent to your email' }))
       return

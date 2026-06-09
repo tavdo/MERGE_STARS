@@ -89,7 +89,19 @@ echo ""
 
 echo "-- .env --"
 if [ -f "$REPO_ROOT/.env" ]; then
-  grep -E "^FRONTEND_URL=|^PORT=" "$REPO_ROOT/.env" 2>/dev/null || warn "check .env FRONTEND_URL"
+  grep -E "^FRONTEND_URL=|^PORT=|^EMAIL_VERIFY=" "$REPO_ROOT/.env" 2>/dev/null || warn "check .env FRONTEND_URL"
+  if grep -qE '^SMTP_USER=.+@' "$REPO_ROOT/.env" 2>/dev/null; then
+    SMTP_USER_SHOW="$(grep '^SMTP_USER=' "$REPO_ROOT/.env" | cut -d= -f2-)"
+    ok "SMTP_USER set ($SMTP_USER_SHOW)"
+  else
+    err "SMTP_USER missing — verification emails will fail"
+  fi
+  HEALTH_JSON="$(curl -sf --max-time 3 http://127.0.0.1:3000/api/health 2>/dev/null || true)"
+  if echo "$HEALTH_JSON" | grep -q '"mail":"smtp"'; then
+    ok "health reports mail=smtp"
+  elif echo "$HEALTH_JSON" | grep -q '"mail":"dev-log"'; then
+    err "health reports mail=dev-log — set SMTP_* in .env"
+  fi
 else
   warn ".env missing"
 fi

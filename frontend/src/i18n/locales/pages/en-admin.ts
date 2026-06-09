@@ -2,6 +2,13 @@ export default {
   admin: {
     panel: 'ADMIN PANEL',
     logout: 'LOGOUT',
+    login: {
+      title: 'ADMIN PORTAL',
+      subtitle: 'Restricted area — authorized personnel only',
+      enter: 'ENTER ADMIN PANEL',
+      denied: 'Access denied. Admin or manager role required.',
+      backToSite: '← Back to public site',
+    },
     nav: {
       dashboard: 'DASHBOARD',
       bankReview: 'BANK REVIEW',

@@ -2,6 +2,8 @@ import {
   BadRequestException,
   ConflictException,
   Injectable,
+  Logger,
+  ServiceUnavailableException,
   UnauthorizedException,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
@@ -20,6 +22,8 @@ import { LoginDto, RegisterDto } from './dto/auth.dto';
 
 @Injectable()
 export class AuthService {
+  private readonly log = new Logger(AuthService.name);
+
   constructor(
     @InjectRepository(User) private readonly users: Repository<User>,
     @InjectRepository(RefreshToken)
@@ -106,10 +110,21 @@ export class AuthService {
 
     const code = String(randomInt(100000, 999999));
     const expiresAt = new Date(Date.now() + 15 * 60_000);
+
+    try {
+      await this.mail.sendVerificationCode(normalized, code);
+    } catch (err) {
+      this.log.error(
+        `Verification email to ${normalized} failed: ${(err as Error).message}`,
+      );
+      throw new ServiceUnavailableException(
+        'Could not send verification email. Please try again in a minute.',
+      );
+    }
+
     await this.emailCodes.save(
       this.emailCodes.create({ email: normalized, code, expiresAt, used: false }),
     );
-    await this.mail.sendVerificationCode(normalized, code);
     return { ok: true, message: 'Verification code sent' };
   }
 

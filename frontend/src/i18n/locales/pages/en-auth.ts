@@ -39,6 +39,7 @@ export default {
     sendCode: 'Send code',
     codeSent: 'Verification code sent — check your inbox',
     codeRequired: 'Enter the 6-digit verification code sent to your email',
+    sendCodeFirst: 'Click “Send code” and check your email first',
     sendCodeFailed: 'Could not send verification code',
     agreeTermsPrefix: 'I agree to the',
     agreePrivacyPrefix: 'I agree to the',

@@ -1,24 +1,27 @@
 import { useState, useEffect, type ReactNode } from 'react'
-import { Link, useLocation, useNavigate } from 'react-router-dom'
+import { Link, useLocation } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import LanguageSwitcher from './LanguageSwitcher'
 import SiteLogo from './SiteLogo'
 
+import { useAdminLogout } from '@/features/auth/hooks/useAuth'
+import { useAuthStore } from '@/features/auth/store/auth.store'
+import { ROUTES } from '@/router/routes'
+
 const NAV = [
-  { icon: '⊞', labelKey: 'admin.nav.dashboard', href: '/dashboard' },
-  { icon: '🏦', labelKey: 'admin.nav.bankReview', href: '/bank-review' },
-  { icon: '🗂', labelKey: 'admin.nav.auditCenter', href: '/audit' },
-  { icon: '🛡', labelKey: 'admin.nav.security', href: '/security' },
-  { icon: '🗄', labelKey: 'admin.nav.dataGov', href: '/data-governance' },
-  { icon: '🧯', labelKey: 'admin.nav.continuity', href: '/business-continuity' },
+  { icon: '📋', labelKey: 'admin.nav.applications', href: ROUTES.ADMIN },
   { icon: '👥', labelKey: 'admin.nav.users', href: '/admin/users' },
   { icon: '🪪', labelKey: 'admin.nav.kyc', href: '/admin/kyc' },
-  { icon: '📋', labelKey: 'admin.nav.applications', href: '/admin' },
   { icon: '🏦', labelKey: 'admin.nav.finance', href: '/admin/finance' },
   { icon: '💎', labelKey: 'admin.nav.crystal', href: '/admin/crystal' },
   { icon: '🏭', labelKey: 'admin.nav.production', href: '/admin/production' },
   { icon: '📊', labelKey: 'admin.nav.analytics', href: '/admin/analytics' },
   { icon: '📜', labelKey: 'admin.nav.auditLog', href: '/admin/audit' },
+  { icon: '🗂', labelKey: 'admin.nav.auditCenter', href: '/admin/audit-center' },
+  { icon: '🏦', labelKey: 'admin.nav.bankReview', href: '/admin/bank-review' },
+  { icon: '🛡', labelKey: 'admin.nav.security', href: '/admin/security' },
+  { icon: '🗄', labelKey: 'admin.nav.dataGov', href: '/admin/data-governance' },
+  { icon: '🧯', labelKey: 'admin.nav.continuity', href: '/admin/business-continuity' },
   { icon: '⚙', labelKey: 'admin.nav.settings', href: '/admin/settings' },
 ] as const
 
@@ -32,8 +35,12 @@ export default function AdminLayout({ children, title, subtitle }: Props) {
   const { t } = useTranslation()
   const [mobileNavOpen, setMobileNavOpen] = useState(false)
   const location = useLocation()
-  const navigate = useNavigate()
+  const logout = useAdminLogout()
+  const user = useAuthStore((s) => s.user)
   const headerTitle = title ?? t('admin.panel')
+  const initials = user
+    ? `${user.firstName?.[0] ?? ''}${user.lastName?.[0] ?? ''}`.toUpperCase() || 'A'
+    : 'A'
 
   useEffect(() => {
     setMobileNavOpen(false)
@@ -73,7 +80,7 @@ export default function AdminLayout({ children, title, subtitle }: Props) {
 
       <aside className={`admin-sidebar${mobileNavOpen ? ' admin-sidebar--mobile-open' : ''}`}>
         <div className="admin-sidebar-head">
-          <Link to="/" className="admin-sidebar-brand" onClick={closeMobileNav}>
+          <Link to={ROUTES.ADMIN} className="admin-sidebar-brand" onClick={closeMobileNav}>
             <SiteLogo size="sm" />
             <div>
               <p className="admin-brand-merge">MERGE</p>
@@ -111,7 +118,7 @@ export default function AdminLayout({ children, title, subtitle }: Props) {
           type="button"
           onClick={() => {
             closeMobileNav()
-            navigate('/login')
+            logout()
           }}
           className="admin-logout"
         >
@@ -142,7 +149,7 @@ export default function AdminLayout({ children, title, subtitle }: Props) {
           <div className="admin-header-actions">
             <LanguageSwitcher variant="compact" />
             <span className="admin-role-badge">ADMIN</span>
-            <div className="admin-avatar">A</div>
+            <div className="admin-avatar">{initials}</div>
           </div>
         </header>
 

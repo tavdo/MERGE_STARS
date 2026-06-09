@@ -1,6 +1,4 @@
-import { Navigate } from 'react-router-dom'
-import BankReviewLayout from '../../components/BankReviewLayout'
-import { useAuthStore } from '@/features/auth/store/auth.store'
+import AdminLayout from '../../components/AdminLayout'
 
 const SECTIONS = [
   'Executive Summary',
@@ -29,14 +27,8 @@ const STATUS = [
 ] as const
 
 export default function BankReviewPage() {
-  const token = useAuthStore((s) => s.accessToken)
-  const user = useAuthStore((s) => s.user)
-  const allowed = user?.roles?.some((r) => r === 'admin' || r === 'manager' || r === 'developer')
-  if (!token) return <Navigate to="/login" replace />
-  if (!allowed) return <Navigate to="/dashboard" replace />
-
   return (
-    <BankReviewLayout title="BANK REVIEW CENTER">
+    <AdminLayout title="ADMIN PANEL" subtitle="BANK REVIEW CENTER">
       <div
         className="gold-card"
         style={{
@@ -66,7 +58,15 @@ export default function BankReviewPage() {
         </div>
         <div style={{ padding: '18px 20px', display: 'grid', gap: '10px' }}>
           {SECTIONS.map((s) => (
-            <div key={s} style={{ padding: '14px', borderRadius: '4px', border: '1px solid rgba(255,255,255,0.06)', background: 'rgba(255,255,255,0.02)' }}>
+            <div
+              key={s}
+              style={{
+                padding: '14px',
+                borderRadius: '4px',
+                border: '1px solid rgba(255,255,255,0.06)',
+                background: 'rgba(255,255,255,0.02)',
+              }}
+            >
               <p style={{ margin: 0, color: '#fff', fontSize: '13px', fontWeight: 700 }}>{s}</p>
               <p style={{ margin: '6px 0 0', color: 'rgba(255,255,255,0.45)', fontSize: '12px', lineHeight: 1.6 }}>
                 Prepared for review. Evidence and controls required before any decision.
@@ -75,7 +75,6 @@ export default function BankReviewPage() {
           ))}
         </div>
       </div>
-    </BankReviewLayout>
+    </AdminLayout>
   )
 }
-
