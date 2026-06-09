@@ -21,8 +21,10 @@ if [ -f .env ]; then
   else
     sed -i 's/^EMAIL_VERIFY=.*/EMAIL_VERIFY=true/' .env
   fi
-  if ! grep -q '^SMTP_PORT=' .env; then
-    echo 'SMTP_PORT=465' >> .env
+  if grep -q '^SMTP_PORT=' .env; then
+    sed -i 's/^SMTP_PORT=.*/SMTP_PORT=587/' .env
+  else
+    echo 'SMTP_PORT=587' >> .env
   fi
   set -a
   load_env_file .env
@@ -165,14 +167,22 @@ else
 fi
 
 echo "==> SMTP verify (registration / forgot-password emails)"
-if [ -f "$SCRIPT_DIR/test-smtp.sh" ]; then
+ENV_FILE="$REPO_ROOT/.env"
+if [ -f "$SCRIPT_DIR/test-smtp.sh" ] && [ -f "$ENV_FILE" ]; then
+  cd "$REPO_ROOT"
   if ! bash "$SCRIPT_DIR/test-smtp.sh" --verify-only; then
     echo "    Retrying SMTP on port 587..."
-    sed -i 's/^SMTP_PORT=.*/SMTP_PORT=587/' .env
+    sed -i 's/^SMTP_PORT=.*/SMTP_PORT=587/' "$ENV_FILE"
     set -a
-    load_env_file .env
+    load_env_file "$ENV_FILE"
     set +a
-    bash "$SCRIPT_DIR/test-smtp.sh" --verify-only
+    if command -v systemctl >/dev/null 2>&1; then
+      systemctl restart merge-stars-backend
+      wait_for_backend || true
+    fi
+    if ! bash "$SCRIPT_DIR/test-smtp.sh" --verify-only; then
+      echo "WARNING: SMTP still failing — add GitHub secret SMTP_PASS and ensure outbound port 587 is open"
+    fi
   fi
 fi
 

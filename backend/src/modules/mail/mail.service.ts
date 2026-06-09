@@ -6,7 +6,7 @@ import type { Transporter } from 'nodemailer';
 export class MailService implements OnModuleInit {
   private readonly log = new Logger(MailService.name);
   private transporter: Transporter | null = null;
-  private readonly sendTimeoutMs = Number(process.env.SMTP_TIMEOUT_MS ?? 15_000);
+  private readonly sendTimeoutMs = Number(process.env.SMTP_TIMEOUT_MS ?? 30_000);
 
   async onModuleInit() {
     if (!this.isConfigured()) {

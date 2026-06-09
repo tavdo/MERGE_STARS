@@ -24,7 +24,7 @@ require('dotenv').config({ path: '../.env' });
 const nodemailer = require('nodemailer');
 const user = (process.env.SMTP_USER || '').trim().toLowerCase();
 const pass = (process.env.SMTP_PASS || '').trim();
-const port = Number(process.env.SMTP_PORT || 465);
+const port = Number(process.env.SMTP_PORT || 587);
 
 if (!user || !pass) {
   console.error('FAIL: SMTP_USER and SMTP_PASS must be set in .env');
@@ -37,6 +37,9 @@ const t = nodemailer.createTransport({
   secure: port === 465,
   requireTLS: port === 587,
   auth: { user, pass },
+  connectionTimeout: 30_000,
+  greetingTimeout: 30_000,
+  socketTimeout: 30_000,
 });
 
 (async () => {
