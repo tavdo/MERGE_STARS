@@ -41,8 +41,16 @@ export class MailService {
     });
   }
 
+  /** Gmail requires From to match the authenticated SMTP_USER account. */
   private fromAddress() {
-    return process.env.MAIL_FROM ?? 'MERGE STARS <noreply@mergestars.com>';
+    const user = process.env.SMTP_USER?.trim().toLowerCase();
+    if (!user) {
+      return process.env.MAIL_FROM?.trim() ?? 'MERGE STARS <noreply@mergestars.com>';
+    }
+    const raw = process.env.MAIL_FROM?.trim().replace(/^['"]|['"]$/g, '') ?? '';
+    const nameMatch = raw.match(/^(.+?)\s*</);
+    const name = (nameMatch?.[1] ?? raw.replace(/<[^>]+>/g, '')).trim() || 'MERGE STARS';
+    return `${name} <${user}>`;
   }
 
   isConfigured() {
@@ -80,7 +88,7 @@ export class MailService {
     }
   }
 
-  async sendVerificationCode(email: string, code: string) {
+  private verificationEmailContent(code: string) {
     const subject = 'MERGE STARS — Email verification code';
     const text = `Your verification code is: ${code}\n\nValid for 15 minutes.`;
     const html = `
@@ -90,7 +98,17 @@ export class MailService {
         <p style="font-size:32px;font-weight:bold;letter-spacing:0.3em;color:#f5d78e">${code}</p>
         <p style="color:#888;font-size:12px">Valid for 15 minutes.</p>
       </div>`;
+    return { subject, html, text };
+  }
+
+  async sendVerificationCode(email: string, code: string) {
+    const { subject, html, text } = this.verificationEmailContent(code);
     await this.send(email, subject, html, text);
+  }
+
+  sendVerificationCodeInBackground(email: string, code: string) {
+    const { subject, html, text } = this.verificationEmailContent(code);
+    this.sendInBackground(email, subject, html, text);
   }
 
   async sendPasswordReset(email: string, resetUrl: string) {

@@ -10,6 +10,8 @@ cd "$REPO_ROOT"
 source "$SCRIPT_DIR/load-env.sh"
 
 if [ -f .env ]; then
+  sed -i 's/Mergestar01@gmail.com/mergestars01@gmail.com/g' .env
+  sed -i 's/\r$//' .env
   set -a
   load_env_file .env
   set +a
@@ -148,6 +150,12 @@ if command -v nginx >/dev/null 2>&1; then
   systemctl reload nginx
 else
   echo "    (skip) nginx not found"
+fi
+
+echo "==> SMTP verify (registration / forgot-password emails)"
+if [ -f "$SCRIPT_DIR/test-smtp.sh" ]; then
+  bash "$SCRIPT_DIR/test-smtp.sh" --verify-only || \
+    echo "WARNING: SMTP login failed — set SMTP_USER=mergestars01@gmail.com SMTP_PORT=465 in .env, then: systemctl restart merge-stars-backend"
 fi
 
 echo ""

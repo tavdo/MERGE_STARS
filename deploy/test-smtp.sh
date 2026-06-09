@@ -10,7 +10,16 @@ load_env_file "$REPO_ROOT/.env"
 
 cd "$REPO_ROOT/backend"
 
-node -e "
+VERIFY_ONLY=0
+SEND_TO=""
+for arg in "$@"; do
+  case "$arg" in
+    --verify-only) VERIFY_ONLY=1 ;;
+    *@*) SEND_TO="$arg" ;;
+  esac
+done
+
+VERIFY_ONLY="$VERIFY_ONLY" SEND_TO="$SEND_TO" node -e "
 require('dotenv').config({ path: '../.env' });
 const nodemailer = require('nodemailer');
 const user = (process.env.SMTP_USER || '').trim().toLowerCase();
@@ -35,7 +44,12 @@ const t = nodemailer.createTransport({
   console.log('SMTP_PORT:', port);
   await t.verify();
   console.log('OK: Gmail SMTP login successful');
-  const to = process.argv[1] || user;
+  const verifyOnly = process.env.VERIFY_ONLY === '1';
+  const to = process.env.SEND_TO || '';
+  if (verifyOnly || !to) {
+    if (!verifyOnly) console.log('(skip send — pass an email to send a test message)');
+    return;
+  }
   const info = await t.sendMail({
     from: process.env.MAIL_FROM || user,
     to,
@@ -47,4 +61,4 @@ const t = nodemailer.createTransport({
   console.error('FAIL:', err.message);
   process.exit(1);
 });
-" "$@"
+"
