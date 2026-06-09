@@ -13,6 +13,13 @@ load_env_file() {
     local val="${line#*=}"
     key="${key#"${key%%[![:space:]]*}"}"
     key="${key%"${key##*[![:space:]]}"}"
+    # common typo: BREVO_API-KEY → BREVO_API_KEY (bash keys cannot contain -)
+    key="${key//BREVO_API-KEY/BREVO_API_KEY}"
+
+    if [[ "$key" =~ - ]]; then
+      echo "WARNING: skipping invalid .env key (use underscores not hyphens): $key" >&2
+      continue
+    fi
 
     if [[ "$val" =~ ^\"(.*)\"$ ]]; then
       val="${BASH_REMATCH[1]}"
