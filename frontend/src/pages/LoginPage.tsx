@@ -11,6 +11,7 @@ type Tab = 'login' | 'register'
 type Step = 1 | 2 | 3
 
 const TERM_COUNT = 3
+const emailVerifyEnabled = import.meta.env.VITE_EMAIL_VERIFY === 'true'
 
 export default function LoginPage() {
   const { t } = useTranslation()
@@ -102,13 +103,15 @@ export default function LoginPage() {
       setAuthError(t('authPanel.passwordMismatch', { defaultValue: 'Passwords do not match' }))
       return
     }
-    if (!codeSent) {
-      setAuthError(t('authPanel.sendCodeFirst', { defaultValue: 'Click “Send code” and check your email first' }))
-      return
-    }
-    if (!/^\d{6}$/.test(verificationCode.trim())) {
-      setAuthError(t('authPanel.codeRequired', { defaultValue: 'Enter the 6-digit verification code sent to your email' }))
-      return
+    if (emailVerifyEnabled) {
+      if (!codeSent) {
+        setAuthError(t('authPanel.sendCodeFirst', { defaultValue: 'Click “Send code” and check your email first' }))
+        return
+      }
+      if (!/^\d{6}$/.test(verificationCode.trim())) {
+        setAuthError(t('authPanel.codeRequired', { defaultValue: 'Enter the 6-digit verification code sent to your email' }))
+        return
+      }
     }
     setAuthError(null)
     setStep(3)
@@ -134,7 +137,7 @@ export default function LoginPage() {
         phone: phone.trim() ? `${phoneCode}${phone.replace(/\D/g, '')}` : undefined,
         email: email.trim().toLowerCase(),
         password: regPassword,
-        verificationCode: verificationCode.trim(),
+        ...(emailVerifyEnabled ? { verificationCode: verificationCode.trim() } : {}),
         referralCode: searchParams.get('ref')?.trim() || undefined,
       },
       {
@@ -297,22 +300,28 @@ export default function LoginPage() {
               <div className="flex flex-col gap-4">
                 <div>
                   <label className="auth-field-label">{t('auth.email')}</label>
-                  <div className="flex gap-2">
-                    <input className="gold-input flex-1" type="email" value={email} onChange={(e) => { setEmail(e.target.value); setCodeSent(false) }} placeholder={t('authPanel.emailPlaceholder')} required />
-                    <button type="button" onClick={handleSendCode} disabled={sendCode.isPending} className="gold-btn-outline shrink-0 px-4" style={{ borderRadius: '2px', whiteSpace: 'nowrap' }}>
-                      {sendCode.isPending ? '…' : t('authPanel.sendCode', { defaultValue: 'Send code' })}
-                    </button>
-                  </div>
-                  {codeSent && (
+                  {emailVerifyEnabled ? (
+                    <div className="flex gap-2">
+                      <input className="gold-input flex-1" type="email" value={email} onChange={(e) => { setEmail(e.target.value); setCodeSent(false) }} placeholder={t('authPanel.emailPlaceholder')} required />
+                      <button type="button" onClick={handleSendCode} disabled={sendCode.isPending} className="gold-btn-outline shrink-0 px-4" style={{ borderRadius: '2px', whiteSpace: 'nowrap' }}>
+                        {sendCode.isPending ? '…' : t('authPanel.sendCode', { defaultValue: 'Send code' })}
+                      </button>
+                    </div>
+                  ) : (
+                    <input className="gold-input" type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder={t('authPanel.emailPlaceholder')} required />
+                  )}
+                  {emailVerifyEnabled && codeSent && (
                     <p className="text-[11px] mt-1" style={{ color: '#86efac' }}>
                       {t('authPanel.codeSent', { defaultValue: 'Verification code sent — check your inbox' })}
                     </p>
                   )}
                 </div>
-                <div>
-                  <label className="auth-field-label">{t('authPanel.verificationCode', { defaultValue: 'Verification code' })}</label>
-                  <input className="gold-input" inputMode="numeric" maxLength={6} value={verificationCode} onChange={(e) => setVerificationCode(e.target.value.replace(/\D/g, '').slice(0, 6))} placeholder={t('authPanel.codePlaceholder')} required />
-                </div>
+                {emailVerifyEnabled && (
+                  <div>
+                    <label className="auth-field-label">{t('authPanel.verificationCode', { defaultValue: 'Verification code' })}</label>
+                    <input className="gold-input" inputMode="numeric" maxLength={6} value={verificationCode} onChange={(e) => setVerificationCode(e.target.value.replace(/\D/g, '').slice(0, 6))} placeholder={t('authPanel.codePlaceholder')} required />
+                  </div>
+                )}
                 <div>
                   <label className="auth-field-label">{t('auth.password')}</label>
                   <input className="gold-input" type="password" value={regPassword} onChange={(e) => setRegPassword(e.target.value)} placeholder={t('authPanel.passwordCreatePlaceholder')} required minLength={8} />
