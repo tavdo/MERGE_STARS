@@ -14,6 +14,7 @@ const NAV = [
   { icon: '◦', labelKey: 'dashboard.nav.coins', href: '/dashboard/coins' },
   { icon: '◦', labelKey: 'dashboard.nav.investments', href: '/dashboard/investments' },
   { icon: '◦', labelKey: 'dashboard.nav.brandLine', href: '/dashboard/brand' },
+  { icon: '◦', labelKey: 'dashboard.nav.collections', href: '/dashboard/collections', match: ['/dashboard/collections'] },
   { icon: '◦', labelKey: 'dashboard.nav.qrIdentity', href: '/dashboard/qr' },
   { icon: '◦', labelKey: 'dashboard.nav.payment', href: '/dashboard/payment' },
   { icon: '◦', labelKey: 'dashboard.nav.delivery', href: '/dashboard/delivery' },

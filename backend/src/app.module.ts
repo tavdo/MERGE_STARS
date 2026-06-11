@@ -26,6 +26,7 @@ import { HealthModule } from './modules/health/health.module';
 import { NotificationsModule } from './modules/notifications/notifications.module';
 import { KycModule } from './modules/kyc/kyc.module';
 import { ReferralsModule } from './modules/referrals/referrals.module';
+import { CatalogModule } from './modules/catalog/catalog.module';
 
 @Module({
   imports: [
@@ -55,6 +56,7 @@ import { ReferralsModule } from './modules/referrals/referrals.module';
     NotificationsModule,
     KycModule,
     ReferralsModule,
+    CatalogModule,
   ],
   controllers: [AppController],
   providers: [

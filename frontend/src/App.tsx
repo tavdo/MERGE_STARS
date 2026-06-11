@@ -24,6 +24,9 @@ import LegalClassificationPage from './pages/public/LegalClassificationPage'
 
 // Dashboard pages
 import BrandLinePage     from './pages/dashboard/BrandLinePage'
+import CollectionsPage   from './pages/dashboard/CollectionsPage'
+import CollectionDetailPage from './pages/dashboard/CollectionDetailPage'
+import CollectionsBrowsePage from './pages/public/CollectionsBrowsePage'
 import QRIdentityPage    from './pages/dashboard/QRIdentityPage'
 import OrdersPage        from './pages/dashboard/OrdersPage'
 import PaymentPage       from './pages/dashboard/PaymentPage'
@@ -92,6 +95,8 @@ function AppRoutes() {
         <Route path="/referral-policy" element={<ReferralPolicyPage />} />
         <Route path="/trust" element={<TrustCenterPage />} />
         <Route path="/legal-classification" element={<LegalClassificationPage />} />
+        <Route path="/collections"          element={<CollectionsBrowsePage />} />
+        <Route path="/collections/:slug"   element={<CollectionsBrowsePage />} />
         <Route path="/login"           element={<LoginPage />} />
         <Route path="/register"        element={<Navigate to="/login?tab=register" replace />} />
         <Route path="/forgot-password" element={<ForgotPasswordPage />} />
@@ -107,6 +112,8 @@ function AppRoutes() {
           <Route path="/dashboard/settings"     element={<SettingsPage />} />
           <Route path="/dashboard/support"      element={<SupportPage />} />
           <Route path="/dashboard/brand"        element={<BrandLinePage />} />
+          <Route path="/dashboard/collections"  element={<CollectionsPage />} />
+          <Route path="/dashboard/collections/:id" element={<CollectionDetailPage />} />
           <Route path="/dashboard/qr"           element={<QRIdentityPage />} />
           <Route path="/dashboard/orders"       element={<OrdersPage />} />
           <Route path="/dashboard/payment"      element={<PaymentPage />} />

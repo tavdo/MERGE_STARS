@@ -9,6 +9,8 @@ import { EmailVerificationCode } from './email-verification-code.entity';
 import { PasswordResetToken } from './password-reset-token.entity';
 import { Notification } from './notification.entity';
 import { KycDocument } from './kyc-document.entity';
+import { CatalogCollection } from './catalog-collection.entity';
+import { CatalogItem } from './catalog-item.entity';
 
 export const entities = [
   User,
@@ -22,6 +24,8 @@ export const entities = [
   PasswordResetToken,
   Notification,
   KycDocument,
+  CatalogCollection,
+  CatalogItem,
 ];
 
 export {
@@ -36,4 +40,6 @@ export {
   PasswordResetToken,
   Notification,
   KycDocument,
+  CatalogCollection,
+  CatalogItem,
 };
