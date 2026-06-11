@@ -41,6 +41,7 @@ export class AuthController {
   constructor(private readonly auth: AuthService) {}
 
   @Post('send-verification-code')
+  @Throttle({ default: { limit: 5, ttl: 60_000 } })
   @UsePipes(new ValidationPipe({ whitelist: true, transform: true }))
   sendVerificationCode(@Body() dto: SendVerificationCodeDto) {
     return this.auth.sendVerificationCode(dto.email);
@@ -76,7 +77,7 @@ export class AuthController {
   @Post('reset-password')
   @UsePipes(new ValidationPipe({ whitelist: true, transform: true }))
   resetPassword(@Body() dto: ResetPasswordDto) {
-    return this.auth.resetPassword(dto.token, dto.password);
+    return this.auth.resetPassword(dto.token, dto.password, dto.email);
   }
 
   @Post('refresh')

@@ -248,17 +248,22 @@ export class MailService implements OnModuleInit {
     this.sendInBackground(email, subject, html, text);
   }
 
-  async sendPasswordReset(email: string, resetUrl: string) {
-    const subject = 'MERGE STARS — Reset your password';
-    const text = `Reset your password: ${resetUrl}\n\nValid for 1 hour. If you did not request this, ignore this email.`;
+  private passwordResetCodeContent(code: string) {
+    const subject = 'MERGE STARS — Password reset code';
+    const text = `Your password reset code is: ${code}\n\nValid for 15 minutes. If you did not request this, ignore this email.`;
     const html = `
       <div style="font-family:sans-serif;max-width:480px;margin:0 auto;padding:24px;background:#080808;color:#fff;border:1px solid #c9a84c">
         <h2 style="color:#c9a84c;letter-spacing:0.2em;font-size:14px">MERGE STARS</h2>
-        <p>Click to reset your password:</p>
-        <p><a href="${resetUrl}" style="color:#f5d78e">${resetUrl}</a></p>
-        <p style="color:#888;font-size:12px">Valid for 1 hour.</p>
+        <p>Your password reset code:</p>
+        <p style="font-size:32px;font-weight:bold;letter-spacing:0.3em;color:#f5d78e">${code}</p>
+        <p style="color:#888;font-size:12px">Valid for 15 minutes.</p>
       </div>`;
-    this.sendInBackground(email, subject, html, text);
+    return { subject, html, text };
+  }
+
+  async sendPasswordResetCode(email: string, code: string) {
+    const { subject, html, text } = this.passwordResetCodeContent(code);
+    await this.send(email, subject, html, text);
   }
 
   async sendApplicationReceived(email: string, name: string, appId: string) {

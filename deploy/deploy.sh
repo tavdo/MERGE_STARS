@@ -19,6 +19,9 @@ if [ -f .env ]; then
   else
     echo 'MAIL_FROM="MERGE STARS <noreply@mergestars.com>"' >> .env
   fi
+  if ! grep -q '^FRONTEND_URL=' .env; then
+    echo 'FRONTEND_URL=https://mergestars.com' >> .env
+  fi
   if ! grep -q '^EMAIL_VERIFY=' .env; then
     echo 'EMAIL_VERIFY=true' >> .env
   else

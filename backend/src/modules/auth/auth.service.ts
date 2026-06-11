@@ -238,28 +238,56 @@ export class AuthService {
     const user = await this.users.findOne({ where: { email: normalized } });
 
     if (user) {
+      const recent = await this.resetTokens.findOne({
+        where: { email: normalized },
+        order: { createdAt: 'DESC' },
+      });
+      if (recent && Date.now() - recent.createdAt.getTime() < 60_000) {
+        throw new BadRequestException('Please wait 60 seconds before requesting a new code');
+      }
+
       await this.resetTokens.delete({ email: normalized });
-      const token = randomBytes(32).toString('hex');
-      const expiresAt = new Date(Date.now() + 60 * 60_000);
+      const code = String(randomInt(100000, 999999));
+      const expiresAt = new Date(Date.now() + 15 * 60_000);
+
+      try {
+        await this.mail.sendPasswordResetCode(normalized, code);
+      } catch {
+        throw new ServiceUnavailableException(
+          'Could not send reset email. Please try again in a minute.',
+        );
+      }
+
       await this.resetTokens.save(
-        this.resetTokens.create({ email: normalized, token, expiresAt, used: false }),
+        this.resetTokens.create({ email: normalized, token: code, expiresAt, used: false }),
       );
-      const base = (process.env.FRONTEND_URL ?? 'http://localhost:5173').replace(/\/$/, '');
-      this.mail.sendPasswordReset(normalized, `${base}/reset-password?token=${token}`);
     }
 
-    return { ok: true, message: 'If that email exists, a reset link was sent' };
+    return { ok: true, message: 'If that email is registered, a reset code was sent' };
   }
 
-  async resetPassword(token: string, password: string) {
-    const row = await this.resetTokens.findOne({ where: { token, used: false } });
+  async resetPassword(token: string, password: string, email?: string) {
+    const isCode = /^\d{6}$/.test(token);
+    let row: PasswordResetToken | null;
+    if (isCode) {
+      const normalized = email?.trim().toLowerCase();
+      if (!normalized) {
+        throw new BadRequestException('Email is required with reset code');
+      }
+      row = await this.resetTokens.findOne({
+        where: { email: normalized, token, used: false },
+        order: { createdAt: 'DESC' },
+      });
+    } else {
+      row = await this.resetTokens.findOne({ where: { token, used: false } });
+    }
     if (!row || row.expiresAt < new Date()) {
-      throw new BadRequestException('Invalid or expired reset link');
+      throw new BadRequestException('Invalid or expired reset code');
     }
 
     const user = await this.users.findOne({ where: { email: row.email } });
     if (!user) {
-      throw new BadRequestException('Invalid or expired reset link');
+      throw new BadRequestException('Invalid or expired reset code');
     }
 
     user.passwordHash = await this.hashPassword(password);
