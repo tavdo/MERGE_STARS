@@ -1,6 +1,9 @@
 import { useState } from 'react'
+import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
+import { useQuery } from '@tanstack/react-query'
 import DashboardLayout from '../../components/DashboardLayout'
+import { catalogApi } from '@/features/catalog/api/catalog.api'
 
 export default function BrandLinePage() {
   const { t } = useTranslation()
@@ -8,10 +11,17 @@ export default function BrandLinePage() {
   const [desc, setDesc] = useState('')
   const [saved, setSaved] = useState(false)
 
+  const { data: collections = [] } = useQuery({
+    queryKey: ['catalog-collections'],
+    queryFn: () => catalogApi.listMine().then((r) => r.data.data),
+  })
+
+  const totalItems = collections.reduce((n, c) => n + c.itemCount, 0)
+
   const stats = [
     { label: t('brandLine.profileViews'), value: '1,247' },
     { label: t('brandLine.qrScans'), value: '89' },
-    { label: t('brandLine.activeProducts'), value: '3' },
+    { label: t('brandLine.activeProducts'), value: String(totalItems) },
     { label: t('brandLine.brandStatus'), value: t('brandLine.active'), color: '#22c55e' },
   ]
 
@@ -136,6 +146,48 @@ export default function BrandLinePage() {
                   </span>
                 </div>
               </div>
+            </div>
+
+            <div className="gold-card catalog-brand-collections" style={{ padding: '24px', borderRadius: '4px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', gap: '12px' }}>
+                <p style={{ fontSize: '11px', fontWeight: 700, letterSpacing: '0.2em', color: '#c9a84c', margin: 0 }}>
+                  {t('collections.brandCollections', { defaultValue: 'MY CATALOGS' })}
+                </p>
+                <Link to="/dashboard/collections" className="text-[11px] text-[#c9a84c] no-underline hover:underline">
+                  {t('collections.manageAll', { defaultValue: 'Manage →' })}
+                </Link>
+              </div>
+              {collections.length === 0 ? (
+                <p style={{ fontSize: '12px', color: 'rgba(255,255,255,0.4)', marginBottom: '16px' }}>
+                  {t('collections.brandEmpty', { defaultValue: 'No catalogs yet. Create your first collection.' })}
+                </p>
+              ) : (
+                <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 16px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                  {collections.slice(0, 4).map((c) => (
+                    <li key={c.id}>
+                      <Link
+                        to={`/dashboard/collections/${c.id}`}
+                        style={{
+                          display: 'flex',
+                          justifyContent: 'space-between',
+                          padding: '10px 12px',
+                          borderRadius: '4px',
+                          border: '1px solid rgba(201,168,76,0.12)',
+                          textDecoration: 'none',
+                          color: '#fff',
+                          fontSize: '12px',
+                        }}
+                      >
+                        <span>{c.title}</span>
+                        <span style={{ color: 'rgba(255,255,255,0.4)' }}>{c.itemCount} items</span>
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              )}
+              <Link to="/dashboard/collections" className="gold-btn w-full justify-center" style={{ borderRadius: '2px', textDecoration: 'none' }}>
+                {t('collections.new', { defaultValue: '+ New collection' })}
+              </Link>
             </div>
 
             <div className="gold-card" style={{ padding: '24px', borderRadius: '4px' }}>
