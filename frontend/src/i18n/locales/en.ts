@@ -44,7 +44,7 @@ export default {
     slogan: 'Where Luxury Meets Innovation',
     legalName: 'MERGE STARS LLC „Merge Varskvlavebi"',
     companyId: 'ID 406286424',
-    contactEmail: 'Mergestar01@gmail.com',
+    contactEmail: 'mergestars01@gmail.com',
     contactPhone: '+995 557 513 613',
     contactAddress: 'Tbilisi, Isani District, B. Gabriels Salosi Ave. N120',
   },
