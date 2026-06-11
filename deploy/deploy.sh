@@ -67,9 +67,20 @@ if [ "$NODE_MAJOR" -lt 20 ]; then
   echo "WARNING: Node 20+ recommended (current: $(node -v)). Upgrade with NodeSource if builds fail."
 fi
 
+npm_ci_clean() {
+  local dir="$1"
+  cd "$dir"
+  # Avoid ENOTEMPTY when npm ci tries to replace a partial/corrupt node_modules (common on VPS)
+  if [ -d node_modules ]; then
+    echo "    cleaning $dir/node_modules"
+    rm -rf node_modules
+  fi
+  npm ci --include=dev
+}
+
 echo "==> Backend: install & build"
+npm_ci_clean "$REPO_ROOT/backend"
 cd "$REPO_ROOT/backend"
-npm ci --include=dev
 npm run build
 npm prune --omit=dev
 test -f dist/main.js || { echo "ERROR: backend build failed - dist/main.js missing"; exit 1; }
@@ -147,8 +158,8 @@ else
 fi
 
 echo "==> Frontend: install & build"
+npm_ci_clean "$REPO_ROOT/frontend"
 cd "$REPO_ROOT/frontend"
-npm ci --include=dev
 npm run build
 if [ ! -f dist/index.html ]; then
   echo "ERROR: frontend build failed - dist/index.html not created"
