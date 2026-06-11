@@ -16,11 +16,10 @@ if [ -f .env ]; then
   if grep -q '^MAIL_FROM=' .env; then
     sed -i 's/^MAIL_FROM=.*/MAIL_FROM="MERGE STARS <mergestars01@gmail.com>"/' .env
   fi
-  # Temporarily off until Brevo/SMTP is configured on VPS
   if ! grep -q '^EMAIL_VERIFY=' .env; then
-    echo 'EMAIL_VERIFY=false' >> .env
+    echo 'EMAIL_VERIFY=true' >> .env
   else
-    sed -i 's/^EMAIL_VERIFY=.*/EMAIL_VERIFY=false/' .env
+    sed -i 's/^EMAIL_VERIFY=.*/EMAIL_VERIFY=true/' .env
   fi
   if grep -q '^SMTP_PORT=' .env; then
     sed -i 's/^SMTP_PORT=.*/SMTP_PORT=587/' .env
@@ -38,7 +37,7 @@ unset NODE_ENV
 
 export VITE_API_URL="${VITE_API_URL:-/api}"
 export VITE_WS_URL="${VITE_WS_URL:-}"
-export VITE_EMAIL_VERIFY="${VITE_EMAIL_VERIFY:-false}"
+export VITE_EMAIL_VERIFY="${VITE_EMAIL_VERIFY:-true}"
 export NODE_OPTIONS="${NODE_OPTIONS:---max-old-space-size=2048}"
 
 echo "==> Deploy MERGE STARS from $REPO_ROOT"

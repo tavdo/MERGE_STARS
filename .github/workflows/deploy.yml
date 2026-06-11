@@ -88,6 +88,11 @@ jobs:
                 echo 'BREVO_API_KEY=${{ secrets.BREVO_API_KEY }}' >> .env
               fi
               grep -q '^SMTP_USER=' .env 2>/dev/null || echo 'SMTP_USER=mergestars01@gmail.com' >> .env
+              if grep -q '^EMAIL_VERIFY=' .env 2>/dev/null; then
+                sed -i 's/^EMAIL_VERIFY=.*/EMAIL_VERIFY=true/' .env
+              else
+                echo 'EMAIL_VERIFY=true' >> .env
+              fi
             fi
             if [ -n "${{ secrets.SMTP_PASS }}" ]; then
               grep -q '^SMTP_HOST=' .env 2>/dev/null || echo 'SMTP_HOST=smtp.gmail.com' >> .env
