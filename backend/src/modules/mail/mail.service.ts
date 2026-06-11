@@ -144,13 +144,17 @@ export class MailService implements OnModuleInit {
     });
   }
 
-  /** Gmail requires From to match the authenticated SMTP_USER account. */
   private fromAddress() {
+    const raw = process.env.MAIL_FROM?.trim().replace(/^['"]|['"]$/g, '') ?? '';
+    // Brevo/Resend: use MAIL_FROM or authenticated domain (not Gmail freemail)
+    if (this.useBrevo() || this.useResend()) {
+      return raw || 'MERGE STARS <noreply@mergestars.com>';
+    }
+    // Gmail SMTP requires From to match SMTP_USER
     const user = process.env.SMTP_USER?.trim().toLowerCase();
     if (!user) {
-      return process.env.MAIL_FROM?.trim() ?? 'MERGE STARS <noreply@mergestars.com>';
+      return raw || 'MERGE STARS <noreply@mergestars.com>';
     }
-    const raw = process.env.MAIL_FROM?.trim().replace(/^['"]|['"]$/g, '') ?? '';
     const nameMatch = raw.match(/^(.+?)\s*</);
     const name = (nameMatch?.[1] ?? raw.replace(/<[^>]+>/g, '')).trim() || 'MERGE STARS';
     return `${name} <${user}>`;

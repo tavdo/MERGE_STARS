@@ -33,6 +33,14 @@ ACCOUNT_HTTP="$(curl -s -o /tmp/brevo-account.json -w '%{http_code}' \
 if [ "$ACCOUNT_HTTP" != "200" ]; then
   echo "FAIL: Brevo account check HTTP $ACCOUNT_HTTP"
   cat /tmp/brevo-account.json 2>/dev/null || true
+  if [ "$ACCOUNT_HTTP" = "401" ] && grep -q 'unrecognised IP' /tmp/brevo-account.json 2>/dev/null; then
+    echo ""
+    echo "Fix: Brevo → Security → Authorized IPs"
+    echo "  https://app.brevo.com/security/authorised_ips"
+    echo "  Add this server IP, or disable IP restriction."
+    curl -s -4 ifconfig.me 2>/dev/null | xargs -I{} echo "  IPv4: {}"
+    curl -s -6 ifconfig.me 2>/dev/null | xargs -I{} echo "  IPv6: {}"
+  fi
   exit 1
 fi
 echo "OK: Brevo account authenticated"
@@ -47,7 +55,8 @@ BREVO_API_KEY="$KEY" SEND_TO="$SEND_TO" node -e "
 require('dotenv').config({ path: '../.env' });
 const key = process.env.BREVO_API_KEY.trim();
 const to = process.env.SEND_TO;
-const fromEmail = (process.env.SMTP_USER || 'mergestars01@gmail.com').trim().toLowerCase();
+const rawFrom = (process.env.MAIL_FROM || 'MERGE STARS <noreply@mergestars.com>').trim();
+const fromEmail = (rawFrom.match(/<([^>]+)>/) || [])[1] || rawFrom;
 fetch('https://api.brevo.com/v3/smtp/email', {
   method: 'POST',
   headers: { 'api-key': key, 'Content-Type': 'application/json' },

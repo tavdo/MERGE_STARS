@@ -15,7 +15,9 @@ if [ -f .env ]; then
   sed -i 's/\r$//' .env
   # systemd EnvironmentFile: quote MAIL_FROM (spaces)
   if grep -q '^MAIL_FROM=' .env; then
-    sed -i 's/^MAIL_FROM=.*/MAIL_FROM="MERGE STARS <mergestars01@gmail.com>"/' .env
+    sed -i 's/^MAIL_FROM=.*/MAIL_FROM="MERGE STARS <noreply@mergestars.com>"/' .env
+  else
+    echo 'MAIL_FROM="MERGE STARS <noreply@mergestars.com>"' >> .env
   fi
   if ! grep -q '^EMAIL_VERIFY=' .env; then
     echo 'EMAIL_VERIFY=true' >> .env
