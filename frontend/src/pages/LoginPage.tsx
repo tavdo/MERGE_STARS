@@ -323,7 +323,7 @@ export default function LoginPage() {
                   </div>
                 )}
                 <div>
-                  <label className="auth-field-label">{t('auth.password')}</label>
+                  <label className="auth-field-label">{t('auth.createPassword', { defaultValue: 'CREATE PASSWORD' })}</label>
                   <input className="gold-input" type="password" value={regPassword} onChange={(e) => setRegPassword(e.target.value)} placeholder={t('authPanel.passwordCreatePlaceholder')} required minLength={8} />
                 </div>
                 <div>

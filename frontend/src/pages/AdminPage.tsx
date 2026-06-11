@@ -60,30 +60,22 @@ export default function AdminPage() {
 
   return (
     <AdminLayout title="ADMIN PANEL" subtitle="APPLICATIONS MANAGEMENT">
-          {/* Stats */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 mb-6">
+          <div className="admin-stat-grid">
             {STATS.map((s) => (
-              <div key={s.label} className="gold-card p-4" style={{ borderRadius: '4px' }}>
-                <p className="text-[9px] font-bold tracking-[0.15em] mb-2" style={{ color: 'rgba(255,255,255,0.35)' }}>{s.label}</p>
-                <p className="text-xl font-black text-white">{s.value}</p>
-                <p className="text-[10px] mt-1 font-semibold" style={{ color: s.up ? '#22c55e' : '#ef4444' }}>{s.change}</p>
+              <div key={s.label} className="admin-stat-card">
+                <p className="admin-stat-label">{s.label}</p>
+                <p className="admin-stat-value">{s.value}</p>
               </div>
             ))}
           </div>
 
-          {/* Table + detail */}
-          <div className="flex gap-5">
-            {/* Table */}
-            <div className="flex-1 gold-card" style={{ borderRadius: '4px', overflow: 'hidden' }}>
-              {/* Filters */}
-              <div
-                className="flex items-center gap-3 px-5 py-4 flex-wrap"
-                style={{ borderBottom: '1px solid rgba(201,168,76,0.1)' }}
-              >
-                <p className="text-[11px] font-bold tracking-[0.15em]" style={{ color: '#c9a84c' }}>APPLICATIONS</p>
+          <div className="flex gap-5 flex-col xl:flex-row">
+            <div className="flex-1 admin-panel">
+              <div className="admin-toolbar">
+                <p className="admin-toolbar-title">Applications</p>
                 <select
-                  className="gold-input text-[11px] py-1.5"
-                  style={{ width: 'auto' }}
+                  className="admin-field-input"
+                  style={{ width: 'auto', minHeight: '2.5rem', padding: '0.5rem 0.75rem', fontSize: '13px' }}
                   value={statusFilter}
                   onChange={(e) => setStatusFilter(e.target.value)}
                 >
@@ -91,34 +83,31 @@ export default function AdminPage() {
                   {Object.keys(STATUS_COLORS).map((s) => <option key={s}>{s}</option>)}
                 </select>
                 <input
-                  className="gold-input text-[11px] py-1.5"
-                  style={{ width: '180px' }}
+                  className="admin-field-input"
+                  style={{ width: '200px', minHeight: '2.5rem', padding: '0.5rem 0.75rem', fontSize: '13px' }}
                   placeholder="Search by ID or name..."
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
                 />
-                <button className="gold-btn ml-auto">
-                  EXPORT
+                <button type="button" className="admin-btn-secondary ml-auto">
+                  Export
                 </button>
               </div>
 
-              {/* Table */}
-              <div className="overflow-x-auto">
-                <table className="w-full">
+              <div className="admin-table-wrap">
+                <table className="admin-table">
                   <thead>
-                    <tr style={{ borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
+                    <tr>
                       {['ID', 'USER', 'COIN TYPE', 'QTY', 'TOTAL VALUE', 'STATUS', 'CRYSTAL', 'ACTIONS'].map((h) => (
-                        <th key={h} className="px-4 py-3 text-left text-[9px] font-bold tracking-[0.15em]" style={{ color: 'rgba(255,255,255,0.3)' }}>
-                          {h}
-                        </th>
+                        <th key={h}>{h}</th>
                       ))}
                     </tr>
                   </thead>
                   <tbody>
                     {isLoading ? (
-                      <tr><td colSpan={8} className="px-4 py-8 text-center text-neutral-500 text-sm">Loading…</td></tr>
+                      <tr><td colSpan={8} className="admin-empty">Loading…</td></tr>
                     ) : filtered.length === 0 ? (
-                      <tr><td colSpan={8} className="px-4 py-8 text-center text-neutral-500 text-sm">No applications</td></tr>
+                      <tr><td colSpan={8} className="admin-empty">No applications yet</td></tr>
                     ) : filtered.map((app) => {
                       const sc = STATUS_COLORS[app.status] || { bg: 'rgba(255,255,255,0.05)', color: '#fff' }
                       return (
@@ -163,8 +152,8 @@ export default function AdminPage() {
             {/* Detail panel */}
             {selected && (
               <div
-                className="w-[280px] shrink-0 gold-card p-5 flex flex-col gap-4"
-                style={{ borderRadius: '4px', maxHeight: '600px', overflowY: 'auto' }}
+                className="w-full xl:w-[300px] shrink-0 admin-section-card flex flex-col gap-4"
+                style={{ maxHeight: '600px', overflowY: 'auto' }}
               >
                 <div className="flex items-center justify-between">
                   <p className="text-[10px] font-bold tracking-[0.15em]" style={{ color: '#c9a84c' }}>APPLICATION DETAILS</p>

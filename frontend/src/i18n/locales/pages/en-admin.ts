@@ -8,8 +8,13 @@ export default {
       enter: 'ENTER ADMIN PANEL',
       denied: 'Access denied. Admin or manager role required.',
       backToSite: '← Back to public site',
+      passwordLabel: 'PASSWORD',
+      emailLabel: 'EMAIL OR USERNAME',
     },
     nav: {
+      groupOperations: 'Operations',
+      groupCompliance: 'Compliance & audit',
+      groupSystem: 'System',
       dashboard: 'DASHBOARD',
       bankReview: 'BANK REVIEW',
       auditCenter: 'AUDIT CENTER',
