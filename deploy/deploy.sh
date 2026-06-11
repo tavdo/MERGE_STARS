@@ -11,6 +11,7 @@ source "$SCRIPT_DIR/load-env.sh"
 
 if [ -f .env ]; then
   sed -i 's/Mergestar01@gmail.com/mergestars01@gmail.com/g' .env
+  sed -i 's/BREVO_API-KEY/BREVO_API_KEY/g' .env
   sed -i 's/\r$//' .env
   # systemd EnvironmentFile: quote MAIL_FROM (spaces)
   if grep -q '^MAIL_FROM=' .env; then

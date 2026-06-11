@@ -35,8 +35,17 @@ export class MailService implements OnModuleInit {
     return !!process.env.RESEND_API_KEY?.trim();
   }
 
+  /** Supports BREVO_API_KEY and common typo BREVO_API-KEY in .env */
+  private brevoApiKey() {
+    return (
+      process.env.BREVO_API_KEY?.trim() ||
+      process.env['BREVO_API-KEY']?.trim() ||
+      ''
+    );
+  }
+
   private useBrevo() {
-    return !!process.env.BREVO_API_KEY?.trim();
+    return !!this.brevoApiKey();
   }
 
   /** Resend "from" — must be a verified domain/email in Resend dashboard. */
@@ -83,7 +92,7 @@ export class MailService implements OnModuleInit {
   }
 
   private async sendViaBrevo(to: string, subject: string, html: string, text: string) {
-    const key = process.env.BREVO_API_KEY!.trim();
+    const key = this.brevoApiKey();
     const sender = this.parseFromAddress(this.fromAddress());
     const res = await fetch('https://api.brevo.com/v3/smtp/email', {
       method: 'POST',
@@ -177,6 +186,13 @@ export class MailService implements OnModuleInit {
         this.log.error(`Brevo mail to ${to} failed: ${(err as Error).message}`);
         throw err;
       }
+    }
+
+    // DigitalOcean blocks outbound SMTP — do not wait 30s in production
+    if (process.env.NODE_ENV === 'production') {
+      throw new Error(
+        'BREVO_API_KEY missing in .env — Gmail SMTP is blocked on this server',
+      );
     }
 
     const transport = this.getTransporter();

@@ -29,7 +29,11 @@ import { ReferralsModule } from './modules/referrals/referrals.module';
 
 @Module({
   imports: [
-    ConfigModule.forRoot({ isGlobal: true }),
+    ConfigModule.forRoot({
+      isGlobal: true,
+      // VPS: systemd loads repo root .env; local dev may use backend/.env
+      envFilePath: ['.env', '../.env'],
+    }),
     ThrottlerModule.forRoot({
       throttlers: [{ name: 'default', ttl: 60_000, limit: 120 }],
     }),
