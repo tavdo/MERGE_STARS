@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import AdminLayout from '../../components/AdminLayout'
 import { api } from '@/lib/axios'
+import type { ApiResponse } from '@/shared/types/api.types'
 
 type AuditEvent = {
   event_id: string
@@ -59,10 +60,16 @@ export default function AuditCenterPage() {
   useEffect(() => {
     let mounted = true
     api
-      .get<{ ok: boolean; data: AuditEvent[] }>('/audit/events?limit=500')
+      .get<ApiResponse<AuditEvent[] | { ok?: boolean; data?: AuditEvent[] }>>('/audit/events?limit=500')
       .then((res) => {
         if (!mounted) return
-        setEvents(res.data.data ?? [])
+        const payload = res.data.data
+        const list = Array.isArray(payload)
+          ? payload
+          : Array.isArray(payload?.data)
+            ? payload.data
+            : []
+        setEvents(list)
       })
       .catch((e) => {
         if (!mounted) return
@@ -81,7 +88,8 @@ export default function AuditCenterPage() {
   const grouped = useMemo(() => {
     const map = new Map<SectionKey, AuditEvent[]>()
     for (const s of SECTIONS) map.set(s, [])
-    for (const ev of events) {
+    const rows = Array.isArray(events) ? events : []
+    for (const ev of rows) {
       const { section } = classify(ev)
       map.get(section)!.push(ev)
       map.get('Audit Logs')!.push(ev)

@@ -14,7 +14,7 @@ export class AuditController {
   @Roles('admin', 'manager')
   list(@Query('limit') limit?: string) {
     const n = Math.max(1, Math.min(2000, Number(limit ?? 200)))
-    return { ok: true, data: this.audit.listLast(n) }
+    return this.audit.listLast(n)
   }
 
   /**
