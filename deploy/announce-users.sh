@@ -41,4 +41,9 @@ echo "    Brevo OK"
 mkdir -p "$REPO_ROOT/deploy/data"
 
 cd "$REPO_ROOT/backend"
+if [ ! -d node_modules/pg ]; then
+  echo "FAIL: backend/node_modules/pg missing — run: cd backend && npm ci"
+  exit 1
+fi
+export NODE_PATH="$REPO_ROOT/backend/node_modules${NODE_PATH:+:$NODE_PATH}"
 node "$REPO_ROOT/deploy/scripts/announce-users.mjs" "$@"
