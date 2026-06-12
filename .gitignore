@@ -3,3 +3,5 @@
 .env.*.local
 deploy/data/announce-sent.log
 deploy/data/.announce-recipients.json
+deploy/data/request-phone-sent.log
+deploy/data/.request-phone-recipients.json
