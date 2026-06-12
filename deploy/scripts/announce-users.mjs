@@ -1,17 +1,13 @@
 /**
  * Send platform relaunch announcement to all users via Brevo API.
- * Run via: bash deploy/announce-users.sh
+ * Users list is fetched by announce-users.sh via psql (no npm deps).
  */
 import { readFileSync, appendFileSync, existsSync } from 'fs';
 import { resolve, dirname } from 'path';
 import { fileURLToPath } from 'url';
-import pg from 'pg';
-import dotenv from 'dotenv';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const REPO_ROOT = resolve(__dirname, '../..');
-
-dotenv.config({ path: resolve(REPO_ROOT, '.env') });
 
 const args = process.argv.slice(2);
 const dryRun = args.includes('--dry-run');
@@ -19,22 +15,16 @@ const skipSent = args.includes('--skip-sent');
 const yes = args.includes('--yes');
 const testIdx = args.indexOf('--test');
 const testEmail = testIdx >= 0 ? args[testIdx + 1] : null;
-const limitIdx = args.indexOf('--limit');
-const limit = limitIdx >= 0 ? Number(args[limitIdx + 1]) : 0;
 const lang = (process.env.ANNOUNCE_LANG || 'ka').toLowerCase();
 
 const key = (process.env.BREVO_API_KEY || process.env['BREVO_API-KEY'] || '').trim();
-const dbUrl = process.env.DATABASE_URL;
 const siteUrl = (process.env.FRONTEND_URL || 'https://mergestars.com').replace(/\/$/, '');
 const delayMs = Number(process.env.ANNOUNCE_EMAIL_DELAY_MS || 600);
 const logPath = resolve(REPO_ROOT, 'deploy/data/announce-sent.log');
+const usersFile = process.env.ANNOUNCE_USERS_FILE;
 
 if (!key) {
   console.error('FAIL: BREVO_API_KEY not set in .env');
-  process.exit(1);
-}
-if (!dbUrl && !testEmail) {
-  console.error('FAIL: DATABASE_URL not set');
   process.exit(1);
 }
 
@@ -146,14 +136,14 @@ function sleep(ms) {
   return new Promise((r) => setTimeout(r, ms));
 }
 
-async function fetchUsers() {
-  const client = new pg.Client({ connectionString: dbUrl });
-  await client.connect();
-  let sql = `SELECT email, first_name, last_name FROM users WHERE status = 'active' AND email IS NOT NULL ORDER BY created_at`;
-  if (limit > 0) sql += ` LIMIT ${limit}`;
-  const { rows } = await client.query(sql);
-  await client.end();
-  return rows;
+function loadUsers() {
+  if (!usersFile || !existsSync(usersFile)) {
+    console.error('FAIL: user list missing (ANNOUNCE_USERS_FILE)');
+    process.exit(1);
+  }
+  const raw = readFileSync(usersFile, 'utf8').trim();
+  if (!raw) return [];
+  return JSON.parse(raw);
 }
 
 async function main() {
@@ -164,8 +154,8 @@ async function main() {
     users = [{ email: testEmail, first_name: 'Test', last_name: 'User' }];
     console.log(`Test mode → ${testEmail}`);
   } else {
-    users = await fetchUsers();
-    users = users.filter((u) => !sent.has(u.email.toLowerCase()));
+    users = loadUsers();
+    users = users.filter((u) => u.email && !sent.has(u.email.toLowerCase()));
     console.log(`Found ${users.length} recipient(s)${skipSent ? ' (excluding already sent)' : ''}`);
   }
 

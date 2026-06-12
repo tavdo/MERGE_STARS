@@ -40,10 +40,47 @@ echo "    Brevo OK"
 
 mkdir -p "$REPO_ROOT/deploy/data"
 
-cd "$REPO_ROOT/backend"
-if [ ! -d node_modules/pg ]; then
-  echo "FAIL: backend/node_modules/pg missing — run: cd backend && npm ci"
-  exit 1
+LIMIT=0
+TEST_MODE=0
+for ((i = 1; i <= $#; i++)); do
+  arg="${!i}"
+  case "$arg" in
+    --test) TEST_MODE=1 ;;
+    --limit)
+      next=$((i + 1))
+      LIMIT="${!next:-0}"
+      ;;
+  esac
+done
+
+USERS_FILE="$REPO_ROOT/deploy/data/.announce-recipients.json"
+export ANNOUNCE_USERS_FILE="$USERS_FILE"
+
+if [ "$TEST_MODE" -eq 0 ]; then
+  DB_URL="${DATABASE_URL:-}"
+  if [ -z "$DB_URL" ]; then
+    echo "FAIL: DATABASE_URL not set in .env"
+    exit 1
+  fi
+  if ! command -v psql >/dev/null 2>&1; then
+    echo "FAIL: psql not found — install postgresql-client"
+    exit 1
+  fi
+
+  LIMIT_SQL=""
+  if [ "$LIMIT" -gt 0 ] 2>/dev/null; then
+    LIMIT_SQL="LIMIT $LIMIT"
+  fi
+
+  echo "==> Loading users from database"
+  psql "$DB_URL" -q -t -A -c \
+    "SELECT COALESCE(json_agg(row_to_json(t)), '[]'::json) FROM (
+       SELECT email, first_name, last_name
+       FROM users
+       WHERE status = 'active' AND email IS NOT NULL
+       ORDER BY created_at
+       $LIMIT_SQL
+     ) t" > "$USERS_FILE"
 fi
-export NODE_PATH="$REPO_ROOT/backend/node_modules${NODE_PATH:+:$NODE_PATH}"
+
 node "$REPO_ROOT/deploy/scripts/announce-users.mjs" "$@"
