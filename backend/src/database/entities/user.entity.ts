@@ -50,6 +50,9 @@ export class User {
   @Column({ name: 'kyc_status', default: 'pending' })
   kycStatus: string;
 
+  @Column({ name: 'avatar_url', type: 'varchar', nullable: true })
+  avatarUrl: string | null;
+
   @Column({ name: 'referred_by_id', type: 'uuid', nullable: true })
   referredById: string | null;
 
@@ -83,6 +86,7 @@ export function userPublicView(user: User) {
     status: user.status,
     kycStatus: user.kycStatus,
     personalId: user.personalId,
+    avatarUrl: user.avatarUrl,
     createdAt: user.createdAt.toISOString(),
   };
 }

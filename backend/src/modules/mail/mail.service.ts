@@ -248,6 +248,19 @@ export class MailService implements OnModuleInit {
     this.sendInBackground(email, subject, html, text);
   }
 
+  async sendEmailChangeCode(email: string, code: string) {
+    const subject = 'MERGE STARS — Confirm your new email';
+    const text = `Your email change verification code is: ${code}\n\nValid for 15 minutes.`;
+    const html = `
+      <div style="font-family:sans-serif;max-width:480px;margin:0 auto;padding:24px;background:#080808;color:#fff;border:1px solid #c9a84c">
+        <h2 style="color:#c9a84c;letter-spacing:0.2em;font-size:14px">MERGE STARS</h2>
+        <p>Confirm your new email address with this code:</p>
+        <p style="font-size:32px;font-weight:bold;letter-spacing:0.3em;color:#f5d78e">${code}</p>
+        <p style="color:#888;font-size:12px">Valid for 15 minutes. If you did not request this, ignore this email.</p>
+      </div>`;
+    await this.send(email, subject, html, text);
+  }
+
   private passwordResetCodeContent(code: string) {
     const subject = 'MERGE STARS — Password reset code';
     const text = `Your password reset code is: ${code}\n\nValid for 15 minutes. If you did not request this, ignore this email.`;
