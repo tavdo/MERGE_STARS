@@ -11,14 +11,28 @@ export class DatabaseSeedService implements OnModuleInit {
   constructor(@InjectRepository(User) private readonly users: Repository<User>) {}
 
   async onModuleInit() {
+    const email = (process.env.SEED_ADMIN_EMAIL ?? 'admin@mergestars.com').toLowerCase();
+    const password = process.env.SEED_ADMIN_PASSWORD ?? 'Admin123!ChangeMe';
+
+    if (process.env.SEED_ADMIN_SYNC === 'true') {
+      const existing = await this.users.findOne({ where: { email } });
+      if (existing) {
+        existing.passwordHash = await bcrypt.hash(password, 12);
+        if (!existing.roles.includes('admin')) {
+          existing.roles = [...new Set([...existing.roles, 'admin', 'manager'])];
+        }
+        await this.users.save(existing);
+        this.log.log(`Synced password for admin ${email} (SEED_ADMIN_SYNC=true)`);
+        return;
+      }
+    }
+
     const count = await this.users.count();
     if (count > 0) {
       this.log.log(`Skipping seed — ${count} user(s) already in database`);
       return;
     }
 
-    const email = (process.env.SEED_ADMIN_EMAIL ?? 'admin@mergestars.com').toLowerCase();
-    const password = process.env.SEED_ADMIN_PASSWORD ?? 'Admin123!ChangeMe';
     const user = this.users.create({
       email,
       phone: null,
