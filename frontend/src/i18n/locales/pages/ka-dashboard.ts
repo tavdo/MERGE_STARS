@@ -118,6 +118,9 @@ export default {
     tableUser: 'მომხმარებელი', tableDate: 'თარიღი', tableStatus: 'KYC', tableOrder: 'შეკვეთა',
     toastDownloaded: 'QR ჩამოტვირთულია', toastShared: 'ბმული გაზიარდა', toastCopiedShare: 'ბმული კოპირებულია',
     toastCopied: 'რეფერალური ბმული კოპირებულია', toastCopyFailed: 'კოპირება ვერ მოხერხდა', toastShareFailed: 'გაზიარება ვერ მოხერხდა',
+    shareOn: 'გაზიარება', shareMessage: 'შემოუერთდი MERGE STARS-ს ჩემი რეფერალური ბმულით',
+    shareHint: 'როცა ვინმე თქვენი ბმულით დარეგისტრირდება, ის ავტომატურად ჩაითვლება „ჩემი რეფერალებში“.',
+    statInvited: 'მოწვეული ადამიანები', toastInstagramCopied: 'ბმული კოპირებულია — ჩასვით Instagram Story-ში ან DM-ში',
   },
   aiPage: {
     disclaimer: 'MERGE AI მხოლოდ საოპერაციო მითითებებს იძლევა. ფინანსურ რჩევას ვერ გავცემ.',

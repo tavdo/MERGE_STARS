@@ -6,6 +6,11 @@ import LanguageSwitcher from '../components/LanguageSwitcher'
 import { useLogin, useRegister } from '@/features/auth/hooks/useAuth'
 import { authApi } from '@/features/auth/api/auth.api'
 import { getApiErrorMessage } from '@/shared/utils/apiError'
+import {
+  clearPersistedReferralRef,
+  persistReferralRef,
+  resolveReferralCode,
+} from '@/utils/referralRef'
 
 type Tab = 'login' | 'register'
 type Step = 1 | 2 | 3
@@ -23,6 +28,12 @@ export default function LoginPage() {
   useEffect(() => {
     if (searchParams.get('tab') === 'register') setTab('register')
   }, [searchParams])
+
+  useEffect(() => {
+    persistReferralRef(searchParams.get('ref'))
+  }, [searchParams])
+
+  const referralCode = resolveReferralCode(searchParams)
   const [step, setStep] = useState<Step>(1)
   const [checked, setChecked] = useState<boolean[]>(() => Array(TERM_COUNT).fill(false))
   const [showPw, setShowPw] = useState(false)
@@ -142,9 +153,10 @@ export default function LoginPage() {
         email: email.trim().toLowerCase(),
         password: regPassword,
         ...(emailVerifyEnabled ? { verificationCode: verificationCode.trim() } : {}),
-        referralCode: searchParams.get('ref')?.trim() || undefined,
+        referralCode: referralCode || undefined,
       },
       {
+        onSuccess: () => clearPersistedReferralRef(),
         onError: (err) =>
           setAuthError(getApiErrorMessage(err, t('authPanel.registerFailed', { defaultValue: 'Registration failed. Email may already exist.' }))),
       },
@@ -268,6 +280,23 @@ export default function LoginPage() {
               ))}
             </div>
             <p className="auth-field-label mb-6" style={{ color: '#c9a84c', fontSize: '0.8125rem' }}>{stepLabel}</p>
+
+            {referralCode && (
+              <div
+                className="mb-5 px-4 py-3 rounded"
+                style={{
+                  border: '1px solid rgba(201,168,76,0.35)',
+                  background: 'rgba(201,168,76,0.08)',
+                }}
+              >
+                <p className="text-[10px] font-bold tracking-[0.12em]" style={{ color: '#c9a84c' }}>
+                  {t('authPanel.referralInvited', { defaultValue: 'You were invited to MERGE STARS' })}
+                </p>
+                <p className="text-[11px] mt-1" style={{ color: 'rgba(255,255,255,0.55)' }}>
+                  {t('authPanel.referralCodeLabel', { defaultValue: 'Referral code' })}: {referralCode}
+                </p>
+              </div>
+            )}
 
             {step === 1 && (
               <div className="flex flex-col gap-4">

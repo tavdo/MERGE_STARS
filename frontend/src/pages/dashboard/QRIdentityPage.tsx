@@ -1,7 +1,9 @@
+import { useCallback, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useQuery } from '@tanstack/react-query'
 import DashboardLayout from '../../components/DashboardLayout'
 import QrCodeImage, { downloadQrPng, shareReferralLink } from '../../components/QrCodeImage'
+import ReferralShareButtons, { type SocialPlatform } from '../../components/referral/ReferralShareButtons'
 import { dashboardApi } from '@/features/dashboard/api/dashboard.api'
 import { brandApi } from '@/features/brand/api/brand.api'
 
@@ -13,6 +15,7 @@ const KYC_COLORS: Record<string, { bg: string; color: string }> = {
 
 export default function QRIdentityPage() {
   const { t } = useTranslation()
+  const [toast, setToast] = useState<string | null>(null)
 
   const { data: summary, isLoading } = useQuery({
     queryKey: ['dashboard-summary'],
@@ -27,8 +30,31 @@ export default function QRIdentityPage() {
     : `${window.location.origin}/login`
   const qrId = user ? `QR-${user.mergeId.replace(/^MERGE-/, '')}` : 'QR-—'
 
+  const showToast = useCallback((message: string) => setToast(message), [])
+
+  useEffect(() => {
+    if (!toast) return
+    const id = window.setTimeout(() => setToast(null), 2800)
+    return () => window.clearTimeout(id)
+  }, [toast])
+
+  const handleSocialShare = (_platform: SocialPlatform, result: 'opened' | 'copied') => {
+    void brandApi.trackQrScan()
+    showToast(
+      result === 'copied'
+        ? t('referral.toastInstagramCopied', { defaultValue: 'Link copied — paste in Instagram Story or DM' })
+        : t('referral.toastShared', { defaultValue: 'Shared' }),
+    )
+  }
+
   return (
     <DashboardLayout titleKey="qrIdentity">
+      {toast && (
+        <div style={{ position: 'fixed', bottom: '24px', right: '24px', zIndex: 100, padding: '12px 18px', background: '#111', border: '1px solid rgba(201,168,76,0.3)', borderRadius: '4px', color: '#c9a84c', fontSize: '12px' }}>
+          {toast}
+        </div>
+      )}
+
       <div style={{ maxWidth: '1000px' }}>
         <div style={{ marginBottom: '32px' }}>
           <p style={{ fontSize: '11px', fontWeight: 700, letterSpacing: '0.3em', color: '#c9a84c', marginBottom: '8px' }}>{t('qrIdentity.title')}</p>
@@ -57,17 +83,20 @@ export default function QRIdentityPage() {
               </span>
             </div>
 
-            <div className="gold-card" style={{ padding: '28px', borderRadius: '4px', display: 'flex', gap: '28px', flexWrap: 'wrap', alignItems: 'center' }}>
-              <QrCodeImage value={universalLink} size={140} />
-              <div style={{ flex: 1, minWidth: '220px' }}>
-                <p style={{ fontSize: '10px', color: 'rgba(255,255,255,0.4)', marginBottom: '8px' }}>{qrId}</p>
-                <p style={{ fontSize: '12px', color: 'rgba(255,255,255,0.55)', wordBreak: 'break-all', marginBottom: '16px' }}>{universalLink}</p>
-                <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
-                  <button type="button" className="gold-btn" onClick={() => navigator.clipboard.writeText(universalLink)}>Copy link</button>
-                  <button type="button" className="gold-btn-outline" onClick={() => { void shareReferralLink(universalLink); void brandApi.trackQrScan() }}>Share</button>
-                  <button type="button" className="gold-btn-outline" onClick={() => { void downloadQrPng(universalLink, `${qrId}.png`); void brandApi.trackQrScan() }}>Download</button>
+            <div className="gold-card" style={{ padding: '28px', borderRadius: '4px' }}>
+              <div style={{ display: 'flex', gap: '28px', flexWrap: 'wrap', alignItems: 'center', marginBottom: '20px' }}>
+                <QrCodeImage value={universalLink} size={140} />
+                <div style={{ flex: 1, minWidth: '220px' }}>
+                  <p style={{ fontSize: '10px', color: 'rgba(255,255,255,0.4)', marginBottom: '8px' }}>{qrId}</p>
+                  <p style={{ fontSize: '12px', color: 'rgba(255,255,255,0.55)', wordBreak: 'break-all', marginBottom: '16px' }}>{universalLink}</p>
+                  <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
+                    <button type="button" className="gold-btn" onClick={() => { void navigator.clipboard.writeText(universalLink); showToast(t('referral.toastCopied')) }}>{t('qrIdentity.link', { defaultValue: 'Copy link' })}</button>
+                    <button type="button" className="gold-btn-outline" onClick={() => { void shareReferralLink(universalLink); void brandApi.trackQrScan() }}>{t('qrIdentity.share')}</button>
+                    <button type="button" className="gold-btn-outline" onClick={() => { void downloadQrPng(universalLink, `${qrId}.png`); void brandApi.trackQrScan() }}>{t('qrIdentity.download')}</button>
+                  </div>
                 </div>
               </div>
+              <ReferralShareButtons link={universalLink} onAction={handleSocialShare} />
             </div>
           </>
         )}

@@ -251,6 +251,11 @@ export default {
     toastCopied: 'Referral link copied',
     toastCopyFailed: 'Copy failed — select the link manually',
     toastShareFailed: 'Could not share link',
+    shareOn: 'Share on',
+    shareMessage: 'Join MERGE STARS with my referral link',
+    shareHint: 'When someone registers through your link, they are counted under My Referrals automatically.',
+    statInvited: 'Invited people',
+    toastInstagramCopied: 'Link copied — paste it in Instagram Story or DM',
   },
   aiPage: {
     disclaimer: 'MERGE AI provides operational guidance only. It does not provide financial advice or guarantee returns.',

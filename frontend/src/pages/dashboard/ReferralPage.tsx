@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { useQuery } from '@tanstack/react-query'
 import DashboardLayout from '../../components/DashboardLayout'
 import QrCodeImage, { downloadQrPng, shareReferralLink } from '../../components/QrCodeImage'
+import ReferralShareButtons, { type SocialPlatform } from '../../components/referral/ReferralShareButtons'
 import { referralsApi } from '@/features/referrals/api/referrals.api'
 import { brandApi } from '@/features/brand/api/brand.api'
 
@@ -43,13 +44,22 @@ export default function ReferralPage() {
       void brandApi.trackQrScan()
       showToast(result === 'shared' ? t('referral.toastShared', { defaultValue: 'Shared' }) : t('referral.toastCopiedShare', { defaultValue: 'Link copied' }))
     } catch {
-      showToast('Could not share')
+      showToast(t('referral.toastShareFailed', { defaultValue: 'Could not share link' }))
     }
   }
 
   const copyLink = async () => {
     await navigator.clipboard.writeText(refLink)
-    showToast(t('referral.toastCopiedShare', { defaultValue: 'Link copied' }))
+    showToast(t('referral.toastCopied', { defaultValue: 'Referral link copied' }))
+  }
+
+  const handleSocialShare = (_platform: SocialPlatform, result: 'opened' | 'copied') => {
+    void brandApi.trackQrScan()
+    showToast(
+      result === 'copied'
+        ? t('referral.toastInstagramCopied', { defaultValue: 'Link copied — paste in Instagram Story or DM' })
+        : t('referral.toastShared', { defaultValue: 'Shared' }),
+    )
   }
 
   return (
@@ -63,10 +73,10 @@ export default function ReferralPage() {
       <div style={{ maxWidth: '900px' }}>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(140px,1fr))', gap: '16px', marginBottom: '24px' }}>
           {[
-            { label: 'TOTAL', value: stats?.total ?? 0 },
-            { label: 'VERIFIED', value: stats?.verified ?? 0 },
-            { label: 'PENDING', value: stats?.pending ?? 0 },
-            { label: 'YOUR SHARE', value: stats?.platformShare ?? '1/4' },
+            { label: t('referral.statInvited', { defaultValue: 'Invited people' }), value: stats?.total ?? 0 },
+            { label: t('referral.statsVerified', { defaultValue: 'Verified' }), value: stats?.verified ?? 0 },
+            { label: t('referral.statsPending', { defaultValue: 'Pending' }), value: stats?.pending ?? 0 },
+            { label: t('referral.statAllocation', { defaultValue: 'Direct Referral Allocation' }), value: stats?.platformShare ?? '1/4' },
           ].map((s) => (
             <div key={s.label} className="gold-card" style={{ padding: '16px 18px', borderRadius: '4px' }}>
               <p style={{ fontSize: '9px', color: 'rgba(255,255,255,0.35)', marginBottom: '6px' }}>{s.label}</p>
@@ -75,27 +85,30 @@ export default function ReferralPage() {
           ))}
         </div>
 
-        <div className="gold-card" style={{ padding: '24px', borderRadius: '4px', marginBottom: '24px', display: 'flex', gap: '24px', flexWrap: 'wrap', alignItems: 'center' }}>
-          <QrCodeImage value={refLink} size={120} />
-          <div style={{ flex: 1, minWidth: '200px' }}>
-            <p style={{ fontSize: '10px', color: 'rgba(255,255,255,0.4)', marginBottom: '8px' }}>{qrRef}</p>
-            <p style={{ fontSize: '12px', color: '#fff', wordBreak: 'break-all', marginBottom: '12px' }}>{refLink}</p>
-            <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
-              <button type="button" className="gold-btn" onClick={() => void copyLink()}>Copy link</button>
-              <button type="button" className="gold-btn-outline" onClick={() => void handleShare()}>Share</button>
-              <button type="button" className="gold-btn-outline" onClick={handleDownload}>Download QR</button>
+        <div className="gold-card" style={{ padding: '24px', borderRadius: '4px', marginBottom: '24px' }}>
+          <div style={{ display: 'flex', gap: '24px', flexWrap: 'wrap', alignItems: 'center', marginBottom: '20px' }}>
+            <QrCodeImage value={refLink} size={120} />
+            <div style={{ flex: 1, minWidth: '200px' }}>
+              <p style={{ fontSize: '10px', color: 'rgba(255,255,255,0.4)', marginBottom: '8px' }}>{qrRef}</p>
+              <p style={{ fontSize: '12px', color: '#fff', wordBreak: 'break-all', marginBottom: '12px' }}>{refLink}</p>
+              <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                <button type="button" className="gold-btn" onClick={() => void copyLink()}>{t('qrIdentity.link', { defaultValue: 'Copy link' })}</button>
+                <button type="button" className="gold-btn-outline" onClick={() => void handleShare()}>{t('qrIdentity.share', { defaultValue: 'Share' })}</button>
+                <button type="button" className="gold-btn-outline" onClick={handleDownload}>{t('qrIdentity.download', { defaultValue: 'Download QR' })}</button>
+              </div>
             </div>
           </div>
+          <ReferralShareButtons link={refLink} onAction={handleSocialShare} />
         </div>
 
         <div className="gold-card" style={{ borderRadius: '4px', overflow: 'hidden' }}>
           <div style={{ padding: '14px 20px', borderBottom: '1px solid rgba(201,168,76,0.1)' }}>
-            <p style={{ fontSize: '11px', fontWeight: 700, letterSpacing: '0.15em', color: '#c9a84c' }}>DIRECT REFERRALS</p>
+            <p style={{ fontSize: '11px', fontWeight: 700, letterSpacing: '0.15em', color: '#c9a84c' }}>{t('referral.myReferredUsers', { defaultValue: 'MY REFERRED USERS' })}</p>
           </div>
           {isLoading ? (
-            <p style={{ padding: '24px', color: 'rgba(255,255,255,0.5)' }}>Loading…</p>
+            <p style={{ padding: '24px', color: 'rgba(255,255,255,0.5)' }}>{t('common.loading', { defaultValue: 'Loading…' })}</p>
           ) : referrals.length === 0 ? (
-            <p style={{ padding: '24px', color: 'rgba(255,255,255,0.5)' }}>No referrals yet. Share your link to invite users.</p>
+            <p style={{ padding: '24px', color: 'rgba(255,255,255,0.5)' }}>{t('referral.shareHint')}</p>
           ) : referrals.map((r) => (
             <div key={r.id} style={{ padding: '14px 20px', borderBottom: '1px solid rgba(255,255,255,0.04)', display: 'flex', justifyContent: 'space-between', gap: '12px' }}>
               <div>

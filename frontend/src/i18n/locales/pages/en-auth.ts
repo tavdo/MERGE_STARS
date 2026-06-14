@@ -54,6 +54,8 @@ export default {
     backToLogin: '← BACK TO LOGIN',
     agreeTermsPrefix: 'I agree to the',
     agreePrivacyPrefix: 'I agree to the',
+    referralInvited: 'You were invited to MERGE STARS',
+    referralCodeLabel: 'Referral code',
   },
   register: {
     comingSoon: 'Register page — coming soon',

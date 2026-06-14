@@ -3,12 +3,14 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Referral } from '../../database/entities/referral.entity';
 import { User } from '../../database/entities/user.entity';
+import { NotificationsService } from '../notifications/notifications.service';
 
 @Injectable()
 export class ReferralsService {
   constructor(
     @InjectRepository(Referral) private readonly referrals: Repository<Referral>,
     @InjectRepository(User) private readonly users: Repository<User>,
+    private readonly notifications: NotificationsService,
   ) {}
 
   shareBase() {
@@ -38,6 +40,16 @@ export class ReferralsService {
       status: 'registered',
     });
     await this.referrals.save(row);
+
+    const referredName = `${referredUser.firstName} ${referredUser.lastName}`.trim() || referredUser.email;
+    await this.notifications.create({
+      userId: referrer.id,
+      type: 'referral_signup',
+      title: 'New referral signup',
+      body: `${referredName} registered using your referral link.`,
+      meta: { referredUserId: referredUser.id, referralId: row.id },
+    });
+
     return row;
   }
 

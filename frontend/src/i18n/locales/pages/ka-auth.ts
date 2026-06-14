@@ -54,6 +54,8 @@ export default {
     backToLogin: '← შესვლაზე დაბრუნება',
     agreeTermsPrefix: 'ვეთანხმები',
     agreePrivacyPrefix: 'ვეთანხმები',
+    referralInvited: 'თქვენ მოგიწვიეს MERGE STARS-ში',
+    referralCodeLabel: 'რეფერალური კოდი',
   },
   register: { comingSoon: 'რეგისტრაციის გვერდი — მალე' },
 } as const
