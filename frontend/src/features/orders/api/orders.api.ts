@@ -9,11 +9,20 @@ export interface Order {
   applicationId: string | null
   coinType: string | null
   quantity: number | null
+  trackingCode: string | null
+  courier: string | null
+  estDeliveryAt: string | null
+  deliveryStatus: string
+  shippedAt: string | null
+  deliveredAt: string | null
   createdAt: string
 }
 
 export const ordersApi = {
   list: () => api.get<ApiResponse<Order[]>>('/orders'),
+
+  latestDelivery: () => api.get<ApiResponse<Order>>('/orders/delivery/latest'),
+
   create: (applicationId: string, paymentMethod: 'full' | 'bank') =>
     api.post<ApiResponse<Order>>('/orders', { applicationId, paymentMethod }),
 }

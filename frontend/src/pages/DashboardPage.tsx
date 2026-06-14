@@ -5,14 +5,26 @@ import DashboardLayout from '../components/DashboardLayout'
 import { dashboardApi } from '@/features/dashboard/api/dashboard.api'
 import { statusLabel } from '@/shared/utils/applicationStatus'
 
+function formatActivityTime(iso: string) {
+  const d = new Date(iso)
+  const diff = Date.now() - d.getTime()
+  if (diff < 3600000) return `${Math.max(1, Math.floor(diff / 60000))}m ago`
+  if (diff < 86400000) return `${Math.floor(diff / 3600000)}h ago`
+  return d.toLocaleDateString('en-GB', { day: '2-digit', month: 'short' })
+}
+
 export default function DashboardPage() {
   const { t } = useTranslation()
-  const activity = t('dashboardHome.activity', { returnObjects: true }) as { text: string; time: string }[]
   const tones = ['gold', 'green', 'blue', 'amber', 'green'] as const
 
   const { data, isLoading } = useQuery({
     queryKey: ['dashboard-summary'],
     queryFn: () => dashboardApi.getSummary().then((r) => r.data.data),
+  })
+
+  const { data: activity = [] } = useQuery({
+    queryKey: ['dashboard-activity'],
+    queryFn: () => dashboardApi.getActivity().then((r) => r.data.data),
   })
 
   const app = data?.application
@@ -88,15 +100,19 @@ export default function DashboardPage() {
           <div className="dash-panel lg:col-span-4">
             <p className="dash-label mb-5">{t('dashboardHome.recentActivity')}</p>
             <ul className="space-y-4">
-              {activity.map((a, i) => (
-                <li key={a.text} className="flex items-start gap-3">
-                  <span className={`dash-activity-icon dash-activity-icon--${tones[i] ?? 'gold'}`}>✓</span>
-                  <div>
-                    <p className="text-[11px] font-medium text-neutral-200 tracking-wide">{a.text}</p>
-                    <p className="text-[10px] text-neutral-600 mt-0.5 tracking-wide">{a.time}</p>
-                  </div>
-                </li>
-              ))}
+              {activity.length === 0 ? (
+                <li className="text-sm text-neutral-500">{t('dashboardHome.noActivity', { defaultValue: 'No recent activity yet.' })}</li>
+              ) : (
+                activity.map((a, i) => (
+                  <li key={`${a.time}-${a.text}`} className="flex items-start gap-3">
+                    <span className={`dash-activity-icon dash-activity-icon--${tones[i % tones.length] ?? 'gold'}`}>✓</span>
+                    <div>
+                      <p className="text-[11px] font-medium text-neutral-200 tracking-wide">{a.text}</p>
+                      <p className="text-[10px] text-neutral-600 mt-0.5 tracking-wide">{formatActivityTime(a.time)}</p>
+                    </div>
+                  </li>
+                ))
+              )}
             </ul>
           </div>
 

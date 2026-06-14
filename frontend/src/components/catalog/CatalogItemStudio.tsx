@@ -225,11 +225,6 @@ export default function CatalogItemStudio({ onSubmit, submitting, error }: Props
       {error && <p className="text-sm text-red-400">{error}</p>}
 
       <div className="catalog-studio-footer">
-        <p className="catalog-studio-footer-note">
-          {t('collections.uploadNote', {
-            defaultValue: 'File uploads will be saved when you connect the catalog upload API on the server.',
-          })}
-        </p>
         <button type="submit" disabled={submitting} className="luxury-btn-glass">
           {submitting ? '…' : t('collections.addItemBtn', { defaultValue: 'Add item' })}
         </button>

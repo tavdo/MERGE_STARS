@@ -11,6 +11,7 @@ import { Notification } from './notification.entity';
 import { KycDocument } from './kyc-document.entity';
 import { CatalogCollection } from './catalog-collection.entity';
 import { CatalogItem } from './catalog-item.entity';
+import { BrandLineProfile } from './brand-line-profile.entity';
 
 export const entities = [
   User,
@@ -26,6 +27,7 @@ export const entities = [
   KycDocument,
   CatalogCollection,
   CatalogItem,
+  BrandLineProfile,
 ];
 
 export {
@@ -42,4 +44,5 @@ export {
   KycDocument,
   CatalogCollection,
   CatalogItem,
+  BrandLineProfile,
 };

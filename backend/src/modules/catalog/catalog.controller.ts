@@ -6,10 +6,17 @@ import {
   Param,
   Patch,
   Post,
+  Res,
+  UploadedFile,
   UseGuards,
+  UseInterceptors,
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { memoryStorage } from 'multer';
+import type { Response } from 'express';
+import { createReadStream } from 'fs';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { CurrentUser } from '../../common/decorators/current-user.decorator';
 import { User } from '../../database/entities/user.entity';
@@ -97,5 +104,49 @@ export class CatalogController {
   @UseGuards(JwtAuthGuard)
   removeItem(@CurrentUser() user: User, @Param('itemId') itemId: string) {
     return this.catalog.removeItem(user.id, itemId);
+  }
+
+  @Post('items/:itemId/image')
+  @UseGuards(JwtAuthGuard)
+  @UseInterceptors(
+    FileInterceptor('file', { storage: memoryStorage(), limits: { fileSize: 10 * 1024 * 1024 } }),
+  )
+  uploadImage(
+    @CurrentUser() user: User,
+    @Param('itemId') itemId: string,
+    @UploadedFile() file: Express.Multer.File,
+  ) {
+    return this.catalog.uploadImage(user.id, itemId, file);
+  }
+
+  @Post('items/:itemId/model3d')
+  @UseGuards(JwtAuthGuard)
+  @UseInterceptors(
+    FileInterceptor('file', { storage: memoryStorage(), limits: { fileSize: 50 * 1024 * 1024 } }),
+  )
+  uploadModel(
+    @CurrentUser() user: User,
+    @Param('itemId') itemId: string,
+    @UploadedFile() file: Express.Multer.File,
+  ) {
+    return this.catalog.uploadModel3d(user.id, itemId, file);
+  }
+
+  @Get('items/:itemId/image/file')
+  @UseGuards(JwtAuthGuard)
+  async imageFile(@CurrentUser() user: User, @Param('itemId') itemId: string, @Res() res: Response) {
+    const file = await this.catalog.getImageFileForUser(user.id, itemId);
+    res.setHeader('Content-Type', file.mimeType);
+    res.setHeader('Cache-Control', 'private, max-age=3600');
+    createReadStream(file.filePath).pipe(res);
+  }
+
+  @Get('items/:itemId/model3d/file')
+  @UseGuards(JwtAuthGuard)
+  async modelFile(@CurrentUser() user: User, @Param('itemId') itemId: string, @Res() res: Response) {
+    const file = await this.catalog.getModelFileForUser(user.id, itemId);
+    res.setHeader('Content-Type', file.mimeType);
+    res.setHeader('Cache-Control', 'private, max-age=3600');
+    createReadStream(file.filePath).pipe(res);
   }
 }

@@ -63,6 +63,8 @@ export default {
       passwordMismatch: 'Passwords do not match',
       kycHint: 'Upload ID document (PDF, JPEG, PNG — max 10 MB)',
       kycUploaded: 'Document uploaded',
+      phoneBanner: 'Please add your phone number to your profile for verification and order updates.',
+      phoneBannerAction: 'Add phone',
     },
     messages: {
       description: 'Your inbox for application updates, production notifications, and support messages.',

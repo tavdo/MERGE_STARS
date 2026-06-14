@@ -41,6 +41,24 @@ export class Order {
   @Column({ default: 'pending' })
   status: string;
 
+  @Column({ name: 'tracking_code', type: 'varchar', nullable: true })
+  trackingCode: string | null;
+
+  @Column({ type: 'varchar', nullable: true })
+  courier: string | null;
+
+  @Column({ name: 'est_delivery_at', type: 'timestamptz', nullable: true })
+  estDeliveryAt: Date | null;
+
+  @Column({ name: 'delivery_status', default: 'pending' })
+  deliveryStatus: string;
+
+  @Column({ name: 'shipped_at', type: 'timestamptz', nullable: true })
+  shippedAt: Date | null;
+
+  @Column({ name: 'delivered_at', type: 'timestamptz', nullable: true })
+  deliveredAt: Date | null;
+
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;
 
@@ -57,6 +75,12 @@ export function orderView(order: Order) {
     amount: Number(order.amount),
     paymentMethod: order.paymentMethod,
     status: order.status,
+    trackingCode: order.trackingCode,
+    courier: order.courier,
+    estDeliveryAt: order.estDeliveryAt?.toISOString() ?? null,
+    deliveryStatus: order.deliveryStatus,
+    shippedAt: order.shippedAt?.toISOString() ?? null,
+    deliveredAt: order.deliveredAt?.toISOString() ?? null,
     createdAt: order.createdAt.toISOString(),
   };
 }

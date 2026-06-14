@@ -9,9 +9,10 @@ import { kycApi } from '@/features/kyc/api/kyc.api'
 import { useAuthStore } from '@/features/auth/store/auth.store'
 import type { Role } from '@/shared/types/api.types'
 import { getApiErrorMessage } from '@/shared/utils/apiError'
+import { SUPPORTED_LANGUAGES, type LanguageCode } from '@/i18n'
 
 export default function ProfilePage() {
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
   const qc = useQueryClient()
   const setSession = useAuthStore((s) => s.setSession)
   const token = useAuthStore((s) => s.accessToken)
@@ -165,6 +166,8 @@ export default function ProfilePage() {
       {label}
     </p>
   )
+
+  const currentLang = (i18n.language?.slice(0, 2) || 'en') as LanguageCode
 
   return (
     <DashboardLayout titleKey="profile">
@@ -440,6 +443,30 @@ export default function ProfilePage() {
           </form>
         </div>
 
+        <div id="preferences" className="apply-surface p-8 sm:p-10 scroll-mt-24">
+          {sectionTitle(t('pages.settings.languageTitle', { defaultValue: 'LANGUAGE' }))}
+          <p className="text-sm text-neutral-500 mb-5">
+            {t('pages.settings.languageHint', { defaultValue: 'Choose your preferred interface language.' })}
+          </p>
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2">
+            {SUPPORTED_LANGUAGES.map(({ code, labelKey }) => (
+              <button
+                key={code}
+                type="button"
+                onClick={() => void i18n.changeLanguage(code)}
+                className={`rounded-lg border px-3 py-3 text-left text-sm transition-all ${
+                  code === currentLang
+                    ? 'border-[rgba(201,168,76,0.5)] bg-[rgba(201,168,76,0.1)] text-[#f0d78a]'
+                    : 'border-white/[0.08] bg-white/[0.02] text-neutral-400 hover:border-white/20 hover:text-neutral-200'
+                }`}
+              >
+                <span className="block text-[10px] font-bold uppercase tracking-widest opacity-60 mb-0.5">{code}</span>
+                {t(labelKey)}
+              </button>
+            ))}
+          </div>
+        </div>
+
         <div className="apply-surface p-8 sm:p-10">
           {sectionTitle('KYC')}
           <p className="text-sm text-neutral-500 mb-4">
@@ -472,8 +499,8 @@ export default function ProfilePage() {
           <Link to="/apply" className="luxury-btn-ghost">
             {t('pages.profile.newApplication')}
           </Link>
-          <Link to="/dashboard/settings" className="luxury-btn-ghost">
-            {t('pages.profile.settings')}
+          <Link to="/privacy" className="luxury-btn-ghost">
+            {t('pages.settings.privacyPolicy', { defaultValue: 'Privacy policy' })}
           </Link>
         </div>
       </div>

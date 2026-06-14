@@ -1,19 +1,9 @@
 import { useTranslation } from 'react-i18next'
 import { useQuery } from '@tanstack/react-query'
 import DashboardLayout from '../../components/DashboardLayout'
+import QrCodeImage, { downloadQrPng, shareReferralLink } from '../../components/QrCodeImage'
 import { dashboardApi } from '@/features/dashboard/api/dashboard.api'
-import { downloadReferralQrPng, shareReferralLink, REFERRAL_QR_PATTERN } from '../../utils/referralQr'
-
-function QRBox({ size = 140, color = '#000', pattern }: { size?: number; color?: string; pattern: readonly number[] }) {
-  const cells = pattern.length >= 49 ? pattern.slice(0, 49) : [...pattern, ...Array(49 - pattern.length).fill(0)]
-  return (
-    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: '2px', width: `${size}px`, height: `${size}px`, padding: '8px', background: '#fff', borderRadius: '4px', flexShrink: 0 }}>
-      {cells.map((filled, i) => (
-        <div key={i} style={{ background: filled ? color : 'transparent', borderRadius: '1px' }} />
-      ))}
-    </div>
-  )
-}
+import { brandApi } from '@/features/brand/api/brand.api'
 
 const KYC_COLORS: Record<string, { bg: string; color: string }> = {
   verified: { bg: 'rgba(34,197,94,0.1)', color: '#22c55e' },
@@ -32,7 +22,9 @@ export default function QRIdentityPage() {
   const user = summary?.user
   const kyc = (user?.kycStatus ?? 'pending').toLowerCase()
   const kycStyle = KYC_COLORS[kyc] ?? KYC_COLORS.pending
-  const universalLink = user ? `${window.location.origin}/login?tab=register&ref=${encodeURIComponent(user.mergeId)}` : `${window.location.origin}/login`
+  const universalLink = user
+    ? `${window.location.origin}/login?tab=register&ref=${encodeURIComponent(user.mergeId)}`
+    : `${window.location.origin}/login`
   const qrId = user ? `QR-${user.mergeId.replace(/^MERGE-/, '')}` : 'QR-—'
 
   return (
@@ -66,14 +58,14 @@ export default function QRIdentityPage() {
             </div>
 
             <div className="gold-card" style={{ padding: '28px', borderRadius: '4px', display: 'flex', gap: '28px', flexWrap: 'wrap', alignItems: 'center' }}>
-              <QRBox pattern={REFERRAL_QR_PATTERN} />
+              <QrCodeImage value={universalLink} size={140} />
               <div style={{ flex: 1, minWidth: '220px' }}>
                 <p style={{ fontSize: '10px', color: 'rgba(255,255,255,0.4)', marginBottom: '8px' }}>{qrId}</p>
                 <p style={{ fontSize: '12px', color: 'rgba(255,255,255,0.55)', wordBreak: 'break-all', marginBottom: '16px' }}>{universalLink}</p>
                 <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
                   <button type="button" className="gold-btn" onClick={() => navigator.clipboard.writeText(universalLink)}>Copy link</button>
-                  <button type="button" className="gold-btn-outline" onClick={() => shareReferralLink(universalLink)}>Share</button>
-                  <button type="button" className="gold-btn-outline" onClick={() => downloadReferralQrPng(REFERRAL_QR_PATTERN, { filename: `${qrId}.png` })}>Download</button>
+                  <button type="button" className="gold-btn-outline" onClick={() => { void shareReferralLink(universalLink); void brandApi.trackQrScan() }}>Share</button>
+                  <button type="button" className="gold-btn-outline" onClick={() => { void downloadQrPng(universalLink, `${qrId}.png`); void brandApi.trackQrScan() }}>Download</button>
                 </div>
               </div>
             </div>

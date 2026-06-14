@@ -4,9 +4,43 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import DashboardLayout from '../../components/DashboardLayout'
 import CatalogItemStudio, { type CatalogItemStudioPayload } from '@/components/catalog/CatalogItemStudio'
 import Model3DViewer from '@/components/catalog/Model3DViewer'
-import { catalogApi, type CatalogVisibility } from '@/features/catalog/api/catalog.api'
+import {
+  catalogApi,
+  catalogItemImageUrl,
+  catalogItemModelUrl,
+  type CatalogItem,
+  type CatalogVisibility,
+} from '@/features/catalog/api/catalog.api'
+import { useAuthAssetUrl } from '@/features/catalog/hooks/useAuthAssetUrl'
 import { getApiErrorMessage } from '@/shared/utils/apiError'
 import { useState } from 'react'
+
+function CatalogItemCard({ item, onRemove }: { item: CatalogItem; onRemove: () => void }) {
+  const { t } = useTranslation()
+  const imageSrc = useAuthAssetUrl(catalogItemImageUrl(item))
+  const modelSrc = useAuthAssetUrl(catalogItemModelUrl(item))
+
+  return (
+    <article className="catalog-item-card">
+      {modelSrc ? (
+        <Model3DViewer modelUrl={modelSrc} className="catalog-item-card-3d" />
+      ) : imageSrc ? (
+        <img src={imageSrc} alt="" className="catalog-item-card-img" />
+      ) : (
+        <div className="catalog-item-card-placeholder">◆</div>
+      )}
+      <div className="catalog-item-card-body">
+        <h4 className="font-semibold text-white mb-1">{item.title}</h4>
+        {item.metalType && <p className="text-xs text-[#D4AF37] mb-1">{item.metalType}</p>}
+        {item.description && <p className="text-sm text-neutral-500 line-clamp-2">{item.description}</p>}
+        {item.hasModel3d && <span className="catalog-item-card-badge">3D</span>}
+        <button type="button" className="text-xs text-red-400 mt-3 hover:text-red-300" onClick={onRemove}>
+          {t('collections.removeItem', { defaultValue: 'Remove' })}
+        </button>
+      </div>
+    </article>
+  )
+}
 
 export default function CollectionDetailPage() {
   const { t } = useTranslation()
@@ -14,7 +48,6 @@ export default function CollectionDetailPage() {
   const navigate = useNavigate()
   const qc = useQueryClient()
   const [error, setError] = useState<string | null>(null)
-  const [pendingModels, setPendingModels] = useState<Record<string, string>>({})
 
   const { data: collection, isLoading } = useQuery({
     queryKey: ['catalog-collection', id],
@@ -40,20 +73,16 @@ export default function CollectionDetailPage() {
 
   const addItem = useMutation({
     mutationFn: async (payload: CatalogItemStudioPayload) => {
-      let imageUrl = payload.imageUrl
-      if (payload.imageFile) {
-        imageUrl = URL.createObjectURL(payload.imageFile)
-      }
-      const item = await catalogApi.addItem(id, {
+      const { data } = await catalogApi.addItem(id, {
         title: payload.title,
         description: payload.description,
         metalType: payload.metalType,
-        imageUrl,
+        imageUrl: payload.imageUrl?.startsWith('http') ? payload.imageUrl : undefined,
       })
-      if (payload.modelUrl && item.data.data.id) {
-        setPendingModels((prev) => ({ ...prev, [item.data.data.id]: payload.modelUrl! }))
-      }
-      return item
+      const itemId = data.data.id
+      if (payload.imageFile) await catalogApi.uploadImage(itemId, payload.imageFile)
+      if (payload.modelFile) await catalogApi.uploadModel3d(itemId, payload.modelFile)
+      return data.data
     },
     onSuccess: () => {
       setError(null)
@@ -155,35 +184,9 @@ export default function CollectionDetailPage() {
             <p className="text-sm text-neutral-500">{t('collections.noItems', { defaultValue: 'No items in this catalog yet.' })}</p>
           ) : (
             <div className="grid sm:grid-cols-2 xl:grid-cols-3 gap-4">
-              {collection.items.map((item) => {
-                const modelUrl = pendingModels[item.id]
-                return (
-                  <article key={item.id} className="catalog-item-card">
-                    {modelUrl ? (
-                      <Model3DViewer modelUrl={modelUrl} className="catalog-item-card-3d" />
-                    ) : item.imageUrl ? (
-                      <img src={item.imageUrl} alt="" className="catalog-item-card-img" />
-                    ) : (
-                      <div className="catalog-item-card-placeholder">◆</div>
-                    )}
-                    <div className="catalog-item-card-body">
-                      <h4 className="font-semibold text-white mb-1">{item.title}</h4>
-                      {item.metalType && <p className="text-xs text-[#D4AF37] mb-1">{item.metalType}</p>}
-                      {item.description && <p className="text-sm text-neutral-500 line-clamp-2">{item.description}</p>}
-                      {modelUrl && (
-                        <span className="catalog-item-card-badge">3D</span>
-                      )}
-                      <button
-                        type="button"
-                        className="text-xs text-red-400 mt-3 hover:text-red-300"
-                        onClick={() => removeItem.mutate(item.id)}
-                      >
-                        {t('collections.removeItem', { defaultValue: 'Remove' })}
-                      </button>
-                    </div>
-                  </article>
-                )
-              })}
+              {collection.items.map((item) => (
+                <CatalogItemCard key={item.id} item={item} onRemove={() => removeItem.mutate(item.id)} />
+              ))}
             </div>
           )}
         </div>

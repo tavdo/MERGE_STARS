@@ -127,6 +127,10 @@ export default function LoginPage() {
   }
 
   const handleRegister = () => {
+    if (!phone.trim()) {
+      setAuthError(t('authPanel.phoneRequired', { defaultValue: 'Phone number is required' }))
+      return
+    }
     if (!allChecked) return
     setAuthError(null)
     register.mutate(
@@ -134,7 +138,7 @@ export default function LoginPage() {
         firstName: firstName.trim(),
         lastName: lastName.trim(),
         personalId: personalId.trim(),
-        phone: phone.trim() ? `${phoneCode}${phone.replace(/\D/g, '')}` : undefined,
+        phone: `${phoneCode}${phone.replace(/\D/g, '')}`,
         email: email.trim().toLowerCase(),
         password: regPassword,
         ...(emailVerifyEnabled ? { verificationCode: verificationCode.trim() } : {}),
@@ -289,7 +293,7 @@ export default function LoginPage() {
                       <option value="+1">🇺🇸 +1</option>
                       <option value="+44">🇬🇧 +44</option>
                     </select>
-                    <input className="gold-input" type="tel" inputMode="tel" autoComplete="tel-national" value={phone} onChange={(e) => setPhone(e.target.value)} placeholder={t('authPanel.phonePlaceholder')} />
+                    <input className="gold-input" type="tel" inputMode="tel" autoComplete="tel-national" value={phone} onChange={(e) => setPhone(e.target.value)} placeholder={t('authPanel.phonePlaceholder')} required />
                   </div>
                 </div>
                 <button type="button" onClick={goToRegisterStep2} className="gold-btn w-full justify-center mt-2" style={{ borderRadius: '2px' }}>{t('auth.nextStep')} ›</button>

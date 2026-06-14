@@ -63,6 +63,8 @@ export default {
       passwordMismatch: 'პაროლები არ ემთხვევა',
       kycHint: 'პირადობის დოკუმენტი (PDF, JPEG, PNG — მაქს. 10 MB)',
       kycUploaded: 'დოკუმენტი ატვირთულია',
+      phoneBanner: 'გთხოვთ, დაამატოთ ტელეფონის ნომერი პროფილში — ვერიფიკაციისა და შეკვეთების შეტყობინებებისთვის.',
+      phoneBannerAction: 'ნომრის დამატება',
     },
     messages: { description: 'განაცხადის, წარმოებისა და მხარდაჭერის შეტყობინებები.', viewStatus: 'სტატუსის ნახვა', aiAssistant: 'AI ასისტენტი' },
     settings: {

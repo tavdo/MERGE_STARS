@@ -35,6 +35,12 @@ export class CatalogItem {
   @Column({ name: 'image_url', type: 'varchar', nullable: true })
   imageUrl: string | null;
 
+  @Column({ name: 'model3d_url', type: 'varchar', nullable: true })
+  model3dUrl: string | null;
+
+  @Column({ name: 'model3d_format', type: 'varchar', nullable: true })
+  model3dFormat: string | null;
+
   @Column({ type: 'varchar', default: 'ACTIVE' })
   status: CatalogItemStatus;
 
@@ -53,6 +59,10 @@ export function catalogItemView(item: CatalogItem) {
     description: item.description,
     metalType: item.metalType,
     imageUrl: item.imageUrl,
+    model3dUrl: item.model3dUrl,
+    model3dFormat: item.model3dFormat,
+    hasImage: !!item.imageUrl,
+    hasModel3d: !!item.model3dUrl,
     status: item.status,
     createdAt: item.createdAt.toISOString(),
     updatedAt: item.updatedAt.toISOString(),

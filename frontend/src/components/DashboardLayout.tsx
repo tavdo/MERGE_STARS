@@ -1,9 +1,13 @@
 import { useState, useEffect, type ReactNode } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
+import { useQuery } from '@tanstack/react-query'
 import LanguageSwitcher from './LanguageSwitcher'
 import SiteLogo from './SiteLogo'
+import PhoneMissingBanner from './profile/PhoneMissingBanner'
 import { useAuthStore } from '@/features/auth/store/auth.store'
+import { notificationsApi } from '@/features/notifications/api/notifications.api'
+import { usersApi } from '@/features/users/api/users.api'
 
 const NAV = [
   { icon: '⊞', labelKey: 'dashboard.nav.dashboard', href: '/dashboard', exact: true },
@@ -19,10 +23,9 @@ const NAV = [
   { icon: '◦', labelKey: 'dashboard.nav.payment', href: '/dashboard/payment' },
   { icon: '◦', labelKey: 'dashboard.nav.delivery', href: '/dashboard/delivery' },
   { icon: '◦', labelKey: 'dashboard.nav.referral', href: '/dashboard/referral' },
-  { icon: '◦', labelKey: 'dashboard.nav.messages', href: '/dashboard/messages', badge: 3 },
+  { icon: '◦', labelKey: 'dashboard.nav.messages', href: '/dashboard/messages', badgeKey: 'messages' as const },
   { icon: '◦', labelKey: 'dashboard.nav.aiAssistant', href: '/dashboard/ai' },
   { icon: '◦', labelKey: 'dashboard.nav.support', href: '/dashboard/support' },
-  { icon: '◦', labelKey: 'dashboard.nav.settings', href: '/dashboard/settings' },
 ] as const
 
 function isNavActive(pathname: string, item: (typeof NAV)[number]): boolean {
@@ -53,6 +56,19 @@ export default function DashboardLayout({ children, title, titleKey }: Props) {
     : title || t('dashboard.titles.dashboard')
 
   const authUser = useAuthStore((s) => s.user)
+
+  const { data: unreadCount = 0 } = useQuery({
+    queryKey: ['notifications-unread'],
+    queryFn: () => notificationsApi.unreadCount().then((r) => r.data.data),
+    refetchInterval: 60_000,
+  })
+
+  const { data: profile } = useQuery({
+    queryKey: ['users-me'],
+    queryFn: () => usersApi.getMe().then((r) => r.data.data),
+  })
+
+  const showPhoneBanner = profile && !profile.phone?.trim()
 
   const showLabels = sidebarExpanded || mobileNavOpen
 
@@ -139,8 +155,8 @@ export default function DashboardLayout({ children, title, titleKey }: Props) {
                 {showLabels && (
                   <>
                     <span className="dash-nav-label">{label}</span>
-                    {'badge' in item && item.badge != null && (
-                      <span className="dash-nav-badge">{item.badge}</span>
+                    {'badgeKey' in item && item.badgeKey === 'messages' && unreadCount > 0 && (
+                      <span className="dash-nav-badge">{unreadCount > 99 ? '99+' : unreadCount}</span>
                     )}
                   </>
                 )}
@@ -195,7 +211,9 @@ export default function DashboardLayout({ children, title, titleKey }: Props) {
               <span className="dash-header-btn-icon" aria-hidden>
                 🔔
               </span>
-              <span className="dash-header-dot">2</span>
+              {unreadCount > 0 && (
+                <span className="dash-header-dot">{unreadCount > 99 ? '99+' : unreadCount}</span>
+              )}
             </Link>
             <Link
               to="/dashboard/messages"
@@ -218,7 +236,10 @@ export default function DashboardLayout({ children, title, titleKey }: Props) {
           </nav>
         </header>
 
-        <main className="dash-content flex-1 overflow-y-auto">{children}</main>
+        <main className="dash-content flex-1 overflow-y-auto">
+          {showPhoneBanner && <div className="max-w-6xl mx-auto px-4 pt-4"><PhoneMissingBanner /></div>}
+          {children}
+        </main>
       </div>
     </div>
   )

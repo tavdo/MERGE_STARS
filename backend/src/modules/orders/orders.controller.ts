@@ -24,6 +24,12 @@ export class OrdersController {
     return this.orders.listForUser(user.id);
   }
 
+  @Get('delivery/latest')
+  @UseGuards(JwtAuthGuard)
+  latestDelivery(@CurrentUser() user: User) {
+    return this.orders.getLatestDelivery(user.id);
+  }
+
   @Post()
   @UseGuards(JwtAuthGuard)
   @UsePipes(new ValidationPipe({ whitelist: true, transform: true }))

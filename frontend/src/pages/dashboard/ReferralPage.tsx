@@ -2,18 +2,9 @@ import { useCallback, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useQuery } from '@tanstack/react-query'
 import DashboardLayout from '../../components/DashboardLayout'
+import QrCodeImage, { downloadQrPng, shareReferralLink } from '../../components/QrCodeImage'
 import { referralsApi } from '@/features/referrals/api/referrals.api'
-import { downloadReferralQrPng, shareReferralLink, REFERRAL_QR_PATTERN } from '../../utils/referralQr'
-
-function MiniQR({ color = '#1a1a1a' }: { color?: string }) {
-  return (
-    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(12, 1fr)', gap: '2px', width: '120px', height: '120px', padding: '8px', background: '#fff', borderRadius: '4px' }}>
-      {REFERRAL_QR_PATTERN.slice(0, 144).map((f, i) => (
-        <div key={i} style={{ background: f ? color : 'transparent', borderRadius: '1px' }} />
-      ))}
-    </div>
-  )
-}
+import { brandApi } from '@/features/brand/api/brand.api'
 
 export default function ReferralPage() {
   const { t } = useTranslation()
@@ -41,13 +32,15 @@ export default function ReferralPage() {
   }, [toast])
 
   const handleDownload = () => {
-    downloadReferralQrPng(REFERRAL_QR_PATTERN, { color: '#1a1a1a', filename: `merge-stars-${qrRef}.png` })
+    void downloadQrPng(refLink, `merge-stars-${qrRef}.png`)
+    void brandApi.trackQrScan()
     showToast(t('referral.toastDownloaded', { defaultValue: 'QR downloaded' }))
   }
 
   const handleShare = async () => {
     try {
       const result = await shareReferralLink(refLink)
+      void brandApi.trackQrScan()
       showToast(result === 'shared' ? t('referral.toastShared', { defaultValue: 'Shared' }) : t('referral.toastCopiedShare', { defaultValue: 'Link copied' }))
     } catch {
       showToast('Could not share')
@@ -83,13 +76,13 @@ export default function ReferralPage() {
         </div>
 
         <div className="gold-card" style={{ padding: '24px', borderRadius: '4px', marginBottom: '24px', display: 'flex', gap: '24px', flexWrap: 'wrap', alignItems: 'center' }}>
-          <MiniQR />
+          <QrCodeImage value={refLink} size={120} />
           <div style={{ flex: 1, minWidth: '200px' }}>
             <p style={{ fontSize: '10px', color: 'rgba(255,255,255,0.4)', marginBottom: '8px' }}>{qrRef}</p>
             <p style={{ fontSize: '12px', color: '#fff', wordBreak: 'break-all', marginBottom: '12px' }}>{refLink}</p>
             <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
-              <button type="button" className="gold-btn" onClick={copyLink}>Copy link</button>
-              <button type="button" className="gold-btn-outline" onClick={handleShare}>Share</button>
+              <button type="button" className="gold-btn" onClick={() => void copyLink()}>Copy link</button>
+              <button type="button" className="gold-btn-outline" onClick={() => void handleShare()}>Share</button>
               <button type="button" className="gold-btn-outline" onClick={handleDownload}>Download QR</button>
             </div>
           </div>

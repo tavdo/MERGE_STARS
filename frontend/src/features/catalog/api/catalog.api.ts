@@ -1,7 +1,21 @@
 import { api } from '@/lib/axios'
 import type { ApiResponse } from '@/shared/types/api.types'
 
-export type CatalogVisibility = 'PUBLIC' | 'PRIVATE'
+export interface CatalogItem {
+  id: string
+  collectionId: string
+  title: string
+  description: string | null
+  metalType: string | null
+  imageUrl: string | null
+  model3dUrl: string | null
+  model3dFormat: string | null
+  hasImage?: boolean
+  hasModel3d?: boolean
+  status: 'ACTIVE' | 'ARCHIVED'
+  createdAt: string
+  updatedAt: string
+}
 
 export interface CatalogCollection {
   id: string
@@ -17,20 +31,26 @@ export interface CatalogCollection {
   brandLineId?: string | null
 }
 
-export interface CatalogItem {
-  id: string
-  collectionId: string
-  title: string
-  description: string | null
-  metalType: string | null
-  imageUrl: string | null
-  status: 'ACTIVE' | 'ARCHIVED'
-  createdAt: string
-  updatedAt: string
-}
+export type CatalogVisibility = 'PUBLIC' | 'PRIVATE'
 
 export interface CatalogCollectionDetail extends CatalogCollection {
   items: CatalogItem[]
+}
+
+const apiBase = (import.meta.env.VITE_API_URL ?? 'http://localhost:3000').replace(/\/$/, '')
+
+export function catalogItemImageUrl(item: CatalogItem) {
+  if (!item.imageUrl) return null
+  if (item.imageUrl.startsWith('http')) return item.imageUrl
+  if (item.hasImage) return `${apiBase}/catalog/items/${item.id}/image/file`
+  return null
+}
+
+export function catalogItemModelUrl(item: CatalogItem) {
+  if (!item.model3dUrl && !item.hasModel3d) return null
+  if (item.model3dUrl?.startsWith('http')) return item.model3dUrl
+  if (item.hasModel3d) return `${apiBase}/catalog/items/${item.id}/model3d/file`
+  return null
 }
 
 export const catalogApi = {
@@ -51,6 +71,22 @@ export const catalogApi = {
 
   addItem: (collectionId: string, payload: { title: string; description?: string; metalType?: string; imageUrl?: string }) =>
     api.post<ApiResponse<CatalogItem>>(`/catalog/collections/${collectionId}/items`, payload),
+
+  uploadImage: (itemId: string, file: File) => {
+    const form = new FormData()
+    form.append('file', file)
+    return api.post<ApiResponse<CatalogItem>>(`/catalog/items/${itemId}/image`, form, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    })
+  },
+
+  uploadModel3d: (itemId: string, file: File) => {
+    const form = new FormData()
+    form.append('file', file)
+    return api.post<ApiResponse<CatalogItem>>(`/catalog/items/${itemId}/model3d`, form, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    })
+  },
 
   updateItem: (itemId: string, payload: Partial<{ title: string; description: string; metalType: string; imageUrl: string; status: 'ACTIVE' | 'ARCHIVED' }>) =>
     api.patch<ApiResponse<CatalogItem>>(`/catalog/items/${itemId}`, payload),
