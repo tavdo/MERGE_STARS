@@ -5436,3 +5436,110 @@ textarea.gold-input {
   line-height: 1.5;
   color: rgba(255, 255, 255, 0.4);
 }
+
+.cookie-consent {
+  position: fixed;
+  inset-inline: 0;
+  bottom: 0;
+  z-index: 9999;
+  padding: 0.75rem;
+  pointer-events: none;
+}
+
+.cookie-consent-inner {
+  pointer-events: auto;
+  max-width: 56rem;
+  margin: 0 auto;
+  padding: 1rem 1.25rem;
+  border-radius: 6px;
+  border: 1px solid rgba(201, 168, 76, 0.35);
+  background: rgba(12, 12, 12, 0.97);
+  backdrop-filter: blur(12px);
+  box-shadow: 0 -8px 32px rgba(0, 0, 0, 0.45);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem 1.25rem;
+}
+
+.cookie-consent-title {
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  color: #c9a84c;
+  margin-bottom: 0.35rem;
+}
+
+.cookie-consent-desc {
+  font-size: 0.8125rem;
+  line-height: 1.55;
+  color: rgba(255, 255, 255, 0.62);
+  max-width: 42rem;
+}
+
+.cookie-consent-link {
+  color: #c9a84c;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.cookie-consent-link:hover {
+  color: #f5d78e;
+}
+
+.cookie-consent-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  shrink: 0;
+}
+
+.cookie-consent-btn {
+  padding: 0.55rem 1rem;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s, color 0.15s;
+}
+
+.cookie-consent-btn--ghost {
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: transparent;
+  color: rgba(255, 255, 255, 0.75);
+}
+
+.cookie-consent-btn--ghost:hover {
+  border-color: rgba(201, 168, 76, 0.45);
+  color: #fff;
+}
+
+.cookie-consent-btn--primary {
+  border: 1px solid #c9a84c;
+  background: linear-gradient(135deg, #c9a84c, #f5d78e);
+  color: #1a1408;
+}
+
+.cookie-consent-btn--primary:hover {
+  filter: brightness(1.05);
+}
+
+@media (max-width: 640px) {
+  .cookie-consent-inner {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .cookie-consent-actions {
+    flex-direction: column;
+  }
+
+  .cookie-consent-btn {
+    width: 100%;
+    justify-content: center;
+    text-align: center;
+  }
+}

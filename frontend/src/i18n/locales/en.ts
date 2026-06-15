@@ -25,6 +25,14 @@ export default {
     menu: 'Menu',
     closeMenu: 'Close menu',
   },
+  cookies: {
+    title: 'We use cookies',
+    message:
+      'We use essential cookies for login, security, and site functionality. With your consent we may also use analytics cookies to improve MERGE STARS.',
+    privacyLink: 'Privacy Policy',
+    acceptAll: 'Accept all',
+    essentialOnly: 'Essential only',
+  },
   footer: {
     secure: 'SECURE PLATFORM',
     secureSub: 'Your data is protected',

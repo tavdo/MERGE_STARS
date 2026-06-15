@@ -62,6 +62,7 @@ import AIAssistantWidget from './components/AIAssistantWidget'
 import AuthGuard from './router/guards/AuthGuard'
 import AdminGuard from './router/guards/AdminGuard'
 import AdminLoginPage from './pages/admin/AdminLoginPage'
+import CookieConsent from './components/CookieConsent'
 
 function useLuxuryCursorEnabled() {
   const { pathname } = useLocation()
@@ -81,6 +82,7 @@ function AppRoutes() {
     <>
       {luxuryCursor && <LuxuryCursor />}
       {!adminZone && <AIAssistantWidget />}
+      <CookieConsent />
       <Routes>
         {/* Public */}
         <Route path="/"                element={<LandingPage />} />
