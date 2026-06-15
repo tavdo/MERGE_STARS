@@ -11,6 +11,14 @@ const { Client } = require('pg');
 
 const DEFAULT_SQL = path.join(__dirname, '..', 'data', 'users.mysql.sql');
 
+const SYNC_PASSWORDS =
+  process.env.IMPORT_USERS_SYNC_PASSWORDS === 'true' ||
+  process.argv.includes('--sync-passwords');
+const UPDATE_EXISTING =
+  process.env.IMPORT_USERS_UPDATE_EXISTING === 'true' ||
+  process.argv.includes('--update-existing') ||
+  SYNC_PASSWORDS;
+
 /** Parse one SQL VALUES tuple: (1, 'name', 'email', ...) */
 function parseSqlTuple(raw) {
   const values = [];
@@ -166,6 +174,10 @@ async function main() {
   let updated = 0;
   let skipped = 0;
 
+  console.log(
+    `Options: updateExisting=${UPDATE_EXISTING} syncPasswords=${SYNC_PASSWORDS}`,
+  );
+
   for (const u of users) {
     const existing = await client.query(
       'SELECT id, email, merge_id FROM users WHERE email = $1 OR merge_id = $2',
@@ -173,27 +185,55 @@ async function main() {
     );
 
     if (existing.rowCount > 0) {
-      await client.query(
-        `UPDATE users SET
-          password_hash = $1,
-          first_name = $2,
-          last_name = $3,
-          personal_id = $4,
-          roles = $5::jsonb,
-          kyc_status = $6,
-          updated_at = $7::timestamptz
-        WHERE email = $8`,
-        [
-          u.passwordHash,
-          u.firstName,
-          u.lastName,
-          u.personalId,
-          JSON.stringify(u.roles),
-          u.kycStatus,
-          u.updatedAt,
-          u.email,
-        ],
-      );
+      if (!UPDATE_EXISTING) {
+        skipped++;
+        console.log(`Skipped existing: ${u.email} (${u.mergeId})`);
+        continue;
+      }
+
+      if (SYNC_PASSWORDS) {
+        await client.query(
+          `UPDATE users SET
+            password_hash = $1,
+            first_name = $2,
+            last_name = $3,
+            personal_id = $4,
+            roles = $5::jsonb,
+            kyc_status = $6,
+            updated_at = $7::timestamptz
+          WHERE email = $8`,
+          [
+            u.passwordHash,
+            u.firstName,
+            u.lastName,
+            u.personalId,
+            JSON.stringify(u.roles),
+            u.kycStatus,
+            u.updatedAt,
+            u.email,
+          ],
+        );
+      } else {
+        await client.query(
+          `UPDATE users SET
+            first_name = $1,
+            last_name = $2,
+            personal_id = $3,
+            roles = $4::jsonb,
+            kyc_status = $5,
+            updated_at = $6::timestamptz
+          WHERE email = $7`,
+          [
+            u.firstName,
+            u.lastName,
+            u.personalId,
+            JSON.stringify(u.roles),
+            u.kycStatus,
+            u.updatedAt,
+            u.email,
+          ],
+        );
+      }
       updated++;
       console.log(`Updated: ${u.email} (${u.mergeId})`);
       continue;

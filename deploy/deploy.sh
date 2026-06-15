@@ -27,6 +27,13 @@ if [ -f .env ]; then
   else
     sed -i 's/^EMAIL_VERIFY=.*/EMAIL_VERIFY=true/' .env
   fi
+  if ! grep -q '^DB_SYNC=' .env; then
+    echo 'DB_SYNC=false' >> .env
+    echo 'DB_MIGRATE=true' >> .env
+  fi
+  if grep -q '^DB_SYNC=true' .env 2>/dev/null; then
+    echo "WARNING: DB_SYNC=true in .env — set DB_SYNC=false DB_MIGRATE=true for production"
+  fi
   if grep -q '^SMTP_PORT=' .env; then
     sed -i 's/^SMTP_PORT=.*/SMTP_PORT=587/' .env
   else
@@ -151,6 +158,8 @@ fi
 echo "==> Import users from MySQL dump (if present)"
 if [ -f "$REPO_ROOT/backend/data/users.mysql.sql" ] && [ -n "${DATABASE_URL:-}" ]; then
   cd "$REPO_ROOT/backend"
+  # Default: import NEW users only — never overwrite passwords for existing accounts.
+  # To force profile/password sync from dump: IMPORT_USERS_UPDATE_EXISTING=true IMPORT_USERS_SYNC_PASSWORDS=true
   node scripts/import-users-sql.js data/users.mysql.sql || echo "WARNING: user import failed — check DATABASE_URL and PostgreSQL"
   cd "$REPO_ROOT"
 else

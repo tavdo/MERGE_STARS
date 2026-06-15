@@ -9,6 +9,7 @@ import { PasswordResetToken } from '../../database/entities/password-reset-token
 import { MailModule } from '../mail/mail.module';
 import { ReferralsModule } from '../referrals/referrals.module';
 import { NotificationsModule } from '../notifications/notifications.module';
+import { PhoneVerificationCode } from '../../database/entities/phone-verification-code.entity';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { JwtStrategy } from './jwt.strategy';
@@ -23,6 +24,7 @@ import { JwtStrategy } from './jwt.strategy';
       RefreshToken,
       EmailVerificationCode,
       PasswordResetToken,
+      PhoneVerificationCode,
     ]),
     PassportModule.register({ defaultStrategy: 'jwt' }),
     JwtModule.register({}),

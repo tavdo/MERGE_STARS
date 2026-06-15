@@ -30,8 +30,35 @@ export const adminApi = {
   getOrders: () =>
     api.get<ApiResponse<AdminOrder[]>>('/admin/orders'),
 
+  getAnalytics: () =>
+    api.get<ApiResponse<AdminAnalytics>>('/admin/analytics'),
+
+  getSettings: () =>
+    api.get<ApiResponse<PlatformSettings>>('/settings'),
+
+  updateSettings: (body: Partial<PlatformSettings>) =>
+    api.patch<ApiResponse<PlatformSettings>>('/settings', body),
+
   exportCsv: () =>
     api.get('/admin/applications/export', { responseType: 'blob' }),
+}
+
+export interface PlatformSettings {
+  tickerEnabled: boolean
+  aiEnabled: boolean
+  autoVerify: boolean
+  platformShare: string
+  brandShare: string
+  referrerShare: string
+  updatedAt: string
+}
+
+export interface AdminAnalytics {
+  stats: { label: string; value: string; change: string; up: boolean; color: string }[]
+  monthly: { month: string; orders: number; revenue: number }[]
+  countries: { country: string; count: number; pct: number }[]
+  funnel: { stage: string; count: number; pct: number }[]
+  shares: { platform: string; brand: string; referrer: string }
 }
 
 export interface AdminUser {

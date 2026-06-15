@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next'
 import LanguageSwitcher from './LanguageSwitcher'
 import SiteLogo from './SiteLogo'
 import { SUPPORTED_LANGUAGES, type LanguageCode } from '../i18n'
+import { useAuthStore } from '@/features/auth/store/auth.store'
 
 const NAV_LINKS = [
   { labelKey: 'nav.home', href: '/' },
@@ -25,7 +26,9 @@ export default function Navbar({ variant = 'landing' }: NavbarProps) {
   const { t, i18n } = useTranslation()
   const [mobileOpen, setMobileOpen] = useState(false)
   const location = useLocation()
-  const isLoggedIn = variant === 'dashboard' || variant === 'admin'
+  const accessToken = useAuthStore((s) => s.accessToken)
+  const user = useAuthStore((s) => s.user)
+  const isLoggedIn = Boolean(accessToken && user)
   const isLanding = variant === 'landing'
   const currentLang = (i18n.language?.slice(0, 2) || 'en') as LanguageCode
 

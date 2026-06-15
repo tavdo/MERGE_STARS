@@ -23,7 +23,6 @@ echo "Resetting password for $EMAIL …"
 cd "$REPO_ROOT/backend"
 export SEED_ADMIN_EMAIL="$EMAIL"
 export SEED_ADMIN_PASSWORD="$PASS"
-export SEED_ADMIN_SYNC=true
 node -e "
 require('dotenv').config({ path: '../.env' });
 const bcrypt = require('bcrypt');
@@ -56,3 +55,8 @@ if command -v systemctl >/dev/null 2>&1; then
 fi
 
 echo "Done. Log in at /admin/login"
+
+if [ -f "$REPO_ROOT/.env" ] && grep -q '^SEED_ADMIN_SYNC=true' "$REPO_ROOT/.env"; then
+  sed -i '/^SEED_ADMIN_SYNC=true/d' "$REPO_ROOT/.env"
+  echo "Removed SEED_ADMIN_SYNC=true from .env (prevents password reset on every restart)"
+fi

@@ -14,9 +14,12 @@ import { User, userPublicView } from '../../database/entities/user.entity';
 import { RefreshToken } from '../../database/entities/refresh-token.entity';
 import { EmailVerificationCode } from '../../database/entities/email-verification-code.entity';
 import { PasswordResetToken } from '../../database/entities/password-reset-token.entity';
+import { PhoneVerificationCode } from '../../database/entities/phone-verification-code.entity';
 import { MailService } from '../mail/mail.service';
 import { ReferralsService } from '../referrals/referrals.service';
 import { NotificationsService } from '../notifications/notifications.service';
+import { SmsService } from '../sms/sms.service';
+import { PlatformSettingsService } from '../settings/platform-settings.service';
 import { LoginDto, RegisterDto } from './dto/auth.dto';
 
 @Injectable()
@@ -29,10 +32,14 @@ export class AuthService {
     private readonly emailCodes: Repository<EmailVerificationCode>,
     @InjectRepository(PasswordResetToken)
     private readonly resetTokens: Repository<PasswordResetToken>,
+    @InjectRepository(PhoneVerificationCode)
+    private readonly phoneCodes: Repository<PhoneVerificationCode>,
     private readonly jwt: JwtService,
     private readonly mail: MailService,
+    private readonly sms: SmsService,
     private readonly referrals: ReferralsService,
     private readonly notifications: NotificationsService,
+    private readonly platformSettings: PlatformSettingsService,
   ) {}
 
   private async hashPassword(password: string) {
@@ -135,6 +142,109 @@ export class AuthService {
     await this.emailCodes.save(row);
   }
 
+  async sendPhoneVerificationCode(phone: string) {
+    const normalized = phone.trim();
+    if (!/^\+[1-9]\d{7,14}$/.test(normalized)) {
+      throw new BadRequestException('Enter phone in international format, e.g. +9955…');
+    }
+
+    const recent = await this.phoneCodes.findOne({
+      where: { phone: normalized },
+      order: { createdAt: 'DESC' },
+    });
+    if (recent && Date.now() - recent.createdAt.getTime() < 60_000) {
+      throw new BadRequestException('Please wait 60 seconds before requesting a new code');
+    }
+
+    await this.phoneCodes.delete({ phone: normalized });
+    const code = String(randomInt(100000, 999999));
+    const expiresAt = new Date(Date.now() + 15 * 60_000);
+
+    try {
+      await this.sms.sendVerificationCode(normalized, code);
+    } catch {
+      throw new ServiceUnavailableException(
+        'Could not send SMS verification code. Please try again shortly.',
+      );
+    }
+
+    await this.phoneCodes.save(
+      this.phoneCodes.create({ phone: normalized, code, expiresAt, used: false }),
+    );
+    return { ok: true, message: 'Verification code sent' };
+  }
+
+  private async consumePhoneVerificationCode(phone: string, code: string) {
+    const normalized = phone.trim();
+    const row = await this.phoneCodes.findOne({
+      where: { phone: normalized, code, used: false },
+      order: { createdAt: 'DESC' },
+    });
+    if (!row || row.expiresAt < new Date()) {
+      throw new BadRequestException('Invalid or expired phone verification code');
+    }
+    row.used = true;
+    await this.phoneCodes.save(row);
+  }
+
+  async googleLogin(idToken: string) {
+    const clientId = process.env.GOOGLE_CLIENT_ID?.trim();
+    if (!clientId) {
+      throw new ServiceUnavailableException('Google sign-in is not configured');
+    }
+
+    const res = await fetch(`https://oauth2.googleapis.com/tokeninfo?id_token=${encodeURIComponent(idToken)}`);
+    if (!res.ok) throw new UnauthorizedException('Invalid Google token');
+
+    const data = (await res.json()) as {
+      aud?: string;
+      email?: string;
+      email_verified?: string;
+      given_name?: string;
+      family_name?: string;
+      sub?: string;
+    };
+
+    if (data.aud !== clientId || data.email_verified !== 'true' || !data.email) {
+      throw new UnauthorizedException('Google account could not be verified');
+    }
+
+    const email = data.email.toLowerCase();
+    let user = await this.users.findOne({ where: { email } });
+
+    if (!user) {
+      const ids = await this.nextUserIds();
+      user = this.users.create({
+        email,
+        phone: null,
+        passwordHash: await this.hashPassword(randomBytes(24).toString('hex')),
+        firstName: data.given_name?.trim() || 'Google',
+        lastName: data.family_name?.trim() || 'User',
+        personalId: null,
+        mergeId: ids.mergeId,
+        founderId: ids.founderId,
+        brandLineId: ids.brandLineId,
+        roles: ['user'],
+        status: 'active',
+        kycStatus: 'pending',
+        termsAcceptedAt: new Date(),
+      });
+      await this.users.save(user);
+    }
+
+    if (user.status !== 'active') {
+      throw new UnauthorizedException('Account disabled');
+    }
+
+    const accessToken = this.signAccessToken(user);
+    const refreshToken = await this.createRefreshToken(user.id);
+    return {
+      accessToken,
+      refreshToken,
+      user: userPublicView(user),
+    };
+  }
+
   async register(dto: RegisterDto) {
     const email = dto.email.trim().toLowerCase();
     const phone = dto.phone?.trim() || null;
@@ -169,6 +279,14 @@ export class AuthService {
       await this.consumeVerificationCode(email, dto.verificationCode.trim());
     }
 
+    const smsVerify = process.env.SMS_VERIFY === 'true';
+    if (smsVerify && phone) {
+      if (!dto.phoneVerificationCode?.trim()) {
+        throw new BadRequestException('Phone verification code is required');
+      }
+      await this.consumePhoneVerificationCode(phone, dto.phoneVerificationCode.trim());
+    }
+
     const ids = await this.nextUserIds();
     if (await this.users.findOne({ where: { mergeId: ids.mergeId } })) {
       throw new ConflictException('Could not allocate user ID, try again');
@@ -186,7 +304,7 @@ export class AuthService {
       brandLineId: ids.brandLineId,
       roles: ['user'],
       status: 'active',
-      kycStatus: 'pending',
+      kycStatus: (await this.platformSettings.get()).autoVerify ? 'verified' : 'pending',
       termsAcceptedAt: new Date(),
     });
 
@@ -250,17 +368,11 @@ export class AuthService {
       const code = String(randomInt(100000, 999999));
       const expiresAt = new Date(Date.now() + 15 * 60_000);
 
-      try {
-        await this.mail.sendPasswordResetCode(normalized, code);
-      } catch {
-        throw new ServiceUnavailableException(
-          'Could not send reset email. Please try again in a minute.',
-        );
-      }
-
       await this.resetTokens.save(
         this.resetTokens.create({ email: normalized, token: code, expiresAt, used: false }),
       );
+
+      this.mail.sendPasswordResetCodeInBackground(normalized, code);
     }
 
     return { ok: true, message: 'If that email is registered, a reset code was sent' };

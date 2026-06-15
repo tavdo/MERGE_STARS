@@ -23,6 +23,9 @@ export class DatabaseSeedService implements OnModuleInit {
         }
         await this.users.save(existing);
         this.log.log(`Synced password for admin ${email} (SEED_ADMIN_SYNC=true)`);
+        this.log.warn(
+          'Remove SEED_ADMIN_SYNC from .env — if it stays true, admin password resets on every backend restart',
+        );
         return;
       }
     }

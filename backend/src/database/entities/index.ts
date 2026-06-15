@@ -12,6 +12,8 @@ import { KycDocument } from './kyc-document.entity';
 import { CatalogCollection } from './catalog-collection.entity';
 import { CatalogItem } from './catalog-item.entity';
 import { BrandLineProfile } from './brand-line-profile.entity';
+import { PlatformSettings } from './platform-settings.entity';
+import { PhoneVerificationCode } from './phone-verification-code.entity';
 
 export const entities = [
   User,
@@ -28,6 +30,8 @@ export const entities = [
   CatalogCollection,
   CatalogItem,
   BrandLineProfile,
+  PlatformSettings,
+  PhoneVerificationCode,
 ];
 
 export {
@@ -45,4 +49,6 @@ export {
   CatalogCollection,
   CatalogItem,
   BrandLineProfile,
+  PlatformSettings,
+  PhoneVerificationCode,
 };

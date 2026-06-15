@@ -1,5 +1,6 @@
-import { useState, useCallback } from 'react'
+import { useCallback, useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import { aiApi } from './ai.api'
 import { getAIResponse, tryAuditAI } from './aiChat'
 import type { ChatMessage } from './aiChat'
 
@@ -13,23 +14,40 @@ export function useAIChat() {
   ])
   const [input, setInput] = useState('')
   const [loading, setLoading] = useState(false)
+  const [provider, setProvider] = useState<string | null>(null)
 
   const send = useCallback(
-    (text: string, suggestionIndex?: number) => {
+    async (text: string, suggestionIndex?: number) => {
       if (!text.trim() || loading) return
       const ts = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
       setMessages((m) => [...m, { role: 'user', text, ts }])
       setInput('')
       setLoading(true)
       void tryAuditAI('AI_PROMPT', { prompt: text })
-      setTimeout(() => {
-        const response = getAIResponse(text, suggested, responses, suggestionIndex)
+
+      const history = messages
+        .filter((m) => m.text !== '__WELCOME__')
+        .map((m) => ({
+          role: (m.role === 'user' ? 'user' : 'assistant') as 'user' | 'assistant',
+          content: m.text,
+        }))
+
+      try {
+        const { data } = await aiApi.chat(text, history)
+        const response = data.data.text
+        setProvider(data.data.provider)
         setMessages((m) => [...m, { role: 'ai', text: response, ts }])
-        void tryAuditAI('AI_RESPONSE', { prompt: text, response })
+        void tryAuditAI('AI_RESPONSE', { prompt: text, response, provider: data.data.provider })
+      } catch {
+        const response = getAIResponse(text, suggested, responses, suggestionIndex)
+        setProvider('fallback')
+        setMessages((m) => [...m, { role: 'ai', text: response, ts }])
+        void tryAuditAI('AI_RESPONSE', { prompt: text, response, provider: 'fallback' })
+      } finally {
         setLoading(false)
-      }, 900)
+      }
     },
-    [loading, suggested, responses],
+    [loading, messages, suggested, responses],
   )
 
   const showSuggestions = messages.length === 1 && !loading
@@ -42,5 +60,6 @@ export function useAIChat() {
     send,
     showSuggestions,
     suggested,
+    provider,
   }
 }

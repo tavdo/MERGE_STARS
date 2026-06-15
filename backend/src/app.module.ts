@@ -28,6 +28,10 @@ import { KycModule } from './modules/kyc/kyc.module';
 import { ReferralsModule } from './modules/referrals/referrals.module';
 import { CatalogModule } from './modules/catalog/catalog.module';
 import { BrandModule } from './modules/brand/brand.module';
+import { SettingsModule } from './modules/settings/settings.module';
+import { AiModule } from './modules/ai/ai.module';
+import { SmsModule } from './modules/sms/sms.module';
+import { RedisModule } from './modules/redis/redis.module';
 
 @Module({
   imports: [
@@ -59,6 +63,10 @@ import { BrandModule } from './modules/brand/brand.module';
     ReferralsModule,
     CatalogModule,
     BrandModule,
+    SettingsModule,
+    AiModule,
+    SmsModule,
+    RedisModule,
   ],
   controllers: [AppController],
   providers: [

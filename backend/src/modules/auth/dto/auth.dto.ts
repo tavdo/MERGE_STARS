@@ -56,11 +56,28 @@ export class RegisterDto {
   @IsString()
   @Length(6, 6)
   verificationCode?: string;
+
+  @IsOptional()
+  @IsString()
+  @Length(6, 6)
+  phoneVerificationCode?: string;
 }
 
 export class SendVerificationCodeDto {
   @IsEmail()
   email: string;
+}
+
+export class SendPhoneVerificationCodeDto {
+  @IsString()
+  @IsNotEmpty()
+  phone: string;
+}
+
+export class GoogleLoginDto {
+  @IsString()
+  @IsNotEmpty()
+  idToken: string;
 }
 
 export class ForgotPasswordDto {

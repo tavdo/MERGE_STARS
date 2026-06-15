@@ -17,7 +17,10 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User, userPublicView } from '../../database/entities/user.entity';
 import { Order, orderView } from '../../database/entities/order.entity';
+import { CoinApplication } from '../../database/entities/coin-application.entity';
+import { BrandLineProfile } from '../../database/entities/brand-line-profile.entity';
 import { UsersService } from '../users/users.service';
+import { AdminAnalyticsService } from './admin-analytics.service';
 
 @Controller('admin')
 @UseGuards(JwtAuthGuard, RolesGuard)
@@ -26,9 +29,15 @@ export class AdminController {
   constructor(
     private readonly coins: CoinsService,
     private readonly usersService: UsersService,
+    private readonly analytics: AdminAnalyticsService,
     @InjectRepository(User) private readonly users: Repository<User>,
     @InjectRepository(Order) private readonly orders: Repository<Order>,
   ) {}
+
+  @Get('analytics')
+  analyticsDashboard() {
+    return this.analytics.dashboard();
+  }
 
   @Get('applications')
   async applications(

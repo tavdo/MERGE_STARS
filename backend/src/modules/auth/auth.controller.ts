@@ -12,9 +12,11 @@ import { Response, Request } from 'express';
 import { AuthService } from './auth.service';
 import {
   ForgotPasswordDto,
+  GoogleLoginDto,
   LoginDto,
   RegisterDto,
   ResetPasswordDto,
+  SendPhoneVerificationCodeDto,
   SendVerificationCodeDto,
 } from './dto/auth.dto';
 
@@ -45,6 +47,25 @@ export class AuthController {
   @UsePipes(new ValidationPipe({ whitelist: true, transform: true }))
   sendVerificationCode(@Body() dto: SendVerificationCodeDto) {
     return this.auth.sendVerificationCode(dto.email);
+  }
+
+  @Post('send-phone-code')
+  @Throttle({ default: { limit: 5, ttl: 60_000 } })
+  @UsePipes(new ValidationPipe({ whitelist: true, transform: true }))
+  sendPhoneCode(@Body() dto: SendPhoneVerificationCodeDto) {
+    return this.auth.sendPhoneVerificationCode(dto.phone);
+  }
+
+  @Post('google')
+  @Throttle({ default: { limit: 10, ttl: 60_000 } })
+  @UsePipes(new ValidationPipe({ whitelist: true, transform: true }))
+  async googleLogin(
+    @Body() dto: GoogleLoginDto,
+    @Res({ passthrough: true }) res: Response,
+  ) {
+    const result = await this.auth.googleLogin(dto.idToken);
+    setRefreshCookie(res, result.refreshToken);
+    return { accessToken: result.accessToken, user: result.user };
   }
 
   @Post('register')

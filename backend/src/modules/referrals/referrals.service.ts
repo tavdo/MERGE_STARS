@@ -4,6 +4,7 @@ import { Repository } from 'typeorm';
 import { Referral } from '../../database/entities/referral.entity';
 import { User } from '../../database/entities/user.entity';
 import { NotificationsService } from '../notifications/notifications.service';
+import { PlatformSettingsService } from '../settings/platform-settings.service';
 
 @Injectable()
 export class ReferralsService {
@@ -11,6 +12,7 @@ export class ReferralsService {
     @InjectRepository(Referral) private readonly referrals: Repository<Referral>,
     @InjectRepository(User) private readonly users: Repository<User>,
     private readonly notifications: NotificationsService,
+    private readonly platformSettings: PlatformSettingsService,
   ) {}
 
   shareBase() {
@@ -71,13 +73,14 @@ export class ReferralsService {
     const rows = await this.referrals.find({ where: { referrerId } });
     const verified = rows.filter((r) => r.status === 'verified' || r.status === 'completed').length;
     const pending = rows.filter((r) => r.status === 'registered' || r.status === 'pending').length;
+    const shares = await this.platformSettings.get();
     return {
       total: rows.length,
       verified,
       pending,
       shareLink: this.buildShareLink(mergeId),
       qrRef: `QR-REF-${mergeId.replace(/^MERGE-/, '')}`,
-      platformShare: '1/4',
+      platformShare: shares.referrerShare,
     };
   }
 }

@@ -15,7 +15,19 @@ Source dump: `users.mysql.sql` (from phpMyAdmin / Laravel `mergestars` database)
 | `email_verified_at` | `kyc_status`: verified / pending |
 | `created_at` / `updated_at` | preserved |
 
-**25 users** in the current dump. Existing emails are **updated** (password + profile), not duplicated.
+**25 users** in the current dump. Existing emails are **skipped** by default (passwords and profile stay as in PostgreSQL).
+
+To update profiles from dump without touching passwords:
+
+```bash
+IMPORT_USERS_UPDATE_EXISTING=true npm run import:users
+```
+
+To also reset passwords from the Laravel dump (one-time migration only):
+
+```bash
+IMPORT_USERS_UPDATE_EXISTING=true IMPORT_USERS_SYNC_PASSWORDS=true npm run import:users
+```
 
 ## Run manually
 

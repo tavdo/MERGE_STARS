@@ -18,6 +18,12 @@ export const authApi = {
   sendEmailVerificationCode: (email: string) =>
     api.post<ApiResponse<{ ok: boolean; message: string }>>('/auth/send-verification-code', { email }),
 
+  sendPhoneVerificationCode: (phone: string) =>
+    api.post<ApiResponse<{ ok: boolean; message: string }>>('/auth/send-phone-code', { phone }),
+
+  googleLogin: (idToken: string) =>
+    api.post<ApiResponse<AuthTokens>>('/auth/google', { idToken }),
+
   forgotPassword: (email: string) =>
     api.post<ApiResponse<{ ok: boolean; message: string }>>('/auth/forgot-password', { email }),
 

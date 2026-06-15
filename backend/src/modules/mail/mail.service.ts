@@ -279,6 +279,11 @@ export class MailService implements OnModuleInit {
     await this.send(email, subject, html, text);
   }
 
+  sendPasswordResetCodeInBackground(email: string, code: string) {
+    const { subject, html, text } = this.passwordResetCodeContent(code);
+    this.sendInBackground(email, subject, html, text);
+  }
+
   async sendApplicationReceived(email: string, name: string, appId: string) {
     const subject = 'MERGE STARS — Application received';
     const text = `Hello ${name},\n\nYour coin application ${appId} has been received and is under review.\n\nTrack status: https://mergestars.com/status`;

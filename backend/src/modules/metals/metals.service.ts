@@ -3,6 +3,7 @@ import { Cron, CronExpression } from '@nestjs/schedule';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { MetalPrice } from '../../database/entities/metal-price.entity';
+import { PlatformSettingsService } from '../settings/platform-settings.service';
 
 type Spot = { metal: string; priceUsd: number; changePct: number };
 
@@ -17,6 +18,7 @@ export class MetalsService implements OnModuleInit {
   constructor(
     @InjectRepository(MetalPrice)
     private readonly prices: Repository<MetalPrice>,
+    private readonly platformSettings: PlatformSettingsService,
   ) {}
 
   async onModuleInit() {
@@ -57,6 +59,8 @@ export class MetalsService implements OnModuleInit {
   @Cron(CronExpression.EVERY_MINUTE)
   async refreshPrices() {
     try {
+      const tickerOn = await this.platformSettings.isTickerEnabled();
+      if (!tickerOn) return;
       const fetched = await Promise.all([
         this.fetchMetalSpot('gold', 'XAU'),
         this.fetchMetalSpot('silver', 'XAG'),
