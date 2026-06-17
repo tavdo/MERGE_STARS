@@ -46,7 +46,7 @@ export default {
       technical: 'Technical Issue',
     },
     emailTitle: 'EMAIL',
-    emailPrimary: 'Mergestar01@gmail.com',
+    emailPrimary: 'mergestars01@gmail.com',
     emailSecondary: 'ID 406286424',
     phoneTitle: 'PHONE',
     phonePrimary: '+995 557 513 613',

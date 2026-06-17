@@ -102,7 +102,7 @@ export default {
       send: 'Send to support',
       sentTitle: 'Message sent',
       sentBody: 'We will respond to {{email}} within 24 hours.',
-      contactLine: 'Email: Mergestar01@gmail.com · Phone: +995 557 513 613',
+      contactLine: 'Email: mergestars01@gmail.com · Phone: +995 557 513 613',
       subjects: ['Support', 'Order', 'KYC', 'Payment', 'Technical'],
     },
     investments: {

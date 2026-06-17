@@ -2,7 +2,7 @@ export default {
   termsSections: [
     {
       title: '1. Hakkımızda',
-      body: 'LLC „Merge Varskvlavebi" (ID 406286424). Adres: Gürcistan, Isani ilçesi, B. Gabriels Salosi Cad. N120, Blok A, Giriş N3, Kat 9, Daire N101b. E-posta: Mergestar01@gmail.com · Tel.: +995 557 513 613.',
+      body: 'LLC „Merge Varskvlavebi" (ID 406286424). Adres: Gürcistan, Isani ilçesi, B. Gabriels Salosi Cad. N120, Blok A, Giriş N3, Kat 9, Daire N101b. E-posta: mergestars01@gmail.com · Tel.: +995 557 513 613.',
     },
     {
       title: 'LLC „Merge Varskvlavebi" — Faaliyet Tanımı',
@@ -33,7 +33,7 @@ export default {
         'Onay formülü: «LLC „Merge Varskvlavebi" elektronik platformuna kaydolarak ve ilgili kutuyu işaretleyerek, kişisel verilerimin bu Şartlara uygun işlenmesine bilinçli onay verdiğimi beyan ederim.»',
         'Meşru amaçlar: kullanıcı kimliği ve sözleşme yönetimi; finansal ve kişisel bilgilerin güvenli işlenmesi; hizmet kalitesinin izlenmesi ve optimizasyonu.',
         'Veri sahibi hakları: bilgiye erişim, düzeltme ve silme. md. 15 kapsamında «unutulma hakkı».',
-        'Kişisel verileriniz (kimlik, KYC, işlem) hizmet ve güvenlik için işlenir. Talepler: Mergestar01@gmail.com.',
+        'Kişisel verileriniz (kimlik, KYC, işlem) hizmet ve güvenlik için işlenir. Talepler: mergestars01@gmail.com.',
         'Veriler hesap silinene kadar saklanır; yasal ve denetim amaçlı bazı bilgiler kayıttan itibaren 5 yıl.',
       ],
     },
@@ -132,7 +132,7 @@ export default {
     },
     {
       title: '14. İletişim',
-      body: 'LLC „Merge Varskvlavebi" · ID 406286424 · Gürcistan, Isani, B. Gabriels Salosi Cad. N120, Blok A, Giriş N3, Kat 9, Daire N101b · Mergestar01@gmail.com · +995 557 513 613',
+      body: 'LLC „Merge Varskvlavebi" · ID 406286424 · Gürcistan, Isani, B. Gabriels Salosi Cad. N120, Blok A, Giriş N3, Kat 9, Daire N101b · mergestars01@gmail.com · +995 557 513 613',
     },
   ],
 } as const

@@ -2,7 +2,7 @@ export default {
   termsSections: [
     {
       title: '1. About Us',
-      body: 'LLC „Merge Varskvlavebi" (ID 406286424). Address: Georgia, Isani District, B. Gabriels Salosi Ave. N120, Block A, Entrance N3, Floor 9, Apt. N101b. Email: Mergestar01@gmail.com · Tel.: +995 557 513 613.',
+      body: 'LLC „Merge Varskvlavebi" (ID 406286424). Address: Georgia, Isani District, B. Gabriels Salosi Ave. N120, Block A, Entrance N3, Floor 9, Apt. N101b. Email: mergestars01@gmail.com · Tel.: +995 557 513 613.',
     },
     {
       title: 'LLC „Merge Varskvlavebi" — Scope of Operations',
@@ -33,7 +33,7 @@ export default {
         'User consent formula: "By registering on the electronic platform of LLC „Merge Varskvlavebi" and checking the relevant box, I declare my informed consent to the processing of my personal data in accordance with these Terms."',
         'Legitimate purposes of data processing: user identification and contractual relationship management; secure processing of financial and personal information; monitoring and optimization of service quality by the Company.',
         'Data subject rights: access to information, correction and deletion of data. Under Article 15 of the Constitution — the "right to be forgotten".',
-        'We process your personal data (identification, KYC, and transactional) for service delivery and security. Requests: Mergestar01@gmail.com.',
+        'We process your personal data (identification, KYC, and transactional) for service delivery and security. Requests: mergestars01@gmail.com.',
         'Data is retained until account deletion; certain information is kept for 5 years from registration for legal requirements and audit logs.',
       ],
     },
@@ -132,7 +132,7 @@ export default {
     },
     {
       title: '14. Contact Information',
-      body: 'LLC „Merge Varskvlavebi" · ID 406286424 · Address: Georgia, Isani District, B. Gabriels Salosi Ave. N120, Block A, Entrance N3, Floor 9, Apt. N101b · Mergestar01@gmail.com · +995 557 513 613',
+      body: 'LLC „Merge Varskvlavebi" · ID 406286424 · Address: Georgia, Isani District, B. Gabriels Salosi Ave. N120, Block A, Entrance N3, Floor 9, Apt. N101b · mergestars01@gmail.com · +995 557 513 613',
     },
   ],
   privacyPage: {

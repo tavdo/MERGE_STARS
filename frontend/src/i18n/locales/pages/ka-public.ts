@@ -39,7 +39,7 @@ export default {
     sendButton: 'გაგზავნა →',
     subjects: { general: 'ზოგადი', order: 'შეკვეთა', kyc: 'KYC / ვერიფიკაცია', payment: 'გადახდა / ფინანსირება', partnership: 'პარტნიორობა', technical: 'ტექნიკური' },
     emailTitle: 'ელფოსტა',
-    emailPrimary: 'Mergestar01@gmail.com',
+    emailPrimary: 'mergestars01@gmail.com',
     emailSecondary: 'ს/კ 406286424',
     phoneTitle: 'ტელეფონი',
     phonePrimary: '+995 557 513 613',

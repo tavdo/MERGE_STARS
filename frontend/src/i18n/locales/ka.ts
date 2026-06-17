@@ -16,7 +16,7 @@ export default {
     rights: 'ყველა უფლება დაცულია.', slogan: 'სადაც ლუქსი ხვდება ინოვაციას',
     legalName: 'შპს „მერგე ვარსკვლავები“',
     companyId: 'ს/კ 406286424',
-    contactEmail: 'Mergestar01@gmail.com',
+    contactEmail: 'mergestars01@gmail.com',
     contactPhone: '+995 557 513 613',
     contactAddress: 'თბილისი, ისნის რაიონი, ბ. გაბრიელ სალოსის გამზ. N120',
   },

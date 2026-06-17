@@ -2,7 +2,7 @@ export default {
   termsSections: [
     {
       title: '1. Über uns',
-      body: 'LLC „Merge Varskvlavebi" (ID 406286424). Adresse: Georgien, Bezirk Isani, B. Gabriels Salosi Allee N120, Block A, Eingang N3, Etage 9, Whg. N101b. E-Mail: Mergestar01@gmail.com · Tel.: +995 557 513 613.',
+      body: 'LLC „Merge Varskvlavebi" (ID 406286424). Adresse: Georgien, Bezirk Isani, B. Gabriels Salosi Allee N120, Block A, Eingang N3, Etage 9, Whg. N101b. E-Mail: mergestars01@gmail.com · Tel.: +995 557 513 613.',
     },
     {
       title: 'LLC „Merge Varskvlavebi" — Tätigkeitsbeschreibung',
@@ -33,7 +33,7 @@ export default {
         'Einwilligungsformel: „Mit der Registrierung auf der elektronischen Plattform von LLC „Merge Varskvlavebi" und dem Ankreuzen des entsprechenden Feldes erkläre ich meine informierte Einwilligung zur Verarbeitung meiner personenbezogenen Daten gemäß diesen Bedingungen."',
         'Rechtmäßige Zwecke: Nutzeridentifikation und Vertragsverwaltung; sichere Verarbeitung finanzieller und persönlicher Informationen; Überwachung und Optimierung der Servicequalität.',
         'Rechte der betroffenen Person: Auskunft, Berichtigung und Löschung. Gemäß Artikel 15 — „Recht auf Vergessenwerden".',
-        'Wir verarbeiten Ihre personenbezogenen Daten (Identifikation, KYC, transaktional) für Service und Sicherheit. Anfragen: Mergestar01@gmail.com.',
+        'Wir verarbeiten Ihre personenbezogenen Daten (Identifikation, KYC, transaktional) für Service und Sicherheit. Anfragen: mergestars01@gmail.com.',
         'Daten werden bis zur Kontolöschung aufbewahrt; bestimmte Informationen 5 Jahre ab Registrierung für gesetzliche und Audit-Zwecke.',
       ],
     },
@@ -132,7 +132,7 @@ export default {
     },
     {
       title: '14. Kontakt',
-      body: 'LLC „Merge Varskvlavebi" · ID 406286424 · Georgien, Isani, B. Gabriels Salosi Allee N120, Block A, Eingang N3, Etage 9, Whg. N101b · Mergestar01@gmail.com · +995 557 513 613',
+      body: 'LLC „Merge Varskvlavebi" · ID 406286424 · Georgien, Isani, B. Gabriels Salosi Allee N120, Block A, Eingang N3, Etage 9, Whg. N101b · mergestars01@gmail.com · +995 557 513 613',
     },
   ],
 } as const

@@ -2,7 +2,7 @@ export default {
   termsSections: [
     {
       title: '1. À propos de nous',
-      body: 'LLC „Merge Varskvlavebi" (ID 406286424). Adresse : Géorgie, district d\'Isani, av. B. Gabriels Salosi N120, bloc A, entrée N3, étage 9, apt. N101b. E-mail : Mergestar01@gmail.com · Tél. : +995 557 513 613.',
+      body: 'LLC „Merge Varskvlavebi" (ID 406286424). Adresse : Géorgie, district d\'Isani, av. B. Gabriels Salosi N120, bloc A, entrée N3, étage 9, apt. N101b. E-mail : mergestars01@gmail.com · Tél. : +995 557 513 613.',
     },
     {
       title: 'LLC „Merge Varskvlavebi" — Description des activités',
@@ -33,7 +33,7 @@ export default {
         'Formule de consentement : « En m\'inscrivant sur la plateforme électronique de LLC „Merge Varskvlavebi" et en cochant la case correspondante, je déclare mon consentement éclairé au traitement de mes données personnelles conformément aux présentes Conditions. »',
         'Finalités légitimes : identification, gestion contractuelle, traitement sécurisé des informations financières et personnelles, suivi et optimisation de la qualité des services.',
         'Droits de la personne concernée : accès, rectification et suppression. Droit à l\'oubli (article 15).',
-        'Traitement des données (identification, KYC, transactions) pour le service et la sécurité. Contact : Mergestar01@gmail.com.',
+        'Traitement des données (identification, KYC, transactions) pour le service et la sécurité. Contact : mergestars01@gmail.com.',
         'Conservation jusqu\'à suppression du compte ; certaines données 5 ans pour obligations légales et audit.',
       ],
     },
@@ -132,7 +132,7 @@ export default {
     },
     {
       title: '14. Contact',
-      body: 'LLC „Merge Varskvlavebi" · ID 406286424 · Géorgie, Isani, av. B. Gabriels Salosi N120, bloc A, entrée N3, étage 9, apt. N101b · Mergestar01@gmail.com · +995 557 513 613',
+      body: 'LLC „Merge Varskvlavebi" · ID 406286424 · Géorgie, Isani, av. B. Gabriels Salosi N120, bloc A, entrée N3, étage 9, apt. N101b · mergestars01@gmail.com · +995 557 513 613',
     },
   ],
 } as const

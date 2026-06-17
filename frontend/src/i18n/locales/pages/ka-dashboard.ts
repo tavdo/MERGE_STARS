@@ -89,7 +89,7 @@ export default {
     support: { description: 'გუნდი ხელმისაწვდომია განაცხადის, გადახდისა და მიწოდების საკითხებში.', contactUs: 'კონტაქტი', faq: 'FAQ',
       kicker: 'მხარდაჭერა', firstName: 'სახელი', lastName: 'გვარი', email: 'ელფოსტა', messagePlaceholder: 'აღწერეთ პრობლემა…',
       send: 'გაგზავნა', sentTitle: 'შეტყობინება გაიგზავნა', sentBody: 'პასუხს მიიღებთ {{email}}-ზე 24 საათში.',
-      contactLine: 'ელფოსტა: Mergestar01@gmail.com · ტელ: +995 557 513 613',
+      contactLine: 'ელფოსტა: mergestars01@gmail.com · ტელ: +995 557 513 613',
       subjects: ['მხარდაჭერა', 'შეკვეთა', 'KYC', 'გადახდა', 'ტექნიკური'],
     },
     investments: { description: 'რეგისტრირებული პროდუქტები და Product Registry.', viewRegistry: 'რეგისტრის ნახვა', newApplication: 'ახალი განაცხადი' },

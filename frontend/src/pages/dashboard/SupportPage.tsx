@@ -69,7 +69,7 @@ export default function SupportPage() {
         </div>
 
         <p style={{ marginTop: '16px', fontSize: '12px', color: 'rgba(255,255,255,0.4)' }}>
-          {t('pages.support.contactLine', { defaultValue: 'Email: Mergestar01@gmail.com · Phone: +995 557 513 613' })}
+          {t('pages.support.contactLine', { defaultValue: 'Email: mergestars01@gmail.com · Phone: +995 557 513 613' })}
         </p>
       </div>
     </DashboardLayout>
