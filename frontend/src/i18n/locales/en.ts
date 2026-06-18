@@ -56,6 +56,13 @@ export default {
     contactPhone: '+995 557 513 613',
     contactAddress: 'Tbilisi, Isani District, B. Gabriels Salosi Ave. N120',
   },
+  registrationGoal: {
+    title: 'Order fulfillment begins at 1,000 registered users',
+    titleReached: 'Goal reached — orders are now being accepted',
+    progress: '{{current}} / {{goal}} registered',
+    remaining: '{{count}} spots remaining',
+    reached: 'Registration goal reached',
+  },
   landing: {
     heroKicker: 'The Next Era Of',
     heroTitleGold: 'Luxury',
@@ -91,7 +98,7 @@ export default {
       'Our proprietary 3D filament is enriched with real precious metals, creating products that are lightweight, durable, and exude unmatched luxury.',
     discoverTech: 'Discover Technology',
     techPoints: {
-      metals: { title: 'PRECIOUS METALS', sub: 'Real gold, silver, platinum and more' },
+      metals: { title: 'PRECIOUS METALS', sub: 'Real silver, gold, platinum and more' },
       composite: { title: 'ADVANCED COMPOSITE', sub: 'Proprietary blend for strength and beauty' },
       lightweight: { title: 'LIGHTWEIGHT CORE', sub: 'Engineered for performance' },
     },
@@ -119,7 +126,6 @@ export default {
       dashboard: 'Dashboard',
       profile: 'My profile',
       applications: 'Applications',
-      calculator: 'Calculator',
       orders: 'Orders',
       coins: 'My coins',
       investments: 'Product Registry',
@@ -151,7 +157,6 @@ export default {
       referral: 'Referral',
       aiAssistant: 'AI assistant',
       application: 'Coin application',
-      calculator: 'Price calculator',
       status: 'Application status',
     },
   },

@@ -135,7 +135,7 @@ export default function CatalogItemStudio({ onSubmit, submitting, error }: Props
             </div>
             <div>
               <label className="auth-field-label">{t('collections.metal', { defaultValue: 'Metal / material' })}</label>
-              <input className="gold-input" value={metal} onChange={(e) => setMetal(e.target.value)} placeholder="Gold 999, Silver…" />
+              <input className="gold-input" value={metal} onChange={(e) => setMetal(e.target.value)} placeholder="Silver 999, Gold…" />
             </div>
           </div>
         )}

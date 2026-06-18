@@ -7,7 +7,6 @@ import ForgotPasswordPage from './pages/ForgotPasswordPage'
 import ResetPasswordPage from './pages/ResetPasswordPage'
 import DashboardPage     from './pages/DashboardPage'
 import ApplicationPage   from './pages/ApplicationPage'
-import CalculatorPage    from './pages/CalculatorPage'
 import StatusPage        from './pages/StatusPage'
 
 // Public pages
@@ -123,7 +122,7 @@ function AppRoutes() {
           <Route path="/dashboard/referral"      element={<ReferralPage />} />
           <Route path="/dashboard/ai"            element={<AIAssistantPage />} />
           <Route path="/apply"              element={<ApplicationPage />} />
-          <Route path="/calculator"         element={<CalculatorPage />} />
+          <Route path="/calculator"         element={<Navigate to="/apply" replace />} />
           <Route path="/status"             element={<StatusPage />} />
         </Route>
 

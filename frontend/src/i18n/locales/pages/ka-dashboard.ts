@@ -18,7 +18,6 @@ export default {
     recentActivity: 'ბოლო აქტივობა',
     quickActions: 'სწრაფი მოქმედებები',
     newApplication: 'ახალი განაცხადი',
-    calculator: 'კალკულატორი',
     myOrders: 'შეკვეთები',
     support: 'მხარდაჭერა',
     activity: [
@@ -152,13 +151,6 @@ export default {
     ],
     coinTypes: ['MERGE SILVER COIN (1KG)', 'MERGE GOLD COIN (1KG)', 'MERGE PLATINUM COIN (1KG)'],
     coinSpec: 'მონეტის სპეციფიკაცია', selectCoin: 'მონეტის ტიპი', quantity: 'რაოდენობა (კგ)', next: 'გაგრძელება', back: 'უკან', submit: 'გაგზავნა',
-  },
-  calculator: {
-    kicker: 'Merge Stars · ფასები', title: 'ფასის კალკულატორი', lead: 'წონა და სინჯი — საცნობარო ღირებულება.',
-    livePrices: 'ცოცხალი ფასები', configuration: 'კონფიგურაცია', coinType: 'მონეტის ტიპი', weight: 'წონა (გ)', purity: 'სინჯი (%)',
-    breakdown: 'ფასის დეტალები', metalValue: 'მეტალი', mfgFee: 'წარმოება', platformFee: 'პლატფორმა', total: 'სულ (საცნობარო)',
-    financing: 'ფინანსირება', downPayment: 'პირველადი (20%)', toFinance: 'დასაფინანსებელი', monthly: 'ყოველთვიური (12 თვე)',
-    disclaimer: 'მხოლოდ საცნობარო.', newApplication: 'განაცხადის დაწყება',
   },
   status: {
     title: 'განაცხადის ტაიმლაინი', current: 'მიმდინარე', underReview: 'განხილვაში', header: 'განაცხადის სტატუსი',

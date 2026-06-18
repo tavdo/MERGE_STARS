@@ -3,6 +3,7 @@ import { useQuery } from '@tanstack/react-query'
 import { useWebSocket } from '@/shared/hooks/useWebSocket'
 import { socket } from '@/lib/socket'
 import { metalsApi, type LiveMetalPrice } from '../api/metals.api'
+import { sortMetalsSilverFirst } from '@/shared/utils/metalOrder'
 
 export function useLiveMetalPrices() {
   const { data: initial } = useQuery({
@@ -25,5 +26,5 @@ export function useLiveMetalPrices() {
     if (payload?.length) setPrices(payload)
   })
 
-  return prices.length ? prices : (initial ?? [])
+  return prices.length ? sortMetalsSilverFirst(prices) : sortMetalsSilverFirst(initial ?? [])
 }

@@ -29,8 +29,8 @@ export default {
   dashboard: {
     welcomeBack: 'Bon retour', logout: 'Déconnexion', collapseMenu: 'Réduire le menu', expandMenu: 'Agrandir le menu',
     notifications: 'Notifications', messages: 'Messages', myProfile: 'Mon profil',
-    nav: { dashboard: 'Tableau de bord', profile: 'Mon profil', applications: 'Candidatures', calculator: 'Calculateur', orders: 'Commandes', coins: 'Mes pièces', investments: 'Product Registry', brandLine: 'Ligne de marque', qrIdentity: 'Identité QR', payment: 'Paiement', delivery: 'Livraison', referral: 'Parrainage', messages: 'Messages', aiAssistant: 'Assistant IA', support: 'Support', settings: 'Paramètres' },
-    titles: { dashboard: 'Tableau de bord', profile: 'Mon profil', coins: 'Mes pièces', investments: 'Product Registry', messages: 'Messages', settings: 'Paramètres', support: 'Support', brandLine: 'Ligne de marque', qrIdentity: 'Identité QR', orders: 'Commandes', payment: 'Paiement', delivery: 'Livraison', referral: 'Parrainage', aiAssistant: 'Assistant IA', application: 'Demande de pièce', calculator: 'Calculateur de prix', status: 'Statut de la demande' },
+    nav: { dashboard: 'Tableau de bord', profile: 'Mon profil', applications: 'Candidatures', orders: 'Commandes', coins: 'Mes pièces', investments: 'Product Registry', brandLine: 'Ligne de marque', qrIdentity: 'Identité QR', payment: 'Paiement', delivery: 'Livraison', referral: 'Parrainage', messages: 'Messages', aiAssistant: 'Assistant IA', support: 'Support', settings: 'Paramètres' },
+    titles: { dashboard: 'Tableau de bord', profile: 'Mon profil', coins: 'Mes pièces', investments: 'Product Registry', messages: 'Messages', settings: 'Paramètres', support: 'Support', brandLine: 'Ligne de marque', qrIdentity: 'Identité QR', orders: 'Commandes', payment: 'Paiement', delivery: 'Livraison', referral: 'Parrainage', aiAssistant: 'Assistant IA', application: 'Demande de pièce', status: 'Statut de la demande' },
   },
   auth: {
     login: 'Connexion', register: 'Inscription', step1: 'ÉTAPE 1 — INFOS PERSONNELLES', step2: 'ÉTAPE 2 — SÉCURITÉ', step3: 'ÉTAPE 3 — ACCORD',

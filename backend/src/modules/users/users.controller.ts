@@ -33,6 +33,11 @@ import {
 export class UsersController {
   constructor(private readonly users: UsersService) {}
 
+  @Get('public/registration-goal')
+  registrationGoal() {
+    return this.users.getRegistrationGoalStats();
+  }
+
   @Get('me')
   @UseGuards(JwtAuthGuard)
   me(@CurrentUser() user: User) {

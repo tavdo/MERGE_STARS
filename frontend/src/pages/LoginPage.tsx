@@ -11,6 +11,7 @@ import {
   persistReferralRef,
   resolveReferralCode,
 } from '@/utils/referralRef'
+import RegistrationGoalBanner from '../components/RegistrationGoalBanner'
 
 type Tab = 'login' | 'register'
 type Step = 1 | 2 | 3
@@ -271,6 +272,8 @@ export default function LoginPage() {
 
         {tab === 'register' && (
           <div className="w-full max-w-md">
+            <RegistrationGoalBanner variant="compact" className="mb-6" />
+
             <div className="flex items-center mb-8">
               {[1, 2, 3].map((s) => (
                 <div key={s} className="flex items-center flex-1">

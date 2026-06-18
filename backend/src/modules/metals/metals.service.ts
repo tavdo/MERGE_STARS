@@ -5,6 +5,8 @@ import { Repository } from 'typeorm';
 import { MetalPrice } from '../../database/entities/metal-price.entity';
 import { PlatformSettingsService } from '../settings/platform-settings.service';
 
+const METAL_DISPLAY_ORDER = ['silver', 'gold', 'platinum', 'palladium'] as const;
+
 type Spot = { metal: string; priceUsd: number; changePct: number };
 
 type MetalsGatewayLike = { broadcastPrices(data: unknown): void };
@@ -62,8 +64,8 @@ export class MetalsService implements OnModuleInit {
       const tickerOn = await this.platformSettings.isTickerEnabled();
       if (!tickerOn) return;
       const fetched = await Promise.all([
-        this.fetchMetalSpot('gold', 'XAU'),
         this.fetchMetalSpot('silver', 'XAG'),
+        this.fetchMetalSpot('gold', 'XAU'),
         this.fetchMetalSpot('platinum', 'XPT'),
         this.fetchMetalSpot('palladium', 'XPD'),
       ]);
@@ -105,7 +107,10 @@ export class MetalsService implements OnModuleInit {
   }
 
   getLive() {
-    return this.cache.map((s) => ({
+    const ordered = METAL_DISPLAY_ORDER.map((metal) => this.cache.find((s) => s.metal === metal)).filter(
+      (s): s is Spot => s != null,
+    );
+    return ordered.map((s) => ({
       ...s,
       pricePerKgUsd: +(s.priceUsd * 1000).toFixed(2),
     }));

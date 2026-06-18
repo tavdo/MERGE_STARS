@@ -20,6 +20,13 @@ export default {
     contactPhone: '+995 557 513 613',
     contactAddress: 'თბილისი, ისნის რაიონი, ბ. გაბრიელ სალოსის გამზ. N120',
   },
+  registrationGoal: {
+    title: 'დაკვეთების შესრულება დაიწყება 1,000 რეგისტრირებულ მომხმარებელზე',
+    titleReached: 'წინაპირობა შესრულებულია — დაკვეთები უკვე მიიღება',
+    progress: '{{current}} / {{goal}} დარეგისტრირებული',
+    remaining: 'დარჩა {{count}} ადგილი',
+    reached: 'რეგისტრაციის მიზანი მიღწეულია',
+  },
   landing: {
     heroKicker: 'ლუქსის ახალი ერა', heroTitleGold: 'ლუქსი', heroTitleRest: 'აქ არის', tagline: 'რევოლუციური · უნიკალური · უსაზღვრო',
     heroBody: 'MERGE STARS არის რევოლუციური პლატფორმა, რომელიც აერთიანებს 3D ფილამენტის ტექნოლოგიას ძვირფას მეტალებთან.',
@@ -34,15 +41,15 @@ export default {
     categoriesTitle: 'კატეგორიების მიხედვით', categories: { jewelry: 'სამკაული', accessories: 'აქსესუარები', souvenirs: 'სუვენირები', sanitaryware: 'სანიტარია', stationery: 'კანცელარია', construction: 'სამშენებლო', more: 'მეტი' },
     techPanel: '3D ფილამენტის ტექნოლოგია', techTitle1: 'რევოლუციური', techTitle2: '3D ფილამენტის', techTitle3: 'ტექნოლოგია',
     techBody: 'ჩვენი პატენტირებული 3D ფილამენტი გამდიდრებულია ძვირფასი მეტალებით — მსუბუქი, გამძლე და ლუქსური პროდუქტები.',
-    discoverTech: 'ტექნოლოგიის აღმოჩენა', techPoints: { metals: { title: 'ძვირფასი მეტალები', sub: 'ოქრო, ვერცხალი, პლატინა' }, composite: { title: 'კომპოზიტი', sub: 'სიძლიერე და სილამაზე' }, lightweight: { title: 'მსუბუქობა', sub: 'საუკეთესო შესრულება' } },
+    discoverTech: 'ტექნოლოგიის აღმოჩენა', techPoints: { metals: { title: 'ძვირფასი მეტალები', sub: 'ვერცხალი, ოქრო, პლატინა' }, composite: { title: 'კომპოზიტი', sub: 'სიძლიერე და სილამაზე' }, lightweight: { title: 'მსუბუქობა', sub: 'საუკეთესო შესრულება' } },
     investTitle1: 'დაინვესტირეთ', investTitle2: '', investTitleGold: 'მომავალში', investBody: 'გახდით გლობალური მოძრაობის ნაწილი, რომელიც ახლებს ლუქსსა და ტექნოლოგიას.',
     learnMore: 'გაიგეთ მეტი', investPoints: { growth: 'მაღალი პოტენციალი', tech: 'ინოვაციური ტექნოლოგია', partner: 'ძლიერი პარტნიორობა', impact: 'გლობალური გავლენა' },
   },
   dashboard: {
     welcomeBack: 'კეთილი დაბრუნება', logout: 'გასვლა', collapseMenu: 'მენიუს დაკეცვა', expandMenu: 'მენიუს გაშლა',
     notifications: 'შეტყობინებები', messages: 'შეტყობინებები', myProfile: 'ჩემი პროფილი',
-    nav: { dashboard: 'პანელი', profile: 'ჩემი პროფილი', applications: 'განაცხადები', calculator: 'კალკულატორი', orders: 'შეკვეთები', coins: 'ჩემი მონეტები', investments: 'Product Registry', brandLine: 'ბრენდი', collections: 'კოლექციები', qrIdentity: 'QR იდენტობა', payment: 'გადახდა', delivery: 'მიწოდება', referral: 'რეფერალი', messages: 'შეტყობინებები', aiAssistant: 'AI ასისტენტი', support: 'მხარდაჭერა', settings: 'პარამეტრები' },
-    titles: { dashboard: 'პანელი', profile: 'ჩემი პროფილი', coins: 'ჩემი მონეტები', investments: 'Product Registry', messages: 'შეტყობინებები', settings: 'პარამეტრები', support: 'მხარდაჭერა', brandLine: 'ბრენდის ხაზი', collections: 'კოლექციები', qrIdentity: 'QR იდენტობა', orders: 'შეკვეთები', payment: 'გადახდა', delivery: 'მიწოდება', referral: 'რეფერალი', aiAssistant: 'AI ასისტენტი', application: 'მონეტის განაცხადი', calculator: 'ფასის კალკულატორი', status: 'განაცხადის სტატუსი' },
+    nav: { dashboard: 'პანელი', profile: 'ჩემი პროფილი', applications: 'განაცხადები', orders: 'შეკვეთები', coins: 'ჩემი მონეტები', investments: 'Product Registry', brandLine: 'ბრენდი', collections: 'კოლექციები', qrIdentity: 'QR იდენტობა', payment: 'გადახდა', delivery: 'მიწოდება', referral: 'რეფერალი', messages: 'შეტყობინებები', aiAssistant: 'AI ასისტენტი', support: 'მხარდაჭერა', settings: 'პარამეტრები' },
+    titles: { dashboard: 'პანელი', profile: 'ჩემი პროფილი', coins: 'ჩემი მონეტები', investments: 'Product Registry', messages: 'შეტყობინებები', settings: 'პარამეტრები', support: 'მხარდაჭერა', brandLine: 'ბრენდის ხაზი', collections: 'კოლექციები', qrIdentity: 'QR იდენტობა', orders: 'შეკვეთები', payment: 'გადახდა', delivery: 'მიწოდება', referral: 'რეფერალი', aiAssistant: 'AI ასისტენტი', application: 'მონეტის განაცხადი', status: 'განაცხადის სტატუსი' },
   },
   collections: {
     title: 'ჩემი კოლექციები და კატალოგები',

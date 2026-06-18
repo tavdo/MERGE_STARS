@@ -22,15 +22,15 @@ export default {
     categoriesTitle: 'Категории', categories: { jewelry: 'ЮВЕЛИРНЫЕ', accessories: 'АКСЕССУАРЫ', souvenirs: 'СУВЕНИРЫ', sanitaryware: 'САНТЕХНИКА', stationery: 'КАНЦТОВАРЫ', construction: 'СТРОИТЕЛЬНЫЕ', more: 'ЕЩЁ' },
     techPanel: '3D Filament Technology', techTitle1: 'Революционная', techTitle2: '3D-нить', techTitle3: 'технология',
     techBody: 'Наша запатентованная 3D-нить обогащена драгоценными металлами — лёгкие, прочные изделия высочайшей роскоши.',
-    discoverTech: 'Узнать больше', techPoints: { metals: { title: 'ДРАГМЕТАЛЛЫ', sub: 'Золото, серебро, платина' }, composite: { title: 'КОМПОЗИТ', sub: 'Прочность и красота' }, lightweight: { title: 'ЛЁГКОСТЬ', sub: 'Инженерная точность' } },
+    discoverTech: 'Узнать больше', techPoints: { metals: { title: 'ДРАГМЕТАЛЛЫ', sub: 'Серебро, золото, платина' }, composite: { title: 'КОМПОЗИТ', sub: 'Прочность и красота' }, lightweight: { title: 'ЛЁГКОСТЬ', sub: 'Инженерная точность' } },
     investTitle1: 'Инвестируйте в', investTitle2: '', investTitleGold: 'будущее', investBody: 'Станьте частью глобального движения, переопределяющего роскошь и технологии.',
     learnMore: 'Подробнее', investPoints: { growth: 'ВЫСОКИЙ ПОТЕНЦИАЛ', tech: 'ИННОВАЦИИ', partner: 'ПАРТНЁРСТВО', impact: 'ГЛОБАЛЬНОЕ ВЛИЯНИЕ' },
   },
   dashboard: {
     welcomeBack: 'С возвращением', logout: 'Выход', collapseMenu: 'Свернуть меню', expandMenu: 'Развернуть меню',
     notifications: 'Уведомления', messages: 'Сообщения', myProfile: 'Мой профиль',
-    nav: { dashboard: 'Кабинет', profile: 'Профиль', applications: 'Заявки', calculator: 'Калькулятор', orders: 'Заказы', coins: 'Мои монеты', investments: 'Product Registry', brandLine: 'Бренд', qrIdentity: 'QR-идентичность', payment: 'Оплата', delivery: 'Доставка', referral: 'Рефералы', messages: 'Сообщения', aiAssistant: 'AI-ассистент', support: 'Поддержка', settings: 'Настройки' },
-    titles: { dashboard: 'Кабинет', profile: 'Профиль', coins: 'Мои монеты', investments: 'Product Registry', messages: 'Сообщения', settings: 'Настройки', support: 'Поддержка', brandLine: 'Бренд', qrIdentity: 'QR-идентичность', orders: 'Заказы', payment: 'Оплата', delivery: 'Доставка', referral: 'Рефералы', aiAssistant: 'AI-ассистент', application: 'Заявка на монету', calculator: 'Калькулятор', status: 'Статус заявки' },
+    nav: { dashboard: 'Кабинет', profile: 'Профиль', applications: 'Заявки', orders: 'Заказы', coins: 'Мои монеты', investments: 'Product Registry', brandLine: 'Бренд', qrIdentity: 'QR-идентичность', payment: 'Оплата', delivery: 'Доставка', referral: 'Рефералы', messages: 'Сообщения', aiAssistant: 'AI-ассистент', support: 'Поддержка', settings: 'Настройки' },
+    titles: { dashboard: 'Кабинет', profile: 'Профиль', coins: 'Мои монеты', investments: 'Product Registry', messages: 'Сообщения', settings: 'Настройки', support: 'Поддержка', brandLine: 'Бренд', qrIdentity: 'QR-идентичность', orders: 'Заказы', payment: 'Оплата', delivery: 'Доставка', referral: 'Рефералы', aiAssistant: 'AI-ассистент', application: 'Заявка на монету', status: 'Статус заявки' },
   },
   auth: {
     login: 'Вход', register: 'Регистрация', step1: 'ШАГ 1 — ЛИЧНЫЕ ДАННЫЕ', step2: 'ШАГ 2 — БЕЗОПАСНОСТЬ', step3: 'ШАГ 3 — СОГЛАСИЕ',

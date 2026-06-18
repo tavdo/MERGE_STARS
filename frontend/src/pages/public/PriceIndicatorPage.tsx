@@ -49,13 +49,13 @@ export default function PriceIndicatorPage() {
               <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#22c55e', display: 'inline-block' }} className="animate-pulse" />
               <span style={{ fontSize: '11px', color: '#22c55e', fontWeight: 600, letterSpacing: '0.15em' }}>{t('prices.liveUpdated', { time: lastUpdated })}</span>
             </div>
-            <p style={{ fontSize: '11px', color: 'rgba(255,255,255,0.4)', letterSpacing: '0.2em', marginBottom: '8px' }}>{t('landing.metalGold')}</p>
-            <p style={{ fontSize: '32px', fontWeight: 900, color: '#fff', marginBottom: '24px' }}>
-              ${(goldSpot * 1000).toFixed(0)}<span style={{ fontSize: '14px', color: 'rgba(255,255,255,0.4)', marginLeft: '4px' }}>/kg</span>
-            </p>
             <p style={{ fontSize: '11px', color: 'rgba(255,255,255,0.4)', letterSpacing: '0.2em', marginBottom: '8px' }}>{t('prices.silverSpot')}</p>
-            <p style={{ fontSize: '42px', fontWeight: 900, color: '#fff', marginBottom: '32px' }}>
+            <p style={{ fontSize: '42px', fontWeight: 900, color: '#fff', marginBottom: '24px' }}>
               ${(silverSpot * 1000).toFixed(2)}<span style={{ fontSize: '16px', color: 'rgba(255,255,255,0.4)', marginLeft: '4px' }}>/kg</span>
+            </p>
+            <p style={{ fontSize: '11px', color: 'rgba(255,255,255,0.4)', letterSpacing: '0.2em', marginBottom: '8px' }}>{t('landing.metalGold')}</p>
+            <p style={{ fontSize: '28px', fontWeight: 900, color: '#fff', marginBottom: '32px' }}>
+              ${(goldSpot * 1000).toFixed(0)}<span style={{ fontSize: '14px', color: 'rgba(255,255,255,0.4)', marginLeft: '4px' }}>/kg</span>
             </p>
             <div style={{ height: '1px', background: 'linear-gradient(90deg,transparent,rgba(201,168,76,0.3),transparent)', margin: '0 0 32px' }} />
             <p style={{ fontSize: '11px', color: 'rgba(255,255,255,0.4)', letterSpacing: '0.2em', marginBottom: '8px' }}>{t('prices.formula')}</p>

@@ -22,15 +22,15 @@ export default {
     categoriesTitle: 'Kategoriye göre keşfet', categories: { jewelry: 'MÜCEVHER', accessories: 'AKSESUAR', souvenirs: 'HEDİYELİK', sanitaryware: 'SIHHİ', stationery: 'KIRTASİYE', construction: 'İNŞAAT', more: 'DAHA FAZLA' },
     techPanel: '3D Filament Teknolojisi', techTitle1: 'Devrimci', techTitle2: '3D Filament', techTitle3: 'Teknolojisi',
     techBody: 'Patentli 3D filamentimiz değerli metallerle zenginleştirilmiştir — hafif, dayanıklı ve lüks.',
-    discoverTech: 'Teknolojiyi keşfet', techPoints: { metals: { title: 'DEĞERLİ METALLER', sub: 'Altın, gümüş, platin' }, composite: { title: 'GELİŞMİŞ KOMPOZİT', sub: 'Dayanıklılık ve güzellik' }, lightweight: { title: 'HAFİFLİK', sub: 'Üstün performans' } },
+    discoverTech: 'Teknolojiyi keşfet', techPoints: { metals: { title: 'DEĞERLİ METALLER', sub: 'Gümüş, altın, platin' }, composite: { title: 'GELİŞMİŞ KOMPOZİT', sub: 'Dayanıklılık ve güzellik' }, lightweight: { title: 'HAFİFLİK', sub: 'Üstün performans' } },
     investTitle1: 'Geleceğe', investTitle2: '', investTitleGold: 'yatırım yapın', investBody: 'Lüks ve teknolojiyi yeniden tanımlayan küresel harekete katılın.',
     learnMore: 'Daha fazla bilgi', investPoints: { growth: 'YÜKSEK BÜYÜME', tech: 'YENİLİKÇİ TEKNOLOJİ', partner: 'GÜÇLÜ ORTAKLIK', impact: 'KÜRESEL ETKİ' },
   },
   dashboard: {
     welcomeBack: 'Tekrar hoş geldiniz', logout: 'Çıkış', collapseMenu: 'Menüyü daralt', expandMenu: 'Menüyü genişlet',
     notifications: 'Bildirimler', messages: 'Mesajlar', myProfile: 'Profilim',
-    nav: { dashboard: 'Panel', profile: 'Profilim', applications: 'Başvurular', calculator: 'Hesaplayıcı', orders: 'Siparişler', coins: 'Paralarım', investments: 'Product Registry', brandLine: 'Marka hattı', qrIdentity: 'QR kimlik', payment: 'Ödeme', delivery: 'Teslimat', referral: 'Referans', messages: 'Mesajlar', aiAssistant: 'AI asistan', support: 'Destek', settings: 'Ayarlar' },
-    titles: { dashboard: 'Panel', profile: 'Profilim', coins: 'Paralarım', investments: 'Product Registry', messages: 'Mesajlar', settings: 'Ayarlar', support: 'Destek', brandLine: 'Marka hattı', qrIdentity: 'QR kimlik', orders: 'Siparişlerim', payment: 'Ödeme', delivery: 'Teslimat', referral: 'Referans', aiAssistant: 'AI asistan', application: 'Para başvurusu', calculator: 'Fiyat hesaplayıcı', status: 'Başvuru durumu' },
+    nav: { dashboard: 'Panel', profile: 'Profilim', applications: 'Başvurular', orders: 'Siparişler', coins: 'Paralarım', investments: 'Product Registry', brandLine: 'Marka hattı', qrIdentity: 'QR kimlik', payment: 'Ödeme', delivery: 'Teslimat', referral: 'Referans', messages: 'Mesajlar', aiAssistant: 'AI asistan', support: 'Destek', settings: 'Ayarlar' },
+    titles: { dashboard: 'Panel', profile: 'Profilim', coins: 'Paralarım', investments: 'Product Registry', messages: 'Mesajlar', settings: 'Ayarlar', support: 'Destek', brandLine: 'Marka hattı', qrIdentity: 'QR kimlik', orders: 'Siparişlerim', payment: 'Ödeme', delivery: 'Teslimat', referral: 'Referans', aiAssistant: 'AI asistan', application: 'Para başvurusu', status: 'Başvuru durumu' },
   },
   auth: {
     login: 'Giriş', register: 'Kayıt', step1: 'ADIM 1 — KİŞİSEL BİLGİ', step2: 'ADIM 2 — GÜVENLİK', step3: 'ADIM 3 — SÖZLEŞME',

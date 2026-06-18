@@ -37,6 +37,6 @@ export type ApplicationStatus =
   | 'ready'
   | 'delivered'
 
-export type Metal = 'gold' | 'silver' | 'platinum' | 'palladium'
+export type Metal = 'silver' | 'gold' | 'platinum' | 'palladium'
 
 export type Role = 'admin' | 'manager' | 'developer' | 'user'

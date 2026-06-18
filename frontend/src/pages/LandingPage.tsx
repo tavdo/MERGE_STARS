@@ -6,6 +6,7 @@ import Footer from '../components/Footer'
 import Hero3DCoin, { landingCoinModelUrl } from '../components/Hero3DCoin'
 import { useGLTF } from '@react-three/drei'
 import { useLiveMetalPrices } from '@/features/coins/hooks/useLiveMetalPrice'
+import RegistrationGoalBanner from '../components/RegistrationGoalBanner'
 
 useGLTF.preload(landingCoinModelUrl)
 import {
@@ -99,7 +100,9 @@ export default function LandingPage() {
             {t('landing.heroTitleRest')}
           </h1>
           <p className="landing-tagline mt-6 mb-4">{t('landing.tagline')}</p>
-          <p className="landing-body max-w-[340px] mb-10">{t('landing.heroBody')}</p>
+          <p className="landing-body max-w-[340px] mb-6">{t('landing.heroBody')}</p>
+
+          <RegistrationGoalBanner variant="hero" className="mb-10 max-w-[400px]" />
 
           <div className="landing-hero-actions flex flex-wrap items-center gap-4">
             <Link to="/apply" className="luxury-btn-glass">
@@ -141,10 +144,14 @@ export default function LandingPage() {
 
         {/* Right — metal spot (desktop) */}
         <div className="hidden xl:flex flex-col gap-5 flex-shrink-0 w-[240px] order-3">
-          {metalCards.map((m) => (
+          {metalCards.map((m, i) => (
             <div
               key={m.nameKey}
-              className="flex items-start gap-4 py-4 px-5 border border-[rgba(212,175,55,0.1)] bg-black/30 backdrop-blur-sm transition-all duration-300 ease-in-out hover:border-[rgba(212,175,55,0.28)]"
+              className={`flex items-start gap-4 py-4 px-5 border bg-black/30 backdrop-blur-sm transition-all duration-300 ease-in-out ${
+                i === 0
+                  ? 'border-[rgba(212,175,55,0.35)]'
+                  : 'border-[rgba(212,175,55,0.1)] hover:border-[rgba(212,175,55,0.28)]'
+              }`}
               style={{ borderRadius: '2px' }}
             >
               <IconPreciousMetals className="w-8 h-8 shrink-0 mt-0.5" />
@@ -173,11 +180,13 @@ export default function LandingPage() {
       {/* Mobile / tablet — live metal prices */}
       <section className="landing-metal-strip xl:hidden max-w-1440 mx-auto w-full px-4 sm:px-8 pb-6">
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-          {metalCards.map((m) => (
+          {metalCards.map((m, i) => (
             <Link
               key={m.nameKey}
               to="/price-indicator"
-              className="landing-metal-card flex items-center justify-between gap-3 py-3 px-4 no-underline"
+              className={`landing-metal-card flex items-center justify-between gap-3 py-3 px-4 no-underline${
+                i === 0 ? ' landing-metal-card--primary' : ''
+              }`}
             >
               <div>
                 <p className="text-[10px] font-medium tracking-[0.16em] text-[#D4AF37] mb-1">{t(m.nameKey)}</p>

@@ -30,7 +30,7 @@ export default function ApplicationPage() {
   const [coinIdx, setCoinIdx] = useState(0)
   const [coinType, setCoinType] = useState(coinTypes[0] ?? '')
   const [quantity, setQuantity] = useState(1)
-  const [metalType, setMetalType] = useState('silver')
+  const metalType = metalForCoinIndex(coinIdx)
   const [notes, setNotes] = useState('')
   const [firstName, setFirstName] = useState('')
   const [lastName, setLastName] = useState('')
@@ -130,7 +130,6 @@ export default function ApplicationPage() {
                         const i = Number(v)
                         setCoinIdx(i)
                         setCoinType(coinTypes[i] ?? '')
-                        setMetalType(metalForCoinIndex(i))
                       }}
                       options={coinTypes.map((c, i) => ({ value: i, label: c }))}
                     />
@@ -165,18 +164,15 @@ export default function ApplicationPage() {
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 sm:gap-8">
                     <div>
                       <label className="apply-label" htmlFor="apply-metal">
-                        {t('application.metalPurity')}
+                        {t('application.metalType')}
                       </label>
-                      <select
+                      <input
                         id="apply-metal"
-                        className="apply-field"
-                        value={metalType}
-                        onChange={(e) => setMetalType(e.target.value)}
-                      >
-                        <option value="silver">{t('application.metals.silver')}</option>
-                        <option value="gold">{t('application.metals.gold')}</option>
-                        <option value="platinum">{t('application.metals.platinum')}</option>
-                      </select>
+                        className="apply-field apply-field--muted"
+                        value={t(`application.metals.${metalType as 'silver' | 'gold' | 'platinum'}`)}
+                        readOnly
+                        aria-readonly="true"
+                      />
                     </div>
                     <div>
                       <label className="apply-label" htmlFor="apply-purity">
@@ -428,10 +424,7 @@ export default function ApplicationPage() {
               ))}
               <p className="apply-preview-note">{t('application.previewNote')}</p>
 
-              <Link to="/calculator" className="luxury-btn-glass w-full justify-center mt-6">
-                {t('application.openCalculator')}
-              </Link>
-              <div className="apply-sidebar-links">
+              <div className="apply-sidebar-links mt-6">
                 <Link to="/price-indicator">{t('application.viewIndicator')}</Link>
                 <Link to="/faq">{t('application.howPricing')}</Link>
               </div>

@@ -22,15 +22,15 @@ export default {
     categoriesTitle: 'Nach Kategorie', categories: { jewelry: 'SCHMUCK', accessories: 'ACCESSOIRES', souvenirs: 'SOUVENIRS', sanitaryware: 'SANITÄR', stationery: 'SCHREIBWARE', construction: 'BAU', more: 'MEHR' },
     techPanel: '3D-Filament-Technologie', techTitle1: 'Revolutionäre', techTitle2: '3D-Filament', techTitle3: 'Technologie',
     techBody: 'Unser proprietäres 3D-Filament ist mit Edelmetallen angereichert — leicht, langlebig und luxuriös.',
-    discoverTech: 'Technologie entdecken', techPoints: { metals: { title: 'EDELMETALLE', sub: 'Gold, Silber, Platin' }, composite: { title: 'VERBUNDSTOFF', sub: 'Stärke und Schönheit' }, lightweight: { title: 'LEICHTBAU', sub: 'Höchste Performance' } },
+    discoverTech: 'Technologie entdecken', techPoints: { metals: { title: 'EDELMETALLE', sub: 'Silber, Gold, Platin' }, composite: { title: 'VERBUNDSTOFF', sub: 'Stärke und Schönheit' }, lightweight: { title: 'LEICHTBAU', sub: 'Höchste Performance' } },
     investTitle1: 'Investieren Sie in', investTitle2: 'die', investTitleGold: 'Zukunft', investBody: 'Werden Sie Teil einer globalen Bewegung, die Luxus und Technologie neu definiert.',
     learnMore: 'Mehr erfahren', investPoints: { growth: 'HOHES WACHSTUM', tech: 'INNOVATIVE TECHNIK', partner: 'STARKE PARTNERSCHAFT', impact: 'GLOBALER IMPACT' },
   },
   dashboard: {
     welcomeBack: 'Willkommen zurück', logout: 'Abmelden', collapseMenu: 'Menü einklappen', expandMenu: 'Menü ausklappen',
     notifications: 'Benachrichtigungen', messages: 'Nachrichten', myProfile: 'Mein Profil',
-    nav: { dashboard: 'Dashboard', profile: 'Profil', applications: 'Anträge', calculator: 'Rechner', orders: 'Bestellungen', coins: 'Meine Münzen', investments: 'Product Registry', brandLine: 'Markenlinie', qrIdentity: 'QR-Identität', payment: 'Zahlung', delivery: 'Lieferung', referral: 'Empfehlung', messages: 'Nachrichten', aiAssistant: 'KI-Assistent', support: 'Support', settings: 'Einstellungen' },
-    titles: { dashboard: 'Dashboard', profile: 'Profil', coins: 'Meine Münzen', investments: 'Product Registry', messages: 'Nachrichten', settings: 'Einstellungen', support: 'Support', brandLine: 'Markenlinie', qrIdentity: 'QR-Identität', orders: 'Bestellungen', payment: 'Zahlung', delivery: 'Lieferung', referral: 'Empfehlung', aiAssistant: 'KI-Assistent', application: 'Münzantrag', calculator: 'Preisrechner', status: 'Antragsstatus' },
+    nav: { dashboard: 'Dashboard', profile: 'Profil', applications: 'Anträge', orders: 'Bestellungen', coins: 'Meine Münzen', investments: 'Product Registry', brandLine: 'Markenlinie', qrIdentity: 'QR-Identität', payment: 'Zahlung', delivery: 'Lieferung', referral: 'Empfehlung', messages: 'Nachrichten', aiAssistant: 'KI-Assistent', support: 'Support', settings: 'Einstellungen' },
+    titles: { dashboard: 'Dashboard', profile: 'Profil', coins: 'Meine Münzen', investments: 'Product Registry', messages: 'Nachrichten', settings: 'Einstellungen', support: 'Support', brandLine: 'Markenlinie', qrIdentity: 'QR-Identität', orders: 'Bestellungen', payment: 'Zahlung', delivery: 'Lieferung', referral: 'Empfehlung', aiAssistant: 'KI-Assistent', application: 'Münzantrag', status: 'Antragsstatus' },
   },
   auth: {
     login: 'Anmelden', register: 'Registrieren', step1: 'SCHRITT 1 — PERSÖNLICHE DATEN', step2: 'SCHRITT 2 — SICHERHEIT', step3: 'SCHRITT 3 — ZUSTIMMUNG',

@@ -253,4 +253,21 @@ export class UsersService {
 
     return userPublicView(user);
   }
+
+  async getRegistrationGoalStats() {
+    const goal = Math.max(1, Number(process.env.REGISTRATION_GOAL ?? 1000));
+    const registeredUsers = await this.users
+      .createQueryBuilder('u')
+      .where(`NOT (u.roles::jsonb ? 'admin')`)
+      .getCount();
+    const progressPct = Math.min(100, Math.round((registeredUsers / goal) * 100));
+
+    return {
+      registeredUsers,
+      goal,
+      remaining: Math.max(0, goal - registeredUsers),
+      goalReached: registeredUsers >= goal,
+      progressPct,
+    };
+  }
 }
