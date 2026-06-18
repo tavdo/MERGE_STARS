@@ -40,7 +40,8 @@ export class UsersService {
   ) {}
 
   private normalizeBcryptHash(hash: string) {
-    return hash.replace(/^\$2y\$/, '$2a$');
+    if (!hash) return hash;
+    return hash.replace(/^\$2y\$/, '$2b$').replace(/^\$2a\$/, '$2b$');
   }
 
   private async comparePassword(password: string, hash: string) {

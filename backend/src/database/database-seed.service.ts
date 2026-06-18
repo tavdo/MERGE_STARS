@@ -15,6 +15,12 @@ export class DatabaseSeedService implements OnModuleInit {
     const password = process.env.SEED_ADMIN_PASSWORD ?? 'Admin123!ChangeMe';
 
     if (process.env.SEED_ADMIN_SYNC === 'true') {
+      if (process.env.NODE_ENV === 'production') {
+        this.log.error(
+          'SEED_ADMIN_SYNC=true is ignored in production — remove it from .env (it resets passwords on every restart)',
+        );
+        return;
+      }
       const existing = await this.users.findOne({ where: { email } });
       if (existing) {
         existing.passwordHash = await bcrypt.hash(password, 12);

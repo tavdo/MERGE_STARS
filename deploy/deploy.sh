@@ -8,6 +8,8 @@ cd "$REPO_ROOT"
 
 # shellcheck disable=SC1091
 source "$SCRIPT_DIR/load-env.sh"
+# shellcheck disable=SC1091
+source "$SCRIPT_DIR/harden-production-env.sh"
 
 if [ -f .env ]; then
   sed -i 's/Mergestar01@gmail.com/mergestars01@gmail.com/g' .env
@@ -42,6 +44,10 @@ if [ -f .env ]; then
   set -a
   load_env_file .env
   set +a
+  harden_production_env .env
+  set -a
+  load_env_file .env
+  set +a
 fi
 
 # NODE_ENV=production in .env makes npm skip devDependencies (nest, vite, tsc).
@@ -57,6 +63,13 @@ echo "==> Deploy MERGE STARS from $REPO_ROOT"
 
 # nginx + systemd on first deploy (no-op if already configured)
 bash "$SCRIPT_DIR/bootstrap.sh"
+
+if [ -f .env ]; then
+  harden_production_env .env
+  set -a
+  load_env_file .env
+  set +a
+fi
 
 if [ -f .env ]; then
   set -a
@@ -156,14 +169,12 @@ if command -v systemctl >/dev/null 2>&1; then
 fi
 
 echo "==> Import users from MySQL dump (if present)"
-if [ -f "$REPO_ROOT/backend/data/users.mysql.sql" ] && [ -n "${DATABASE_URL:-}" ]; then
+if [ "${IMPORT_USERS_ON_DEPLOY:-false}" = "true" ] && [ -f "$REPO_ROOT/backend/data/users.mysql.sql" ] && [ -n "${DATABASE_URL:-}" ]; then
   cd "$REPO_ROOT/backend"
-  # Default: import NEW users only — never overwrite passwords for existing accounts.
-  # To force profile/password sync from dump: IMPORT_USERS_UPDATE_EXISTING=true IMPORT_USERS_SYNC_PASSWORDS=true
   node scripts/import-users-sql.js data/users.mysql.sql || echo "WARNING: user import failed — check DATABASE_URL and PostgreSQL"
   cd "$REPO_ROOT"
 else
-  echo "    (skip) backend/data/users.mysql.sql or DATABASE_URL not set"
+  echo "    (skip) user import disabled — registration adds users; one-time only: IMPORT_USERS_ON_DEPLOY=true"
 fi
 
 echo "==> Frontend: install & build"

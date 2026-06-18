@@ -98,7 +98,8 @@ set_env "DB_PORT" "5432"
 set_env "DB_USER" "$DB_USER"
 set_env "DB_PASSWORD" "$DB_PASSWORD"
 set_env "DB_NAME" "$DB_NAME"
-set_env "DB_SYNC" "true"
+set_env "DB_SYNC" "false"
+set_env "DB_MIGRATE" "true"
 set_env "DB_SSL" "false"
 
 if ! grep -q '^JWT_SECRET=' "$ENV_FILE" 2>/dev/null || grep -q 'change-this-to-a-long-random-string' "$ENV_FILE" 2>/dev/null; then
