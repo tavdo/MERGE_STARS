@@ -53,6 +53,7 @@ import BankReviewPage from './pages/admin/BankReviewPage'
 import SecurityCenterPage from './pages/admin/SecurityCenterPage'
 import DataGovernancePage from './pages/admin/DataGovernancePage'
 import BusinessContinuityPage from './pages/admin/BusinessContinuityPage'
+import ComplianceHubPage from './pages/admin/ComplianceHubPage'
 import AuditCenterPage from './pages/admin/AuditCenterPage'
 
 import './App.css'
@@ -129,10 +130,10 @@ function AppRoutes() {
         {/* Admin zone — separate secured area at /admin/* */}
         <Route path="/admin/login" element={<AdminLoginPage />} />
         <Route path="/bank-review" element={<Navigate to="/admin/bank-review" replace />} />
-        <Route path="/audit" element={<Navigate to="/admin/audit-center" replace />} />
-        <Route path="/security" element={<Navigate to="/admin/security" replace />} />
-        <Route path="/data-governance" element={<Navigate to="/admin/data-governance" replace />} />
-        <Route path="/business-continuity" element={<Navigate to="/admin/business-continuity" replace />} />
+        <Route path="/audit" element={<Navigate to="/admin/audit" replace />} />
+        <Route path="/security" element={<Navigate to="/admin/compliance?tab=security" replace />} />
+        <Route path="/data-governance" element={<Navigate to="/admin/compliance?tab=data" replace />} />
+        <Route path="/business-continuity" element={<Navigate to="/admin/compliance?tab=continuity" replace />} />
 
         <Route element={<AdminGuard />}>
           <Route path="/admin" element={<AdminPage />} />
@@ -145,6 +146,7 @@ function AppRoutes() {
           <Route path="/admin/analytics" element={<AdminAnalyticsPage />} />
           <Route path="/admin/settings" element={<AdminSettingsPage />} />
           <Route path="/admin/bank-review" element={<BankReviewPage />} />
+          <Route path="/admin/compliance" element={<ComplianceHubPage />} />
           <Route path="/admin/audit-center" element={<AuditCenterPage />} />
           <Route path="/admin/security" element={<SecurityCenterPage />} />
           <Route path="/admin/data-governance" element={<DataGovernancePage />} />

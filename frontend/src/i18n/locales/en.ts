@@ -252,8 +252,8 @@ export default {
   },
   legal: {
     legal: 'LEGAL',
-    lastUpdated: 'Last revised: 2026 · Version 3.0',
-    termsTitle: 'TERMS & CONDITIONS',
+    lastUpdated: 'Last revised: 2026 · Version 4.0',
+    termsTitle: 'TERMS OF SERVICE',
     termsIntro:
       'LLC „Merge Varskvlavebi" (ID 406286424). Please read these Terms fully before registering or placing an order. If you do not agree, stop using the Platform immediately.',
     privacyTitle: 'PRIVACY POLICY',

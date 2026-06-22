@@ -16,6 +16,27 @@ type AuditEvent = {
   owner: string
 }
 
+type SectionKey =
+  | 'All'
+  | 'Evidence Records'
+  | 'QR Verification Events'
+  | 'Payment Confirmation Events'
+  | 'QC Events'
+  | 'Delivery Events'
+  | 'User Actions'
+  | 'Admin Actions'
+
+const SECTIONS: SectionKey[] = [
+  'All',
+  'Evidence Records',
+  'QR Verification Events',
+  'Payment Confirmation Events',
+  'QC Events',
+  'Delivery Events',
+  'User Actions',
+  'Admin Actions',
+]
+
 const ACTION_COLORS: Record<string, string> = {
   STATUS_CHANGE: '#c9a84c',
   ORDER_SUBMIT: '#60a5fa',
@@ -31,10 +52,25 @@ function actionColor(action: string) {
   return key ? ACTION_COLORS[key] : '#c9a84c'
 }
 
+function classify(ev: AuditEvent): SectionKey {
+  const a = (ev.action ?? '').toUpperCase()
+  const role = (ev.actor_role ?? '').toUpperCase()
+
+  if (a.includes('QR') || a.includes('PASSPORT')) return 'QR Verification Events'
+  if (a.includes('PAY') || a.includes('BANK')) return 'Payment Confirmation Events'
+  if (a.includes('QC')) return 'QC Events'
+  if (a.includes('DELIVER')) return 'Delivery Events'
+  if (a.includes('EVIDENCE')) return 'Evidence Records'
+  if (role === 'ADMIN' || role === 'MANAGER') return 'Admin Actions'
+  if (role === 'CUSTOMER') return 'User Actions'
+  return 'All'
+}
+
 export default function AdminAuditPage() {
   const { t } = useTranslation()
   const [search, setSearch] = useState('')
   const [actionFilter, setActionFilter] = useState('All')
+  const [sectionFilter, setSectionFilter] = useState<SectionKey>('All')
   const [events, setEvents] = useState<AuditEvent[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -68,11 +104,43 @@ export default function AdminAuditPage() {
   const filtered = events.filter((l) => {
     const ms = (l.actor_id + l.action + (l.object_id ?? '')).toLowerCase().includes(search.toLowerCase())
     const ma = actionFilter === 'All' || l.action === actionFilter
-    return ms && ma
+    const ms2 = sectionFilter === 'All' || classify(l) === sectionFilter
+    return ms && ma && ms2
   })
 
   return (
     <AdminLayout title="ADMIN PANEL" subtitle="AUDIT LOG">
+      <div
+        style={{
+          padding: '12px 16px',
+          background: 'rgba(201,168,76,0.05)',
+          border: '1px solid rgba(201,168,76,0.12)',
+          borderRadius: '4px',
+          marginBottom: '18px',
+          display: 'flex',
+          gap: '10px',
+        }}
+      >
+        <span style={{ fontSize: '16px' }}>🧾</span>
+        <p style={{ fontSize: '12px', color: 'rgba(255,255,255,0.45)', lineHeight: 1.6, margin: 0 }}>
+          Append-only audit trail — timestamped, actor-linked, and owner-linked. Logs are non-deletable from the UI.
+        </p>
+      </div>
+
+      <div style={{ display: 'flex', gap: '8px', marginBottom: '14px', flexWrap: 'wrap' }}>
+        {SECTIONS.map((s) => (
+          <button
+            key={s}
+            type="button"
+            className={sectionFilter === s ? 'gold-btn' : 'gold-btn-outline'}
+            style={{ padding: '7px 10px', fontSize: '10px', letterSpacing: '0.08em' }}
+            onClick={() => setSectionFilter(s)}
+          >
+            {s}
+          </button>
+        ))}
+      </div>
+
       <div style={{ display: 'flex', gap: '12px', marginBottom: '20px', flexWrap: 'wrap' }}>
         <input
           className="gold-input"
@@ -88,6 +156,11 @@ export default function AdminAuditPage() {
         </select>
         {loading && <span style={{ fontSize: '11px', color: 'rgba(255,255,255,0.4)', alignSelf: 'center' }}>Loading…</span>}
         {error && <span style={{ fontSize: '11px', color: '#f87171', alignSelf: 'center' }}>{error}</span>}
+        {!loading && (
+          <span style={{ fontSize: '11px', color: 'rgba(255,255,255,0.35)', alignSelf: 'center' }}>
+            {filtered.length} records
+          </span>
+        )}
       </div>
 
       <div className="gold-card" style={{ borderRadius: '4px', overflow: 'hidden' }}>
@@ -95,7 +168,7 @@ export default function AdminAuditPage() {
           <table style={{ width: '100%', borderCollapse: 'collapse' }}>
             <thead>
               <tr style={{ borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
-                {['ID', 'USER', 'ACTION', 'TARGET', 'BEFORE', 'AFTER', 'IP', 'TIME', 'SESSION'].map((h) => (
+                {['ID', 'USER', 'ROLE', 'ACTION', 'TARGET', 'RESULT', 'IP', 'TIME', 'OWNER'].map((h) => (
                   <th key={h} style={{ padding: '12px 14px', textAlign: 'left', fontSize: '9px', fontWeight: 700, letterSpacing: '0.12em', color: 'rgba(255,255,255,0.3)', whiteSpace: 'nowrap' }}>{h}</th>
                 ))}
               </tr>
@@ -105,9 +178,9 @@ export default function AdminAuditPage() {
                 <tr key={l.event_id} style={{ borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
                   <td style={{ padding: '12px 14px', fontSize: '10px', color: 'rgba(255,255,255,0.35)' }}>{l.event_id.slice(0, 8)}</td>
                   <td style={{ padding: '12px 14px', fontSize: '11px', color: '#fff', fontWeight: 600 }}>{l.actor_id}</td>
+                  <td style={{ padding: '12px 14px', fontSize: '10px', color: 'rgba(255,255,255,0.45)' }}>{l.actor_role}</td>
                   <td style={{ padding: '12px 14px', fontSize: '10px', fontWeight: 700, color: actionColor(l.action) }}>{l.action}</td>
                   <td style={{ padding: '12px 14px', fontSize: '11px', color: 'rgba(255,255,255,0.55)' }}>{l.object_id ?? '—'}</td>
-                  <td style={{ padding: '12px 14px', fontSize: '10px', color: 'rgba(255,255,255,0.35)' }}>—</td>
                   <td style={{ padding: '12px 14px', fontSize: '10px', color: l.result === 'SUCCESS' ? '#22c55e' : '#f87171' }}>{l.result}</td>
                   <td style={{ padding: '12px 14px', fontSize: '10px', color: 'rgba(255,255,255,0.35)', fontFamily: 'monospace' }}>{l.ip_address ?? '—'}</td>
                   <td style={{ padding: '12px 14px', fontSize: '10px', color: 'rgba(255,255,255,0.45)', whiteSpace: 'nowrap' }}>{l.timestamp}</td>

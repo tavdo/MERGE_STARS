@@ -14,8 +14,6 @@ const NAV_LINKS = [
   { labelKey: 'nav.apply', href: '/apply' },
   { labelKey: 'nav.faq', href: '/faq' },
   { labelKey: 'nav.contact', href: '/contact' },
-  { labelKey: 'nav.trust', href: '/trust' },
-  { labelKey: 'nav.legalClassification', href: '/legal-classification' },
 ] as const
 
 interface NavbarProps {

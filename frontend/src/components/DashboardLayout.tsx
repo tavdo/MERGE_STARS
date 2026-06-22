@@ -15,7 +15,6 @@ const NAV = [
   { icon: '◦', labelKey: 'dashboard.nav.applications', href: '/apply', match: ['/apply', '/status'] },
   { icon: '◦', labelKey: 'dashboard.nav.orders', href: '/dashboard/orders' },
   { icon: '◦', labelKey: 'dashboard.nav.coins', href: '/dashboard/coins' },
-  { icon: '◦', labelKey: 'dashboard.nav.investments', href: '/dashboard/investments' },
   { icon: '◦', labelKey: 'dashboard.nav.brandLine', href: '/dashboard/brand' },
   { icon: '◦', labelKey: 'dashboard.nav.collections', href: '/dashboard/collections', match: ['/dashboard/collections'] },
   { icon: '◦', labelKey: 'dashboard.nav.qrIdentity', href: '/dashboard/qr' },
@@ -23,7 +22,6 @@ const NAV = [
   { icon: '◦', labelKey: 'dashboard.nav.delivery', href: '/dashboard/delivery' },
   { icon: '◦', labelKey: 'dashboard.nav.referral', href: '/dashboard/referral' },
   { icon: '◦', labelKey: 'dashboard.nav.messages', href: '/dashboard/messages', badgeKey: 'messages' as const },
-  { icon: '◦', labelKey: 'dashboard.nav.aiAssistant', href: '/dashboard/ai' },
   { icon: '◦', labelKey: 'dashboard.nav.support', href: '/dashboard/support' },
 ] as const
 

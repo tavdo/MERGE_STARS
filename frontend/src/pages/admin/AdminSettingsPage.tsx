@@ -54,7 +54,7 @@ export default function AdminSettingsPage() {
   }
 
   const exportAudit = () => {
-    window.open('/admin/audit-center', '_blank')
+    window.open('/admin/audit', '_blank')
   }
 
   const handleSave = (e: React.FormEvent) => {

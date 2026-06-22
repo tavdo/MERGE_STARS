@@ -63,7 +63,7 @@ export default function DashboardPage() {
             <Link to="/status" className="dash-text-link mt-5 inline-block">{t('dashboardHome.viewDetails')}</Link>
           </div>
 
-          <div className="dash-panel">
+          <div className="dash-panel" id="registry">
             <p className="dash-label mb-4">{t('dashboardHome.registeredValue')}</p>
             <p className="font-serif-display text-3xl text-neutral-100 tracking-wide">
               ${isLoading ? '…' : registeredValue.toLocaleString()}

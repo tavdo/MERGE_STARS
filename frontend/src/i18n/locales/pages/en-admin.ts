@@ -18,6 +18,7 @@ export default {
       dashboard: 'DASHBOARD',
       bankReview: 'BANK REVIEW',
       auditCenter: 'AUDIT CENTER',
+      compliance: 'COMPLIANCE',
       security: 'SECURITY',
       dataGov: 'DATA GOV',
       continuity: 'CONTINUITY',

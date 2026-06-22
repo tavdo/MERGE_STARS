@@ -27,11 +27,8 @@ const NAV_GROUPS: { titleKey: string; items: NavItem[] }[] = [
     titleKey: 'admin.nav.groupCompliance',
     items: [
       { icon: '📜', labelKey: 'admin.nav.auditLog', href: '/admin/audit' },
-      { icon: '🗂', labelKey: 'admin.nav.auditCenter', href: '/admin/audit-center' },
       { icon: '🏛', labelKey: 'admin.nav.bankReview', href: '/admin/bank-review' },
-      { icon: '🛡', labelKey: 'admin.nav.security', href: '/admin/security' },
-      { icon: '🗄', labelKey: 'admin.nav.dataGov', href: '/admin/data-governance' },
-      { icon: '🧯', labelKey: 'admin.nav.continuity', href: '/admin/business-continuity' },
+      { icon: '🛡', labelKey: 'admin.nav.compliance', href: '/admin/compliance' },
     ],
   },
   {
@@ -118,7 +115,9 @@ export default function AdminLayout({ children, title, subtitle }: Props) {
             <div key={group.titleKey} className="admin-nav-group">
               <p className="admin-nav-group-title">{t(group.titleKey)}</p>
               {group.items.map((item) => {
-                const active = location.pathname === item.href
+                const active =
+                  location.pathname === item.href ||
+                  (item.href === '/admin/compliance' && location.pathname.startsWith('/admin/compliance'))
                 return (
                   <Link
                     key={item.href}
