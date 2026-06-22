@@ -4,9 +4,10 @@ import { useQuery } from '@tanstack/react-query'
 import DashboardLayout from '../../components/DashboardLayout'
 import { coinsApi } from '@/features/coins/api/coins.api'
 import { statusLabel } from '@/shared/utils/applicationStatus'
+import { formatMetalFineness, metalI18nKey } from '@/shared/utils/metalPurity'
 
 export default function CoinsPage() {
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
 
   const { data: app, isLoading } = useQuery({
     queryKey: ['application-latest'],
@@ -30,7 +31,7 @@ export default function CoinsPage() {
                     {t('coins.quantity')}: {app.quantity} KG
                   </p>
                   <p className="text-[11px] text-neutral-500 tracking-wide mb-3">
-                    {t('coins.purity')}: {app.metalPurity}‰
+                    {t('coins.purity')}: {formatMetalFineness(app.metalPurity, i18n.language)} {t(`application.metals.${metalI18nKey(app.metalType)}`)}
                   </p>
                   <span className="dash-status dash-status--blue">{statusLabel(app.status)}</span>
                 </div>

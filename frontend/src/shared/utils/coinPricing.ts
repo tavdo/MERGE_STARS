@@ -16,13 +16,14 @@ export function estimateCoinValue(
   coinIndex: number,
   quantity: number,
   livePrices?: { metal: string; priceUsd: number }[],
-  purity = 99.9,
+  purityPerMille = 999.9,
 ): number {
   const metal = metalForCoinIndex(coinIndex)
   const spot =
     livePrices?.find((p) => p.metal === metal)?.priceUsd ?? DEFAULT_SPOT[metal] ?? 1
   const weightGrams = 1000 * quantity
-  const metalValue = (spot * weightGrams * purity) / 100
+  const fraction = purityPerMille > 100 ? purityPerMille / 1000 : purityPerMille / 100
+  const metalValue = spot * weightGrams * fraction
   return Math.round((metalValue + MFG_FEE_USD + PLATFORM_FEE_USD) * 100) / 100
 }
 

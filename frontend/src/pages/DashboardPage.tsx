@@ -4,6 +4,7 @@ import { useQuery } from '@tanstack/react-query'
 import DashboardLayout from '../components/DashboardLayout'
 import { dashboardApi } from '@/features/dashboard/api/dashboard.api'
 import { statusLabel } from '@/shared/utils/applicationStatus'
+import { formatMetalFineness, metalI18nKey } from '@/shared/utils/metalPurity'
 
 function formatActivityTime(iso: string) {
   const d = new Date(iso)
@@ -14,7 +15,7 @@ function formatActivityTime(iso: string) {
 }
 
 export default function DashboardPage() {
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
   const tones = ['gold', 'green', 'blue', 'amber', 'green'] as const
 
   const { data, isLoading } = useQuery({
@@ -84,8 +85,14 @@ export default function DashboardPage() {
               <div className="dash-coin-badge text-2xl shrink-0">★</div>
               <div className="min-w-0">
                 <h3 className="text-sm font-medium tracking-wide text-[#D4AF37] mb-2">{app?.coinType ?? t('dashboardHome.coinName')}</h3>
-                <p className="text-[11px] text-neutral-500 tracking-wide">{t('dashboardHome.quantity')}: {app?.quantity ?? '—'}</p>
-                <p className="text-[11px] text-neutral-500 tracking-wide mt-0.5">{t('dashboardHome.purity')}</p>
+                <p className="text-[11px] text-neutral-500 tracking-wide">
+                  {t('dashboardHome.quantity')}: {app ? `${(app.quantity * 1000).toLocaleString(i18n.language)} g` : '—'}
+                </p>
+                <p className="text-[11px] text-neutral-500 tracking-wide mt-0.5">
+                  {app
+                    ? `${t('dashboardHome.fineness')}: ${formatMetalFineness(app.metalPurity, i18n.language)} ${t(`application.metals.${metalI18nKey(app.metalType)}`)}`
+                    : t('dashboardHome.purityDefault')}
+                </p>
                 {app && (
                   <span className="dash-status dash-status--blue mt-3">{statusLabel(app.status)}</span>
                 )}

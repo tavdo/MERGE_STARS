@@ -9,13 +9,14 @@ import { coinsApi } from '@/features/coins/api/coins.api'
 import { useLiveMetalPrices } from '@/features/coins/hooks/useLiveMetalPrice'
 import { useAuthStore } from '@/features/auth/store/auth.store'
 import { estimateCoinValue, financingPreview, metalForCoinIndex } from '@/shared/utils/coinPricing'
+import { DEFAULT_FINENESS_PER_MILLE, formatMetalFineness } from '@/shared/utils/metalPurity'
 
 type Step = 1 | 2 | 3 | 4
 
 const FINANCING_KEYS = ['full', 'bank12', 'bank24'] as const
 
 export default function ApplicationPage() {
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
   const authUser = useAuthStore((s) => s.user)
   const coinTypes = t('application.coinTypes', { returnObjects: true }) as string[]
   const stepLabels = t('application.steps', { returnObjects: true }) as string[]
@@ -66,7 +67,7 @@ export default function ApplicationPage() {
       coinsApi.submitApplication({
         coinType,
         quantity,
-        metalPurity: 99.9,
+        metalPurity: 999.9,
         metalType,
         coinValue: coinValue * quantity,
         notes: notes.trim() || undefined,
@@ -181,7 +182,7 @@ export default function ApplicationPage() {
                       <input
                         id="apply-purity"
                         className="apply-field apply-field--muted"
-                        value="99.9 %"
+                        value={formatMetalFineness(DEFAULT_FINENESS_PER_MILLE, i18n.language)}
                         readOnly
                         aria-readonly="true"
                       />
@@ -338,7 +339,7 @@ export default function ApplicationPage() {
                     { label: t('application.summaryCoinType'), value: coinType },
                     { label: t('application.summaryQuantity'), value: `${quantity} KG` },
                     { label: t('application.summaryWeight'), value: t('application.grams', { n: quantity * 1000 }) },
-                    { label: t('application.summaryPurity'), value: t('application.puritySilver') },
+                    { label: t('application.summaryPurity'), value: `${formatMetalFineness(DEFAULT_FINENESS_PER_MILLE, i18n.language)} ${t(`application.metals.${metalType}`)}` },
                     { label: t('application.summaryValue'), value: `$${(coinValue * quantity).toLocaleString()}` },
                     { label: t('application.summaryFinancing'), value: summaryFinancing },
                     { label: t('application.deliveryAddress'), value: deliveryAddress || '—' },
