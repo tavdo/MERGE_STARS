@@ -88,11 +88,23 @@ fi
 
 npm_ci_clean() {
   local dir="$1"
+  local stale
   cd "$dir"
   # Avoid ENOTEMPTY when npm ci tries to replace a partial/corrupt node_modules (common on VPS)
   if [ -d node_modules ]; then
     echo "    cleaning $dir/node_modules"
-    rm -rf node_modules
+    stale="node_modules.stale.$$"
+    # Rename first so npm can install while we delete the old tree
+    mv node_modules "$stale" 2>/dev/null || true
+    rm -rf "$stale" 2>/dev/null || {
+      echo "    retrying node_modules cleanup…"
+      chmod -R u+w "$stale" 2>/dev/null || true
+      rm -rf "$stale" 2>/dev/null || true
+    }
+    # Last resort: leave stale dir for later cleanup, but ensure node_modules is gone
+    if [ -d node_modules ]; then
+      rm -rf node_modules 2>/dev/null || true
+    fi
   fi
   npm ci --include=dev
 }

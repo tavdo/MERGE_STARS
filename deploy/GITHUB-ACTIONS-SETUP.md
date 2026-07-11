@@ -8,7 +8,7 @@ Repo → **Settings** → **Secrets and variables** → **Actions** → **New re
 
 | Secret | Example | Notes |
 |--------|---------|-------|
-| `VPS_HOST` | `203.0.113.10` or `mergestars.com` | Server IP or hostname |
+| `VPS_HOST` | `142.93.105.164` or `mergestars.com` | Current production VPS IP / hostname |
 | `VPS_USER` | `root` | SSH user (root ok) |
 | `VPS_SSH_KEY` | full private key | See below |
 | `VPS_DEPLOY_PATH` | `/var/www/html` | Git repo root on VPS |
