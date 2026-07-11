@@ -12,7 +12,7 @@ export default {
     coinName: 'MERGE SILVER COIN (1KG)',
     quantity: 'რაოდენობა',
     fineness: 'სინჯი',
-    purityDefault: 'სინჯი: 999,9‰ ვერცხლი',
+    purityDefault: 'სინჯი: 999,9 ვერცხლი',
     inProduction: 'წარმოებაში',
     viewCoin: 'მონეტის ნახვა',
     trackStatus: 'სტატუსის თრეკინგი',
