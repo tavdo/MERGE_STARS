@@ -677,6 +677,7 @@
   font-size: 0.9375rem;
   line-height: 1.4;
   color: #f5f2eb;
+  caret-color: #f5d78e;
   min-height: 2.75rem;
   transition:
     background 0.25s ease,
@@ -1900,7 +1901,9 @@ html.luxury-cursor-active button,
 html.luxury-cursor-active input,
 html.luxury-cursor-active select,
 html.luxury-cursor-active textarea,
-html.luxury-cursor-active label {
+html.luxury-cursor-active label,
+html.luxury-cursor-active .custom-select-trigger,
+html.luxury-cursor-active .custom-select-option {
   cursor: none;
 }
 
@@ -1960,7 +1963,7 @@ html.luxury-cursor-active label {
   color: #f5f2eb;
   min-height: 2.75rem;
   text-align: left;
-  cursor: none;
+  cursor: pointer;
   transition:
     background 0.25s ease,
     border-color 0.25s ease;
@@ -2004,7 +2007,7 @@ html.luxury-cursor-active label {
   font-size: 0.8125rem;
   letter-spacing: 0.04em;
   color: rgba(245, 242, 235, 0.85);
-  cursor: none;
+  cursor: pointer;
   transition: background 0.2s ease, color 0.2s ease;
 }
 
@@ -4237,6 +4240,7 @@ button.gold-btn-outline {
   background: #111;
   border: 1px solid rgba(201, 168, 76, 0.2);
   color: #fff;
+  caret-color: #f5d78e;
   width: 100%;
   padding: 14px 18px;
   font-size: 15px;
