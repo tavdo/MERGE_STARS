@@ -16,10 +16,9 @@ if [ -f .env ]; then
   sed -i 's/BREVO_API-KEY/BREVO_API_KEY/g' .env
   sed -i 's/\r$//' .env
   # systemd EnvironmentFile: quote MAIL_FROM (spaces)
-  if grep -q '^MAIL_FROM=' .env; then
-    sed -i 's/^MAIL_FROM=.*/MAIL_FROM="MERGE STARS <noreply@mergestars.com>"/' .env
-  else
-    echo 'MAIL_FROM="MERGE STARS <noreply@mergestars.com>"' >> .env
+  # Use Brevo-verified sender; noreply@mergestars.com requires domain auth in Brevo dashboard
+  if ! grep -q '^MAIL_FROM=' .env; then
+    echo 'MAIL_FROM="MERGE STARS <mergestars01@gmail.com>"' >> .env
   fi
   if ! grep -q '^FRONTEND_URL=' .env; then
     echo 'FRONTEND_URL=https://mergestars.com' >> .env
@@ -198,6 +197,18 @@ fi
 
 echo "==> Reload nginx"
 if command -v nginx >/dev/null 2>&1; then
+  # Re-apply Let's Encrypt if deploy/bootstrap replaced HTTP-only config
+  if command -v certbot >/dev/null 2>&1; then
+    CERT_NAME="${FRONTEND_URL:-https://mergestars.com}"
+    CERT_NAME="${CERT_NAME#https://}"
+    CERT_NAME="${CERT_NAME#http://}"
+    CERT_NAME="${CERT_NAME%%/*}"
+    if [ -d "/etc/letsencrypt/live/$CERT_NAME" ]; then
+      certbot install --cert-name "$CERT_NAME" --nginx --redirect --non-interactive \
+        && echo "    HTTPS cert re-applied ($CERT_NAME)" \
+        || echo "WARNING: certbot install failed — run: certbot install --cert-name $CERT_NAME --nginx --redirect"
+    fi
+  fi
   nginx -t
   systemctl reload nginx
 else

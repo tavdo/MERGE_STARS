@@ -373,7 +373,13 @@ export class AuthService {
         this.resetTokens.create({ email: normalized, token: code, expiresAt, used: false }),
       );
 
-      this.mail.sendPasswordResetCodeInBackground(normalized, code);
+      try {
+        await this.mail.sendPasswordResetCode(normalized, code);
+      } catch {
+        throw new ServiceUnavailableException(
+          'Could not send password reset email. Please try again in a minute.',
+        );
+      }
     }
 
     return { ok: true, message: 'If that email is registered, a reset code was sent' };

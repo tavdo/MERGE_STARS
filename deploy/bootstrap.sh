@@ -58,13 +58,19 @@ systemctl daemon-reload
 systemctl enable merge-stars-backend
 
 echo "==> nginx: merge-stars site"
-sed \
-  -e "s|__DEPLOY_DIR__|$DEPLOY_DIR|g" \
-  -e "s|__DOMAIN__|$DOMAIN|g" \
-  "$SCRIPT_DIR/nginx/merge-stars.conf" \
-  | tee /etc/nginx/sites-available/merge-stars.conf >/dev/null
+NGINX_SITE="/etc/nginx/sites-available/merge-stars.conf"
+if [ -f "$NGINX_SITE" ] && grep -qE 'ssl_certificate|listen 443' "$NGINX_SITE" 2>/dev/null; then
+  echo "    keeping certbot SSL config — updating root path only"
+  sed -i "s|root .*frontend/dist;|root $DEPLOY_DIR/frontend/dist;|" "$NGINX_SITE"
+else
+  sed \
+    -e "s|__DEPLOY_DIR__|$DEPLOY_DIR|g" \
+    -e "s|__DOMAIN__|$DOMAIN|g" \
+    "$SCRIPT_DIR/nginx/merge-stars.conf" \
+    | tee "$NGINX_SITE" >/dev/null
+fi
 
-ln -sf /etc/nginx/sites-available/merge-stars.conf /etc/nginx/sites-enabled/merge-stars.conf
+ln -sf "$NGINX_SITE" /etc/nginx/sites-enabled/merge-stars.conf
 rm -f /etc/nginx/sites-enabled/default 2>/dev/null || true
 
 systemctl enable nginx

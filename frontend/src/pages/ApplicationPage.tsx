@@ -5,14 +5,16 @@ import { useMutation } from '@tanstack/react-query'
 import DashboardLayout from '../components/DashboardLayout'
 import FlowStepper from '../components/FlowStepper'
 import CustomSelect from '../components/CustomSelect'
+import OrderAIDesignPanel from '../components/application/OrderAIDesignPanel'
 import { coinsApi } from '@/features/coins/api/coins.api'
 import { useLiveMetalPrices } from '@/features/coins/hooks/useLiveMetalPrice'
 import { useAuthStore } from '@/features/auth/store/auth.store'
 import { estimateCoinValue, financingPreview, metalForCoinIndex } from '@/shared/utils/coinPricing'
 import { DEFAULT_FINENESS_PER_MILLE, formatMetalFineness } from '@/shared/utils/metalPurity'
 
-type Step = 1 | 2 | 3 | 4
+type Step = 1 | 2 | 3 | 4 | 5
 
+const TOTAL_STEPS = 5
 const FINANCING_KEYS = ['full', 'bank12', 'bank24'] as const
 
 export default function ApplicationPage() {
@@ -33,6 +35,9 @@ export default function ApplicationPage() {
   const [quantity, setQuantity] = useState(1)
   const metalType = metalForCoinIndex(coinIdx)
   const [notes, setNotes] = useState('')
+  const [aiPrompt, setAiPrompt] = useState('')
+  const [aiStyle, setAiStyle] = useState('luxuryCoin')
+  const [aiAttempted, setAiAttempted] = useState(false)
   const [firstName, setFirstName] = useState('')
   const [lastName, setLastName] = useState('')
   const [personalId, setPersonalId] = useState('')
@@ -62,6 +67,16 @@ export default function ApplicationPage() {
   const termMonths = financingIdx === 0 ? 0 : financingIdx === 1 ? 12 : 24
   const { downPayment, toFinance, monthly } = financingPreview(coinValue * quantity, termMonths || 12)
 
+  const designNotes = useMemo(() => {
+    const parts = [
+      notes.trim(),
+      aiPrompt.trim()
+        ? `[AI design] style=${aiStyle}; prompt=${aiPrompt.trim()}`
+        : '',
+    ].filter(Boolean)
+    return parts.join('\n') || undefined
+  }, [notes, aiPrompt, aiStyle])
+
   const submitApp = useMutation({
     mutationFn: () =>
       coinsApi.submitApplication({
@@ -70,7 +85,7 @@ export default function ApplicationPage() {
         metalPurity: 999.9,
         metalType,
         coinValue: coinValue * quantity,
-        notes: notes.trim() || undefined,
+        notes: designNotes,
         firstName: firstName.trim(),
         lastName: lastName.trim(),
         personalId: personalId.trim() || undefined,
@@ -87,10 +102,15 @@ export default function ApplicationPage() {
   const idx = step - 1
 
   const goNext = () => {
-    if (step === 2 && (!firstName.trim() || !lastName.trim() || !email.trim())) return
-    if (step === 3 && !deliveryAddress.trim()) return
-    setStep((s) => Math.min(4, s + 1) as Step)
+    if (step === 2 && !aiAttempted) return
+    if (step === 3 && (!firstName.trim() || !lastName.trim() || !email.trim())) return
+    if (step === 4 && !deliveryAddress.trim()) return
+    setStep((s) => Math.min(TOTAL_STEPS, s + 1) as Step)
   }
+
+  const canContinue =
+    step !== 2 ||
+    aiAttempted
 
   const summaryFinancing =
     financingIdx === 0
@@ -206,6 +226,20 @@ export default function ApplicationPage() {
 
               {step === 2 && (
                 <div className="flex flex-col gap-7 sm:gap-8">
+                  <h3 className="apply-section-head">{t('application.aiDesign')}</h3>
+                  <OrderAIDesignPanel
+                    attempted={aiAttempted}
+                    onAttempted={() => setAiAttempted(true)}
+                    prompt={aiPrompt}
+                    onPromptChange={setAiPrompt}
+                    styleKey={aiStyle}
+                    onStyleChange={setAiStyle}
+                  />
+                </div>
+              )}
+
+              {step === 3 && (
+                <div className="flex flex-col gap-7 sm:gap-8">
                   <h3 className="apply-section-head">{t('application.yourProfile')}</h3>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 sm:gap-8">
                     <div>
@@ -283,7 +317,7 @@ export default function ApplicationPage() {
                 </div>
               )}
 
-              {step === 3 && (
+              {step === 4 && (
                 <div className="flex flex-col gap-7 sm:gap-8">
                   <h3 className="apply-section-head">{t('application.optionsAddress')}</h3>
                   <div>
@@ -332,7 +366,7 @@ export default function ApplicationPage() {
                 </div>
               )}
 
-              {step === 4 && (
+              {step === 5 && (
                 <div className="flex flex-col gap-4">
                   <h3 className="apply-section-head">{t('application.summary')}</h3>
                   {[
@@ -341,6 +375,10 @@ export default function ApplicationPage() {
                     { label: t('application.summaryWeight'), value: t('application.grams', { n: quantity * 1000 }) },
                     { label: t('application.summaryPurity'), value: `${formatMetalFineness(DEFAULT_FINENESS_PER_MILLE, i18n.language)} ${t(`application.metals.${metalType}`)}` },
                     { label: t('application.summaryValue'), value: `$${(coinValue * quantity).toLocaleString()}` },
+                    {
+                      label: t('application.summaryAiDesign'),
+                      value: aiPrompt.trim() || '—',
+                    },
                     { label: t('application.summaryFinancing'), value: summaryFinancing },
                     { label: t('application.deliveryAddress'), value: deliveryAddress || '—' },
                   ].map((r) => (
@@ -380,10 +418,11 @@ export default function ApplicationPage() {
                       {t('application.backBtn')}
                     </button>
                   )}
-                  {step < 4 ? (
+                  {step < TOTAL_STEPS ? (
                     <button
                       type="button"
                       onClick={goNext}
+                      disabled={!canContinue}
                       className={`luxury-btn-glass justify-center ${step > 1 ? 'flex-1' : 'w-full sm:flex-1'}`}
                     >
                       {t('application.continueBtn')}
