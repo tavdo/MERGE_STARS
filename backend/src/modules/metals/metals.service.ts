@@ -5,7 +5,7 @@ import { Repository } from 'typeorm';
 import { MetalPrice } from '../../database/entities/metal-price.entity';
 import { PlatformSettingsService } from '../settings/platform-settings.service';
 
-const METAL_DISPLAY_ORDER = ['silver', 'gold', 'platinum', 'palladium'] as const;
+const METAL_DISPLAY_ORDER = ['silver', 'gold', 'palladium'] as const;
 
 type Spot = { metal: string; priceUsd: number; changePct: number };
 
@@ -66,7 +66,6 @@ export class MetalsService implements OnModuleInit {
       const fetched = await Promise.all([
         this.fetchMetalSpot('silver', 'XAG'),
         this.fetchMetalSpot('gold', 'XAU'),
-        this.fetchMetalSpot('platinum', 'XPT'),
         this.fetchMetalSpot('palladium', 'XPD'),
       ]);
       const spots = fetched.filter((s): s is Spot => s !== null);
@@ -99,7 +98,6 @@ export class MetalsService implements OnModuleInit {
         this.cache = [
           { metal: 'silver', priceUsd: 1.09, changePct: 0 },
           { metal: 'gold', priceUsd: 139.1, changePct: 0 },
-          { metal: 'platinum', priceUsd: 32.15, changePct: 0 },
           { metal: 'palladium', priceUsd: 28.5, changePct: 0 },
         ];
       }

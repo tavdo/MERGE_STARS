@@ -190,7 +190,7 @@ export default function ApplicationPage() {
                       <input
                         id="apply-metal"
                         className="apply-field apply-field--muted"
-                        value={t(`application.metals.${metalType as 'silver' | 'gold' | 'platinum'}`)}
+                        value={t(`application.metals.${metalType as 'silver' | 'gold'}`)}
                         readOnly
                         aria-readonly="true"
                       />

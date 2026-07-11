@@ -105,7 +105,7 @@ src/
 - [ ] 🟠 Section "Explore by Category" — cards : Jewelry, Accessories, Souvenirs, Sanitaryware, Stationery, Construction Materials
 - [ ] 🟠 Section "Revolutionary 3D Filament Technology"
 - [ ] 🟠 Section "Invest in the Future"
-- [ ] 🟡 Barre live des prix métaux en bas de page (gold, silver, platinum, palladium)
+- [ ] 🟡 Barre live des prix métaux en bas de page (gold, silver, palladium)
 - [ ] 🟡 Footer complet (Company, Support, Contact, Follow Us)
 - [ ] 🟢 Sélecteur de langue `EN / GE` en haut à droite
 
@@ -207,7 +207,7 @@ src/
 ### 🪙 Coin Viewer 3D (Application)
 
 - [ ] 🟠 Créer `CoinViewer3D.tsx` — viewer interactif de la pièce configurée
-- [ ] 🟠 Changement de métal (gold/silver/platinum) → mise à jour du matériau PBR en < 16ms
+- [ ] 🟠 Changement de métal (gold/silver) → mise à jour du matériau PBR en < 16ms
 - [ ] 🟡 Rotation orbitale + zoom tactile
 - [ ] 🟢 AR Preview (WebXR) — voir la pièce dans l'espace réel
 

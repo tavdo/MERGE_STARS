@@ -98,7 +98,7 @@ export default {
       'Our proprietary 3D filament is enriched with real precious metals, creating products that are lightweight, durable, and exude unmatched luxury.',
     discoverTech: 'Discover Technology',
     techPoints: {
-      metals: { title: 'PRECIOUS METALS', sub: 'Real silver, gold, platinum and more' },
+      metals: { title: 'PRECIOUS METALS', sub: 'Real silver, gold and more' },
       composite: { title: 'ADVANCED COMPOSITE', sub: 'Proprietary blend for strength and beauty' },
       lightweight: { title: 'LIGHTWEIGHT CORE', sub: 'Engineered for performance' },
     },

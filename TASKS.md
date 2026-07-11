@@ -75,7 +75,7 @@
 
 ### 📊 Module Metals (Prix live)
 
-- [ ] 🔴 `GET /api/v1/metals/live` — derniers prix (gold, silver, platinum, palladium)
+- [ ] 🔴 `GET /api/v1/metals/live` — derniers prix (gold, silver, palladium)
 - [ ] 🔴 Créer un `CronJob` (BullMQ) qui fetch les prix toutes les 30 secondes
 - [ ] 🟠 Créer le `MetalsGateway` WebSocket — broadcast sur `/metals` toutes les 30s
 - [ ] 🟡 Persister les prix dans `metal_prices` (time-series)

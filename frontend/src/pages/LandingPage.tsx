@@ -41,7 +41,6 @@ const INVEST_POINT_KEYS = ['growth', 'tech', 'partner', 'impact'] as const
 const METAL_KEYS = [
   { metal: 'silver', nameKey: 'landing.metalSilver' },
   { metal: 'gold', nameKey: 'landing.metalGold' },
-  { metal: 'platinum', nameKey: 'landing.metalPlatinum' },
 ] as const
 
 function formatUsd(value: number) {

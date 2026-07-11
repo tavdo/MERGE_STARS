@@ -41,7 +41,7 @@ export default {
     categoriesTitle: 'კატეგორიების მიხედვით', categories: { jewelry: 'სამკაული', accessories: 'აქსესუარები', souvenirs: 'სუვენირები', sanitaryware: 'სანიტარია', stationery: 'კანცელარია', construction: 'სამშენებლო', more: 'მეტი' },
     techPanel: '3D ფილამენტის ტექნოლოგია', techTitle1: 'რევოლუციური', techTitle2: '3D ფილამენტის', techTitle3: 'ტექნოლოგია',
     techBody: 'ჩვენი პატენტირებული 3D ფილამენტი გამდიდრებულია ძვირფასი მეტალებით — მსუბუქი, გამძლე და ლუქსური პროდუქტები.',
-    discoverTech: 'ტექნოლოგიის აღმოჩენა', techPoints: { metals: { title: 'ძვირფასი მეტალები', sub: 'ვერცხალი, ოქრო, პლატინა' }, composite: { title: 'კომპოზიტი', sub: 'სიძლიერე და სილამაზე' }, lightweight: { title: 'მსუბუქობა', sub: 'საუკეთესო შესრულება' } },
+    discoverTech: 'ტექნოლოგიის აღმოჩენა', techPoints: { metals: { title: 'ძვირფასი მეტალები', sub: 'ვერცხალი, ოქრო' }, composite: { title: 'კომპოზიტი', sub: 'სიძლიერე და სილამაზე' }, lightweight: { title: 'მსუბუქობა', sub: 'საუკეთესო შესრულება' } },
     investTitle1: 'დაინვესტირეთ', investTitle2: '', investTitleGold: 'მომავალში', investBody: 'გახდით გლობალური მოძრაობის ნაწილი, რომელიც ახლებს ლუქსსა და ტექნოლოგიას.',
     learnMore: 'გაიგეთ მეტი', investPoints: { growth: 'მაღალი პოტენციალი', tech: 'ინოვაციური ტექნოლოგია', partner: 'ძლიერი პარტნიორობა', impact: 'გლობალური გავლენა' },
   },

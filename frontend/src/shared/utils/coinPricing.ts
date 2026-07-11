@@ -1,11 +1,10 @@
 export const MFG_FEE_USD = 1200
 export const PLATFORM_FEE_USD = 153
 
-const METAL_BY_COIN_INDEX = ['silver', 'gold', 'platinum'] as const
+const METAL_BY_COIN_INDEX = ['silver', 'gold'] as const
 const DEFAULT_SPOT: Record<string, number> = {
   silver: 1.09,
   gold: 139.1,
-  platinum: 32.15,
 }
 
 export function metalForCoinIndex(index: number): string {

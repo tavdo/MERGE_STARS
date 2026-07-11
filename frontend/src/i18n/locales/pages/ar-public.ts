@@ -114,7 +114,6 @@ export default {
   landing: {
     metalSilver: 'الفضة (Ag)',
     metalGold: 'الذهب (Au)',
-    metalPlatinum: 'البلاتين (Pt)',
     perKg: '/ كغ',
     loadingCoin: 'جارٍ تحميل عملة MERGE STARS',
     coinEmblem: 'شعار عملة MERGE STARS الذهبية',

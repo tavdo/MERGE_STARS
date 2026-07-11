@@ -117,7 +117,6 @@ export default {
   landing: {
     metalSilver: 'SILVER (Ag)',
     metalGold: 'GOLD (Au)',
-    metalPlatinum: 'PLATINUM (Pt)',
     perKg: '/ kg',
     loadingCoin: 'Loading MERGE STARS coin',
     coinEmblem: 'MERGE STARS golden coin emblem',

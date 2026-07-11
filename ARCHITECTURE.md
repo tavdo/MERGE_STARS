@@ -291,7 +291,7 @@ CREATE TABLE investments (
 -- metal_prices  (append-only time-series)
 CREATE TABLE metal_prices (
     id              BIGSERIAL PRIMARY KEY,
-    metal           VARCHAR(20) NOT NULL,  -- 'gold','silver','platinum','palladium'
+    metal           VARCHAR(20) NOT NULL,  -- 'gold','silver','palladium'
     price_usd       NUMERIC(12,4) NOT NULL,
     change_pct      NUMERIC(6,4),
     recorded_at     TIMESTAMPTZ DEFAULT NOW()

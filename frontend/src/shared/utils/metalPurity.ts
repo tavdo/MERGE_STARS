@@ -24,7 +24,7 @@ export function formatMetalFineness(value: number | undefined, locale = 'en'): s
   })
 }
 
-export function metalI18nKey(metalType?: string | null): 'silver' | 'gold' | 'platinum' {
-  if (metalType === 'gold' || metalType === 'platinum') return metalType
+export function metalI18nKey(metalType?: string | null): 'silver' | 'gold' {
+  if (metalType === 'gold') return metalType
   return 'silver'
 }

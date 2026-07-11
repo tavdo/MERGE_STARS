@@ -152,7 +152,7 @@ export default {
       { title: 'ფინანსირება და მიწოდება', blurb: 'გადახდა და მისამართი.' },
       { title: 'შემოწმება', blurb: 'დაადასტურეთ ყველა ველი.' },
     ],
-    coinTypes: ['MERGE SILVER COIN (1KG)', 'MERGE GOLD COIN (1KG)', 'MERGE PLATINUM COIN (1KG)'],
+    coinTypes: ['MERGE SILVER COIN (1KG)', 'MERGE GOLD COIN (1KG)'],
     coinSpec: 'მონეტის სპეციფიკაცია', selectCoin: 'მონეტის ტიპი', quantity: 'რაოდენობა (კგ)', next: 'გაგრძელება', back: 'უკან', submit: 'გაგზავნა',
     aiDesign: 'AI 3D დიზაინი',
     aiBadge: 'Design AI',

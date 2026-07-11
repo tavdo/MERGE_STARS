@@ -84,7 +84,6 @@ export default {
   landing: {
     metalSilver: 'ვერცხალი (Ag)',
     metalGold: 'ოქრო (Au)',
-    metalPlatinum: 'პლატინა (Pt)',
     perKg: '/ კგ',
     loadingCoin: 'MERGE STARS მონეტა იტვირთება',
     coinEmblem: 'MERGE STARS ოქროს ემბლემა',
