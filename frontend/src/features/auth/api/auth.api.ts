@@ -21,8 +21,12 @@ export const authApi = {
   sendPhoneVerificationCode: (phone: string) =>
     api.post<ApiResponse<{ ok: boolean; message: string }>>('/auth/send-phone-code', { phone }),
 
-  googleLogin: (idToken: string) =>
-    api.post<ApiResponse<AuthTokens>>('/auth/google', { idToken }),
+  googleLogin: (idToken: string, opts?: { referralCode?: string; referralSource?: string }) =>
+    api.post<ApiResponse<AuthTokens>>('/auth/google', {
+      idToken,
+      ...(opts?.referralCode ? { referralCode: opts.referralCode } : {}),
+      ...(opts?.referralSource ? { referralSource: opts.referralSource } : {}),
+    }),
 
   forgotPassword: (email: string) =>
     api.post<ApiResponse<{ ok: boolean; message: string }>>('/auth/forgot-password', { email }),

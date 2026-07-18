@@ -1,13 +1,14 @@
 import { useState, useEffect, type ReactNode } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { useQuery } from '@tanstack/react-query'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
 import LanguageSwitcher from './LanguageSwitcher'
 import SiteLogo from './SiteLogo'
 import PhoneMissingBanner from './profile/PhoneMissingBanner'
 import { useAuthStore } from '@/features/auth/store/auth.store'
 import { notificationsApi } from '@/features/notifications/api/notifications.api'
 import { usersApi } from '@/features/users/api/users.api'
+import { socket } from '@/lib/socket'
 
 const NAV = [
   { icon: '⊞', labelKey: 'dashboard.nav.dashboard', href: '/dashboard', exact: true },
@@ -47,6 +48,8 @@ export default function DashboardLayout({ children, title, titleKey }: Props) {
   const [mobileNavOpen, setMobileNavOpen] = useState(false)
   const location = useLocation()
   const navigate = useNavigate()
+  const qc = useQueryClient()
+  const token = useAuthStore((s) => s.accessToken)
 
   const headerTitle = titleKey
     ? t(`dashboard.titles.${titleKey}`)
@@ -59,6 +62,18 @@ export default function DashboardLayout({ children, title, titleKey }: Props) {
     queryFn: () => notificationsApi.unreadCount().then((r) => r.data.data),
     refetchInterval: 60_000,
   })
+
+  useEffect(() => {
+    if (!token) return
+    const onNew = () => {
+      void qc.invalidateQueries({ queryKey: ['notifications-unread'] })
+      void qc.invalidateQueries({ queryKey: ['notifications'] })
+    }
+    socket.on('notification:new', onNew)
+    return () => {
+      socket.off('notification:new', onNew)
+    }
+  }, [token, qc])
 
   const { data: profile } = useQuery({
     queryKey: ['users-me'],

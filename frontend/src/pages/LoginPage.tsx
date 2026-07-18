@@ -9,7 +9,9 @@ import { getApiErrorMessage } from '@/shared/utils/apiError'
 import {
   clearPersistedReferralRef,
   persistReferralRef,
+  persistReferralSource,
   resolveReferralCode,
+  resolveReferralSource,
 } from '@/utils/referralRef'
 import RegistrationGoalBanner from '../components/RegistrationGoalBanner'
 
@@ -32,9 +34,11 @@ export default function LoginPage() {
 
   useEffect(() => {
     persistReferralRef(searchParams.get('ref'))
+    persistReferralSource(searchParams.get('src'))
   }, [searchParams])
 
   const referralCode = resolveReferralCode(searchParams)
+  const referralSource = resolveReferralSource(searchParams)
   const [step, setStep] = useState<Step>(1)
   const [checked, setChecked] = useState<boolean[]>(() => Array(TERM_COUNT).fill(false))
   const [showPw, setShowPw] = useState(false)
@@ -155,6 +159,7 @@ export default function LoginPage() {
         password: regPassword,
         ...(emailVerifyEnabled ? { verificationCode: verificationCode.trim() } : {}),
         referralCode: referralCode || undefined,
+        referralSource: referralSource || (referralCode ? 'link' : undefined),
       },
       {
         onSuccess: () => clearPersistedReferralRef(),

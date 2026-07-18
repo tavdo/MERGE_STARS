@@ -52,6 +52,11 @@ export class RegisterDto {
   @IsString()
   referralCode?: string;
 
+  /** How the invite was opened: qr | link */
+  @IsOptional()
+  @IsString()
+  referralSource?: string;
+
   @IsOptional()
   @IsString()
   @Length(6, 6)
@@ -78,6 +83,14 @@ export class GoogleLoginDto {
   @IsString()
   @IsNotEmpty()
   idToken: string;
+
+  @IsOptional()
+  @IsString()
+  referralCode?: string;
+
+  @IsOptional()
+  @IsString()
+  referralSource?: string;
 }
 
 export class ForgotPasswordDto {

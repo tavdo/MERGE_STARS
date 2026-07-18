@@ -26,7 +26,7 @@ export default function QRIdentityPage() {
   const kyc = (user?.kycStatus ?? 'pending').toLowerCase()
   const kycStyle = KYC_COLORS[kyc] ?? KYC_COLORS.pending
   const universalLink = user
-    ? `${window.location.origin}/login?tab=register&ref=${encodeURIComponent(user.mergeId)}`
+    ? `${window.location.origin}/login?tab=register&ref=${encodeURIComponent(user.mergeId)}&src=qr`
     : `${window.location.origin}/login`
   const qrId = user ? `QR-${user.mergeId.replace(/^MERGE-/, '')}` : 'QR-—'
 

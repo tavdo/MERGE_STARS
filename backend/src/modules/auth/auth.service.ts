@@ -188,7 +188,7 @@ export class AuthService {
     await this.phoneCodes.save(row);
   }
 
-  async googleLogin(idToken: string) {
+  async googleLogin(idToken: string, referralCode?: string, referralSource?: string) {
     const clientId = process.env.GOOGLE_CLIENT_ID?.trim();
     if (!clientId) {
       throw new ServiceUnavailableException('Google sign-in is not configured');
@@ -231,6 +231,7 @@ export class AuthService {
         termsAcceptedAt: new Date(),
       });
       await this.users.save(user);
+      await this.referrals.attachReferral(user, referralCode, referralSource);
     }
 
     if (user.status !== 'active') {
@@ -310,7 +311,7 @@ export class AuthService {
     });
 
     await this.users.save(user);
-    await this.referrals.attachReferral(user, dto.referralCode);
+    await this.referrals.attachReferral(user, dto.referralCode, dto.referralSource);
     await this.notifications.create({
       userId: user.id,
       type: 'welcome',

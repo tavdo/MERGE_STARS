@@ -63,7 +63,11 @@ export class AuthController {
     @Body() dto: GoogleLoginDto,
     @Res({ passthrough: true }) res: Response,
   ) {
-    const result = await this.auth.googleLogin(dto.idToken);
+    const result = await this.auth.googleLogin(
+      dto.idToken,
+      dto.referralCode,
+      dto.referralSource,
+    );
     setRefreshCookie(res, result.refreshToken);
     return { accessToken: result.accessToken, user: result.user };
   }

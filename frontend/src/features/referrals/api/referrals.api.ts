@@ -14,6 +14,7 @@ export interface ReferralStats {
   verified: number
   pending: number
   shareLink: string
+  qrLink?: string
   qrRef: string
   platformShare: string
 }

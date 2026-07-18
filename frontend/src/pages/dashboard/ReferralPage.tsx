@@ -22,6 +22,11 @@ export default function ReferralPage() {
   })
 
   const refLink = stats?.shareLink ?? `${window.location.origin}/login?tab=register`
+  const qrLink =
+    stats?.qrLink ??
+    (stats?.shareLink
+      ? `${stats.shareLink}${stats.shareLink.includes('?') ? '&' : '?'}src=qr`
+      : `${window.location.origin}/login?tab=register&src=qr`)
   const qrRef = stats?.qrRef ?? 'QR-REF'
 
   const showToast = useCallback((message: string) => setToast(message), [])
@@ -33,7 +38,7 @@ export default function ReferralPage() {
   }, [toast])
 
   const handleDownload = () => {
-    void downloadQrPng(refLink, `merge-stars-${qrRef}.png`)
+    void downloadQrPng(qrLink, `merge-stars-${qrRef}.png`)
     void brandApi.trackQrScan()
     showToast(t('referral.toastDownloaded', { defaultValue: 'QR downloaded' }))
   }
@@ -87,7 +92,7 @@ export default function ReferralPage() {
 
         <div className="gold-card" style={{ padding: '24px', borderRadius: '4px', marginBottom: '24px' }}>
           <div style={{ display: 'flex', gap: '24px', flexWrap: 'wrap', alignItems: 'center', marginBottom: '20px' }}>
-            <QrCodeImage value={refLink} size={120} />
+            <QrCodeImage value={qrLink} size={120} />
             <div style={{ flex: 1, minWidth: '200px' }}>
               <p style={{ fontSize: '10px', color: 'rgba(255,255,255,0.4)', marginBottom: '8px' }}>{qrRef}</p>
               <p style={{ fontSize: '12px', color: '#fff', wordBreak: 'break-all', marginBottom: '12px' }}>{refLink}</p>

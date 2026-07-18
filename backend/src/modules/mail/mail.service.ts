@@ -284,6 +284,28 @@ export class MailService implements OnModuleInit {
     this.sendInBackground(email, subject, html, text);
   }
 
+  async sendReferralJoined(
+    to: string,
+    referrerFirstName: string,
+    joinedName: string,
+    viaQr: boolean,
+  ) {
+    const name = referrerFirstName?.trim() || 'Member';
+    const channel = viaQr ? 'QR code' : 'referral link';
+    const subject = viaQr
+      ? 'MERGE STARS — Someone joined via your QR code'
+      : 'MERGE STARS — New referral signup';
+    const text = `Hello ${name},\n\n${joinedName} just registered using your ${channel}.\n\nOpen your Messages inbox to see the update:\nhttps://mergestars.com/dashboard/messages\n\nMERGE STARS`;
+    const html = `
+      <div style="font-family:sans-serif;max-width:480px;margin:0 auto;padding:24px;background:#080808;color:#fff;border:1px solid #c9a84c">
+        <h2 style="color:#c9a84c;letter-spacing:0.2em;font-size:14px">MERGE STARS</h2>
+        <p>Hello ${name},</p>
+        <p><strong style="color:#f5d78e">${joinedName}</strong> just registered using your <strong>${channel}</strong>.</p>
+        <p style="margin-top:24px"><a href="https://mergestars.com/dashboard/messages" style="color:#c9a84c">Open messages →</a></p>
+      </div>`;
+    await this.send(to, subject, html, text);
+  }
+
   async sendApplicationReceived(email: string, name: string, appId: string) {
     const subject = 'MERGE STARS — Application received';
     const text = `Hello ${name},\n\nYour coin application ${appId} has been received and is under review.\n\nTrack status: https://mergestars.com/status`;
