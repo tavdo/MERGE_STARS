@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="100" height="100" fill="none">
+  <defs>
+    <linearGradient id="premiumSilver" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FFFFFF"/>
+      <stop offset="25%" stop-color="#E0E0E0"/>
+      <stop offset="60%" stop-color="#8A8A8A"/>
+      <stop offset="100%" stop-color="#333333"/>
+    </linearGradient>
+  </defs>
+  <path d="M32 6L55 18V46L32 58L9 18V46L32 58" stroke="url(#premiumSilver)" stroke-width="1.8" stroke-linejoin="round"/>
+  <path d="M9 18L32 30L55 18" stroke="url(#premiumSilver)" stroke-width="1.8"/>
+  <path d="M32 30V58" stroke="url(#premiumSilver)" stroke-width="1.8"/>
+  <path d="M21 24.5V40.5L32 46.5M43 24.5V40.5L32 46.5" stroke="url(#premiumSilver)" stroke-width="1" stroke-dasharray="3 2"/>
+</svg>
