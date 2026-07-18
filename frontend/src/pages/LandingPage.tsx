@@ -16,6 +16,8 @@ import {
   IconPreciousMetals,
   IconSustainable,
 } from '../components/LandingFeatureIcons'
+import BrandIcon from '../components/BrandIcon'
+import { CATEGORY_ICONS, type CategoryIconKey } from '@/assets/brandIcons'
 
 const FEATURES = [
   { id: 'filament' as const, Icon: IconFilament3D },
@@ -230,6 +232,10 @@ export default function LandingPage() {
               to={c.to}
               className={`landing-category-card group${i === CATEGORIES.length - 1 ? ' landing-category-card--last' : ''}`}
             >
+              <BrandIcon
+                src={CATEGORY_ICONS[c.key as CategoryIconKey]}
+                className="landing-category-icon"
+              />
               <span className="landing-category-label">{t(`landing.categories.${c.key}`)}</span>
             </Link>
           ))}

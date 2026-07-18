@@ -2,17 +2,14 @@ import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import Navbar from '../../components/Navbar'
 import Footer from '../../components/Footer'
+import BrandIcon from '../../components/BrandIcon'
+import { HOW_IT_WORKS_ICONS } from '@/assets/brandIcons'
 
-type Step = { n: string; icon: string; title: string; desc: string }
-
-const STEP_ICONS = ['👤', '🪪', '🏷', '★', '📋', '🏦', '🏭', '📦']
+type Step = { n: string; title: string; desc: string }
 
 export default function HowItWorksPage() {
   const { t } = useTranslation()
-  const steps = (t('howItWorks.steps', { returnObjects: true }) as Omit<Step, 'icon'>[]).map((s, i) => ({
-    ...s,
-    icon: STEP_ICONS[i] ?? '◦',
-  }))
+  const steps = t('howItWorks.steps', { returnObjects: true }) as Step[]
 
   return (
     <div className="hiw-page-wrap">
@@ -32,7 +29,7 @@ export default function HowItWorksPage() {
               <div key={s.n} className="hiw-step-row">
                 <div className="hiw-step-icon-col">
                   <div className={`hiw-step-icon${i < 2 ? ' hiw-step-icon--active' : ''}`}>
-                    <span>{s.icon}</span>
+                    <BrandIcon src={HOW_IT_WORKS_ICONS[i] ?? HOW_IT_WORKS_ICONS[0]} className="hiw-step-icon-img" />
                   </div>
                   <span className="hiw-step-num">{s.n}</span>
                 </div>
