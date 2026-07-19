@@ -60,8 +60,14 @@ systemctl enable merge-stars-backend
 echo "==> nginx: merge-stars site"
 NGINX_SITE="/etc/nginx/sites-available/merge-stars.conf"
 if [ -f "$NGINX_SITE" ] && grep -qE 'ssl_certificate|listen 443' "$NGINX_SITE" 2>/dev/null; then
-  echo "    keeping certbot SSL config — updating root path only"
+  echo "    keeping certbot SSL config — updating root path and upload limits"
   sed -i "s|root .*frontend/dist;|root $DEPLOY_DIR/frontend/dist;|" "$NGINX_SITE"
+  # Ensure large catalog uploads (3D models) are not rejected with 413
+  if ! grep -q 'client_max_body_size' "$NGINX_SITE"; then
+    sed -i '/server_name/a\    client_max_body_size 100m;' "$NGINX_SITE"
+  else
+    sed -i 's/client_max_body_size [^;]*;/client_max_body_size 100m;/' "$NGINX_SITE"
+  fi
 else
   sed \
     -e "s|__DEPLOY_DIR__|$DEPLOY_DIR|g" \
