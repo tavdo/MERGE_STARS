@@ -5,10 +5,9 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { randomBytes } from 'crypto';
-import { mkdir, writeFile } from 'fs/promises';
+import { randomBytes, randomUUID } from 'crypto';
+import { mkdir, rename, unlink, writeFile } from 'fs/promises';
 import { join } from 'path';
-import { randomUUID } from 'crypto';
 import { Repository } from 'typeorm';
 import {
   CatalogCollection,
@@ -229,19 +228,37 @@ export class CatalogService {
   }
 
   async uploadModel3d(userId: string, itemId: string, file: Express.Multer.File | undefined) {
-    if (!file?.buffer?.length) throw new BadRequestException('3D model file is required');
+    if (!file) throw new BadRequestException('3D model file is required');
     const ext = file.originalname.split('.').pop()?.toLowerCase() ?? '';
     if (!MODEL_MIME.has(file.mimetype) && !MODEL_EXT.has(ext)) {
+      if (file.path) await unlink(file.path).catch(() => undefined);
       throw new BadRequestException('Allowed: GLB, GLTF, USDZ, USDC');
     }
-    if (file.size > MODEL_MAX) throw new BadRequestException('Model too large (max 1 GB)');
+    if (file.size > MODEL_MAX) {
+      if (file.path) await unlink(file.path).catch(() => undefined);
+      throw new BadRequestException('Model too large (max 1 GB)');
+    }
 
     const item = await this.ownedItem(userId, itemId);
     const dir = this.itemDir(itemId);
     await mkdir(dir, { recursive: true });
     const format = ext || 'glb';
     const stored = `model-${randomUUID()}.${format}`;
-    await writeFile(join(dir, stored), file.buffer);
+    const dest = join(dir, stored);
+
+    try {
+      if (file.path) {
+        await rename(file.path, dest);
+      } else if (file.buffer?.length) {
+        await writeFile(dest, file.buffer);
+      } else {
+        throw new BadRequestException('3D model file is required');
+      }
+    } catch (err) {
+      if (file.path) await unlink(file.path).catch(() => undefined);
+      throw err;
+    }
+
     item.model3dUrl = stored;
     item.model3dFormat = format;
     await this.items.save(item);

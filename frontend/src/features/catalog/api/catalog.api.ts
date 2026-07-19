@@ -86,6 +86,7 @@ export const catalogApi = {
     form.append('file', file)
     return api.post<ApiResponse<CatalogItem>>(`/catalog/items/${itemId}/model3d`, form, {
       headers: { 'Content-Type': 'multipart/form-data' },
+      timeout: 600_000,
     })
   },
 

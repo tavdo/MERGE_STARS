@@ -10,14 +10,23 @@ if "client_max_body_size" not in text:
         1,
     )
 else:
-    text = re.sub(r"client_max_body_size\s+[^;]+;", "client_max_body_size 1024m;", text)
+    text = re.sub(r"client_max_body_size\s+[^;]*;", "client_max_body_size 1024m;", text)
 
-text = text.replace(
-    "proxy_read_timeout 60s;",
-    "proxy_read_timeout 300s;\n        proxy_send_timeout 300s;",
-)
+if "proxy_read_timeout 300s" not in text:
+    text = text.replace(
+        "proxy_read_timeout 60s;",
+        "proxy_read_timeout 600s;\n        proxy_send_timeout 600s;\n        proxy_request_buffering off;",
+    )
+else:
+    text = text.replace("proxy_read_timeout 300s;", "proxy_read_timeout 600s;")
+    if "proxy_send_timeout" not in text:
+        text = text.replace(
+            "proxy_read_timeout 600s;",
+            "proxy_read_timeout 600s;\n        proxy_send_timeout 600s;\n        proxy_request_buffering off;",
+        )
+
 p.write_text(text)
 print("OK")
 for line in text.splitlines():
-    if "client_max_body_size" in line or "proxy_read_timeout 300" in line:
+    if "client_max_body_size" in line or "proxy_read_timeout" in line or "proxy_send_timeout" in line:
         print(line.strip())

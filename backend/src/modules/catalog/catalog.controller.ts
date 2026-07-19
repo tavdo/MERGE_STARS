@@ -14,9 +14,12 @@ import {
   ValidationPipe,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { memoryStorage } from 'multer';
+import { diskStorage, memoryStorage } from 'multer';
 import type { Response } from 'express';
 import { createReadStream } from 'fs';
+import { mkdirSync } from 'fs';
+import { join } from 'path';
+import { randomUUID } from 'crypto';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { CurrentUser } from '../../common/decorators/current-user.decorator';
 import { User } from '../../database/entities/user.entity';
@@ -27,6 +30,21 @@ import {
   UpdateCatalogItemDto,
   UpdateCollectionDto,
 } from './dto/catalog.dto';
+
+const uploadRoot = process.env.UPLOAD_DIR ?? join(process.cwd(), 'uploads');
+const modelTmpDir = join(uploadRoot, 'tmp');
+mkdirSync(modelTmpDir, { recursive: true });
+
+const modelUpload = FileInterceptor('file', {
+  storage: diskStorage({
+    destination: (_req, _file, cb) => cb(null, modelTmpDir),
+    filename: (_req, file, cb) => {
+      const ext = file.originalname.split('.').pop()?.toLowerCase() || 'glb';
+      cb(null, `upload-${randomUUID()}.${ext}`);
+    },
+  }),
+  limits: { fileSize: 1024 * 1024 * 1024 },
+});
 
 @Controller('catalog')
 export class CatalogController {
@@ -121,9 +139,7 @@ export class CatalogController {
 
   @Post('items/:itemId/model3d')
   @UseGuards(JwtAuthGuard)
-  @UseInterceptors(
-    FileInterceptor('file', { storage: memoryStorage(), limits: { fileSize: 1024 * 1024 * 1024 } }),
-  )
+  @UseInterceptors(modelUpload)
   uploadModel(
     @CurrentUser() user: User,
     @Param('itemId') itemId: string,
