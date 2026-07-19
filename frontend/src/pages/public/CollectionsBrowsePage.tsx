@@ -11,7 +11,7 @@ export default function CollectionsBrowsePage() {
   const { t } = useTranslation()
   const { slug } = useParams()
   const navigate = useNavigate()
-  const token = useAuthStore((s) => s.token)
+  const accessToken = useAuthStore((s) => s.accessToken)
   const [buyMsg, setBuyMsg] = useState<string | null>(null)
   const [buyError, setBuyError] = useState<string | null>(null)
   const [buyingId, setBuyingId] = useState<string | null>(null)
@@ -61,7 +61,7 @@ export default function CollectionsBrowsePage() {
   })
 
   const onBuy = (itemId: string) => {
-    if (!token) {
+    if (!accessToken) {
       navigate(`/login?next=/collections/${slug}`)
       return
     }
