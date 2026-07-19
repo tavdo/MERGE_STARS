@@ -1,8 +1,13 @@
 import axios from 'axios'
 import { useAuthStore } from '@/features/auth/store/auth.store'
 
+/** Prefer relative /api in production builds; never leave localhost as fallback on live. */
+const apiBase =
+  import.meta.env.VITE_API_URL ||
+  (import.meta.env.PROD ? '/api' : 'http://localhost:3000')
+
 export const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL ?? 'http://localhost:3000',
+  baseURL: apiBase,
   withCredentials: true,   // send HttpOnly refresh token cookie
   headers: { 'Content-Type': 'application/json' },
 })
