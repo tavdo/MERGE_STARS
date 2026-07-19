@@ -34,7 +34,7 @@ const MODEL_MIME = new Set([
 ]);
 const MODEL_EXT = new Set(['glb', 'gltf', 'usdz', 'usdc']);
 const IMAGE_MAX = 10 * 1024 * 1024;
-const MODEL_MAX = 50 * 1024 * 1024;
+const MODEL_MAX = 100 * 1024 * 1024;
 
 function slugify(title: string) {
   const base = title
@@ -234,7 +234,7 @@ export class CatalogService {
     if (!MODEL_MIME.has(file.mimetype) && !MODEL_EXT.has(ext)) {
       throw new BadRequestException('Allowed: GLB, GLTF, USDZ, USDC');
     }
-    if (file.size > MODEL_MAX) throw new BadRequestException('Model too large (max 50 MB)');
+    if (file.size > MODEL_MAX) throw new BadRequestException('Model too large (max 100 MB)');
 
     const item = await this.ownedItem(userId, itemId);
     const dir = this.itemDir(itemId);
