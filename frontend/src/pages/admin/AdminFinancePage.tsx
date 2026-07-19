@@ -1,5 +1,5 @@
-import { useMemo } from 'react'
-import { useQuery } from '@tanstack/react-query'
+import { useMemo, useState } from 'react'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import AdminLayout from '../../components/AdminLayout'
 import { adminApi, type AdminOrder } from '../../features/admin/api/admin.api'
 
@@ -31,9 +31,38 @@ function formatDate(iso: string) {
 }
 
 export default function AdminFinancePage() {
+  const qc = useQueryClient()
+  const [identifier, setIdentifier] = useState('')
+  const [amount, setAmount] = useState('')
+  const [note, setNote] = useState('')
+  const [creditMsg, setCreditMsg] = useState<string | null>(null)
+
   const { data: orders = [], isLoading } = useQuery({
     queryKey: ['admin-orders'],
     queryFn: () => adminApi.getOrders().then((r) => r.data.data),
+  })
+
+  const credit = useMutation({
+    mutationFn: () =>
+      adminApi.creditWallet({
+        identifier: identifier.trim(),
+        amount: Number(amount),
+        note: note.trim() || undefined,
+      }),
+    onSuccess: (res) => {
+      const tx = res.data.data
+      setCreditMsg(`Credited $${Number(tx.amount).toFixed(2)}. New balance: $${Number(tx.balanceAfter).toFixed(2)}`)
+      setIdentifier('')
+      setAmount('')
+      setNote('')
+      qc.invalidateQueries({ queryKey: ['admin-orders'] })
+    },
+    onError: (err: unknown) => {
+      const msg =
+        (err as { response?: { data?: { message?: string } } })?.response?.data?.message
+        || 'Credit failed'
+      setCreditMsg(msg)
+    },
   })
 
   const rows = useMemo(() => orders.map((o) => ({
@@ -65,6 +94,59 @@ export default function AdminFinancePage() {
             <p style={{ fontSize: '24px', fontWeight: 900, color: s.color }}>{s.value}</p>
           </div>
         ))}
+      </div>
+
+      <div className="gold-card" style={{ padding: '20px', borderRadius: '4px', marginBottom: '24px' }}>
+        <p style={{ fontSize: '11px', fontWeight: 700, letterSpacing: '0.15em', color: '#c9a84c', marginBottom: '8px' }}>
+          CREDIT EARNINGS WALLET
+        </p>
+        <p style={{ fontSize: '12px', color: 'rgba(255,255,255,0.45)', marginBottom: '16px', lineHeight: 1.5 }}>
+          Add catalog earnings (brand share) to a user&apos;s wallet. They can spend this balance on coin orders.
+        </p>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(180px,1fr))', gap: '12px', alignItems: 'end' }}>
+          <label style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+            <span style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '0.1em', color: 'rgba(255,255,255,0.4)' }}>EMAIL / MERGE ID</span>
+            <input
+              value={identifier}
+              onChange={(e) => setIdentifier(e.target.value)}
+              placeholder="user@email.com or MERGE-…"
+              style={{ padding: '10px 12px', background: 'rgba(0,0,0,0.35)', border: '1px solid rgba(255,255,255,0.12)', borderRadius: '4px', color: '#fff', fontSize: '13px' }}
+            />
+          </label>
+          <label style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+            <span style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '0.1em', color: 'rgba(255,255,255,0.4)' }}>AMOUNT (USD)</span>
+            <input
+              type="number"
+              min="0.01"
+              step="0.01"
+              value={amount}
+              onChange={(e) => setAmount(e.target.value)}
+              placeholder="0.00"
+              style={{ padding: '10px 12px', background: 'rgba(0,0,0,0.35)', border: '1px solid rgba(255,255,255,0.12)', borderRadius: '4px', color: '#fff', fontSize: '13px' }}
+            />
+          </label>
+          <label style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+            <span style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '0.1em', color: 'rgba(255,255,255,0.4)' }}>NOTE (optional)</span>
+            <input
+              value={note}
+              onChange={(e) => setNote(e.target.value)}
+              placeholder="Catalog sale / manual credit"
+              style={{ padding: '10px 12px', background: 'rgba(0,0,0,0.35)', border: '1px solid rgba(255,255,255,0.12)', borderRadius: '4px', color: '#fff', fontSize: '13px' }}
+            />
+          </label>
+          <button
+            type="button"
+            className="gold-btn justify-center"
+            disabled={credit.isPending || !identifier.trim() || !(Number(amount) > 0)}
+            onClick={() => { setCreditMsg(null); credit.mutate() }}
+            style={{ height: '42px' }}
+          >
+            {credit.isPending ? '…' : 'CREDIT WALLET'}
+          </button>
+        </div>
+        {creditMsg && (
+          <p style={{ fontSize: '12px', marginTop: '14px', color: credit.isError ? '#f87171' : '#22c55e' }}>{creditMsg}</p>
+        )}
       </div>
 
       <div style={{ padding: '14px 20px', background: 'rgba(59,130,246,0.06)', border: '1px solid rgba(59,130,246,0.15)', borderRadius: '4px', marginBottom: '24px' }}>

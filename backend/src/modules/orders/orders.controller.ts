@@ -10,7 +10,7 @@ class CreateOrderDto {
   applicationId: string;
 
   @IsOptional()
-  @IsIn(['full', 'bank'])
+  @IsIn(['full', 'bank', 'earnings'])
   paymentMethod?: string;
 }
 

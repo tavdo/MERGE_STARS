@@ -39,6 +39,17 @@ export const adminApi = {
   updateSettings: (body: Partial<PlatformSettings>) =>
     api.patch<ApiResponse<PlatformSettings>>('/settings', body),
 
+  creditWallet: (body: { identifier: string; amount: number; note?: string }) =>
+    api.post<ApiResponse<{
+      id: string
+      type: string
+      amount: number
+      balanceAfter: number
+      reason: string
+      note: string | null
+      createdAt: string
+    }>>('/admin/wallet/credit', body),
+
   exportCsv: () =>
     api.get('/admin/applications/export', { responseType: 'blob' }),
 }

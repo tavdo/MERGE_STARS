@@ -23,6 +23,6 @@ export const ordersApi = {
 
   latestDelivery: () => api.get<ApiResponse<Order>>('/orders/delivery/latest'),
 
-  create: (applicationId: string, paymentMethod: 'full' | 'bank') =>
+  create: (applicationId: string, paymentMethod: 'full' | 'bank' | 'earnings') =>
     api.post<ApiResponse<Order>>('/orders', { applicationId, paymentMethod }),
 }

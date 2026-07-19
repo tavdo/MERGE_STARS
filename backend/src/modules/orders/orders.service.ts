@@ -1,9 +1,10 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, BadRequestException, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Order, orderView } from '../../database/entities/order.entity';
 import { User } from '../../database/entities/user.entity';
 import { CoinApplication } from '../../database/entities/coin-application.entity';
+import { WalletService } from '../wallet/wallet.service';
 
 @Injectable()
 export class OrdersService {
@@ -11,6 +12,7 @@ export class OrdersService {
     @InjectRepository(Order) private readonly orders: Repository<Order>,
     @InjectRepository(CoinApplication)
     private readonly apps: Repository<CoinApplication>,
+    private readonly wallet: WalletService,
   ) {}
 
   private nextPublicId() {
@@ -73,10 +75,25 @@ export class OrdersService {
   }
 
   async createForApplication(user: User, applicationPublicId: string, paymentMethod: string) {
+    const method = paymentMethod || 'bank';
+    if (!['full', 'bank', 'earnings'].includes(method)) {
+      throw new BadRequestException('Invalid payment method');
+    }
+
     const app = await this.apps.findOne({
       where: { publicId: applicationPublicId, userId: user.id },
     });
     if (!app) throw new NotFoundException('Application not found');
+
+    const amount = Number(app.coinValue);
+    if (method === 'earnings') {
+      const balance = await this.wallet.getBalance(user.id);
+      if (balance < amount) {
+        throw new BadRequestException(
+          `Insufficient earnings balance. Available: $${balance.toFixed(2)}, required: $${amount.toFixed(2)}`,
+        );
+      }
+    }
 
     let publicId = this.nextPublicId();
     while (await this.orders.findOne({ where: { publicId } })) {
@@ -89,14 +106,33 @@ export class OrdersService {
       userId: user.id,
       applicationId: app.id,
       amount: app.coinValue,
-      paymentMethod,
-      status: 'pending',
+      paymentMethod: method,
+      status: method === 'earnings' ? 'paid' : 'pending',
       trackingCode: `MS-TRK-${publicId.replace(/^ORD-/, '')}`,
       courier: null,
       estDeliveryAt,
-      deliveryStatus: 'pending',
+      deliveryStatus: method === 'earnings' ? 'processing' : 'pending',
     });
     await this.orders.save(order);
-    return this.mapOrder(order);
+
+    if (method === 'earnings') {
+      try {
+        await this.wallet.debitForOrder({
+          userId: user.id,
+          amount,
+          orderId: order.id,
+          note: `Paid coin order ${publicId} with earnings`,
+        });
+      } catch (err) {
+        await this.orders.delete({ id: order.id });
+        throw err;
+      }
+    }
+
+    const saved = await this.orders.findOne({
+      where: { id: order.id },
+      relations: { application: true },
+    });
+    return this.mapOrder(saved!);
   }
 }
