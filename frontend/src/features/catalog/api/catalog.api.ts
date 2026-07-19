@@ -13,6 +13,7 @@ export interface CatalogItem {
   hasImage?: boolean
   hasModel3d?: boolean
   status: 'ACTIVE' | 'ARCHIVED'
+  priceUsd: number | null
   createdAt: string
   updatedAt: string
 }
@@ -69,7 +70,7 @@ export const catalogApi = {
   remove: (id: string) =>
     api.delete<ApiResponse<{ ok: boolean }>>(`/catalog/collections/${id}`),
 
-  addItem: (collectionId: string, payload: { title: string; description?: string; metalType?: string; imageUrl?: string }) =>
+  addItem: (collectionId: string, payload: { title: string; description?: string; metalType?: string; imageUrl?: string; priceUsd?: number }) =>
     api.post<ApiResponse<CatalogItem>>(`/catalog/collections/${collectionId}/items`, payload),
 
   uploadImage: (itemId: string, file: File) => {
@@ -88,11 +89,24 @@ export const catalogApi = {
     })
   },
 
-  updateItem: (itemId: string, payload: Partial<{ title: string; description: string; metalType: string; imageUrl: string; status: 'ACTIVE' | 'ARCHIVED' }>) =>
+  updateItem: (itemId: string, payload: Partial<{ title: string; description: string; metalType: string; imageUrl: string; status: 'ACTIVE' | 'ARCHIVED'; priceUsd: number | null }>) =>
     api.patch<ApiResponse<CatalogItem>>(`/catalog/items/${itemId}`, payload),
 
   removeItem: (itemId: string) =>
     api.delete<ApiResponse<{ ok: boolean }>>(`/catalog/items/${itemId}`),
+
+  placeOrder: (itemId: string) =>
+    api.post<ApiResponse<{
+      id: string
+      itemId: string
+      itemTitle: string
+      amount: number
+      sellerEarnings: number
+      brandShareLabel: string
+      status: string
+      createdAt: string
+      coinAutoPay: { paid: boolean; orderId?: string; amount?: number; reason?: string }
+    }>>(`/catalog/items/${itemId}/order`),
 
   listPublic: () =>
     api.get<ApiResponse<CatalogCollection[]>>('/catalog/public'),

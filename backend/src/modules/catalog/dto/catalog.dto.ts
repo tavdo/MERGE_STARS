@@ -1,10 +1,13 @@
 import {
   IsEnum,
   IsNotEmpty,
+  IsNumber,
   IsOptional,
   IsString,
   MaxLength,
+  Min,
 } from 'class-validator';
+import { Type } from 'class-transformer';
 
 export class CreateCollectionDto {
   @IsString()
@@ -58,6 +61,12 @@ export class CreateCatalogItemDto {
   @IsString()
   @MaxLength(500)
   imageUrl?: string;
+
+  @IsOptional()
+  @Type(() => Number)
+  @IsNumber()
+  @Min(0)
+  priceUsd?: number;
 }
 
 export class UpdateCatalogItemDto {
@@ -85,4 +94,10 @@ export class UpdateCatalogItemDto {
   @IsOptional()
   @IsEnum(['ACTIVE', 'ARCHIVED'])
   status?: 'ACTIVE' | 'ARCHIVED';
+
+  @IsOptional()
+  @Type(() => Number)
+  @IsNumber()
+  @Min(0)
+  priceUsd?: number | null;
 }

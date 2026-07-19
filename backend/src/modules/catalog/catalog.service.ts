@@ -19,6 +19,15 @@ import {
   catalogItemView,
 } from '../../database/entities/catalog-item.entity';
 import {
+  CatalogOrder,
+  catalogOrderView,
+} from '../../database/entities/catalog-order.entity';
+import { User } from '../../database/entities/user.entity';
+import { WalletService } from '../wallet/wallet.service';
+import { OrdersService } from '../orders/orders.service';
+import { PlatformSettingsService } from '../settings/platform-settings.service';
+import { NotificationsService } from '../notifications/notifications.service';
+import {
   CreateCatalogItemDto,
   CreateCollectionDto,
   UpdateCatalogItemDto,
@@ -57,6 +66,12 @@ export class CatalogService {
     private readonly collections: Repository<CatalogCollection>,
     @InjectRepository(CatalogItem)
     private readonly items: Repository<CatalogItem>,
+    @InjectRepository(CatalogOrder)
+    private readonly catalogOrders: Repository<CatalogOrder>,
+    private readonly wallet: WalletService,
+    private readonly orders: OrdersService,
+    private readonly settings: PlatformSettingsService,
+    private readonly notifications: NotificationsService,
   ) {}
 
   private itemDir(itemId: string) {
@@ -80,6 +95,12 @@ export class CatalogService {
     if (!row) throw new NotFoundException('Collection not found');
     if (row.userId !== userId) throw new ForbiddenException('Not your collection');
     return row;
+  }
+
+  private nextCatalogOrderId() {
+    const year = new Date().getFullYear();
+    const n = Math.floor(100000 + Math.random() * 899999);
+    return `CAT-${year}-${String(n).padStart(6, '0')}`;
   }
 
   async listForUser(userId: string) {
@@ -169,12 +190,17 @@ export class CatalogService {
 
   async addItem(userId: string, collectionId: string, dto: CreateCatalogItemDto) {
     await this.ownedCollection(userId, collectionId);
+    const price =
+      dto.priceUsd !== undefined && Number.isFinite(Number(dto.priceUsd))
+        ? Math.round(Number(dto.priceUsd) * 100) / 100
+        : null;
     const item = this.items.create({
       collectionId,
       title: dto.title.trim(),
       description: dto.description?.trim() || null,
       metalType: dto.metalType?.trim() || null,
       imageUrl: dto.imageUrl?.trim() || null,
+      priceUsd: price,
       status: 'ACTIVE',
     });
     await this.items.save(item);
@@ -188,6 +214,12 @@ export class CatalogService {
     if (dto.metalType !== undefined) item.metalType = dto.metalType?.trim() || null;
     if (dto.imageUrl !== undefined) item.imageUrl = dto.imageUrl?.trim() || null;
     if (dto.status !== undefined) item.status = dto.status;
+    if (dto.priceUsd !== undefined) {
+      item.priceUsd =
+        dto.priceUsd === null
+          ? null
+          : Math.round(Number(dto.priceUsd) * 100) / 100;
+    }
     await this.items.save(item);
     return catalogItemView(item);
   }
@@ -196,6 +228,97 @@ export class CatalogService {
     const item = await this.ownedItem(userId, itemId);
     await this.items.remove(item);
     return { ok: true };
+  }
+
+  /**
+   * Buyer purchases a public catalog item.
+   * Credits seller with brandShare of the price, then tries to auto-pay
+   * the seller's pending coin order from earnings.
+   */
+  async placeOrder(buyer: User, itemId: string) {
+    const item = await this.items.findOne({
+      where: { id: itemId },
+      relations: { collection: true },
+    });
+    if (!item || item.status !== 'ACTIVE') {
+      throw new NotFoundException('Item not found');
+    }
+    if (item.collection.visibility !== 'PUBLIC') {
+      throw new BadRequestException('This collection is not public');
+    }
+
+    const amount = Number(item.priceUsd);
+    if (!Number.isFinite(amount) || amount <= 0) {
+      throw new BadRequestException('This item is not for sale');
+    }
+
+    const sellerId = item.collection.userId;
+    if (sellerId === buyer.id) {
+      throw new BadRequestException('You cannot buy your own catalog item');
+    }
+
+    const { label: brandShareLabel, fraction } = await this.settings.brandShareFraction();
+    const sellerEarnings = Math.round(amount * fraction * 100) / 100;
+    if (sellerEarnings <= 0) {
+      throw new BadRequestException('Brand share results in zero earnings');
+    }
+
+    let publicId = this.nextCatalogOrderId();
+    while (await this.catalogOrders.findOne({ where: { publicId } })) {
+      publicId = this.nextCatalogOrderId();
+    }
+
+    const order = this.catalogOrders.create({
+      publicId,
+      buyerId: buyer.id,
+      sellerId,
+      itemId: item.id,
+      collectionId: item.collectionId,
+      itemTitle: item.title,
+      amount,
+      sellerEarnings,
+      brandShareLabel,
+      status: 'paid',
+      meta: { brandShareFraction: fraction },
+    });
+    await this.catalogOrders.save(order);
+
+    await this.wallet.credit({
+      userId: sellerId,
+      amount: sellerEarnings,
+      reason: 'catalog_sale',
+      note: `Catalog sale ${publicId}: ${item.title}`,
+      meta: {
+        catalogOrderId: order.id,
+        catalogOrderPublicId: publicId,
+        itemId: item.id,
+        saleAmount: amount,
+        brandShare: brandShareLabel,
+      },
+      notify: false,
+    });
+
+    const coinAutoPay = await this.orders.tryPayPendingWithEarnings(sellerId);
+
+    await this.notifications.create({
+      userId: sellerId,
+      type: 'catalog_sale',
+      title: 'Catalog item sold',
+      body: coinAutoPay.paid
+        ? `"${item.title}" sold for $${amount.toFixed(2)}. $${sellerEarnings.toFixed(2)} credited — coin order ${coinAutoPay.orderId} auto-paid.`
+        : `"${item.title}" sold for $${amount.toFixed(2)}. $${sellerEarnings.toFixed(2)} (${brandShareLabel} brand share) added to your earnings wallet.`,
+      meta: {
+        catalogOrderId: publicId,
+        amount,
+        sellerEarnings,
+        coinAutoPay,
+      },
+    });
+
+    return {
+      ...catalogOrderView(order),
+      coinAutoPay,
+    };
   }
 
   async uploadImage(userId: string, itemId: string, file: Express.Multer.File | undefined) {

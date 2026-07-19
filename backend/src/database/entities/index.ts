@@ -15,6 +15,7 @@ import { BrandLineProfile } from './brand-line-profile.entity';
 import { PlatformSettings } from './platform-settings.entity';
 import { PhoneVerificationCode } from './phone-verification-code.entity';
 import { WalletTransaction } from './wallet-transaction.entity';
+import { CatalogOrder } from './catalog-order.entity';
 
 export const entities = [
   User,
@@ -34,6 +35,7 @@ export const entities = [
   PlatformSettings,
   PhoneVerificationCode,
   WalletTransaction,
+  CatalogOrder,
 ];
 
 export {
@@ -54,4 +56,5 @@ export {
   PlatformSettings,
   PhoneVerificationCode,
   WalletTransaction,
+  CatalogOrder,
 };

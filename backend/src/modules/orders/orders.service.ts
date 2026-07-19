@@ -135,4 +135,51 @@ export class OrdersService {
     });
     return this.mapOrder(saved!);
   }
+
+  /**
+   * If the user has a pending coin order and enough earnings balance,
+   * debit wallet and mark the oldest pending order as paid.
+   */
+  async tryPayPendingWithEarnings(userId: string) {
+    const pending = await this.orders.findOne({
+      where: { userId, status: 'pending' },
+      relations: { application: true },
+      order: { createdAt: 'ASC' },
+    });
+    if (!pending) {
+      return { paid: false as const, reason: 'no_pending_order' as const };
+    }
+
+    const amount = Number(pending.amount);
+    const balance = await this.wallet.getBalance(userId);
+    if (balance < amount) {
+      return {
+        paid: false as const,
+        reason: 'insufficient_balance' as const,
+        balance,
+        required: amount,
+        orderId: pending.publicId,
+      };
+    }
+
+    await this.wallet.debitForOrder({
+      userId,
+      amount,
+      orderId: pending.id,
+      note: `Auto-paid coin order ${pending.publicId} from catalog earnings`,
+    });
+
+    pending.status = 'paid';
+    pending.paymentMethod = 'earnings';
+    pending.deliveryStatus =
+      pending.deliveryStatus === 'pending' ? 'processing' : pending.deliveryStatus;
+    await this.orders.save(pending);
+
+    return {
+      paid: true as const,
+      orderId: pending.publicId,
+      amount,
+      balanceAfter: await this.wallet.getBalance(userId),
+    };
+  }
 }

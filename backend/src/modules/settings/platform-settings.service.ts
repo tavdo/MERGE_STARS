@@ -74,4 +74,31 @@ export class PlatformSettingsService implements OnModuleInit {
   async referrerShareLabel() {
     return (await this.getRow()).referrerShare;
   }
+
+  /** Parse "1/2", "1/4", "50%", or "0.5" into a 0–1 fraction. */
+  parseShareFraction(raw: string, fallback = 0.25): number {
+    const t = (raw || '').trim();
+    if (!t) return fallback;
+    if (t.includes('/')) {
+      const [a, b] = t.split('/');
+      const n = Number(a) / Number(b);
+      return Number.isFinite(n) && n > 0 && n <= 1 ? n : fallback;
+    }
+    if (t.endsWith('%')) {
+      const n = Number(t.slice(0, -1)) / 100;
+      return Number.isFinite(n) && n > 0 && n <= 1 ? n : fallback;
+    }
+    const n = Number(t);
+    if (!Number.isFinite(n) || n <= 0) return fallback;
+    if (n > 1) return Math.min(n / 100, 1);
+    return n;
+  }
+
+  async brandShareFraction() {
+    const row = await this.getRow();
+    return {
+      label: row.brandShare,
+      fraction: this.parseShareFraction(row.brandShare, 0.25),
+    };
+  }
 }

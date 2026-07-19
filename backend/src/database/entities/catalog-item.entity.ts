@@ -44,6 +44,10 @@ export class CatalogItem {
   @Column({ type: 'varchar', default: 'ACTIVE' })
   status: CatalogItemStatus;
 
+  /** Sale price in USD; null or 0 = not for sale */
+  @Column({ name: 'price_usd', type: 'decimal', precision: 14, scale: 2, nullable: true })
+  priceUsd: number | null;
+
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;
 
@@ -64,6 +68,7 @@ export function catalogItemView(item: CatalogItem) {
     hasImage: !!item.imageUrl,
     hasModel3d: !!item.model3dUrl,
     status: item.status,
+    priceUsd: item.priceUsd != null ? Number(item.priceUsd) : null,
     createdAt: item.createdAt.toISOString(),
     updatedAt: item.updatedAt.toISOString(),
   };
