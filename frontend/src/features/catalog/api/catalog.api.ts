@@ -95,19 +95,6 @@ export const catalogApi = {
   removeItem: (itemId: string) =>
     api.delete<ApiResponse<{ ok: boolean }>>(`/catalog/items/${itemId}`),
 
-  placeOrder: (itemId: string) =>
-    api.post<ApiResponse<{
-      id: string
-      itemId: string
-      itemTitle: string
-      amount: number
-      sellerEarnings: number
-      brandShareLabel: string
-      status: string
-      createdAt: string
-      coinAutoPay: { paid: boolean; orderId?: string; amount?: number; reason?: string }
-    }>>(`/catalog/items/${itemId}/order`),
-
   listPublic: () =>
     api.get<ApiResponse<CatalogCollection[]>>('/catalog/public'),
 

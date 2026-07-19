@@ -1,30 +1,35 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+﻿import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import {
   applicationView,
   CoinApplication,
 } from '../../database/entities/coin-application.entity';
+import { CatalogItem } from '../../database/entities/catalog-item.entity';
 import { User } from '../../database/entities/user.entity';
 import { SubmitApplicationDto } from './dto/submit-application.dto';
 import { UsersService } from '../users/users.service';
 import { MailService } from '../mail/mail.service';
 import { NotificationsService } from '../notifications/notifications.service';
+import { OrdersService } from '../orders/orders.service';
 
 @Injectable()
 export class CoinsService {
   constructor(
     @InjectRepository(CoinApplication)
     private readonly apps: Repository<CoinApplication>,
+    @InjectRepository(CatalogItem)
+    private readonly catalogItems: Repository<CatalogItem>,
     private readonly usersService: UsersService,
     private readonly mail: MailService,
     private readonly notifications: NotificationsService,
+    private readonly orders: OrdersService,
   ) {}
 
   private nextPublicId() {
     const year = new Date().getFullYear();
     const n = Math.floor(100000 + Math.random() * 899999);
-    return `APP-${year}-${String(n).padStart(6, '0')}`;
+    return 'APP-' + year + '-' + String(n).padStart(6, '0');
   }
 
   async listForUser(userId: string) {
@@ -50,6 +55,28 @@ export class CoinsService {
     return applicationView(app);
   }
 
+  private async resolveDesign(catalogItemId: string | undefined, buyerId: string) {
+    if (!catalogItemId?.trim()) {
+      return { catalogItemId: null as string | null, designAuthorId: null as string | null, designNote: '' };
+    }
+    const item = await this.catalogItems.findOne({
+      where: { id: catalogItemId.trim() },
+      relations: { collection: true },
+    });
+    if (!item || item.status !== 'ACTIVE') {
+      throw new BadRequestException('Catalog design not found');
+    }
+    if (item.collection.visibility !== 'PUBLIC') {
+      throw new BadRequestException('Catalog design is not public');
+    }
+    const authorId = item.collection.userId;
+    const designNote = '[Catalog design] item=' + item.id + '; title=' + item.title;
+    if (authorId === buyerId) {
+      return { catalogItemId: item.id, designAuthorId: null as string | null, designNote };
+    }
+    return { catalogItemId: item.id, designAuthorId: authorId, designNote };
+  }
+
   async submit(user: User, dto: SubmitApplicationDto) {
     if (dto.firstName || dto.lastName || dto.phone) {
       await this.usersService.updateMe(user.id, {
@@ -59,10 +86,14 @@ export class CoinsService {
       });
     }
 
+    const design = await this.resolveDesign(dto.catalogItemId, user.id);
+
     let publicId = this.nextPublicId();
     while (await this.apps.findOne({ where: { publicId } })) {
       publicId = this.nextPublicId();
     }
+
+    const notesParts = [dto.notes?.trim(), design.designNote].filter(Boolean);
 
     const app = this.apps.create({
       publicId,
@@ -72,11 +103,13 @@ export class CoinsService {
       metalPurity: dto.metalPurity ?? 999,
       metalType: dto.metalType ?? null,
       coinValue: dto.coinValue,
-      notes: dto.notes ?? null,
+      notes: notesParts.length ? notesParts.join('\n') : null,
       financingPreference: dto.financingPreference ?? null,
       financingTermMonths: dto.financingTermMonths ?? null,
       deliveryAddress: dto.deliveryAddress ?? null,
       additionalNotes: dto.additionalNotes ?? null,
+      catalogItemId: design.catalogItemId,
+      designAuthorId: design.designAuthorId,
       status: 'submitted',
       crystalSent: false,
     });
@@ -84,15 +117,15 @@ export class CoinsService {
 
     const freshUser = await this.usersService.findById(user.id);
     const email = dto.contactEmail ?? freshUser.email;
-    const name = `${dto.firstName ?? freshUser.firstName} ${dto.lastName ?? freshUser.lastName}`.trim();
-    await this.mail.sendApplicationReceived(email, name, publicId);
+    const name = (dto.firstName ?? freshUser.firstName) + ' ' + (dto.lastName ?? freshUser.lastName);
+    await this.mail.sendApplicationReceived(email, name.trim(), publicId);
 
     await this.notifications.create({
       userId: user.id,
       type: 'application_submitted',
       title: 'Application received',
-      body: `Your application ${publicId} was submitted successfully.`,
-      meta: { applicationId: publicId },
+      body: 'Your application ' + publicId + ' was submitted successfully.',
+      meta: { applicationId: publicId, catalogItemId: design.catalogItemId },
     });
 
     return applicationView(app);
@@ -110,7 +143,7 @@ export class CoinsService {
       qb.andWhere('a.status = :status', { status: params.status });
     }
     if (params.search?.trim()) {
-      const q = `%${params.search.trim().toLowerCase()}%`;
+      const q = '%' + params.search.trim().toLowerCase() + '%';
       qb.andWhere(
         '(LOWER(a.publicId) LIKE :q OR LOWER(u.firstName) LIKE :q OR LOWER(u.lastName) LIKE :q OR LOWER(u.email) LIKE :q)',
         { q },
@@ -124,7 +157,7 @@ export class CoinsService {
 
     return {
       items: rows.map((a) =>
-        applicationView(a, `${a.user?.firstName ?? ''} ${a.user?.lastName ?? ''}`.trim()),
+        applicationView(a, ((a.user?.firstName ?? '') + ' ' + (a.user?.lastName ?? '')).trim()),
       ),
       page,
       limit,
@@ -156,8 +189,12 @@ export class CoinsService {
 
     await this.apps.save(app);
 
+    if (status === 'funds_received' && previousStatus !== 'funds_received') {
+      await this.orders.markPaidForApplication(app.id);
+    }
+
     if (app.user && previousStatus !== status) {
-      const name = `${app.user.firstName} ${app.user.lastName}`.trim();
+      const name = (app.user.firstName + ' ' + app.user.lastName).trim();
       await this.mail.sendApplicationStatusUpdate(
         app.user.email,
         name,
@@ -169,14 +206,14 @@ export class CoinsService {
         userId: app.userId,
         type: 'application_status',
         title: 'Application status updated',
-        body: `${publicId}: ${status.replace(/_/g, ' ')}`,
+        body: publicId + ': ' + status.replace(/_/g, ' '),
         meta: { applicationId: publicId, status, note: options?.note ?? null },
       });
     }
 
     return applicationView(
       app,
-      `${app.user?.firstName ?? ''} ${app.user?.lastName ?? ''}`.trim(),
+      ((app.user?.firstName ?? '') + ' ' + (app.user?.lastName ?? '')).trim(),
     );
   }
 

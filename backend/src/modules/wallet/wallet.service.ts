@@ -156,4 +156,13 @@ export class WalletService {
       meta: { source: 'admin', labeledAs: 'catalog_earnings_50pct' },
     });
   }
+
+  async hasDesignRoyaltyForOrder(coinOrderId: string): Promise<boolean> {
+    const row = await this.txs
+      .createQueryBuilder('t')
+      .where('t.reason = :reason', { reason: 'design_royalty' })
+      .andWhere(`t.meta->>'coinOrderId' = :coinOrderId`, { coinOrderId })
+      .getOne();
+    return !!row;
+  }
 }

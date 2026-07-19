@@ -8,7 +8,6 @@ export type CatalogItemStudioPayload = {
   title: string
   description?: string
   metalType?: string
-  priceUsd?: number
   imageUrl?: string
   imageFile?: File | null
   modelFile?: File | null
@@ -39,7 +38,6 @@ export default function CatalogItemStudio({ onSubmit, submitting, error }: Props
   const [title, setTitle] = useState('')
   const [description, setDescription] = useState('')
   const [metal, setMetal] = useState('')
-  const [priceUsd, setPriceUsd] = useState('')
   const [imageUrl, setImageUrl] = useState('')
   const [imageFile, setImageFile] = useState<File | null>(null)
   const [imagePreview, setImagePreview] = useState<string | null>(null)
@@ -84,7 +82,6 @@ export default function CatalogItemStudio({ onSubmit, submitting, error }: Props
       title: title.trim(),
       description: description.trim() || undefined,
       metalType: metal.trim() || undefined,
-      priceUsd: priceUsd.trim() ? Number(priceUsd) : undefined,
       imageUrl: imageUrl.trim() || undefined,
       imageFile,
       modelFile,
@@ -139,21 +136,6 @@ export default function CatalogItemStudio({ onSubmit, submitting, error }: Props
             <div>
               <label className="auth-field-label">{t('collections.metal', { defaultValue: 'Metal / material' })}</label>
               <input className="gold-input" value={metal} onChange={(e) => setMetal(e.target.value)} placeholder="Silver 999, Gold…" />
-            </div>
-            <div>
-              <label className="auth-field-label">{t('collections.priceUsd', { defaultValue: 'Price (USD)' })}</label>
-              <input
-                className="gold-input"
-                type="number"
-                min="0"
-                step="0.01"
-                value={priceUsd}
-                onChange={(e) => setPriceUsd(e.target.value)}
-                placeholder="0.00"
-              />
-              <p className="text-xs text-neutral-500 mt-1">
-                {t('collections.priceHint', { defaultValue: 'Set a price to enable Buy on your public catalog. Brand share of each sale goes to your earnings wallet.' })}
-              </p>
             </div>
           </div>
         )}

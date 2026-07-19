@@ -36,6 +36,7 @@ export interface SubmitApplicationPayload {
   financingTermMonths?: number
   deliveryAddress?: string
   additionalNotes?: string
+  catalogItemId?: string
 }
 
 export const coinsApi = {

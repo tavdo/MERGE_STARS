@@ -78,6 +78,14 @@ export class CoinApplication {
   @Column({ name: 'crystal_sent', default: false })
   crystalSent: boolean;
 
+  /** Catalog design used for this coin order (showcase item, not a product sale) */
+  @Column({ name: 'catalog_item_id', type: 'uuid', nullable: true })
+  catalogItemId: string | null;
+
+  /** Owner of that design — receives royalty when buyer pays */
+  @Column({ name: 'design_author_id', type: 'uuid', nullable: true })
+  designAuthorId: string | null;
+
   @OneToMany(() => Order, (o) => o.application)
   orders: Order[];
 
@@ -107,6 +115,8 @@ export function applicationView(app: CoinApplication, userName?: string) {
     deliveryAddress: app.deliveryAddress,
     additionalNotes: app.additionalNotes,
     statusNote: app.statusNote,
+    catalogItemId: app.catalogItemId,
+    designAuthorId: app.designAuthorId,
     submittedAt: app.submittedAt.toISOString(),
     updatedAt: app.updatedAt.toISOString(),
   };

@@ -106,12 +106,6 @@ export class CatalogController {
     return this.catalog.removeItem(user.id, itemId);
   }
 
-  @Post('items/:itemId/order')
-  @UseGuards(JwtAuthGuard)
-  placeOrder(@CurrentUser() user: User, @Param('itemId') itemId: string) {
-    return this.catalog.placeOrder(user, itemId);
-  }
-
   @Post('items/:itemId/image')
   @UseGuards(JwtAuthGuard)
   @UseInterceptors(

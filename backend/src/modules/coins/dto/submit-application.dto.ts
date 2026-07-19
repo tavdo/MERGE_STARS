@@ -73,4 +73,9 @@ export class SubmitApplicationDto {
   @IsOptional()
   @IsString()
   additionalNotes?: string;
+
+  /** Public catalog design to mint with — author gets 50% of paid coin value */
+  @IsOptional()
+  @IsString()
+  catalogItemId?: string;
 }

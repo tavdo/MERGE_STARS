@@ -32,9 +32,6 @@ function CatalogItemCard({ item, onRemove }: { item: CatalogItem; onRemove: () =
       <div className="catalog-item-card-body">
         <h4 className="font-semibold text-white mb-1">{item.title}</h4>
         {item.metalType && <p className="text-xs text-[#D4AF37] mb-1">{item.metalType}</p>}
-        {item.priceUsd != null && item.priceUsd > 0 && (
-          <p className="text-sm font-bold text-white mb-1">${Number(item.priceUsd).toLocaleString()}</p>
-        )}
         {item.description && <p className="text-sm text-neutral-500 line-clamp-2">{item.description}</p>}
         {item.hasModel3d && <span className="catalog-item-card-badge">3D</span>}
         <button type="button" className="text-xs text-red-400 mt-3 hover:text-red-300" onClick={onRemove}>
@@ -80,7 +77,6 @@ export default function CollectionDetailPage() {
         title: payload.title,
         description: payload.description,
         metalType: payload.metalType,
-        priceUsd: payload.priceUsd,
         imageUrl: payload.imageUrl?.startsWith('http') ? payload.imageUrl : undefined,
       })
       const itemId = data.data.id

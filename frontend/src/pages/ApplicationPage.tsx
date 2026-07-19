@@ -1,12 +1,13 @@
 import { useEffect, useMemo, useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { useMutation } from '@tanstack/react-query'
+import { useMutation, useQuery } from '@tanstack/react-query'
 import DashboardLayout from '../components/DashboardLayout'
 import FlowStepper from '../components/FlowStepper'
 import CustomSelect from '../components/CustomSelect'
 import OrderAIDesignPanel from '../components/application/OrderAIDesignPanel'
 import { coinsApi } from '@/features/coins/api/coins.api'
+import { catalogApi } from '@/features/catalog/api/catalog.api'
 import { useLiveMetalPrices } from '@/features/coins/hooks/useLiveMetalPrice'
 import { useAuthStore } from '@/features/auth/store/auth.store'
 import { estimateCoinValue, financingPreview, metalForCoinIndex } from '@/shared/utils/coinPricing'
@@ -19,6 +20,8 @@ const FINANCING_KEYS = ['full', 'bank12', 'bank24'] as const
 
 export default function ApplicationPage() {
   const { t, i18n } = useTranslation()
+  const [searchParams] = useSearchParams()
+  const catalogItemId = searchParams.get('catalogItemId')?.trim() || ''
   const authUser = useAuthStore((s) => s.user)
   const coinTypes = t('application.coinTypes', { returnObjects: true }) as string[]
   const stepLabels = t('application.steps', { returnObjects: true }) as string[]
@@ -51,6 +54,27 @@ export default function ApplicationPage() {
   const navigate = useNavigate()
 
   const metals = useLiveMetalPrices()
+
+  const { data: catalogDesign } = useQuery({
+    queryKey: ['catalog-design-for-apply', catalogItemId],
+    queryFn: async () => {
+      // Resolve design title from public collections
+      const list = await catalogApi.listPublic().then((r) => r.data.data)
+      for (const c of list) {
+        const detail = await catalogApi.getPublic(c.slug).then((r) => r.data.data)
+        const item = detail.items.find((i) => i.id === catalogItemId)
+        if (item) {
+          return { item, collectionTitle: detail.title, ownerName: detail.ownerName }
+        }
+      }
+      return null
+    },
+    enabled: !!catalogItemId,
+  })
+
+  useEffect(() => {
+    if (catalogItemId) setAiAttempted(true)
+  }, [catalogItemId])
 
   useEffect(() => {
     if (!authUser) return
@@ -95,6 +119,7 @@ export default function ApplicationPage() {
         financingTermMonths: termMonths || undefined,
         deliveryAddress: deliveryAddress.trim() || undefined,
         additionalNotes: additionalNotes.trim() || undefined,
+        catalogItemId: catalogItemId || undefined,
       }),
     onSuccess: () => navigate('/status'),
   })
@@ -129,6 +154,15 @@ export default function ApplicationPage() {
           </h2>
           <span className="apply-step-pill">{t('application.stepOf', { step })}</span>
           <p className="apply-lead">{stepGuide[idx]?.blurb}</p>
+          {catalogItemId && catalogDesign && (
+            <p className="mt-3 text-sm text-[#c9a84c]">
+              {t('application.usingCatalogDesign', {
+                defaultValue: 'Using catalog design “{{title}}” by {{owner}}. Designer receives 50% when you pay.',
+                title: catalogDesign.item.title,
+                owner: catalogDesign.ownerName ?? 'member',
+              })}
+            </p>
+          )}
         </header>
 
         <FlowStepper steps={stepLabels} current={step} />
@@ -227,14 +261,33 @@ export default function ApplicationPage() {
               {step === 2 && (
                 <div className="flex flex-col gap-7 sm:gap-8">
                   <h3 className="apply-section-head">{t('application.aiDesign')}</h3>
-                  <OrderAIDesignPanel
-                    attempted={aiAttempted}
-                    onAttempted={() => setAiAttempted(true)}
-                    prompt={aiPrompt}
-                    onPromptChange={setAiPrompt}
-                    styleKey={aiStyle}
-                    onStyleChange={setAiStyle}
-                  />
+                  {catalogItemId ? (
+                    <div className="rounded border border-[#c9a84c]/30 bg-[#c9a84c]/08 p-5 space-y-2">
+                      <p className="text-sm font-bold text-[#c9a84c]">
+                        {t('application.catalogDesignSelected', { defaultValue: 'Catalog design selected' })}
+                      </p>
+                      <p className="text-white font-semibold">
+                        {catalogDesign?.item.title ?? '…'}
+                      </p>
+                      {catalogDesign?.ownerName && (
+                        <p className="text-sm text-neutral-400">{catalogDesign.ownerName}</p>
+                      )}
+                      <p className="text-xs text-neutral-500">
+                        {t('application.catalogDesignRoyaltyNote', {
+                          defaultValue: 'When you pay for this coin order, the design author receives 50% of the paid amount in their earnings wallet.',
+                        })}
+                      </p>
+                    </div>
+                  ) : (
+                    <OrderAIDesignPanel
+                      attempted={aiAttempted}
+                      onAttempted={() => setAiAttempted(true)}
+                      prompt={aiPrompt}
+                      onPromptChange={setAiPrompt}
+                      styleKey={aiStyle}
+                      onStyleChange={setAiStyle}
+                    />
+                  )}
                 </div>
               )}
 

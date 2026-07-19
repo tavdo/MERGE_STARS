@@ -6,6 +6,9 @@ import { User } from '../../database/entities/user.entity';
 import { CoinApplication } from '../../database/entities/coin-application.entity';
 import { WalletService } from '../wallet/wallet.service';
 
+/** Design author share of the buyer's paid coin order */
+const DESIGN_ROYALTY_FRACTION = 0.5;
+
 @Injectable()
 export class OrdersService {
   constructor(
@@ -74,6 +77,70 @@ export class OrdersService {
     return this.mapOrder(order);
   }
 
+  /**
+   * When a buyer pays for a coin that uses another member's catalog design,
+   * credit the design author 50% of the paid amount.
+   */
+  async creditDesignRoyalty(order: Order, app?: CoinApplication | null) {
+    const application =
+      app ??
+      (order.applicationId
+        ? await this.apps.findOne({ where: { id: order.applicationId } })
+        : null);
+    if (!application?.designAuthorId) return null;
+    if (application.designAuthorId === order.userId) return null;
+
+    const already = await this.wallet.hasDesignRoyaltyForOrder(order.id);
+    if (already) return null;
+
+    const paid = Number(order.amount);
+    const royalty = Math.round(paid * DESIGN_ROYALTY_FRACTION * 100) / 100;
+    if (royalty <= 0) return null;
+
+    return this.wallet.credit({
+      userId: application.designAuthorId,
+      amount: royalty,
+      reason: 'design_royalty',
+      note: `Design royalty (50%) from coin order ${order.publicId}`,
+      meta: {
+        coinOrderId: order.id,
+        coinOrderPublicId: order.publicId,
+        catalogItemId: application.catalogItemId,
+        saleAmount: paid,
+        fraction: DESIGN_ROYALTY_FRACTION,
+      },
+    });
+  }
+
+  async markOrderPaid(orderIdOrPublicId: string) {
+    const order = await this.orders.findOne({
+      where: [{ id: orderIdOrPublicId }, { publicId: orderIdOrPublicId }],
+      relations: { application: true },
+    });
+    if (!order) throw new NotFoundException('Order not found');
+    if (order.status !== 'paid') {
+      order.status = 'paid';
+      order.deliveryStatus =
+        order.deliveryStatus === 'pending' ? 'processing' : order.deliveryStatus;
+      await this.orders.save(order);
+    }
+    await this.creditDesignRoyalty(order, order.application);
+    return this.mapOrder(order);
+  }
+
+  /** Mark pending orders for an application as paid (e.g. admin funds_received). */
+  async markPaidForApplication(applicationInternalId: string) {
+    const pending = await this.orders.find({
+      where: { applicationId: applicationInternalId, status: 'pending' },
+      relations: { application: true },
+    });
+    const results = [];
+    for (const order of pending) {
+      results.push(await this.markOrderPaid(order.id));
+    }
+    return results;
+  }
+
   async createForApplication(user: User, applicationPublicId: string, paymentMethod: string) {
     const method = paymentMethod || 'bank';
     if (!['full', 'bank', 'earnings'].includes(method)) {
@@ -123,6 +190,7 @@ export class OrdersService {
           orderId: order.id,
           note: `Paid coin order ${publicId} with earnings`,
         });
+        await this.creditDesignRoyalty(order, app);
       } catch (err) {
         await this.orders.delete({ id: order.id });
         throw err;
@@ -134,52 +202,5 @@ export class OrdersService {
       relations: { application: true },
     });
     return this.mapOrder(saved!);
-  }
-
-  /**
-   * If the user has a pending coin order and enough earnings balance,
-   * debit wallet and mark the oldest pending order as paid.
-   */
-  async tryPayPendingWithEarnings(userId: string) {
-    const pending = await this.orders.findOne({
-      where: { userId, status: 'pending' },
-      relations: { application: true },
-      order: { createdAt: 'ASC' },
-    });
-    if (!pending) {
-      return { paid: false as const, reason: 'no_pending_order' as const };
-    }
-
-    const amount = Number(pending.amount);
-    const balance = await this.wallet.getBalance(userId);
-    if (balance < amount) {
-      return {
-        paid: false as const,
-        reason: 'insufficient_balance' as const,
-        balance,
-        required: amount,
-        orderId: pending.publicId,
-      };
-    }
-
-    await this.wallet.debitForOrder({
-      userId,
-      amount,
-      orderId: pending.id,
-      note: `Auto-paid coin order ${pending.publicId} from catalog earnings`,
-    });
-
-    pending.status = 'paid';
-    pending.paymentMethod = 'earnings';
-    pending.deliveryStatus =
-      pending.deliveryStatus === 'pending' ? 'processing' : pending.deliveryStatus;
-    await this.orders.save(pending);
-
-    return {
-      paid: true as const,
-      orderId: pending.publicId,
-      amount,
-      balanceAfter: await this.wallet.getBalance(userId),
-    };
   }
 }
