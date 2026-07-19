@@ -64,9 +64,9 @@ if [ -f "$NGINX_SITE" ] && grep -qE 'ssl_certificate|listen 443' "$NGINX_SITE" 2
   sed -i "s|root .*frontend/dist;|root $DEPLOY_DIR/frontend/dist;|" "$NGINX_SITE"
   # Ensure large catalog uploads (3D models) are not rejected with 413
   if ! grep -q 'client_max_body_size' "$NGINX_SITE"; then
-    sed -i '/server_name/a\    client_max_body_size 100m;' "$NGINX_SITE"
+    sed -i '/server_name/a\    client_max_body_size 1024m;' "$NGINX_SITE"
   else
-    sed -i 's/client_max_body_size [^;]*;/client_max_body_size 100m;/' "$NGINX_SITE"
+    sed -i 's/client_max_body_size [^;]*;/client_max_body_size 1024m;/' "$NGINX_SITE"
   fi
 else
   sed \

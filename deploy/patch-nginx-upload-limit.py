@@ -6,11 +6,11 @@ text = p.read_text()
 if "client_max_body_size" not in text:
     text = text.replace(
         "server_name mergestars.com www.mergestars.com;",
-        "server_name mergestars.com www.mergestars.com;\n    client_max_body_size 100m;",
+        "server_name mergestars.com www.mergestars.com;\n    client_max_body_size 1024m;",
         1,
     )
 else:
-    text = re.sub(r"client_max_body_size\s+[^;]+;", "client_max_body_size 100m;", text)
+    text = re.sub(r"client_max_body_size\s+[^;]+;", "client_max_body_size 1024m;", text)
 
 text = text.replace(
     "proxy_read_timeout 60s;",

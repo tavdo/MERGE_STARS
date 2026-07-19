@@ -175,7 +175,7 @@ export default function CatalogItemStudio({ onSubmit, submitting, error }: Props
             <div className="catalog-studio-model-upload">
               <FileDropzone
                 label={t('collections.upload3d', { defaultValue: 'Upload 3D model' })}
-                hint="GLB, GLTF, USDZ, USDC"
+                hint="GLB, GLTF, USDZ, USDC · max 1 GB"
                 accept={MODEL_ACCEPT}
                 icon="◆"
                 fileName={modelFile?.name}

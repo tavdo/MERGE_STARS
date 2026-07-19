@@ -122,7 +122,7 @@ export class CatalogController {
   @Post('items/:itemId/model3d')
   @UseGuards(JwtAuthGuard)
   @UseInterceptors(
-    FileInterceptor('file', { storage: memoryStorage(), limits: { fileSize: 100 * 1024 * 1024 } }),
+    FileInterceptor('file', { storage: memoryStorage(), limits: { fileSize: 1024 * 1024 * 1024 } }),
   )
   uploadModel(
     @CurrentUser() user: User,
