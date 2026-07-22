@@ -1,4 +1,5 @@
 import { useRef, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 
 type Props = {
   label: string
@@ -21,6 +22,7 @@ export default function FileDropzone({
   previewType = 'image',
   onFile,
 }: Props) {
+  const { t } = useTranslation()
   const inputRef = useRef<HTMLInputElement>(null)
   const [dragOver, setDragOver] = useState(false)
 
@@ -50,7 +52,7 @@ export default function FileDropzone({
           <>
             <span className="catalog-dropzone-icon" aria-hidden>{icon}</span>
             <span className="catalog-dropzone-title">
-              {fileName ?? 'Click or drag file here'}
+              {fileName ?? t('catalog.dropHint', { defaultValue: 'Click or drag file here' })}
             </span>
             {hint && <span className="catalog-dropzone-hint">{hint}</span>}
           </>
@@ -65,7 +67,7 @@ export default function FileDropzone({
       />
       {fileName && (
         <button type="button" className="catalog-dropzone-clear" onClick={() => onFile(null)}>
-          Remove file
+          {t('catalog.removeFile', { defaultValue: 'Remove file' })}
         </button>
       )}
     </div>

@@ -15,6 +15,13 @@ import frPages from './locales/pages/fr'
 import dePages from './locales/pages/de'
 import trPages from './locales/pages/tr'
 import arPages from './locales/pages/ar'
+import enFill from './locales/fills/en'
+import kaFill from './locales/fills/ka'
+import arFill from './locales/fills/ar'
+import ruFill from './locales/fills/ru'
+import deFill from './locales/fills/de'
+import frFill from './locales/fills/fr'
+import trFill from './locales/fills/tr'
 
 export const LANG_STORAGE_KEY = 'merge-stars-lang'
 
@@ -53,13 +60,13 @@ function applyDocumentLanguage(lng: string) {
 
 void i18n.use(initReactI18next).init({
   resources: {
-    en: { translation: mergeLocales(en, enPages) },
-    ru: { translation: mergeLocales(ru, ruPages) },
-    fr: { translation: mergeLocales(fr, frPages) },
-    de: { translation: mergeLocales(de, dePages) },
-    tr: { translation: mergeLocales(tr, trPages) },
-    ka: { translation: mergeLocales(ka, kaPages) },
-    ar: { translation: mergeLocales(ar, arPages) },
+    en: { translation: mergeLocales(en, enPages, enFill) },
+    ru: { translation: mergeLocales(ru, ruPages, ruFill) },
+    fr: { translation: mergeLocales(fr, frPages, frFill) },
+    de: { translation: mergeLocales(de, dePages, deFill) },
+    tr: { translation: mergeLocales(tr, trPages, trFill) },
+    ka: { translation: mergeLocales(ka, kaPages, kaFill) },
+    ar: { translation: mergeLocales(ar, arPages, arFill) },
   },
   lng: saved,
   fallbackLng: 'en',
