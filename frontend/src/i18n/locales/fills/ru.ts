@@ -17,6 +17,9 @@ export default {
   footer: {
     legalName: "MERGE STARS LLC „Merge Varskvlavebi\"",
     contactAddress: "Тбилиси, район Исани, пр-т Б. Габриэла Салоси, N120",
+    companyId: "ID 406286424",
+    contactEmail: "mergestars01@gmail.com",
+    contactPhone: "+995 557 513 613",
   },
   registrationGoal: {
     title: "Выполнение заказов начинается при 1 000 зарегистрированных пользователей",

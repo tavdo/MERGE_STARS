@@ -19,6 +19,9 @@ export default {
     legalName: "MERGE STARS LLC „Merge Varskvlavebi\"",
     contactAddress: "Tiflis, Bezirk Isani, B. Gabriels Salosi Ave. N120",
     support: "Hilfe",
+    companyId: "ID 406286424",
+    contactEmail: "mergestars01@gmail.com",
+    contactPhone: "+995 557 513 613",
   },
   registrationGoal: {
     title: "Die Auftragserfüllung beginnt bei 1.000 registrierten Nutzern",

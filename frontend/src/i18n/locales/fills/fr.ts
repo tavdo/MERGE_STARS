@@ -21,6 +21,9 @@ export default {
     contactAddress: "Tbilissi, district d’Isani, avenue B. Gabriels Salosi N120",
     support: "Assistance",
     contact: "Contact",
+    companyId: "ID 406286424",
+    contactEmail: "mergestars01@gmail.com",
+    contactPhone: "+995 557 513 613",
   },
   registrationGoal: {
     title: "L’exécution des commandes commence à 1 000 utilisateurs inscrits",

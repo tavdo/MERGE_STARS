@@ -10,6 +10,9 @@ export default {
   footer: {
     legalName: "MERGE STARS LLC „Merge Varskvlavebi\"",
     contactAddress: "تبليسي، منطقة إيساني، شارع ب. غابرييلس سالوسي رقم 120",
+    companyId: "ID 406286424",
+    contactEmail: "mergestars01@gmail.com",
+    contactPhone: "+995 557 513 613",
   },
   registrationGoal: {
     title: "يبدأ تنفيذ الطلبات عند تسجيل 1,000 مستخدم",
@@ -254,6 +257,9 @@ export default {
   },
   contact: {
     emailPlaceholder: "your@email.com",
+    emailPrimary: "mergestars01@gmail.com",
+    emailSecondary: "ID 406286424",
+    phonePrimary: "+995 557 513 613",
   },
   prices: {
     title: "MERGE COIN",
