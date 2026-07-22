@@ -44,7 +44,6 @@ export default {
       passwordSection: 'პაროლი',
       changePhoto: 'შეცვლა',
       uploadPhoto: 'ფოტოს ატვირთვა',
-      photoHint: 'JPEG, PNG ან WEBP · მაქს. 5 MB',
       avatarFailed: 'ფოტოს ატვირთვა ვერ მოხერხდა',
       cropTitle: 'ფოტოს ამოჭრა',
       cropHint: 'გადაადგილეთ ფოტო. ზუმისთვის გამოიყენეთ სლაიდერი.',

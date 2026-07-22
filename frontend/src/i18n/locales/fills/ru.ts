@@ -265,7 +265,6 @@ export default {
       passwordSection: "ПАРОЛЬ",
       changePhoto: "Изменить фото",
       uploadPhoto: "Загрузить фото",
-      photoHint: "JPEG, PNG или WEBP · максимум 5 МБ",
       avatarFailed: "Не удалось загрузить фото",
       cropTitle: "Обрезать фото",
       cropHint: "Перетащите для изменения положения. Используйте ползунок для увеличения.",

@@ -140,9 +140,6 @@ export default function ProfileAvatar({
         <p className="text-lg text-white font-medium">
           {firstName} {lastName}
         </p>
-        <p className="text-sm text-neutral-500 mt-1">
-          {t('pages.profile.photoHint', { defaultValue: 'JPEG, PNG or WEBP · max 5 MB' })}
-        </p>
         {pickError && <p className="text-sm text-red-400 mt-2">{pickError}</p>}
         <button
           type="button"

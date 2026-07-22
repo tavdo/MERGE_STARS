@@ -131,7 +131,6 @@ export default {
       passwordSection: "كلمة المرور",
       changePhoto: "تغيير الصورة",
       uploadPhoto: "تحميل صورة",
-      photoHint: "JPEG أو PNG أو WEBP · الحد الأقصى 5 ميغابايت",
       avatarFailed: "تعذر تحميل الصورة",
       cropTitle: "اقتصاص الصورة",
       cropHint: "اسحب لإعادة التموضع. استخدم شريط التمرير للتكبير.",

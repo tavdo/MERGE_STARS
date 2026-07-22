@@ -44,7 +44,6 @@ export default {
       passwordSection: 'PASSWORD',
       changePhoto: 'Change photo',
       uploadPhoto: 'Upload photo',
-      photoHint: 'JPEG, PNG or WEBP · max 5 MB',
       avatarFailed: 'Could not upload photo',
       cropTitle: 'Crop photo',
       cropHint: 'Drag to reposition. Use the slider to zoom.',
