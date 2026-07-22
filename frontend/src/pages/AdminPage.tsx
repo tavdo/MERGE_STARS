@@ -1,12 +1,15 @@
 import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import AdminLayout from '../components/AdminLayout'
 import { adminApi } from '@/features/admin/api/admin.api'
-import { STATUS_COLORS, statusLabel, statusToApi } from '@/shared/utils/applicationStatus'
+import { STATUS_COLORS, STATUS_LABELS, statusLabel } from '@/shared/utils/applicationStatus'
+import type { ApplicationStatus } from '@/shared/types/api.types'
 
 export default function AdminPage() {
+  const { t } = useTranslation()
   const [selectedApp, setSelectedApp] = useState<string | null>(null)
-  const [statusFilter, setStatusFilter] = useState('All Status')
+  const [statusFilter, setStatusFilter] = useState<ApplicationStatus | 'all'>('all')
   const [search, setSearch] = useState('')
   const qc = useQueryClient()
 
@@ -15,7 +18,7 @@ export default function AdminPage() {
     queryFn: () =>
       adminApi
         .getApplications({
-          status: statusFilter === 'All Status' ? undefined : (statusToApi(statusFilter) as never),
+          status: statusFilter === 'all' ? undefined : statusFilter,
           search: search || undefined,
         })
         .then((r) => r.data.data),
@@ -37,11 +40,11 @@ export default function AdminPage() {
 
   const STATS = stats
     ? [
-        { label: 'TOTAL APPLICATIONS', value: String(stats.totalApplications), change: '', up: true },
-        { label: 'APPROVED', value: String(stats.approved), change: '', up: true },
-        { label: 'REJECTED', value: String(stats.rejected), change: '', up: false },
-        { label: 'TOTAL FUNDS', value: `$${stats.totalFunds.toLocaleString()}`, change: '', up: true },
-        { label: 'IN PRODUCTION', value: String(stats.inProduction), change: '', up: true },
+        { label: t('admin.applications.totalApplications'), value: String(stats.totalApplications), change: '', up: true },
+        { label: t('admin.applications.approved'), value: String(stats.approved), change: '', up: true },
+        { label: t('applicationStatuses.rejected'), value: String(stats.rejected), change: '', up: false },
+        { label: t('admin.applications.totalFunds'), value: `$${stats.totalFunds.toLocaleString()}`, change: '', up: true },
+        { label: t('admin.applications.inProduction'), value: String(stats.inProduction), change: '', up: true },
       ]
     : []
 
@@ -59,7 +62,7 @@ export default function AdminPage() {
   const selected = filtered.find((a) => a.id === selectedApp)
 
   return (
-    <AdminLayout title="ADMIN PANEL" subtitle="APPLICATIONS MANAGEMENT">
+    <AdminLayout title={t('admin.panel')} subtitle={t('admin.applications.subtitle')}>
           <div className="admin-stat-grid">
             {STATS.map((s) => (
               <div key={s.label} className="admin-stat-card">
@@ -72,25 +75,27 @@ export default function AdminPage() {
           <div className="flex gap-5 flex-col xl:flex-row">
             <div className="flex-1 admin-panel">
               <div className="admin-toolbar">
-                <p className="admin-toolbar-title">Applications</p>
+                <p className="admin-toolbar-title">{t('admin.applications.title')}</p>
                 <select
                   className="admin-field-input"
                   style={{ width: 'auto', minHeight: '2.5rem', padding: '0.5rem 0.75rem', fontSize: '13px' }}
                   value={statusFilter}
-                  onChange={(e) => setStatusFilter(e.target.value)}
+                  onChange={(e) => setStatusFilter(e.target.value as ApplicationStatus | 'all')}
                 >
-                  <option>All Status</option>
-                  {Object.keys(STATUS_COLORS).map((s) => <option key={s}>{s}</option>)}
+                  <option value="all">{t('admin.applications.allStatus')}</option>
+                  {(Object.keys(STATUS_LABELS) as ApplicationStatus[]).map((s) => (
+                    <option key={s} value={s}>{statusLabel(s)}</option>
+                  ))}
                 </select>
                 <input
                   className="admin-field-input"
                   style={{ width: '200px', minHeight: '2.5rem', padding: '0.5rem 0.75rem', fontSize: '13px' }}
-                  placeholder="Search by ID or name..."
+                  placeholder={t('admin.applications.searchPlaceholder')}
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
                 />
                 <button type="button" className="admin-btn-secondary ml-auto">
-                  Export
+                  {t('admin.applications.export')}
                 </button>
               </div>
 
@@ -109,7 +114,7 @@ export default function AdminPage() {
                     ) : filtered.length === 0 ? (
                       <tr><td colSpan={8} className="admin-empty">No applications yet</td></tr>
                     ) : filtered.map((app) => {
-                      const sc = STATUS_COLORS[app.status] || { bg: 'rgba(255,255,255,0.05)', color: '#fff' }
+                      const sc = STATUS_COLORS[app.rawStatus] || STATUS_COLORS[app.status] || { bg: 'rgba(255,255,255,0.05)', color: '#fff' }
                       return (
                         <tr
                           key={app.id}

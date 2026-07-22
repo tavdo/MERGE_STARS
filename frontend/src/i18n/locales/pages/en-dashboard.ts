@@ -78,6 +78,10 @@ export default {
       description: 'Your inbox for application updates, production notifications, and support messages.',
       viewStatus: 'View application status',
       aiAssistant: 'AI assistant',
+      inbox: 'INBOX',
+      markAllRead: 'Mark all read',
+      markAsRead: 'Mark as read',
+      empty: 'No messages yet. Updates about applications and KYC will appear here.',
     },
     settings: {
       description: 'Manage your account, language, and platform preferences.',

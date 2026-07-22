@@ -1,5 +1,6 @@
 import { useMemo } from 'react'
 import { useQuery } from '@tanstack/react-query'
+import { useTranslation } from 'react-i18next'
 import AdminLayout from '../../components/AdminLayout'
 import { adminApi, type AdminOrder } from '../../features/admin/api/admin.api'
 
@@ -31,6 +32,8 @@ function formatDate(iso: string) {
 }
 
 export default function AdminFinancePage() {
+  const { t } = useTranslation()
+
   const { data: orders = [], isLoading } = useQuery({
     queryKey: ['admin-orders'],
     queryFn: () => adminApi.getOrders().then((r) => r.data.data),
@@ -51,7 +54,7 @@ export default function AdminFinancePage() {
   const totalFunds = rows.filter((o) => o.payment === 'PAID').reduce((s, o) => s + Number(o.raw.amount), 0)
 
   return (
-    <AdminLayout title="ADMIN PANEL" subtitle="FINANCE PANEL">
+    <AdminLayout title={t('admin.panel')} subtitle={t('admin.finance.subtitle')}>
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(180px,1fr))', gap: '16px', marginBottom: '24px' }}>
         {[
           { label: 'TOTAL FUNDS RECEIVED', value: `$${totalFunds.toLocaleString()}`, color: '#22c55e' },

@@ -2,7 +2,14 @@ import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import Model3DViewer from './Model3DViewer'
 
-const STYLES = ['Jewelry', 'Luxury coin', 'Watch', 'Sculpture', 'Ring', 'Pendant'] as const
+const STYLES = [
+  { value: 'Jewelry', labelKey: 'jewelry' },
+  { value: 'Luxury coin', labelKey: 'luxuryCoin' },
+  { value: 'Watch', labelKey: 'watch' },
+  { value: 'Sculpture', labelKey: 'sculpture' },
+  { value: 'Ring', labelKey: 'ring' },
+  { value: 'Pendant', labelKey: 'pendant' },
+] as const
 
 export type MeshyGenerateResult = {
   prompt: string
@@ -18,7 +25,7 @@ type Props = {
 export default function MeshyAIPanel({ onGenerate, resultUrl: externalResult }: Props) {
   const { t } = useTranslation()
   const [prompt, setPrompt] = useState('')
-  const [style, setStyle] = useState<string>(STYLES[0])
+  const [style, setStyle] = useState<string>(STYLES[0].value)
   const [status, setStatus] = useState<'idle' | 'generating' | 'done' | 'error'>('idle')
   const [progress, setProgress] = useState(0)
   const [localResult, setLocalResult] = useState<string | null>(null)
@@ -81,12 +88,12 @@ export default function MeshyAIPanel({ onGenerate, resultUrl: externalResult }: 
       <div className="catalog-meshy-chips">
         {STYLES.map((s) => (
           <button
-            key={s}
+            key={s.value}
             type="button"
-            className={`catalog-meshy-chip${style === s ? ' catalog-meshy-chip--active' : ''}`}
-            onClick={() => setStyle(s)}
+            className={`catalog-meshy-chip${style === s.value ? ' catalog-meshy-chip--active' : ''}`}
+            onClick={() => setStyle(s.value)}
           >
-            {s}
+            {t(`collections.meshyStyles.${s.labelKey}`)}
           </button>
         ))}
       </div>
