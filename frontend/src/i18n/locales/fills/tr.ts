@@ -279,7 +279,6 @@ export default {
       passwordSection: "ŞİFRE",
       changePhoto: "Fotoğrafı değiştir",
       uploadPhoto: "Fotoğraf yükle",
-      photoHint: "JPEG, PNG veya WEBP · en fazla 5 MB",
       avatarFailed: "Fotoğraf yüklenemedi",
       cropTitle: "Fotoğrafı kırp",
       cropHint: "Yeniden konumlandırmak için sürükleyin. Yakınlaştırmak için kaydırıcıyı kullanın.",

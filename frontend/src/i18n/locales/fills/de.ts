@@ -288,7 +288,6 @@ export default {
       passwordSection: "PASSWORT",
       changePhoto: "Foto ändern",
       uploadPhoto: "Foto hochladen",
-      photoHint: "JPEG, PNG oder WEBP · max. 5 MB",
       avatarFailed: "Foto konnte nicht hochgeladen werden",
       cropTitle: "Foto zuschneiden",
       cropHint: "Ziehen Sie zum Neupositionieren. Verwenden Sie den Schieberegler zum Zoomen.",

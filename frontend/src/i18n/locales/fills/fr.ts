@@ -292,7 +292,6 @@ export default {
       passwordSection: "MOT DE PASSE",
       changePhoto: "Changer la photo",
       uploadPhoto: "Importer une photo",
-      photoHint: "JPEG, PNG ou WEBP · max. 5 Mo",
       avatarFailed: "Impossible d’importer la photo",
       cropTitle: "Recadrer la photo",
       cropHint: "Faites glisser pour repositionner. Utilisez le curseur pour zoomer.",
