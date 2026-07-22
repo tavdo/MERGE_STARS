@@ -35,7 +35,7 @@ export default function AdminUsersPage() {
   }, [users])
 
   return (
-    <AdminLayout title="ADMIN PANEL" subtitle="USER MANAGEMENT">
+    <AdminLayout title={t('admin.panel')} subtitle={t('admin.users.subtitle')}>
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(160px,1fr))', gap: '16px', marginBottom: '24px' }}>
         {[
           { label: 'TOTAL USERS', value: stats.total, color: '#fff' },

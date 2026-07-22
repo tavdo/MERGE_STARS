@@ -109,7 +109,7 @@ export default function AdminAuditPage() {
   })
 
   return (
-    <AdminLayout title="ADMIN PANEL" subtitle="AUDIT LOG">
+    <AdminLayout title={t('admin.panel')} subtitle={t('admin.audit.subtitle')}>
       <div
         style={{
           padding: '12px 16px',

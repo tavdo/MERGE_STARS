@@ -1,8 +1,11 @@
 import { useQuery } from '@tanstack/react-query'
+import { useTranslation } from 'react-i18next'
 import AdminLayout from '../../components/AdminLayout'
 import { adminApi } from '@/features/admin/api/admin.api'
 
 export default function AdminAnalyticsPage() {
+  const { t } = useTranslation()
+
   const { data, isLoading, error } = useQuery({
     queryKey: ['admin-analytics'],
     queryFn: () => adminApi.getAnalytics().then((r) => r.data.data),
@@ -16,7 +19,7 @@ export default function AdminAnalyticsPage() {
   const maxRevenue = Math.max(...monthly.map((m) => m.revenue), 1)
 
   return (
-    <AdminLayout title="ADMIN PANEL" subtitle="ANALYTICS DASHBOARD">
+    <AdminLayout title={t('admin.panel')} subtitle={t('admin.analytics.subtitle')}>
       {isLoading && (
         <p style={{ color: 'rgba(255,255,255,0.5)', marginBottom: '16px' }}>Loading live analytics…</p>
       )}

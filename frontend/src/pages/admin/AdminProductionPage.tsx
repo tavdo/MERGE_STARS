@@ -1,5 +1,6 @@
 import { useMemo } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { useTranslation } from 'react-i18next'
 import AdminLayout from '../../components/AdminLayout'
 import { adminApi } from '../../features/admin/api/admin.api'
 import type { ApplicationStatus } from '@/shared/types/api.types'
@@ -48,6 +49,7 @@ function formatDate(iso: string) {
 }
 
 export default function AdminProductionPage() {
+  const { t } = useTranslation()
   const qc = useQueryClient()
 
   const { data: applications = [], isLoading } = useQuery({
@@ -95,7 +97,7 @@ export default function AdminProductionPage() {
   }
 
   return (
-    <AdminLayout title="ADMIN PANEL" subtitle="PRODUCTION MANAGEMENT">
+    <AdminLayout title={t('admin.panel')} subtitle={t('admin.production.subtitle')}>
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(150px,1fr))', gap: '16px', marginBottom: '24px' }}>
         {Object.entries(statCounts).map(([status, count]) => {
           const sc = STATUS_COLORS[status]

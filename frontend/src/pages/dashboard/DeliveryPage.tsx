@@ -29,13 +29,6 @@ function deliveryStepIndex(status: string) {
   }
 }
 
-const STATUS_LABELS: Record<string, string> = {
-  pending: 'Pending',
-  processing: 'Processing',
-  in_transit: 'In transit',
-  delivered: 'Delivered',
-}
-
 export default function DeliveryPage() {
   const { t } = useTranslation()
 
@@ -81,7 +74,7 @@ export default function DeliveryPage() {
     )
   }
 
-  const statusLabel = STATUS_LABELS[order.deliveryStatus] ?? order.deliveryStatus
+  const statusLabel = t(`deliveryStatuses.${order.deliveryStatus}`, { defaultValue: order.deliveryStatus })
 
   return (
     <DashboardLayout titleKey="delivery">
