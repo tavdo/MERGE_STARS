@@ -323,6 +323,11 @@ export default {
       phoneBannerAction: "Ajouter un téléphone",
     },
     messages: {
+      inbox: 'BOÎTE DE RÉCEPTION',
+      markAllRead: 'Tout marquer comme lu',
+      markAsRead: 'Marquer comme lu',
+      empty: 'Aucun message pour le moment. Les mises à jour de demandes et KYC apparaîtront ici.',
+
       description: "Votre boîte de réception pour les mises à jour de demande, les notifications de production et les messages d’assistance.",
       viewStatus: "Voir le statut de la demande",
       aiAssistant: "Assistant IA",

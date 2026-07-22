@@ -319,6 +319,11 @@ export default {
       phoneBannerAction: "Telefon hinzufügen",
     },
     messages: {
+      inbox: 'POSTEINGANG',
+      markAllRead: 'Alle als gelesen markieren',
+      markAsRead: 'Als gelesen markieren',
+      empty: 'Noch keine Nachrichten. Updates zu Anträgen und KYC erscheinen hier.',
+
       description: "Ihr Posteingang für Antragsaktualisierungen, Produktionsbenachrichtigungen und Hilfenachrichten.",
       viewStatus: "Antragsstatus ansehen",
       aiAssistant: "KI-Assistent",

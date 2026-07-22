@@ -310,6 +310,11 @@ export default {
       phoneBannerAction: "Telefon ekle",
     },
     messages: {
+      inbox: 'GELEN KUTUSU',
+      markAllRead: 'Tümünü okundu işaretle',
+      markAsRead: 'Okundu işaretle',
+      empty: 'Henüz mesaj yok. Başvuru ve KYC güncellemeleri burada görünecek.',
+
       description: "Başvuru güncellemeleri, üretim bildirimleri ve destek mesajları için gelen kutunuz.",
       viewStatus: "Başvuru durumunu görüntüle",
       aiAssistant: "AI asistanı",

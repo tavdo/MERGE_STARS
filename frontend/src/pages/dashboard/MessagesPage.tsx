@@ -52,12 +52,14 @@ export default function MessagesPage() {
       <div style={{ maxWidth: '800px' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px', flexWrap: 'wrap', gap: '12px' }}>
           <div>
-            <p style={{ fontSize: '11px', fontWeight: 700, letterSpacing: '0.3em', color: '#c9a84c', marginBottom: '8px' }}>INBOX</p>
+            <p style={{ fontSize: '11px', fontWeight: 700, letterSpacing: '0.3em', color: '#c9a84c', marginBottom: '8px' }}>
+              {t('pages.messages.inbox', { defaultValue: 'INBOX' })}
+            </p>
             <h1 style={{ fontSize: '22px', fontWeight: 900, color: '#fff', margin: 0 }}>{t('dashboard.titles.messages')}</h1>
           </div>
           {unread > 0 && (
             <button type="button" className="gold-btn-outline" onClick={() => markAll.mutate()} disabled={markAll.isPending}>
-              Mark all read ({unread})
+              {t('pages.messages.markAllRead', { defaultValue: 'Mark all read' })} ({unread})
             </button>
           )}
         </div>
@@ -67,7 +69,9 @@ export default function MessagesPage() {
             <p style={{ padding: '24px', color: 'rgba(255,255,255,0.5)' }}>{t('common.loading')}</p>
           ) : items.length === 0 ? (
             <p style={{ padding: '24px', color: 'rgba(255,255,255,0.5)' }}>
-              No messages yet. Updates about applications and KYC will appear here.
+              {t('pages.messages.empty', {
+                defaultValue: 'No messages yet. Updates about applications and KYC will appear here.',
+              })}
             </p>
           ) : (
             items.map((n) => (
@@ -90,7 +94,7 @@ export default function MessagesPage() {
                     onClick={() => markRead.mutate(n.id)}
                     style={{ fontSize: '10px', fontWeight: 700, color: '#c9a84c', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
                   >
-                    Mark as read
+                    {t('pages.messages.markAsRead', { defaultValue: 'Mark as read' })}
                   </button>
                 )}
               </div>
@@ -99,8 +103,8 @@ export default function MessagesPage() {
         </div>
 
         <div style={{ marginTop: '20px', display: 'flex', gap: '16px', flexWrap: 'wrap' }}>
-          <Link to="/status" className="gold-btn-outline">Application status</Link>
-          <Link to="/dashboard/ai" className="gold-btn-outline">AI Assistant</Link>
+          <Link to="/status" className="gold-btn-outline">{t('pages.messages.viewStatus')}</Link>
+          <Link to="/dashboard/ai" className="gold-btn-outline">{t('pages.messages.aiAssistant')}</Link>
         </div>
       </div>
     </DashboardLayout>

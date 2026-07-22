@@ -115,6 +115,12 @@ export default {
     referralCodeLabel: "رمز الإحالة",
   },
   pages: {
+    messages: {
+      inbox: 'البريد الوارد',
+      markAllRead: 'تحديد الكل كمقروء',
+      markAsRead: 'تحديد كمقروء',
+      empty: 'لا توجد رسائل بعد. ستظهر هنا تحديثات الطلبات وKYC.',
+    },
     profile: {
       save: "حفظ الملف الشخصي",
       saved: "تم تحديث الملف الشخصي",
