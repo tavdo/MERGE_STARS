@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next'
 import AdminLayout from '../../components/AdminLayout'
 
 const SECTIONS = [
@@ -27,8 +28,10 @@ const STATUS = [
 ] as const
 
 export default function BankReviewPage() {
+  const { t } = useTranslation()
+
   return (
-    <AdminLayout title="ADMIN PANEL" subtitle="BANK REVIEW CENTER">
+    <AdminLayout title={t('admin.panel')} subtitle={t('admin.bankReview.subtitle')}>
       <div
         className="gold-card"
         style={{

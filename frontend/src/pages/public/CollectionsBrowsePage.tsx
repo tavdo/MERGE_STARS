@@ -43,7 +43,7 @@ export default function CollectionsBrowsePage() {
               {t('collections.browseSubtitle', { defaultValue: 'Explore catalogs created by MERGE STARS members.' })}
             </p>
             {listLoading ? (
-              <p className="text-neutral-500">Loading…</p>
+              <p className="text-neutral-500">{t('common.loading')}</p>
             ) : list.length === 0 ? (
               <p className="text-neutral-500">{t('collections.browseEmpty', { defaultValue: 'No public collections yet.' })}</p>
             ) : (
@@ -64,7 +64,7 @@ export default function CollectionsBrowsePage() {
             )}
           </>
         ) : detailLoading || !detail ? (
-          <p className="text-neutral-500">Loading…</p>
+          <p className="text-neutral-500">{t('common.loading')}</p>
         ) : (
           <>
             <Link to="/collections" className="text-sm text-neutral-500 hover:text-[#D4AF37] no-underline">

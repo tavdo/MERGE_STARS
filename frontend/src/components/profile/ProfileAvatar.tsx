@@ -2,6 +2,10 @@ import { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useAuthStore } from '@/features/auth/store/auth.store'
 import { usersApi } from '@/features/users/api/users.api'
+import AvatarCropModal from './AvatarCropModal'
+
+const MAX_BYTES = 5 * 1024 * 1024
+const ALLOWED_TYPES = new Set(['image/jpeg', 'image/png', 'image/webp'])
 
 interface ProfileAvatarProps {
   hasAvatar: boolean
@@ -24,6 +28,9 @@ export default function ProfileAvatar({
   const token = useAuthStore((s) => s.accessToken)
   const inputRef = useRef<HTMLInputElement>(null)
   const [src, setSrc] = useState<string | null>(null)
+  const [cropSrc, setCropSrc] = useState<string | null>(null)
+  const [cropFileName, setCropFileName] = useState('avatar.jpg')
+  const [pickError, setPickError] = useState<string | null>(null)
 
   const initials = `${firstName.charAt(0)}${lastName.charAt(0)}`.toUpperCase() || '?'
 
@@ -59,12 +66,55 @@ export default function ProfileAvatar({
     }
   }, [hasAvatar, token, avatarVersion])
 
+  useEffect(() => {
+    return () => {
+      if (cropSrc) URL.revokeObjectURL(cropSrc)
+    }
+  }, [cropSrc])
+
+  const openPicker = () => inputRef.current?.click()
+
+  const closeCrop = () => {
+    setCropSrc((prev) => {
+      if (prev) URL.revokeObjectURL(prev)
+      return null
+    })
+  }
+
+  const onFilePicked = (file: File | undefined) => {
+    setPickError(null)
+    if (!file) return
+
+    if (!ALLOWED_TYPES.has(file.type)) {
+      setPickError(
+        t('pages.profile.photoTypeInvalid', {
+          defaultValue: 'Allowed types: JPEG, PNG, WEBP',
+        }),
+      )
+      return
+    }
+    if (file.size > MAX_BYTES) {
+      setPickError(
+        t('pages.profile.photoTooLarge', {
+          defaultValue: 'Image too large (max 5 MB)',
+        }),
+      )
+      return
+    }
+
+    setCropSrc((prev) => {
+      if (prev) URL.revokeObjectURL(prev)
+      return URL.createObjectURL(file)
+    })
+    setCropFileName(file.name || 'avatar.jpg')
+  }
+
   return (
     <div className="flex flex-col sm:flex-row items-center gap-6">
       <button
         type="button"
         className="relative group shrink-0"
-        onClick={() => inputRef.current?.click()}
+        onClick={openPicker}
         disabled={uploading}
         aria-label={t('pages.profile.changePhoto', { defaultValue: 'Change photo' })}
       >
@@ -90,13 +140,11 @@ export default function ProfileAvatar({
         <p className="text-lg text-white font-medium">
           {firstName} {lastName}
         </p>
-        <p className="text-sm text-neutral-500 mt-1">
-          {t('pages.profile.photoHint', { defaultValue: 'JPEG, PNG or WEBP · max 5 MB' })}
-        </p>
+        {pickError && <p className="text-sm text-red-400 mt-2">{pickError}</p>}
         <button
           type="button"
           className="luxury-btn-ghost mt-3 text-xs"
-          onClick={() => inputRef.current?.click()}
+          onClick={openPicker}
           disabled={uploading}
         >
           {uploading
@@ -111,11 +159,22 @@ export default function ProfileAvatar({
         accept="image/jpeg,image/png,image/webp"
         className="hidden"
         onChange={(e) => {
-          const file = e.target.files?.[0]
-          if (file) onUpload(file)
+          onFilePicked(e.target.files?.[0])
           e.target.value = ''
         }}
       />
+
+      {cropSrc && (
+        <AvatarCropModal
+          imageSrc={cropSrc}
+          fileName={cropFileName}
+          onCancel={closeCrop}
+          onConfirm={(file) => {
+            closeCrop()
+            onUpload(file)
+          }}
+        />
+      )}
     </div>
   )
 }

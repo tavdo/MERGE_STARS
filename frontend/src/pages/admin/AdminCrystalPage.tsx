@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { useTranslation } from 'react-i18next'
 import AdminLayout from '../../components/AdminLayout'
 import { adminApi } from '../../features/admin/api/admin.api'
 import type { CoinApplication } from '@/features/coins/api/coins.api'
@@ -15,6 +16,7 @@ function crystalResponse(app: CoinApplication): 'AWAITING' | 'APPROVED' | 'REJEC
 }
 
 export default function AdminCrystalPage() {
+  const { t } = useTranslation()
   const [selected, setSelected] = useState<string | null>(null)
   const qc = useQueryClient()
 
@@ -50,7 +52,7 @@ export default function AdminCrystalPage() {
   const resp = app ? crystalResponse(app) : null
 
   return (
-    <AdminLayout title="ADMIN PANEL" subtitle="CRYSTAL WORKFLOW">
+    <AdminLayout title={t('admin.panel')} subtitle={t('admin.crystal.subtitle')}>
       <div style={{ display: 'grid', gridTemplateColumns: selected ? '1fr 360px' : '1fr', gap: '20px' }}>
         <div className="gold-card" style={{ borderRadius: '4px', overflow: 'hidden' }}>
           <div style={{ padding: '14px 20px', borderBottom: '1px solid rgba(201,168,76,0.1)' }}>

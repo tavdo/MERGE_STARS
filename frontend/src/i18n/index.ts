@@ -15,6 +15,20 @@ import frPages from './locales/pages/fr'
 import dePages from './locales/pages/de'
 import trPages from './locales/pages/tr'
 import arPages from './locales/pages/ar'
+import enFill from './locales/fills/en'
+import kaFill from './locales/fills/ka'
+import arFill from './locales/fills/ar'
+import ruFill from './locales/fills/ru'
+import deFill from './locales/fills/de'
+import frFill from './locales/fills/fr'
+import trFill from './locales/fills/tr'
+import enMergeCoin from './locales/pages/merge-coin-en'
+import kaMergeCoin from './locales/pages/merge-coin-ka'
+import arMergeCoin from './locales/pages/merge-coin-ar'
+import ruMergeCoin from './locales/pages/merge-coin-ru'
+import deMergeCoin from './locales/pages/merge-coin-de'
+import frMergeCoin from './locales/pages/merge-coin-fr'
+import trMergeCoin from './locales/pages/merge-coin-tr'
 
 export const LANG_STORAGE_KEY = 'merge-stars-lang'
 
@@ -53,13 +67,13 @@ function applyDocumentLanguage(lng: string) {
 
 void i18n.use(initReactI18next).init({
   resources: {
-    en: { translation: mergeLocales(en, enPages) },
-    ru: { translation: mergeLocales(ru, ruPages) },
-    fr: { translation: mergeLocales(fr, frPages) },
-    de: { translation: mergeLocales(de, dePages) },
-    tr: { translation: mergeLocales(tr, trPages) },
-    ka: { translation: mergeLocales(ka, kaPages) },
-    ar: { translation: mergeLocales(ar, arPages) },
+    en: { translation: mergeLocales(en, enPages, enFill, enMergeCoin) },
+    ru: { translation: mergeLocales(ru, ruPages, ruFill, ruMergeCoin) },
+    fr: { translation: mergeLocales(fr, frPages, frFill, frMergeCoin) },
+    de: { translation: mergeLocales(de, dePages, deFill, deMergeCoin) },
+    tr: { translation: mergeLocales(tr, trPages, trFill, trMergeCoin) },
+    ka: { translation: mergeLocales(ka, kaPages, kaFill, kaMergeCoin) },
+    ar: { translation: mergeLocales(ar, arPages, arFill, arMergeCoin) },
   },
   lng: saved,
   fallbackLng: 'en',

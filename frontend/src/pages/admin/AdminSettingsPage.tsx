@@ -63,7 +63,7 @@ export default function AdminSettingsPage() {
   }
 
   return (
-    <AdminLayout title="SETTINGS" subtitle="SYSTEM CONFIGURATION">
+    <AdminLayout title={t('admin.settings.title')} subtitle={t('admin.settings.subtitle')}>
       <div className="space-y-6">
         {isLoading && <p style={{ color: 'rgba(255,255,255,0.45)', fontSize: '12px' }}>Loading settings…</p>}
 

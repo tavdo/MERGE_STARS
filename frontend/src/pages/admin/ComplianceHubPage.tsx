@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { useSearchParams } from 'react-router-dom'
 import AdminLayout from '../../components/AdminLayout'
 
@@ -64,6 +65,7 @@ function parseTab(value: string | null): Tab {
 }
 
 export default function ComplianceHubPage() {
+  const { t } = useTranslation()
   const [searchParams, setSearchParams] = useSearchParams()
   const tab = parseTab(searchParams.get('tab'))
   const [active, setActive] = useState<Tab>(tab)
@@ -81,7 +83,7 @@ export default function ComplianceHubPage() {
   const meta = TABS.find((t) => t.id === active)!
 
   return (
-    <AdminLayout title="COMPLIANCE" subtitle={meta.subtitle}>
+    <AdminLayout title={t('admin.nav.compliance')} subtitle={meta.subtitle}>
       <div style={{ display: 'flex', gap: '8px', marginBottom: '18px', flexWrap: 'wrap' }}>
         {TABS.map((t) => (
           <button

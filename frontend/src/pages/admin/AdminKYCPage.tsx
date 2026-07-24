@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { useTranslation } from 'react-i18next'
 import AdminLayout from '../../components/AdminLayout'
 import { adminApi, type AdminUser } from '../../features/admin/api/admin.api'
 import { kycApi } from '@/features/kyc/api/kyc.api'
@@ -11,6 +12,7 @@ const KYC_COLORS: Record<string, { bg: string; color: string }> = {
 }
 
 export default function AdminKYCPage() {
+  const { t } = useTranslation()
   const [selected, setSelected] = useState<string | null>(null)
   const qc = useQueryClient()
 
@@ -54,7 +56,7 @@ export default function AdminKYCPage() {
   }
 
   return (
-    <AdminLayout title="ADMIN PANEL" subtitle="KYC VERIFICATION">
+    <AdminLayout title={t('admin.panel')} subtitle={t('admin.kyc.subtitle')}>
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(160px,1fr))', gap: '16px', marginBottom: '24px' }}>
         {[
           { label: 'PENDING', value: stats.pending, color: '#f59e0b' },
