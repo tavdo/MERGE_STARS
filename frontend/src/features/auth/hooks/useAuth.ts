@@ -1,10 +1,11 @@
 import { useMutation } from '@tanstack/react-query'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { authApi } from '../api/auth.api'
+import { kycApi } from '@/features/kyc/api/kyc.api'
 import { useAuthStore } from '../store/auth.store'
 import { connectSocket, disconnectSocket } from '@/lib/socket'
 import { ROUTES } from '@/router/routes'
-import type { LoginPayload, RegisterPayload } from '../types'
+import type { LoginPayload, RegisterWithIdentityPayload } from '../types'
 import type { Role } from '@/shared/types/api.types'
 
 function mapUser(u: {
@@ -45,12 +46,31 @@ export function useRegister() {
   const navigate = useNavigate()
 
   return useMutation({
-    mutationFn: (payload: RegisterPayload) => authApi.register(payload),
-    onSuccess: ({ data }) => {
-      const { accessToken, user } = data.data
+    mutationFn: async ({
+      identityFront,
+      identityBack,
+      ...payload
+    }: RegisterWithIdentityPayload) => {
+      const response = await authApi.register(payload)
+      const { accessToken } = response.data.data
+
+      let kycComplete = true
+      try {
+        await Promise.all([
+          kycApi.upload(identityFront, 'id_front', accessToken),
+          kycApi.upload(identityBack, 'id_back', accessToken),
+        ])
+      } catch {
+        kycComplete = false
+      }
+
+      return { response, kycComplete }
+    },
+    onSuccess: ({ response, kycComplete }) => {
+      const { accessToken, user } = response.data.data
       setSession(accessToken, mapUser(user))
       connectSocket(accessToken)
-      navigate(ROUTES.DASHBOARD)
+      navigate(kycComplete ? ROUTES.DASHBOARD : '/dashboard/profile?kyc=required')
     },
   })
 }

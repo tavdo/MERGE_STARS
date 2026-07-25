@@ -237,6 +237,8 @@ export default {
     yourBrand: 'YOUR BRAND',
     descPreview: 'Brand description appears here',
     savedBtn: '✅ SAVED',
+    viewPublic: 'View public profile',
+    copyPublicLink: 'Copy public link',
   },
   qrIdentity: {
     title: 'QR IDENTITY',

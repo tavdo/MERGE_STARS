@@ -12,6 +12,7 @@ import StatusPage        from './pages/StatusPage'
 // Public pages
 import HowItWorksPage    from './pages/public/HowItWorksPage'
 import MergeCoinPage     from './pages/public/MergeCoinPage'
+import FilamentTechnologyPage from './pages/public/FilamentTechnologyPage'
 import PriceIndicatorPage from './pages/public/PriceIndicatorPage'
 import FAQPage           from './pages/public/FAQPage'
 import ContactPage       from './pages/public/ContactPage'
@@ -26,6 +27,9 @@ import BrandLinePage     from './pages/dashboard/BrandLinePage'
 import CollectionsPage   from './pages/dashboard/CollectionsPage'
 import CollectionDetailPage from './pages/dashboard/CollectionDetailPage'
 import CollectionsBrowsePage from './pages/public/CollectionsBrowsePage'
+import BrandPublicPage from './pages/public/BrandPublicPage'
+import BrandRoomPage from './pages/public/BrandRoomPage'
+import MemberPublicPage from './pages/public/MemberPublicPage'
 import QRIdentityPage    from './pages/dashboard/QRIdentityPage'
 import OrdersPage        from './pages/dashboard/OrdersPage'
 import PaymentPage       from './pages/dashboard/PaymentPage'
@@ -88,6 +92,7 @@ function AppRoutes() {
         <Route path="/"                element={<LandingPage />} />
         <Route path="/how-it-works"    element={<HowItWorksPage />} />
         <Route path="/merge-coin"      element={<MergeCoinPage />} />
+        <Route path="/filament"        element={<FilamentTechnologyPage />} />
         <Route path="/price-indicator" element={<PriceIndicatorPage />} />
         <Route path="/faq"             element={<FAQPage />} />
         <Route path="/contact"         element={<ContactPage />} />
@@ -99,6 +104,9 @@ function AppRoutes() {
         <Route path="/legal-classification" element={<LegalClassificationPage />} />
         <Route path="/collections"          element={<CollectionsBrowsePage />} />
         <Route path="/collections/:slug"   element={<CollectionsBrowsePage />} />
+        <Route path="/brand-room"          element={<BrandRoomPage />} />
+        <Route path="/b/:brandLineId"      element={<BrandPublicPage />} />
+        <Route path="/u/:mergeId"          element={<MemberPublicPage mode="member" />} />
         <Route path="/login"           element={<LoginPage />} />
         <Route path="/register"        element={<Navigate to="/login?tab=register" replace />} />
         <Route path="/forgot-password" element={<ForgotPasswordPage />} />

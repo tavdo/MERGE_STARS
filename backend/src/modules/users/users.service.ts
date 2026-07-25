@@ -118,6 +118,43 @@ export class UsersService {
     return { filePath, mimeType };
   }
 
+  private async findByPublicId(id: string) {
+    const key = id.trim();
+    if (!key) throw new NotFoundException('User not found');
+    const user = await this.users.findOne({
+      where: [{ mergeId: key }, { brandLineId: key }],
+    });
+    if (!user) throw new NotFoundException('User not found');
+    return user;
+  }
+
+  /** Safe public member card (no email/phone/KYC docs) */
+  async getPublicMemberProfile(id: string) {
+    const user = await this.findByPublicId(id);
+    return {
+      firstName: user.firstName,
+      lastName: user.lastName,
+      displayName: `${user.firstName} ${user.lastName}`.trim(),
+      mergeId: user.mergeId,
+      brandLineId: user.brandLineId,
+      founderId: user.founderId,
+      hasAvatar: !!user.avatarUrl,
+      avatarUrl: user.avatarUrl
+        ? `/api/users/public/${encodeURIComponent(user.mergeId)}/avatar`
+        : null,
+      profilePath: `/u/${encodeURIComponent(user.mergeId)}`,
+      brandPath: user.brandLineId
+        ? `/b/${encodeURIComponent(user.brandLineId)}`
+        : `/u/${encodeURIComponent(user.mergeId)}`,
+      memberSince: user.createdAt.toISOString(),
+    };
+  }
+
+  async getPublicAvatarFile(id: string) {
+    const user = await this.findByPublicId(id);
+    return this.getAvatarFile(user.id);
+  }
+
   async changePassword(
     userId: string,
     currentPassword: string,

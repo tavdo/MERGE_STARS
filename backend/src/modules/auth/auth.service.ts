@@ -76,10 +76,6 @@ export class AuthService {
     return token;
   }
 
-  private normalizePersonalId(id: string) {
-    return id.trim().replace(/\s+/g, '');
-  }
-
   private async nextUserIds() {
     const rows = await this.users.find({ select: { mergeId: true } });
     let max = 0;
@@ -250,11 +246,6 @@ export class AuthService {
   async register(dto: RegisterDto) {
     const email = dto.email.trim().toLowerCase();
     const phone = dto.phone?.trim() || null;
-    const personalId = this.normalizePersonalId(dto.personalId);
-
-    if (!personalId) {
-      throw new BadRequestException('Personal ID is required');
-    }
 
     const existingEmail = await this.users.findOne({ where: { email } });
     if (existingEmail) {
@@ -266,11 +257,6 @@ export class AuthService {
       if (existingPhone) {
         throw new ConflictException('Phone already registered');
       }
-    }
-
-    const existingPersonalId = await this.users.findOne({ where: { personalId } });
-    if (existingPersonalId) {
-      throw new ConflictException('Personal ID already registered — one account per ID');
     }
 
     const emailVerify = process.env.EMAIL_VERIFY !== 'false';
@@ -300,7 +286,8 @@ export class AuthService {
       passwordHash: await this.hashPassword(dto.password),
       firstName: dto.firstName.trim(),
       lastName: dto.lastName.trim(),
-      personalId,
+      // Filled later by KYC review/OCR from the uploaded identity card.
+      personalId: null,
       mergeId: ids.mergeId,
       founderId: ids.founderId,
       brandLineId: ids.brandLineId,

@@ -25,20 +25,41 @@ export interface CatalogCollection {
   description: string | null
   slug: string
   visibility: CatalogVisibility
+  category?: CatalogCategory
   itemCount: number
   createdAt: string
   updatedAt: string
   ownerName?: string
   brandLineId?: string | null
+  mergeId?: string | null
+  brandName?: string | null
+  logoUrl?: string | null
+  avatarUrl?: string | null
 }
 
 export type CatalogVisibility = 'PUBLIC' | 'PRIVATE'
+export type CatalogCategory =
+  | 'jewelry'
+  | 'accessories'
+  | 'souvenirs'
+  | 'sanitaryware'
+  | 'stationery'
+  | 'construction'
+  | 'more'
+
+export interface CatalogCategoryStat {
+  key: CatalogCategory
+  count: number
+}
 
 export interface CatalogCollectionDetail extends CatalogCollection {
   items: CatalogItem[]
 }
 
-const apiBase = (import.meta.env.VITE_API_URL ?? 'http://localhost:3000').replace(/\/$/, '')
+const apiBase = (import.meta.env.VITE_API_URL || (import.meta.env.PROD ? '/api' : 'http://localhost:3000')).replace(
+  /\/$/,
+  '',
+)
 
 export function catalogItemImageUrl(item: CatalogItem) {
   if (!item.imageUrl) return null
@@ -54,6 +75,23 @@ export function catalogItemModelUrl(item: CatalogItem) {
   return null
 }
 
+/** Public browse — no auth required (item must be in a PUBLIC collection) */
+export function catalogItemPublicImageUrl(item: CatalogItem) {
+  if (item.imageUrl?.startsWith('http')) return item.imageUrl
+  if (item.hasImage || (item.imageUrl && !item.imageUrl.startsWith('http'))) {
+    return `${apiBase}/catalog/public/items/${item.id}/image`
+  }
+  return null
+}
+
+export function catalogItemPublicModelUrl(item: CatalogItem) {
+  if (item.model3dUrl?.startsWith('http')) return item.model3dUrl
+  if (item.hasModel3d || (item.model3dUrl && !item.model3dUrl.startsWith('http'))) {
+    return `${apiBase}/catalog/public/items/${item.id}/model3d`
+  }
+  return null
+}
+
 export const catalogApi = {
   listMine: () =>
     api.get<ApiResponse<CatalogCollection[]>>('/catalog/collections'),
@@ -61,11 +99,22 @@ export const catalogApi = {
   getOne: (id: string) =>
     api.get<ApiResponse<CatalogCollectionDetail>>(`/catalog/collections/${id}`),
 
-  create: (payload: { title: string; description?: string; visibility: CatalogVisibility }) =>
-    api.post<ApiResponse<CatalogCollection>>('/catalog/collections', payload),
+  create: (payload: {
+    title: string
+    description?: string
+    visibility: CatalogVisibility
+    category?: CatalogCategory
+  }) => api.post<ApiResponse<CatalogCollection>>('/catalog/collections', payload),
 
-  update: (id: string, payload: Partial<{ title: string; description: string; visibility: CatalogVisibility }>) =>
-    api.patch<ApiResponse<CatalogCollection>>(`/catalog/collections/${id}`, payload),
+  update: (
+    id: string,
+    payload: Partial<{
+      title: string
+      description: string
+      visibility: CatalogVisibility
+      category: CatalogCategory
+    }>,
+  ) => api.patch<ApiResponse<CatalogCollection>>(`/catalog/collections/${id}`, payload),
 
   remove: (id: string) =>
     api.delete<ApiResponse<{ ok: boolean }>>(`/catalog/collections/${id}`),
@@ -96,8 +145,13 @@ export const catalogApi = {
   removeItem: (itemId: string) =>
     api.delete<ApiResponse<{ ok: boolean }>>(`/catalog/items/${itemId}`),
 
-  listPublic: () =>
-    api.get<ApiResponse<CatalogCollection[]>>('/catalog/public'),
+  listPublic: (category?: string) =>
+    api.get<ApiResponse<CatalogCollection[]>>('/catalog/public', {
+      params: category ? { category } : undefined,
+    }),
+
+  categoryStats: () =>
+    api.get<ApiResponse<CatalogCategoryStat[]>>('/catalog/public/categories'),
 
   getPublic: (slug: string) =>
     api.get<ApiResponse<CatalogCollectionDetail>>(`/catalog/public/${slug}`),

@@ -7,6 +7,7 @@ export interface KycDocumentItem {
   originalName: string
   mimeType: string
   size: number
+  documentType: 'id_front' | 'id_back' | 'other'
   status: string
   createdAt: string
 }
@@ -15,11 +16,19 @@ export const kycApi = {
   listMine: () =>
     api.get<ApiResponse<KycDocumentItem[]>>('/users/me/kyc/documents'),
 
-  upload: (file: File) => {
+  upload: (
+    file: File,
+    documentType: 'id_front' | 'id_back' | 'other' = 'other',
+    accessToken?: string,
+  ) => {
     const form = new FormData()
     form.append('file', file)
+    form.append('documentType', documentType)
     return api.post<ApiResponse<KycDocumentItem>>('/users/me/kyc/documents', form, {
-      headers: { 'Content-Type': 'multipart/form-data' },
+      headers: {
+        'Content-Type': 'multipart/form-data',
+        ...(accessToken ? { Authorization: `Bearer ${accessToken}` } : {}),
+      },
     })
   },
 

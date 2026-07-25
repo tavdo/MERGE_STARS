@@ -3,7 +3,8 @@ import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import DashboardLayout from '../../components/DashboardLayout'
-import { catalogApi, type CatalogVisibility } from '@/features/catalog/api/catalog.api'
+import { catalogApi, type CatalogCategory, type CatalogVisibility } from '@/features/catalog/api/catalog.api'
+import { CATALOG_CATEGORIES } from '@/shared/catalogCategories'
 import { getApiErrorMessage } from '@/shared/utils/apiError'
 
 export default function CollectionsPage() {
@@ -13,6 +14,7 @@ export default function CollectionsPage() {
   const [title, setTitle] = useState('')
   const [description, setDescription] = useState('')
   const [visibility, setVisibility] = useState<CatalogVisibility>('PRIVATE')
+  const [category, setCategory] = useState<CatalogCategory>('jewelry')
   const [error, setError] = useState<string | null>(null)
 
   const { data: collections = [], isLoading } = useQuery({
@@ -26,12 +28,14 @@ export default function CollectionsPage() {
         title: title.trim(),
         description: description.trim() || undefined,
         visibility,
+        category,
       }),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['catalog-collections'] })
       setTitle('')
       setDescription('')
       setVisibility('PRIVATE')
+      setCategory('jewelry')
       setShowForm(false)
       setError(null)
     },
@@ -75,6 +79,20 @@ export default function CollectionsPage() {
               <textarea className="gold-input" rows={3} value={description} onChange={(e) => setDescription(e.target.value)} />
             </div>
             <div>
+              <label className="auth-field-label">{t('collections.category', { defaultValue: 'Category' })}</label>
+              <select
+                className="gold-input"
+                value={category}
+                onChange={(e) => setCategory(e.target.value as CatalogCategory)}
+              >
+                {CATALOG_CATEGORIES.map((key) => (
+                  <option key={key} value={key}>
+                    {t(`landing.categories.${key}`)}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div>
               <label className="auth-field-label">{t('collections.visibility', { defaultValue: 'Visibility' })}</label>
               <select className="gold-input" value={visibility} onChange={(e) => setVisibility(e.target.value as CatalogVisibility)}>
                 <option value="PRIVATE">{t('collections.private', { defaultValue: 'Private — only you' })}</option>
@@ -105,9 +123,16 @@ export default function CollectionsPage() {
               <Link key={c.id} to={`/dashboard/collections/${c.id}`} className="dash-panel block hover:border-[#D4AF37]/40 transition-colors no-underline">
                 <div className="flex items-start justify-between gap-3 mb-3">
                   <h3 className="text-base font-bold text-white">{c.title}</h3>
-                  <span className={`text-[10px] font-bold tracking-wider px-2 py-1 rounded ${c.visibility === 'PUBLIC' ? 'bg-emerald-500/10 text-emerald-400' : 'bg-neutral-500/10 text-neutral-400'}`}>
-                    {c.visibility}
-                  </span>
+                  <div className="flex flex-col items-end gap-1">
+                    <span className={`text-[10px] font-bold tracking-wider px-2 py-1 rounded ${c.visibility === 'PUBLIC' ? 'bg-emerald-500/10 text-emerald-400' : 'bg-neutral-500/10 text-neutral-400'}`}>
+                      {c.visibility}
+                    </span>
+                    {c.category && (
+                      <span className="text-[10px] tracking-wider text-[#c9a84c]">
+                        {t(`landing.categories.${c.category}`)}
+                      </span>
+                    )}
+                  </div>
                 </div>
                 {c.description && (
                   <p className="text-sm text-neutral-500 line-clamp-2 mb-4">{c.description}</p>

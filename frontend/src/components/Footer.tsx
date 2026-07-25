@@ -12,6 +12,7 @@ import {
 const COMPANY = [
   { labelKey: 'nav.howItWorks', to: '/how-it-works' },
   { labelKey: 'nav.mergeCoin', to: '/merge-coin' },
+  { labelKey: 'nav.filament', to: '/filament' },
   { labelKey: 'nav.prices', to: '/price-indicator' },
   { labelKey: 'nav.apply', to: '/apply' },
 ] as const

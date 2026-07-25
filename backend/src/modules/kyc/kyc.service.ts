@@ -5,11 +5,12 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { mkdir, writeFile } from 'fs/promises';
+import { mkdir, unlink, writeFile } from 'fs/promises';
 import { join } from 'path';
 import { randomUUID } from 'crypto';
 import {
   KycDocument,
+  KycDocumentType,
   kycDocumentView,
 } from '../../database/entities/kyc-document.entity';
 
@@ -21,6 +22,8 @@ const ALLOWED_MIME = new Set([
 ]);
 
 const MAX_BYTES = 10 * 1024 * 1024;
+const ID_DOCUMENT_TYPES = new Set<KycDocumentType>(['id_front', 'id_back']);
+const IMAGE_MIME = new Set(['image/jpeg', 'image/png', 'image/webp']);
 
 @Injectable()
 export class KycService {
@@ -38,7 +41,11 @@ export class KycService {
   async uploadForUser(
     userId: string,
     file: Express.Multer.File | undefined,
+    documentType: KycDocumentType = 'other',
   ) {
+    if (!['id_front', 'id_back', 'other'].includes(documentType)) {
+      throw new BadRequestException('Invalid document type');
+    }
     if (!file?.buffer?.length) {
       throw new BadRequestException('File is required');
     }
@@ -48,6 +55,9 @@ export class KycService {
     if (file.size > MAX_BYTES) {
       throw new BadRequestException('File too large (max 10 MB)');
     }
+    if (ID_DOCUMENT_TYPES.has(documentType) && !IMAGE_MIME.has(file.mimetype)) {
+      throw new BadRequestException('Identity card sides must be JPEG, PNG, or WEBP');
+    }
 
     const dir = this.userDir(userId);
     await mkdir(dir, { recursive: true });
@@ -55,15 +65,21 @@ export class KycService {
     const filePath = join(dir, storedName);
     await writeFile(filePath, file.buffer);
 
-    const doc = this.docs.create({
-      userId,
-      originalName: file.originalname,
-      mimeType: file.mimetype,
-      size: file.size,
-      filePath,
-      status: 'pending',
-    });
+    const existing = ID_DOCUMENT_TYPES.has(documentType)
+      ? await this.docs.findOne({ where: { userId, documentType } })
+      : null;
+    const previousPath = existing?.filePath;
+    const doc = existing ?? this.docs.create({ userId });
+    doc.originalName = file.originalname;
+    doc.mimeType = file.mimetype;
+    doc.size = file.size;
+    doc.filePath = filePath;
+    doc.documentType = documentType;
+    doc.status = 'pending';
     await this.docs.save(doc);
+    if (previousPath && previousPath !== filePath) {
+      await unlink(previousPath).catch(() => undefined);
+    }
     return kycDocumentView(doc);
   }
 

@@ -7,7 +7,6 @@ export interface LoginPayload {
 export interface RegisterStep1Payload {
   firstName: string
   lastName: string
-  personalId: string
   phone: string
 }
 
@@ -29,13 +28,17 @@ export interface RegisterStep3Payload {
 export interface RegisterPayload {
   firstName: string
   lastName: string
-  personalId: string
   phone?: string
   email: string
   password: string
   referralCode?: string
   referralSource?: string
   verificationCode?: string
+}
+
+export interface RegisterWithIdentityPayload extends RegisterPayload {
+  identityFront: File
+  identityBack: File
 }
 
 export interface AuthUser {

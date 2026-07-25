@@ -13,6 +13,15 @@ import { CatalogItem } from './catalog-item.entity';
 
 export type CatalogVisibility = 'PUBLIC' | 'PRIVATE';
 
+export type CatalogCategory =
+  | 'jewelry'
+  | 'accessories'
+  | 'souvenirs'
+  | 'sanitaryware'
+  | 'stationery'
+  | 'construction'
+  | 'more';
+
 @Entity('catalog_collections')
 export class CatalogCollection {
   @PrimaryGeneratedColumn('uuid')
@@ -37,6 +46,10 @@ export class CatalogCollection {
   @Column({ type: 'varchar', default: 'PRIVATE' })
   visibility: CatalogVisibility;
 
+  /** Landing / Brand Room explore category */
+  @Column({ type: 'varchar', length: 32, default: 'more' })
+  category: CatalogCategory;
+
   @OneToMany(() => CatalogItem, (item) => item.collection)
   items: CatalogItem[];
 
@@ -55,6 +68,7 @@ export function catalogCollectionView(c: CatalogCollection, itemCount?: number) 
     description: c.description,
     slug: c.slug,
     visibility: c.visibility,
+    category: c.category || 'more',
     itemCount: itemCount ?? c.items?.length ?? 0,
     createdAt: c.createdAt.toISOString(),
     updatedAt: c.updatedAt.toISOString(),

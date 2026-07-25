@@ -1,4 +1,5 @@
 import {
+  Body,
   Controller,
   Get,
   Param,
@@ -17,6 +18,7 @@ import { RolesGuard } from '../../common/guards/roles.guard';
 import { Roles } from '../../common/decorators/roles.decorator';
 import { CurrentUser } from '../../common/decorators/current-user.decorator';
 import { User } from '../../database/entities/user.entity';
+import { KycDocumentType } from '../../database/entities/kyc-document.entity';
 import { KycService } from './kyc.service';
 
 @Controller()
@@ -31,8 +33,12 @@ export class KycController {
       limits: { fileSize: 10 * 1024 * 1024 },
     }),
   )
-  upload(@CurrentUser() user: User, @UploadedFile() file: Express.Multer.File) {
-    return this.kyc.uploadForUser(user.id, file);
+  upload(
+    @CurrentUser() user: User,
+    @UploadedFile() file: Express.Multer.File,
+    @Body('documentType') documentType?: KycDocumentType,
+  ) {
+    return this.kyc.uploadForUser(user.id, file, documentType ?? 'other');
   }
 
   @Get('users/me/kyc/documents')

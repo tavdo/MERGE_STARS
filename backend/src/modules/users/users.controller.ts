@@ -2,6 +2,7 @@ import {
   Body,
   Controller,
   Get,
+  Param,
   Patch,
   Post,
   Res,
@@ -36,6 +37,19 @@ export class UsersController {
   @Get('public/registration-goal')
   registrationGoal() {
     return this.users.getRegistrationGoalStats();
+  }
+
+  @Get('public/:mergeId')
+  getPublicProfile(@Param('mergeId') mergeId: string) {
+    return this.users.getPublicMemberProfile(mergeId);
+  }
+
+  @Get('public/:mergeId/avatar')
+  async publicAvatar(@Param('mergeId') mergeId: string, @Res() res: Response) {
+    const file = await this.users.getPublicAvatarFile(mergeId);
+    res.setHeader('Content-Type', file.mimeType);
+    res.setHeader('Cache-Control', 'public, max-age=3600');
+    createReadStream(file.filePath).pipe(res);
   }
 
   @Get('me')

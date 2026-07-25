@@ -10,6 +10,8 @@ const NAV_LINKS = [
   { labelKey: 'nav.home', href: '/' },
   { labelKey: 'nav.howItWorks', href: '/how-it-works' },
   { labelKey: 'nav.mergeCoin', href: '/merge-coin' },
+  { labelKey: 'nav.filament', href: '/filament' },
+  { labelKey: 'nav.brandRoom', href: '/brand-room' },
   { labelKey: 'nav.prices', href: '/price-indicator' },
   { labelKey: 'nav.apply', href: '/apply' },
   { labelKey: 'nav.faq', href: '/faq' },
@@ -80,21 +82,26 @@ export default function Navbar({ variant = 'landing' }: NavbarProps) {
 
         <div className="site-nav-links hidden lg:flex items-center">
           {NAV_LINKS.map((link) => {
-            const active = location.pathname === link.href
-            return (
-              <Link
-                key={link.href}
-                to={link.href}
-                className={`site-nav-link text-[10px] font-medium tracking-[0.18em] uppercase transition-all duration-300 ease-in-out pb-0.5 border-b ${
-                  active
-                    ? 'text-[#D4AF37] border-[#D4AF37]'
-                    : 'text-neutral-400 border-transparent hover:text-neutral-200 hover:border-neutral-600'
-                }`}
-                style={{ textDecoration: 'none' }}
-              >
-                {t(link.labelKey)}
-              </Link>
-            )
+                const active =
+                  link.href === '/brand-room'
+                    ? location.pathname === '/brand-room' ||
+                      location.pathname.startsWith('/b/') ||
+                      location.pathname.startsWith('/u/')
+                    : location.pathname === link.href
+                return (
+                  <Link
+                    key={link.href}
+                    to={link.href}
+                    className={`site-nav-link text-[10px] font-medium tracking-[0.18em] uppercase transition-all duration-300 ease-in-out pb-0.5 border-b ${
+                      active
+                        ? 'text-[#D4AF37] border-[#D4AF37]'
+                        : 'text-neutral-400 border-transparent hover:text-neutral-200 hover:border-neutral-600'
+                    }`}
+                    style={{ textDecoration: 'none' }}
+                  >
+                    {t(link.labelKey)}
+                  </Link>
+                )
           })}
         </div>
 
@@ -138,7 +145,12 @@ export default function Navbar({ variant = 'landing' }: NavbarProps) {
           <div id="site-mobile-menu" className="nav-mobile-panel lg:hidden">
             <div className="nav-mobile-links">
               {NAV_LINKS.map((link) => {
-                const active = location.pathname === link.href
+                const active =
+                  link.href === '/brand-room'
+                    ? location.pathname === '/brand-room' ||
+                      location.pathname.startsWith('/b/') ||
+                      location.pathname.startsWith('/u/')
+                    : location.pathname === link.href
                 return (
                   <Link
                     key={link.href}

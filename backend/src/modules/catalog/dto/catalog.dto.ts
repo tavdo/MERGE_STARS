@@ -1,5 +1,6 @@
 import {
   IsEnum,
+  IsIn,
   IsNotEmpty,
   IsNumber,
   IsOptional,
@@ -8,6 +9,9 @@ import {
   Min,
 } from 'class-validator';
 import { Type } from 'class-transformer';
+import { CATALOG_CATEGORIES } from '../catalog-categories';
+
+const CATEGORY_VALUES = [...CATALOG_CATEGORIES];
 
 export class CreateCollectionDto {
   @IsString()
@@ -22,6 +26,10 @@ export class CreateCollectionDto {
 
   @IsEnum(['PUBLIC', 'PRIVATE'])
   visibility: 'PUBLIC' | 'PRIVATE';
+
+  @IsOptional()
+  @IsIn(CATEGORY_VALUES)
+  category?: (typeof CATALOG_CATEGORIES)[number];
 }
 
 export class UpdateCollectionDto {
@@ -39,6 +47,10 @@ export class UpdateCollectionDto {
   @IsOptional()
   @IsEnum(['PUBLIC', 'PRIVATE'])
   visibility?: 'PUBLIC' | 'PRIVATE';
+
+  @IsOptional()
+  @IsIn(CATEGORY_VALUES)
+  category?: (typeof CATALOG_CATEGORIES)[number];
 }
 
 export class CreateCatalogItemDto {

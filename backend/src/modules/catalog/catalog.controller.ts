@@ -6,6 +6,7 @@ import {
   Param,
   Patch,
   Post,
+  Query,
   Res,
   UploadedFile,
   UseGuards,
@@ -51,8 +52,29 @@ export class CatalogController {
   constructor(private readonly catalog: CatalogService) {}
 
   @Get('public')
-  listPublic() {
-    return this.catalog.listPublic();
+  listPublic(@Query('category') category?: string) {
+    return this.catalog.listPublic(50, category);
+  }
+
+  @Get('public/categories')
+  categoryStats() {
+    return this.catalog.publicCategoryStats();
+  }
+
+  @Get('public/items/:itemId/image')
+  async publicImage(@Param('itemId') itemId: string, @Res() res: Response) {
+    const file = await this.catalog.getPublicImageFile(itemId);
+    res.setHeader('Content-Type', file.mimeType);
+    res.setHeader('Cache-Control', 'public, max-age=3600');
+    createReadStream(file.filePath).pipe(res);
+  }
+
+  @Get('public/items/:itemId/model3d')
+  async publicModel(@Param('itemId') itemId: string, @Res() res: Response) {
+    const file = await this.catalog.getPublicModelFile(itemId);
+    res.setHeader('Content-Type', file.mimeType);
+    res.setHeader('Cache-Control', 'public, max-age=3600');
+    createReadStream(file.filePath).pipe(res);
   }
 
   @Get('public/:slug')

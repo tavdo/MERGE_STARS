@@ -8,7 +8,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { randomBytes, randomUUID } from 'crypto';
 import { mkdir, rename, unlink, writeFile } from 'fs/promises';
 import { join } from 'path';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
+import { BrandLineProfile } from '../../database/entities/brand-line-profile.entity';
 import {
   CatalogCollection,
   catalogCollectionView,
@@ -17,12 +18,18 @@ import {
   CatalogItem,
   catalogItemView,
 } from '../../database/entities/catalog-item.entity';
+import { User } from '../../database/entities/user.entity';
 import {
   CreateCatalogItemDto,
   CreateCollectionDto,
   UpdateCatalogItemDto,
   UpdateCollectionDto,
 } from './dto/catalog.dto';
+import {
+  CATALOG_CATEGORIES,
+  isCatalogCategory,
+  normalizeCatalogCategory,
+} from './catalog-categories';
 
 const IMAGE_MIME = new Set(['image/jpeg', 'image/png', 'image/webp', 'image/gif']);
 const MODEL_MIME = new Set([
@@ -56,10 +63,51 @@ export class CatalogService {
     private readonly collections: Repository<CatalogCollection>,
     @InjectRepository(CatalogItem)
     private readonly items: Repository<CatalogItem>,
+    @InjectRepository(BrandLineProfile)
+    private readonly brandProfiles: Repository<BrandLineProfile>,
   ) {}
 
   private itemDir(itemId: string) {
     return join(this.uploadRoot, 'catalog', itemId);
+  }
+
+  private publicOwnerMeta(
+    user: User | null | undefined,
+    profile: BrandLineProfile | null | undefined,
+  ) {
+    if (!user) {
+      return {
+        ownerName: 'Member',
+        brandLineId: null as string | null,
+        mergeId: null as string | null,
+        brandName: null as string | null,
+        logoUrl: null as string | null,
+        avatarUrl: null as string | null,
+      };
+    }
+    const publicKey = user.brandLineId || user.mergeId;
+    return {
+      ownerName: `${user.firstName} ${user.lastName}`.trim() || 'Member',
+      brandLineId: user.brandLineId ?? null,
+      mergeId: user.mergeId ?? null,
+      brandName: profile?.name?.trim() || null,
+      logoUrl:
+        profile?.logoUrl && publicKey
+          ? `/api/brand/public/${encodeURIComponent(publicKey)}/logo`
+          : null,
+      avatarUrl: user.avatarUrl
+        ? `/api/users/public/${encodeURIComponent(user.mergeId)}/avatar`
+        : null,
+    };
+  }
+
+  private async brandProfilesByUserIds(userIds: string[]) {
+    const unique = [...new Set(userIds.filter(Boolean))];
+    if (unique.length === 0) return new Map<string, BrandLineProfile>();
+    const rows = await this.brandProfiles.find({
+      where: { userId: In(unique) },
+    });
+    return new Map(rows.map((p) => [p.userId, p]));
   }
 
   private async ownedItem(userId: string, itemId: string) {
@@ -90,17 +138,48 @@ export class CatalogService {
     return rows.map((c) => catalogCollectionView(c));
   }
 
-  async listPublic(limit = 50) {
+  async listPublic(limit = 50, category?: string) {
+    const where: {
+      visibility: 'PUBLIC';
+      category?: (typeof CATALOG_CATEGORIES)[number];
+    } = { visibility: 'PUBLIC' };
+    if (category && isCatalogCategory(category)) {
+      where.category = category;
+    }
     const rows = await this.collections.find({
-      where: { visibility: 'PUBLIC' },
+      where,
       order: { updatedAt: 'DESC' },
       take: limit,
       relations: { items: true, user: true },
     });
+    const profiles = await this.brandProfilesByUserIds(rows.map((c) => c.userId));
     return rows.map((c) => ({
       ...catalogCollectionView(c),
-      ownerName: c.user ? `${c.user.firstName} ${c.user.lastName}`.trim() : 'Member',
-      brandLineId: c.user?.brandLineId ?? null,
+      ...this.publicOwnerMeta(c.user, profiles.get(c.userId)),
+    }));
+  }
+
+  async publicCategoryStats() {
+    const rows = await this.collections
+      .createQueryBuilder('c')
+      .select('c.category', 'category')
+      .addSelect('COUNT(*)', 'count')
+      .where('c.visibility = :v', { v: 'PUBLIC' })
+      .groupBy('c.category')
+      .getRawMany<{ category: string; count: string }>();
+
+    const counts = Object.fromEntries(
+      CATALOG_CATEGORIES.map((key) => [key, 0]),
+    ) as Record<(typeof CATALOG_CATEGORIES)[number], number>;
+
+    for (const row of rows) {
+      const key = normalizeCatalogCategory(row.category);
+      counts[key] += Number(row.count) || 0;
+    }
+
+    return CATALOG_CATEGORIES.map((key) => ({
+      key,
+      count: counts[key],
     }));
   }
 
@@ -125,9 +204,12 @@ export class CatalogService {
       relations: { items: true, user: true },
     });
     if (!row) throw new NotFoundException('Collection not found');
+    const profile = row.userId
+      ? await this.brandProfiles.findOne({ where: { userId: row.userId } })
+      : null;
     return {
       ...catalogCollectionView(row),
-      ownerName: row.user ? `${row.user.firstName} ${row.user.lastName}`.trim() : 'Member',
+      ...this.publicOwnerMeta(row.user, profile),
       items: row.items
         .filter((i) => i.status === 'ACTIVE')
         .map(catalogItemView),
@@ -144,6 +226,7 @@ export class CatalogService {
       title: dto.title.trim(),
       description: dto.description?.trim() || null,
       visibility: dto.visibility,
+      category: normalizeCatalogCategory(dto.category),
       slug,
     });
     await this.collections.save(row);
@@ -155,6 +238,7 @@ export class CatalogService {
     if (dto.title !== undefined) row.title = dto.title.trim();
     if (dto.description !== undefined) row.description = dto.description?.trim() || null;
     if (dto.visibility !== undefined) row.visibility = dto.visibility;
+    if (dto.category !== undefined) row.category = normalizeCatalogCategory(dto.category);
     await this.collections.save(row);
     const count = await this.items.count({ where: { collectionId: id } });
     return catalogCollectionView(row, count);
@@ -304,6 +388,31 @@ export class CatalogService {
 
   async getModelFileForUser(userId: string, itemId: string) {
     const item = await this.ownedItem(userId, itemId);
+    if (!item.model3dUrl) throw new NotFoundException('No 3D model');
+    return this.getModelFile(itemId, item.model3dUrl);
+  }
+
+  private async getPublicActiveItem(itemId: string) {
+    const item = await this.items.findOne({
+      where: { id: itemId },
+      relations: { collection: true },
+    });
+    if (!item || item.status !== 'ACTIVE' || item.collection?.visibility !== 'PUBLIC') {
+      throw new NotFoundException('Item not found');
+    }
+    return item;
+  }
+
+  async getPublicImageFile(itemId: string) {
+    const item = await this.getPublicActiveItem(itemId);
+    if (!item.imageUrl || item.imageUrl.startsWith('http')) {
+      throw new NotFoundException('No uploaded image');
+    }
+    return this.getImageFile(itemId, item.imageUrl);
+  }
+
+  async getPublicModelFile(itemId: string) {
+    const item = await this.getPublicActiveItem(itemId);
     if (!item.model3dUrl) throw new NotFoundException('No 3D model');
     return this.getModelFile(itemId, item.model3dUrl);
   }

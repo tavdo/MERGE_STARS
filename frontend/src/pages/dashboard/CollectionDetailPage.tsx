@@ -8,9 +8,11 @@ import {
   catalogApi,
   catalogItemImageUrl,
   catalogItemModelUrl,
+  type CatalogCategory,
   type CatalogItem,
   type CatalogVisibility,
 } from '@/features/catalog/api/catalog.api'
+import { CATALOG_CATEGORIES } from '@/shared/catalogCategories'
 import { useAuthAssetUrl } from '@/features/catalog/hooks/useAuthAssetUrl'
 import { getApiErrorMessage } from '@/shared/utils/apiError'
 import { useState } from 'react'
@@ -61,8 +63,12 @@ export default function CollectionDetailPage() {
   }
 
   const updateCollection = useMutation({
-    mutationFn: (payload: { title?: string; description?: string; visibility?: CatalogVisibility }) =>
-      catalogApi.update(id, payload),
+    mutationFn: (payload: {
+      title?: string
+      description?: string
+      visibility?: CatalogVisibility
+      category?: CatalogCategory
+    }) => catalogApi.update(id, payload),
     onSuccess: invalidate,
   })
 
@@ -134,6 +140,22 @@ export default function CollectionDetailPage() {
                 defaultValue={collection.description ?? ''}
                 onBlur={(e) => updateCollection.mutate({ description: e.target.value })}
               />
+            </div>
+            <div>
+              <label className="auth-field-label">{t('collections.category', { defaultValue: 'Category' })}</label>
+              <select
+                className="gold-input"
+                value={collection.category || 'more'}
+                onChange={(e) =>
+                  updateCollection.mutate({ category: e.target.value as CatalogCategory })
+                }
+              >
+                {CATALOG_CATEGORIES.map((key) => (
+                  <option key={key} value={key}>
+                    {t(`landing.categories.${key}`)}
+                  </option>
+                ))}
+              </select>
             </div>
             <div>
               <label className="auth-field-label">{t('collections.visibility', { defaultValue: 'Visibility' })}</label>

@@ -139,6 +139,7 @@ export default {
     preview: 'პრევიუ', brandStats: 'სტატისტიკა', profileViews: 'ნახვები', qrScans: 'QR სკანები',
     activeProducts: 'აქტიური პროდუქტები', brandStatus: 'სტატუსი', active: 'აქტიური',
     yourBrand: 'თქვენი ბრენდი', descPreview: 'აღწერა აქ გამოჩნდება',
+    viewPublic: 'საჯარო პროფილის ნახვა', copyPublicLink: 'საჯარო ბმულის კოპირება',
   },
   qrIdentity: {
     title: 'QR იდენტობა', subtitle: 'თქვენი ციფრული იდენტობა', mergeId: 'MERGE ID', founderId: 'FOUNDER ID',

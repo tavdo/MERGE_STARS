@@ -20,6 +20,8 @@ type Step = 1 | 2 | 3
 
 const TERM_COUNT = 3
 const emailVerifyEnabled = import.meta.env.VITE_EMAIL_VERIFY === 'true'
+const ID_ACCEPT = 'image/jpeg,image/png,image/webp'
+const MAX_ID_FILE_BYTES = 10 * 1024 * 1024
 
 export default function LoginPage() {
   const { t } = useTranslation()
@@ -49,7 +51,8 @@ export default function LoginPage() {
 
   const [firstName, setFirstName] = useState('')
   const [lastName, setLastName] = useState('')
-  const [personalId, setPersonalId] = useState('')
+  const [identityFront, setIdentityFront] = useState<File | null>(null)
+  const [identityBack, setIdentityBack] = useState<File | null>(null)
   const [phoneCode, setPhoneCode] = useState('+995')
   const [phone, setPhone] = useState('')
   const [email, setEmail] = useState('')
@@ -93,13 +96,40 @@ export default function LoginPage() {
     )
   }
 
+  const selectIdentityFile = (side: 'front' | 'back', file?: File) => {
+    if (!file) return
+    if (!['image/jpeg', 'image/png', 'image/webp'].includes(file.type)) {
+      setAuthError(
+        t('authPanel.identityImageOnly', {
+          defaultValue: 'Identity card must be a JPEG, PNG, or WEBP image',
+        }),
+      )
+      return
+    }
+    if (file.size > MAX_ID_FILE_BYTES) {
+      setAuthError(
+        t('authPanel.identityTooLarge', {
+          defaultValue: 'Each identity card image must be 10 MB or smaller',
+        }),
+      )
+      return
+    }
+    if (side === 'front') setIdentityFront(file)
+    else setIdentityBack(file)
+    setAuthError(null)
+  }
+
   const goToRegisterStep2 = () => {
     if (!firstName.trim() || !lastName.trim()) {
       setAuthError(t('authPanel.nameRequired', { defaultValue: 'First and last name are required' }))
       return
     }
-    if (!personalId.trim()) {
-      setAuthError(t('authPanel.personalIdRequired', { defaultValue: 'Personal ID is required' }))
+    if (!identityFront || !identityBack) {
+      setAuthError(
+        t('authPanel.identityBothRequired', {
+          defaultValue: 'Upload both the front and back sides of your identity card',
+        }),
+      )
       return
     }
     setAuthError(null)
@@ -153,7 +183,8 @@ export default function LoginPage() {
       {
         firstName: firstName.trim(),
         lastName: lastName.trim(),
-        personalId: personalId.trim(),
+        identityFront: identityFront!,
+        identityBack: identityBack!,
         phone: `${phoneCode}${phone.replace(/\D/g, '')}`,
         email: email.trim().toLowerCase(),
         password: regPassword,
@@ -319,8 +350,47 @@ export default function LoginPage() {
                   </div>
                 </div>
                 <div>
-                  <label className="auth-field-label">{t('auth.personalId')}</label>
-                  <input className="gold-input" value={personalId} onChange={(e) => setPersonalId(e.target.value)} placeholder={t('authPanel.personalIdPlaceholder')} required />
+                  <label className="auth-field-label">
+                    {t('authPanel.identityCard', { defaultValue: 'IDENTITY CARD' })}
+                  </label>
+                  <p className="text-[11px] mb-3" style={{ color: 'rgba(255,255,255,0.42)' }}>
+                    {t('authPanel.identityCardHint', {
+                      defaultValue: 'Upload a clear photo of both sides. Your personal number will be verified from the document.',
+                    })}
+                  </p>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    {([
+                      ['front', identityFront, 'identityFront', 'Front side'],
+                      ['back', identityBack, 'identityBack', 'Back side'],
+                    ] as const).map(([side, file, key, fallback]) => (
+                      <label
+                        key={side}
+                        className={`cursor-pointer rounded border px-4 py-4 min-h-[88px] flex flex-col justify-center transition-colors ${
+                          file
+                            ? 'border-[rgba(201,168,76,0.65)] bg-[rgba(201,168,76,0.08)]'
+                            : 'border-white/10 bg-white/[0.02] hover:border-[rgba(201,168,76,0.4)]'
+                        }`}
+                      >
+                        <span className="text-[10px] font-bold tracking-[0.14em] text-[#c9a84c] uppercase">
+                          {t(`authPanel.${key}`, { defaultValue: fallback })}
+                        </span>
+                        <span className="text-[11px] mt-2 truncate" style={{ color: file ? '#fff' : 'rgba(255,255,255,0.4)' }}>
+                          {file
+                            ? file.name
+                            : t('authPanel.choosePhoto', { defaultValue: 'Choose photo' })}
+                        </span>
+                        <input
+                          type="file"
+                          accept={ID_ACCEPT}
+                          className="hidden"
+                          onChange={(e) => {
+                            selectIdentityFile(side, e.target.files?.[0])
+                            e.target.value = ''
+                          }}
+                        />
+                      </label>
+                    ))}
+                  </div>
                 </div>
                 <div>
                   <label className="auth-field-label">{t('auth.phone')}</label>

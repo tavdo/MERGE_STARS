@@ -121,4 +121,117 @@ export default {
     loadingCoin: 'Loading MERGE STARS coin',
     coinEmblem: 'MERGE STARS golden coin emblem',
   },
+  filament: {
+    kicker: 'MATERIAL ECOSYSTEM',
+    title: 'MERGE STARS',
+    titleGold: 'Filament Technology',
+    lead:
+      'Precious-metal composite filaments engineered for luxury manufacturing and digital production — not ordinary alloys.',
+    ctaExplore: 'Explore materials',
+    ctaApply: 'Apply now',
+    philosophyTitle: 'Core philosophy',
+    philosophyBody:
+      'MERGE STARS materials are engineered composite systems. Pure precious-metal particles are distributed at nano scale inside an engineered polymer matrix with structural bonding layers — built for luxury creative manufacturing and 3D printing.',
+    pillars: [
+      { title: 'Pure precious-metal particles' },
+      { title: 'Engineered polymer matrix' },
+      { title: 'Structural bonding technology' },
+      { title: 'Physical + digital identity architecture' },
+    ],
+    diagramAlt: 'MERGE STARS material ecosystem — precious-metal composite technology overview',
+    diagramCaption: 'Precious-metal composite technology overview',
+    anatomyKicker: 'Technical anatomy',
+    anatomyTitle: 'Material structure',
+    anatomyLead:
+      'Precious metals are distributed at the nano level within a polymer matrix to deliver finish, strength, and printability together.',
+    layers: [
+      {
+        title: 'Pure precious-metal particles',
+        desc: 'Real gold, silver, or platinum particles that define the luxury surface character.',
+      },
+      {
+        title: 'Nano-scale distribution',
+        desc: 'Controlled particle dispersion for consistent color, reflection, and material behavior.',
+      },
+      {
+        title: 'Engineered polymer matrix',
+        desc: 'A specialty polymer base tuned for dimensional stability and layer precision.',
+      },
+      {
+        title: 'Structural bonding layers',
+        desc: 'Bonding technology that supports adhesion, durability, and print reliability.',
+      },
+    ],
+    classesKicker: 'Material classes',
+    classesTitle: 'Composite product lineup',
+    classesLead: 'Each class is designed for a distinct finish, performance profile, and creative purpose.',
+    structureLabel: 'Structure',
+    purposeLabel: 'Purpose',
+    classes: [
+      {
+        name: 'Gold 8K Composite',
+        structure: 'Pure gold particles in an exclusive polymer matrix.',
+        purpose: 'Luxury finish with lightweight structural strength.',
+      },
+      {
+        name: 'Silver 8K Composite',
+        structure: 'Pure silver particle composite system.',
+        purpose: 'Reflective finish with strong structural performance.',
+      },
+      {
+        name: 'Platinum Composite',
+        structure: 'Platinum-based precious-metal composite.',
+        purpose: 'Ultra-premium character with maximum durability.',
+      },
+      {
+        name: 'Graphene Conductive Series',
+        structure: 'Graphene-enhanced conductive composite.',
+        purpose: 'Conductive pathways and smart-object systems.',
+      },
+    ],
+    featuresKicker: 'Capabilities',
+    featuresTitle: 'Built for digital luxury manufacturing',
+    features: [
+      {
+        title: 'Luxury polymer matrix',
+        desc: 'Dimensional stability and precise layer control for refined printed surfaces.',
+      },
+      {
+        title: 'Digital manufacturing ready',
+        desc: 'Optimized for FDM / FFF workflows used in modern production.',
+      },
+      {
+        title: 'Material identity system',
+        desc: 'Batch verification, QR-linked material passports, and traceability.',
+      },
+      {
+        title: 'Premium performance',
+        desc: 'Strong adhesion with reduced warping for cleaner results.',
+      },
+      {
+        title: 'Quality assurance',
+        desc: 'Diameter consistency and metal-content analysis across batches.',
+      },
+      {
+        title: 'Sustainable innovation',
+        desc: 'Responsible sourcing and eco-conscious production practices.',
+      },
+    ],
+    futureKicker: 'Future ecosystem',
+    futureTitle: 'Connected creative infrastructure',
+    futureItems: [
+      'AI-assisted creation platforms',
+      'Digital manufacturing networks',
+      'Brand identity linked to physical material',
+      'Traceable luxury product passports',
+    ],
+    positioningLead: 'Official positioning',
+    positioningBody:
+      'MERGE STARS is not selling ordinary filament. MERGE STARS develops luxury creative technology materials for the future of digital manufacturing.',
+    ctaTitle: 'Ready to build with',
+    ctaGold: 'MERGE STARS materials?',
+    ctaBody: 'Create your account and start your brand journey on the platform.',
+    ctaRegister: 'Create account →',
+    ctaCoin: 'About MERGE COIN',
+  },
 } as const

@@ -33,10 +33,6 @@ export class RegisterDto {
 
   @IsString()
   @IsNotEmpty()
-  personalId: string;
-
-  @IsString()
-  @IsNotEmpty()
   @MinLength(6)
   @MaxLength(30)
   phone: string;

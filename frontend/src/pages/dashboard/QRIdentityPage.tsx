@@ -28,6 +28,9 @@ export default function QRIdentityPage() {
   const universalLink = user
     ? `${window.location.origin}/login?tab=register&ref=${encodeURIComponent(user.mergeId)}&src=qr`
     : `${window.location.origin}/login`
+  const brandProfileLink = user?.brandLineId
+    ? `${window.location.origin}/b/${encodeURIComponent(user.brandLineId)}`
+    : null
   const qrId = user ? `QR-${user.mergeId.replace(/^MERGE-/, '')}` : 'QR-—'
 
   const showToast = useCallback((message: string) => setToast(message), [])
@@ -98,6 +101,54 @@ export default function QRIdentityPage() {
               </div>
               <ReferralShareButtons link={universalLink} onAction={handleSocialShare} />
             </div>
+
+            {brandProfileLink && (
+              <div className="gold-card" style={{ padding: '28px', borderRadius: '4px', marginTop: '24px' }}>
+                <p style={{ fontSize: '11px', fontWeight: 700, letterSpacing: '0.2em', color: '#c9a84c', marginBottom: '16px' }}>
+                  {t('brandLine.brandQr', { defaultValue: 'Brand QR' })}
+                </p>
+                <div style={{ display: 'flex', gap: '28px', flexWrap: 'wrap', alignItems: 'center' }}>
+                  <QrCodeImage value={brandProfileLink} size={140} />
+                  <div style={{ flex: 1, minWidth: '220px' }}>
+                    <p style={{ fontSize: '12px', color: 'rgba(255,255,255,0.55)', wordBreak: 'break-all', marginBottom: '16px' }}>
+                      {brandProfileLink}
+                    </p>
+                    <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
+                      <button
+                        type="button"
+                        className="gold-btn"
+                        onClick={() => {
+                          void navigator.clipboard.writeText(brandProfileLink)
+                          showToast(t('referral.toastCopied'))
+                        }}
+                      >
+                        {t('qrIdentity.link', { defaultValue: 'Copy link' })}
+                      </button>
+                      <button
+                        type="button"
+                        className="gold-btn-outline"
+                        onClick={() => {
+                          void shareReferralLink(brandProfileLink)
+                          void brandApi.trackPublicScan(user!.brandLineId!)
+                        }}
+                      >
+                        {t('qrIdentity.share')}
+                      </button>
+                      <button
+                        type="button"
+                        className="gold-btn-outline"
+                        onClick={() => {
+                          void downloadQrPng(brandProfileLink, `brand-${user?.brandLineId}.png`)
+                          void brandApi.trackPublicScan(user!.brandLineId!)
+                        }}
+                      >
+                        {t('qrIdentity.download')}
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
           </>
         )}
       </div>

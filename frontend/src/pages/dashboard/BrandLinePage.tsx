@@ -29,10 +29,6 @@ export default function BrandLinePage() {
     setDesc(brand.description ?? '')
   }, [brand])
 
-  useEffect(() => {
-    brandApi.trackView().catch(() => {})
-  }, [])
-
   const save = useMutation({
     mutationFn: () => brandApi.update({ name: name.trim(), description: desc.trim() }),
     onSuccess: () => {
@@ -72,7 +68,29 @@ export default function BrandLinePage() {
           <p className="landing-sans-head mb-2">{t('brandLine.title')}</p>
           <p className="apply-lead">{t('brandLine.identity')}</p>
           {brand?.brandLineId && (
-            <p className="text-xs text-neutral-500 mt-2 tracking-wide">{brand.brandLineId}</p>
+            <div className="mt-3 flex flex-wrap items-center gap-3">
+              <p className="text-xs text-neutral-500 tracking-wide">{brand.brandLineId}</p>
+              <Link
+                to={`/b/${encodeURIComponent(brand.brandLineId)}`}
+                className="text-xs text-[#c9a84c] hover:underline no-underline"
+                target="_blank"
+                rel="noreferrer"
+              >
+                {t('brandLine.viewPublic', { defaultValue: 'View public profile' })} →
+              </Link>
+              <button
+                type="button"
+                className="text-xs text-neutral-400 hover:text-[#c9a84c]"
+                onClick={() => {
+                  const url = `${window.location.origin}/b/${encodeURIComponent(brand.brandLineId!)}`
+                  void navigator.clipboard.writeText(url)
+                  setSaved(true)
+                  setTimeout(() => setSaved(false), 2000)
+                }}
+              >
+                {t('brandLine.copyPublicLink', { defaultValue: 'Copy public link' })}
+              </button>
+            </div>
           )}
         </div>
 

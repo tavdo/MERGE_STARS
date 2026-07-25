@@ -8,6 +8,8 @@ import {
 } from 'typeorm';
 import { User } from './user.entity';
 
+export type KycDocumentType = 'id_front' | 'id_back' | 'other';
+
 @Entity('kyc_documents')
 export class KycDocument {
   @PrimaryGeneratedColumn('uuid')
@@ -32,6 +34,9 @@ export class KycDocument {
   @Column({ name: 'file_path' })
   filePath: string;
 
+  @Column({ name: 'document_type', type: 'varchar', length: 32, default: 'other' })
+  documentType: KycDocumentType;
+
   @Column({ default: 'pending' })
   status: string;
 
@@ -46,6 +51,7 @@ export function kycDocumentView(doc: KycDocument) {
     originalName: doc.originalName,
     mimeType: doc.mimeType,
     size: doc.size,
+    documentType: doc.documentType,
     status: doc.status,
     createdAt: doc.createdAt.toISOString(),
   };

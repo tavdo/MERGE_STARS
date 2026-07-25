@@ -110,7 +110,7 @@ export default function AdminKYCPage() {
             {[
               { label: 'Full Name', value: item.name },
               { label: 'Merge ID', value: item.mergeId },
-              { label: 'ID Number', value: item.personalId ?? '—' },
+              { label: 'ID Number', value: item.personalId ?? 'Read from ID document' },
               { label: 'Phone', value: item.phone ?? '—' },
               { label: 'Email', value: item.email },
               { label: 'Registered', value: item.joined },
@@ -134,7 +134,13 @@ export default function AdminKYCPage() {
                     rel="noreferrer"
                     style={{ display: 'block', fontSize: '12px', color: '#c9a84c', padding: '6px 0', textDecoration: 'none' }}
                   >
-                    📄 {d.originalName}
+                    📄{' '}
+                    {d.documentType === 'id_front'
+                      ? 'ID FRONT'
+                      : d.documentType === 'id_back'
+                        ? 'ID BACK'
+                        : 'OTHER'}{' '}
+                    — {d.originalName}
                   </a>
                 ))
               )}

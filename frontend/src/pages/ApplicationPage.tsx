@@ -64,7 +64,12 @@ export default function ApplicationPage() {
         const detail = await catalogApi.getPublic(c.slug).then((r) => r.data.data)
         const item = detail.items.find((i) => i.id === catalogItemId)
         if (item) {
-          return { item, collectionTitle: detail.title, ownerName: detail.ownerName }
+          return {
+            item,
+            collectionTitle: detail.title,
+            ownerName: detail.ownerName,
+            brandLineId: detail.brandLineId ?? null,
+          }
         }
       }
       return null
@@ -270,7 +275,16 @@ export default function ApplicationPage() {
                         {catalogDesign?.item.title ?? '…'}
                       </p>
                       {catalogDesign?.ownerName && (
-                        <p className="text-sm text-neutral-400">{catalogDesign.ownerName}</p>
+                        catalogDesign.brandLineId ? (
+                          <Link
+                            to={`/b/${encodeURIComponent(catalogDesign.brandLineId)}`}
+                            className="text-sm text-[#c9a84c] hover:underline no-underline"
+                          >
+                            {catalogDesign.ownerName}
+                          </Link>
+                        ) : (
+                          <p className="text-sm text-neutral-400">{catalogDesign.ownerName}</p>
+                        )
                       )}
                       <p className="text-xs text-neutral-500">
                         {t('application.catalogDesignRoyaltyNote', {

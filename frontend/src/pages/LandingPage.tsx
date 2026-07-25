@@ -28,13 +28,13 @@ const FEATURES = [
 ]
 
 const CATEGORIES = [
-  { key: 'jewelry', to: '/apply' },
-  { key: 'accessories', to: '/apply' },
-  { key: 'souvenirs', to: '/apply' },
-  { key: 'sanitaryware', to: '/apply' },
-  { key: 'stationery', to: '/apply' },
-  { key: 'construction', to: '/apply' },
-  { key: 'more', to: '/how-it-works' },
+  { key: 'jewelry', to: '/brand-room?category=jewelry' },
+  { key: 'accessories', to: '/brand-room?category=accessories' },
+  { key: 'souvenirs', to: '/brand-room?category=souvenirs' },
+  { key: 'sanitaryware', to: '/brand-room?category=sanitaryware' },
+  { key: 'stationery', to: '/brand-room?category=stationery' },
+  { key: 'construction', to: '/brand-room?category=construction' },
+  { key: 'more', to: '/brand-room?category=more' },
 ] as const
 
 const TECH_POINT_KEYS = ['metals', 'composite', 'lightweight'] as const
@@ -179,27 +179,29 @@ export default function LandingPage() {
       </section>
 
       {/* Mobile / tablet — live metal prices */}
-      <section className="landing-metal-strip xl:hidden max-w-1440 mx-auto w-full px-4 sm:px-8 pb-6">
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+      <section className="landing-metal-strip xl:hidden max-w-1440 mx-auto w-full">
+        <div className="landing-metal-grid">
           {metalCards.map((m, i) => (
             <Link
               key={m.nameKey}
               to="/price-indicator"
-              className={`landing-metal-card flex items-center justify-between gap-3 py-3 px-4 no-underline${
+              className={`landing-metal-card no-underline${
                 i === 0 ? ' landing-metal-card--primary' : ''
               }`}
             >
-              <div>
-                <p className="text-[10px] font-medium tracking-[0.16em] text-[#D4AF37] mb-1">{t(m.nameKey)}</p>
-                <p className="text-[11px] text-neutral-400">
-                  {m.pricePerKgUsd > 0 ? formatUsd(m.pricePerKgUsd) : '—'} {t('landing.perKg')}
-                </p>
-              </div>
+              <p className="landing-metal-name">{t(m.nameKey)}</p>
+              <p className="landing-metal-price">
+                {m.pricePerKgUsd > 0 ? formatUsd(m.pricePerKgUsd) : '—'}{' '}
+                <span>{t('landing.perKg')}</span>
+              </p>
               {m.pricePerKgUsd > 0 && (
-                <span className="text-[10px] font-medium" style={{ color: m.up ? '#4ade80' : '#f87171' }}>
+                <p
+                  className="landing-metal-change"
+                  style={{ color: m.up ? '#4ade80' : '#f87171' }}
+                >
                   {m.changePct > 0 ? '+' : ''}
                   {m.changePct.toFixed(2)}%
-                </span>
+                </p>
               )}
             </Link>
           ))}
@@ -260,7 +262,7 @@ export default function LandingPage() {
             {t('landing.techTitle3')}
           </h2>
           <p className="landing-body landing-split-lead">{t('landing.techBody')}</p>
-          <Link to="/how-it-works" className="luxury-btn-glass landing-split-cta">
+          <Link to="/filament" className="luxury-btn-glass landing-split-cta">
             {t('landing.discoverTech')}
           </Link>
           <div className="landing-tech-points">
