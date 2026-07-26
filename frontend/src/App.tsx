@@ -53,6 +53,7 @@ import AdminProductionPage from './pages/admin/AdminProductionPage'
 import AdminAuditPage    from './pages/admin/AdminAuditPage'
 import AdminAnalyticsPage from './pages/admin/AdminAnalyticsPage'
 import AdminSettingsPage from './pages/admin/AdminSettingsPage'
+import AdminAiTrainingPage from './pages/admin/AdminAiTrainingPage'
 import BankReviewPage from './pages/admin/BankReviewPage'
 import SecurityCenterPage from './pages/admin/SecurityCenterPage'
 import DataGovernancePage from './pages/admin/DataGovernancePage'
@@ -153,6 +154,7 @@ function AppRoutes() {
           <Route path="/admin/audit" element={<AdminAuditPage />} />
           <Route path="/admin/analytics" element={<AdminAnalyticsPage />} />
           <Route path="/admin/settings" element={<AdminSettingsPage />} />
+          <Route path="/admin/ai-training" element={<AdminAiTrainingPage />} />
           <Route path="/admin/bank-review" element={<BankReviewPage />} />
           <Route path="/admin/compliance" element={<ComplianceHubPage />} />
           <Route path="/admin/audit-center" element={<AuditCenterPage />} />

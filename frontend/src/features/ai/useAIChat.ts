@@ -2,6 +2,7 @@ import { useCallback, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { aiApi } from './ai.api'
 import { getAIResponse, tryAuditAI } from './aiChat'
+import { clarificationReply } from './aiLanguage'
 import type { ChatMessage } from './aiChat'
 
 export function useAIChat() {
@@ -37,12 +38,20 @@ export function useAIChat() {
         const response = data.data.text
         setProvider(data.data.provider)
         setMessages((m) => [...m, { role: 'ai', text: response, ts }])
-        void tryAuditAI('AI_RESPONSE', { prompt: text, response, provider: data.data.provider })
+        void tryAuditAI('AI_RESPONSE', {
+          prompt: text,
+          response,
+          provider: data.data.provider,
+          needsClarification: data.data.needsClarification,
+        })
       } catch {
-        const response = getAIResponse(text, suggested, responses, suggestionIndex)
-        setProvider('fallback')
+        const response =
+          suggestionIndex !== undefined
+            ? getAIResponse(text, suggested, responses, suggestionIndex)
+            : clarificationReply(text)
+        setProvider(suggestionIndex !== undefined ? 'fallback' : 'pending')
         setMessages((m) => [...m, { role: 'ai', text: response, ts }])
-        void tryAuditAI('AI_RESPONSE', { prompt: text, response, provider: 'fallback' })
+        void tryAuditAI('AI_RESPONSE', { prompt: text, response, provider: 'offline' })
       } finally {
         setLoading(false)
       }

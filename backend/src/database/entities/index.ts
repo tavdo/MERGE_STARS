@@ -16,6 +16,7 @@ import { PlatformSettings } from './platform-settings.entity';
 import { PhoneVerificationCode } from './phone-verification-code.entity';
 import { WalletTransaction } from './wallet-transaction.entity';
 import { CatalogOrder } from './catalog-order.entity';
+import { AiTrainingItem } from './ai-training-item.entity';
 
 export const entities = [
   User,
@@ -36,6 +37,7 @@ export const entities = [
   PhoneVerificationCode,
   WalletTransaction,
   CatalogOrder,
+  AiTrainingItem,
 ];
 
 export {
@@ -57,4 +59,5 @@ export {
   PhoneVerificationCode,
   WalletTransaction,
   CatalogOrder,
+  AiTrainingItem,
 };

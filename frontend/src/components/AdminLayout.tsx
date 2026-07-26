@@ -33,7 +33,10 @@ const NAV_GROUPS: { titleKey: string; items: NavItem[] }[] = [
   },
   {
     titleKey: 'admin.nav.groupSystem',
-    items: [{ icon: '⚙', labelKey: 'admin.nav.settings', href: '/admin/settings' }],
+    items: [
+      { icon: '🤖', labelKey: 'admin.nav.aiTraining', href: '/admin/ai-training' },
+      { icon: '⚙', labelKey: 'admin.nav.settings', href: '/admin/settings' },
+    ],
   },
 ]
 
