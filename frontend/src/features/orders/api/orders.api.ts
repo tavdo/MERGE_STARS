@@ -15,6 +15,7 @@ export interface Order {
   deliveryStatus: string
   shippedAt: string | null
   deliveredAt: string | null
+  awaitingEarnings?: boolean
   createdAt: string
 }
 
@@ -23,6 +24,11 @@ export const ordersApi = {
 
   latestDelivery: () => api.get<ApiResponse<Order>>('/orders/delivery/latest'),
 
+  awaitingEarnings: () => api.get<ApiResponse<Order[]>>('/orders/awaiting-earnings'),
+
   create: (applicationId: string, paymentMethod: 'full' | 'bank' | 'earnings') =>
     api.post<ApiResponse<Order>>('/orders', { applicationId, paymentMethod }),
+
+  payWithEarnings: (orderId: string) =>
+    api.post<ApiResponse<Order>>(`/orders/${encodeURIComponent(orderId)}/pay-earnings`),
 }

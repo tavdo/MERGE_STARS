@@ -50,6 +50,7 @@ export class OrdersService {
     return {
       ...orderView(o),
       ...delivery,
+      awaitingEarnings: o.paymentMethod === 'earnings' && o.status === 'pending',
       estDeliveryAt: delivery.estDeliveryAt.toISOString(),
       shippedAt: delivery.shippedAt?.toISOString() ?? null,
       deliveredAt: delivery.deliveredAt?.toISOString() ?? null,
@@ -153,13 +154,14 @@ export class OrdersService {
     if (!app) throw new NotFoundException('Application not found');
 
     const amount = Number(app.coinValue);
+
+    // Anyone may choose earnings: picking it opens the wallet. When the balance
+    // does not cover the order yet, the order waits until earnings accumulate.
+    let settleNow = false;
     if (method === 'earnings') {
+      await this.wallet.activate(user.id, 'coin_order');
       const balance = await this.wallet.getBalance(user.id);
-      if (balance < amount) {
-        throw new BadRequestException(
-          `Insufficient earnings balance. Available: $${balance.toFixed(2)}, required: $${amount.toFixed(2)}`,
-        );
-      }
+      settleNow = balance >= amount && amount > 0;
     }
 
     let publicId = this.nextPublicId();
@@ -174,15 +176,15 @@ export class OrdersService {
       applicationId: app.id,
       amount: app.coinValue,
       paymentMethod: method,
-      status: method === 'earnings' ? 'paid' : 'pending',
+      status: settleNow ? 'paid' : 'pending',
       trackingCode: `MS-TRK-${publicId.replace(/^ORD-/, '')}`,
       courier: null,
       estDeliveryAt,
-      deliveryStatus: method === 'earnings' ? 'processing' : 'pending',
+      deliveryStatus: settleNow ? 'processing' : 'pending',
     });
     await this.orders.save(order);
 
-    if (method === 'earnings') {
+    if (settleNow) {
       try {
         await this.wallet.debitForOrder({
           userId: user.id,
@@ -202,5 +204,48 @@ export class OrdersService {
       relations: { application: true },
     });
     return this.mapOrder(saved!);
+  }
+
+  /** Settle an order that was reserved for earnings once the balance covers it. */
+  async payWithEarnings(user: User, orderIdOrPublicId: string) {
+    const order = await this.orders.findOne({
+      where: [
+        { id: orderIdOrPublicId, userId: user.id },
+        { publicId: orderIdOrPublicId, userId: user.id },
+      ],
+      relations: { application: true },
+    });
+    if (!order) throw new NotFoundException('Order not found');
+    if (order.status !== 'pending') {
+      throw new BadRequestException('Order is not awaiting payment');
+    }
+
+    const amount = Number(order.amount);
+    await this.wallet.activate(user.id, 'coin_order');
+    await this.wallet.debitForOrder({
+      userId: user.id,
+      amount,
+      orderId: order.id,
+      note: `Paid coin order ${order.publicId} with earnings`,
+    });
+
+    order.paymentMethod = 'earnings';
+    order.status = 'paid';
+    order.deliveryStatus =
+      order.deliveryStatus === 'pending' ? 'processing' : order.deliveryStatus;
+    await this.orders.save(order);
+    await this.creditDesignRoyalty(order, order.application);
+
+    return this.mapOrder(order);
+  }
+
+  /** Pending earnings orders for the wallet page. */
+  async listAwaitingEarnings(userId: string) {
+    const rows = await this.orders.find({
+      where: { userId, paymentMethod: 'earnings', status: 'pending' },
+      relations: { application: true },
+      order: { createdAt: 'DESC' },
+    });
+    return rows.map((o) => this.mapOrder(o));
   }
 }

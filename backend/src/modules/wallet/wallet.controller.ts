@@ -33,6 +33,12 @@ export class WalletController {
     return this.wallet.getMe(user.id, limit ? Number(limit) : 30);
   }
 
+  @Post('wallet/activate')
+  @UseGuards(JwtAuthGuard)
+  activate(@CurrentUser() user: User) {
+    return this.wallet.activate(user.id, 'user');
+  }
+
   @Post('admin/wallet/credit')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('admin', 'manager')

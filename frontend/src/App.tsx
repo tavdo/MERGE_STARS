@@ -33,6 +33,7 @@ import MemberPublicPage from './pages/public/MemberPublicPage'
 import QRIdentityPage    from './pages/dashboard/QRIdentityPage'
 import OrdersPage        from './pages/dashboard/OrdersPage'
 import PaymentPage       from './pages/dashboard/PaymentPage'
+import WalletPage        from './pages/dashboard/WalletPage'
 import DeliveryPage      from './pages/dashboard/DeliveryPage'
 import ReferralPage      from './pages/dashboard/ReferralPage'
 import AIAssistantPage   from './pages/dashboard/AIAssistantPage'
@@ -128,6 +129,7 @@ function AppRoutes() {
           <Route path="/dashboard/qr"           element={<QRIdentityPage />} />
           <Route path="/dashboard/orders"       element={<OrdersPage />} />
           <Route path="/dashboard/payment"      element={<PaymentPage />} />
+          <Route path="/dashboard/wallet"       element={<WalletPage />} />
           <Route path="/dashboard/delivery"      element={<DeliveryPage />} />
           <Route path="/dashboard/referral"      element={<ReferralPage />} />
           <Route path="/dashboard/ai"            element={<AIAssistantPage />} />

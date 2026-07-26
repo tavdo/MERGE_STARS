@@ -55,6 +55,7 @@ export default {
     noDescription: 'No brand description yet.',
     joinViaBrand: 'Join via this brand',
     copyLink: 'Copy profile link',
+    socialLinks: 'Social links',
   },
   cookies: {
     title: 'We use cookies',
@@ -164,6 +165,7 @@ export default {
       collections: 'Collections',
       qrIdentity: 'QR identity',
       payment: 'Payment',
+      wallet: 'Earnings wallet',
       delivery: 'Delivery',
       referral: 'Referral',
       messages: 'Messages',
@@ -184,6 +186,7 @@ export default {
       qrIdentity: 'QR identity',
       orders: 'My orders',
       payment: 'Payment',
+      wallet: 'Earnings wallet',
       delivery: 'Delivery',
       referral: 'Referral',
       aiAssistant: 'AI assistant',

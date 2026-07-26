@@ -1,6 +1,22 @@
 import { api } from '@/lib/axios'
 import type { ApiResponse, Role } from '@/shared/types/api.types'
 
+export const SOCIAL_LINK_KEYS = [
+  'tiktok',
+  'facebook',
+  'instagram',
+  'linkedin',
+  'whatsapp',
+  'youtube',
+  'x',
+  'telegram',
+  'website',
+] as const
+
+export type SocialLinkKey = (typeof SOCIAL_LINK_KEYS)[number]
+
+export type SocialLinks = Partial<Record<SocialLinkKey, string>>
+
 export interface UserProfile {
   id: string
   email: string
@@ -14,6 +30,7 @@ export interface UserProfile {
   status: string
   kycStatus: string
   avatarUrl: string | null
+  socialLinks?: SocialLinks
   createdAt: string
 }
 
@@ -21,6 +38,7 @@ export interface UpdateProfilePayload {
   firstName?: string
   lastName?: string
   phone?: string
+  socialLinks?: Partial<Record<SocialLinkKey, string | null>>
 }
 
 const apiBase = (import.meta.env.VITE_API_URL ?? 'http://localhost:3000').replace(/\/$/, '')

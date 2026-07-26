@@ -16,10 +16,17 @@ export interface WalletTransaction {
 export interface WalletMe {
   balance: number
   currency: string
+  activated: boolean
+  activatedAt: string | null
+  totalEarned: number
+  totalSpent: number
   transactions: WalletTransaction[]
 }
 
 export const walletApi = {
   me: (limit?: number) =>
     api.get<ApiResponse<WalletMe>>('/wallet/me', { params: limit ? { limit } : undefined }),
+
+  activate: () =>
+    api.post<ApiResponse<{ activated: boolean; activatedAt: string }>>('/wallet/activate'),
 }

@@ -1,4 +1,11 @@
-import { IsOptional, IsString, MaxLength, MinLength } from 'class-validator';
+import {
+  IsObject,
+  IsOptional,
+  IsString,
+  MaxLength,
+  MinLength,
+  ValidateIf,
+} from 'class-validator';
 
 export class UpdateUserDto {
   @IsOptional()
@@ -17,4 +24,10 @@ export class UpdateUserDto {
   @IsString()
   @MaxLength(30)
   phone?: string;
+
+  /** Partial map of platform → URL / WhatsApp phone / Telegram handle */
+  @IsOptional()
+  @ValidateIf((_, v) => v !== null)
+  @IsObject()
+  socialLinks?: Record<string, string | null>;
 }

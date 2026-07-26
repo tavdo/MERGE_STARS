@@ -8,6 +8,10 @@ import {
 } from 'typeorm';
 import { CoinApplication } from './coin-application.entity';
 import { Order } from './order.entity';
+import {
+  socialLinksPublicView,
+  type SocialLinks,
+} from '../../common/social-links';
 
 @Entity('users')
 export class User {
@@ -53,11 +57,19 @@ export class User {
   @Column({ name: 'avatar_url', type: 'varchar', nullable: true })
   avatarUrl: string | null;
 
+  /** Member social profile links (tiktok, instagram, whatsapp, …) */
+  @Column({ name: 'social_links', type: 'jsonb', default: () => `'{}'` })
+  socialLinks: SocialLinks;
+
   @Column({ name: 'referred_by_id', type: 'uuid', nullable: true })
   referredById: string | null;
 
   @Column({ name: 'terms_accepted_at', type: 'timestamptz', nullable: true })
   termsAcceptedAt: Date | null;
+
+  /** Set the first time the member opts into the earnings wallet */
+  @Column({ name: 'wallet_activated_at', type: 'timestamptz', nullable: true })
+  walletActivatedAt: Date | null;
 
   @OneToMany(() => CoinApplication, (a) => a.user)
   applications: CoinApplication[];
@@ -87,6 +99,8 @@ export function userPublicView(user: User) {
     kycStatus: user.kycStatus,
     personalId: user.personalId,
     avatarUrl: user.avatarUrl,
+    socialLinks: socialLinksPublicView(user.socialLinks),
+    walletActivatedAt: user.walletActivatedAt?.toISOString() ?? null,
     createdAt: user.createdAt.toISOString(),
   };
 }

@@ -4,10 +4,30 @@ import { useTranslation } from 'react-i18next'
 import { useQuery } from '@tanstack/react-query'
 import SiteLayout from '../../components/SiteLayout'
 import { brandApi } from '@/features/brand/api/brand.api'
+import { SOCIAL_LINK_KEYS, type SocialLinkKey } from '@/features/users/api/users.api'
 import { useAuthStore } from '@/features/auth/store/auth.store'
 
 type Props = {
   mode?: 'brand' | 'member'
+}
+
+const SOCIAL_LABELS: Record<SocialLinkKey, string> = {
+  tiktok: 'TikTok',
+  facebook: 'Facebook',
+  instagram: 'Instagram',
+  linkedin: 'LinkedIn',
+  whatsapp: 'WhatsApp',
+  youtube: 'YouTube',
+  x: 'X',
+  telegram: 'Telegram',
+  website: 'Website',
+}
+
+function socialEntries(links: Partial<Record<SocialLinkKey, string>> | undefined | null) {
+  if (!links) return []
+  return SOCIAL_LINK_KEYS.filter((k) => typeof links[k] === 'string' && links[k]!.trim()).map(
+    (k) => ({ key: k, href: links[k]!.trim(), label: SOCIAL_LABELS[k] }),
+  )
 }
 
 export default function MemberPublicPage({ mode = 'member' }: Props) {
@@ -49,6 +69,7 @@ export default function MemberPublicPage({ mode = 'member' }: Props) {
 
   const heroImage = brand?.logoUrl || owner?.avatarUrl || null
   const heroIsAvatar = !brand?.logoUrl && !!owner?.avatarUrl
+  const socials = useMemo(() => socialEntries(owner?.socialLinks), [owner?.socialLinks])
 
   const catalogCovers = useMemo(() => {
     if (!brand) return new Map<string, string>()
@@ -106,6 +127,22 @@ export default function MemberPublicPage({ mode = 'member' }: Props) {
 
                   {brand.description?.trim() ? (
                     <p className="mp-desc">{brand.description}</p>
+                  ) : null}
+
+                  {socials.length > 0 ? (
+                    <nav className="mp-socials" aria-label={t('brandPublic.socialLinks', { defaultValue: 'Social links' })}>
+                      {socials.map((s) => (
+                        <a
+                          key={s.key}
+                          href={s.href}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="mp-social-link"
+                        >
+                          {t(`pages.profile.social.${s.key}`, { defaultValue: s.label })}
+                        </a>
+                      ))}
+                    </nav>
                   ) : null}
 
                   <div className="mp-stats">

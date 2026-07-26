@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { useMutation, useQuery } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import DashboardLayout from '../../components/DashboardLayout'
 import { coinsApi } from '@/features/coins/api/coins.api'
 import { ordersApi } from '@/features/orders/api/orders.api'
@@ -10,9 +10,13 @@ import { financingPreview } from '@/shared/utils/coinPricing'
 
 type Method = 'full' | 'bank' | 'earnings'
 
+const money = (n: number) =>
+  n.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+
 export default function PaymentPage() {
   const { t } = useTranslation()
   const navigate = useNavigate()
+  const qc = useQueryClient()
   const [method, setMethod] = useState<Method>('bank')
   const [termMonths, setTermMonths] = useState(12)
 
@@ -28,12 +32,19 @@ export default function PaymentPage() {
 
   const createOrder = useMutation({
     mutationFn: () => ordersApi.create(app!.id, method),
-    onSuccess: () => navigate('/dashboard/orders'),
+    onSuccess: (res) => {
+      void qc.invalidateQueries({ queryKey: ['wallet-me'] })
+      void qc.invalidateQueries({ queryKey: ['orders'] })
+      const order = res.data.data
+      navigate(order?.awaitingEarnings ? '/dashboard/wallet' : '/dashboard/orders')
+    },
   })
 
   const coinValue = app ? Number(app.coinValue) : 0
   const earningsBalance = wallet?.balance ?? 0
+  const walletActivated = wallet?.activated ?? false
   const canPayEarnings = earningsBalance >= coinValue && coinValue > 0
+  const shortfall = Math.max(0, coinValue - earningsBalance)
   const { downPayment, toFinance } = financingPreview(coinValue, termMonths)
 
   if (isLoading) {
@@ -117,12 +128,13 @@ export default function PaymentPage() {
             {methodCard(
               'earnings',
               t('payment.payWithEarnings'),
-              t('payment.payWithEarningsDesc', { balance: earningsBalance.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }),
+              t('payment.payWithEarningsDesc', { balance: money(earningsBalance) }),
               canPayEarnings
                 ? t('payment.earningsEnough')
-                : t('payment.earningsShort', { need: coinValue.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }),
-              canPayEarnings ? '#22c55e' : '#f87171',
-              !canPayEarnings,
+                : walletActivated
+                  ? t('payment.earningsAccruing', { need: money(shortfall) })
+                  : t('payment.earningsWillActivate'),
+              canPayEarnings ? '#22c55e' : '#c9a84c',
             )}
           </div>
 
@@ -157,15 +169,27 @@ export default function PaymentPage() {
               <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
                 {[
                   { label: t('payment.coinValue'), value: `$${coinValue.toLocaleString()}.00` },
-                  { label: t('payment.earningsBalance'), value: `$${earningsBalance.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}` },
+                  { label: t('payment.earningsBalance'), value: `$${money(earningsBalance)}` },
                   { label: t('payment.paymentMethod'), value: t('payment.payWithEarnings') },
-                  { label: t('payment.balanceAfter'), value: `$${(earningsBalance - coinValue).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}` },
+                  canPayEarnings
+                    ? { label: t('payment.balanceAfter'), value: `$${money(earningsBalance - coinValue)}` }
+                    : { label: t('payment.earningsRemaining'), value: `$${money(shortfall)}` },
                 ].map((r) => (
                   <div key={r.label} style={{ display: 'flex', justifyContent: 'space-between', padding: '10px 0', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
                     <span style={{ fontSize: '12px', color: 'rgba(255,255,255,0.4)' }}>{r.label}</span>
                     <span style={{ fontSize: '12px', fontWeight: 700, color: '#fff' }}>{r.value}</span>
                   </div>
                 ))}
+                {!canPayEarnings && (
+                  <div style={{ padding: '14px 16px', marginTop: '16px', background: 'rgba(201,168,76,0.07)', border: '1px solid rgba(201,168,76,0.22)', borderRadius: '4px' }}>
+                    <p style={{ fontSize: '12px', fontWeight: 700, color: '#c9a84c', marginBottom: '6px' }}>
+                      {walletActivated ? t('payment.walletActive') : t('payment.walletActivates')}
+                    </p>
+                    <p style={{ fontSize: '12px', color: 'rgba(255,255,255,0.5)', lineHeight: 1.6 }}>
+                      {t('payment.earningsReserveBody', { need: money(shortfall) })}
+                    </p>
+                  </div>
+                )}
                 {createOrder.isError && (
                   <p style={{ fontSize: '12px', color: '#f87171', marginTop: '12px' }}>
                     {(createOrder.error as { response?: { data?: { message?: string } } })?.response?.data?.message
@@ -175,13 +199,24 @@ export default function PaymentPage() {
                 <button
                   type="button"
                   className="gold-btn w-full justify-center mt-5"
-                  disabled={createOrder.isPending || !canPayEarnings}
+                  disabled={createOrder.isPending}
                   onClick={() => createOrder.mutate()}
                 >
-                  {createOrder.isPending ? '…' : t('payment.payFromEarnings')}
+                  {createOrder.isPending
+                    ? '…'
+                    : canPayEarnings
+                      ? t('payment.payFromEarnings')
+                      : t('payment.activateWallet')}
                 </button>
-                <p style={{ fontSize: '10px', color: 'rgba(255,255,255,0.25)', textAlign: 'center', marginTop: '12px', lineHeight: 1.6 }}>
-                  {t('payment.earningsNote')}
+                <Link
+                  to="/dashboard/wallet"
+                  className="no-underline"
+                  style={{ display: 'block', textAlign: 'center', fontSize: '11px', color: '#c9a84c', marginTop: '12px' }}
+                >
+                  {t('payment.openWallet')}
+                </Link>
+                <p style={{ fontSize: '10px', color: 'rgba(255,255,255,0.25)', textAlign: 'center', marginTop: '10px', lineHeight: 1.6 }}>
+                  {canPayEarnings ? t('payment.earningsNote') : t('payment.earningsPendingNote')}
                 </p>
               </div>
             ) : (

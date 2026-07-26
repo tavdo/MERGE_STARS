@@ -27,16 +27,59 @@ export class WalletService {
     return last ? Number(last.balanceAfter) : 0;
   }
 
+  /**
+   * Opens the earnings wallet for a member. Idempotent: the first opt-in wins,
+   * later calls just return the existing activation date.
+   */
+  async activate(userId: string, source = 'user') {
+    const user = await this.users.findOne({ where: { id: userId } });
+    if (!user) throw new NotFoundException('User not found');
+
+    if (!user.walletActivatedAt) {
+      user.walletActivatedAt = new Date();
+      await this.users.save(user);
+      await this.notifications.create({
+        userId,
+        type: 'wallet_activated',
+        title: 'Earnings wallet activated',
+        body: 'Your earnings wallet is open. Design royalties and catalog earnings are credited here and can be used to pay for coin orders.',
+        meta: { source },
+      });
+    }
+
+    return { activated: true, activatedAt: user.walletActivatedAt.toISOString() };
+  }
+
   async getMe(userId: string, limit = 30) {
+    const user = await this.users.findOne({ where: { id: userId } });
+    if (!user) throw new NotFoundException('User not found');
+
     const balance = await this.getBalance(userId);
     const rows = await this.txs.find({
       where: { userId },
       order: { createdAt: 'DESC' },
       take: Math.min(limit, 100),
     });
+
+    const totals = rows.length
+      ? await this.txs
+          .createQueryBuilder('t')
+          .select('t.type', 'type')
+          .addSelect('SUM(t.amount)', 'total')
+          .where('t.user_id = :userId', { userId })
+          .groupBy('t.type')
+          .getRawMany<{ type: string; total: string }>()
+      : [];
+    const sumFor = (type: string) =>
+      Number(totals.find((r) => r.type === type)?.total ?? 0);
+
     return {
       balance,
       currency: 'USD',
+      activated: !!user.walletActivatedAt,
+      activatedAt: user.walletActivatedAt?.toISOString() ?? null,
+      totalEarned: sumFor('credit'),
+      totalSpent: sumFor('debit'),
       transactions: rows.map(walletTxView),
     };
   }
@@ -57,6 +100,9 @@ export class WalletService {
 
     const user = await this.users.findOne({ where: { id: params.userId } });
     if (!user) throw new NotFoundException('User not found');
+    if (!user.walletActivatedAt) {
+      await this.activate(params.userId, `credit:${params.reason}`);
+    }
 
     const row = await this.dataSource.transaction(async (manager) => {
       const repo = manager.getRepository(WalletTransaction);

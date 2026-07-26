@@ -41,6 +41,20 @@ export interface PublicBrandOwner {
   founderId: string | null
   hasAvatar: boolean
   avatarUrl: string | null
+  socialLinks?: Partial<
+    Record<
+      | 'tiktok'
+      | 'facebook'
+      | 'instagram'
+      | 'linkedin'
+      | 'whatsapp'
+      | 'youtube'
+      | 'x'
+      | 'telegram'
+      | 'website',
+      string
+    >
+  >
   profilePath: string
   brandPath: string
 }

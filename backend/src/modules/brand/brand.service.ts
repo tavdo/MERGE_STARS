@@ -20,6 +20,7 @@ import {
 import { catalogItemView } from '../../database/entities/catalog-item.entity';
 import { User } from '../../database/entities/user.entity';
 import { UpdateBrandLineDto } from './dto/brand.dto';
+import { socialLinksPublicView } from '../../common/social-links';
 
 const LOGO_MIME = new Set(['image/jpeg', 'image/png', 'image/webp', 'image/svg+xml']);
 const LOGO_MAX = 5 * 1024 * 1024;
@@ -317,6 +318,7 @@ export class BrandService {
         avatarUrl: user.avatarUrl
           ? `/api/users/public/${encodeURIComponent(user.mergeId)}/avatar`
           : null,
+        socialLinks: socialLinksPublicView(user.socialLinks),
         profilePath: `/u/${encodeURIComponent(user.mergeId)}`,
         brandPath: user.brandLineId
           ? `/b/${encodeURIComponent(user.brandLineId)}`

@@ -18,6 +18,11 @@ import { RefreshToken } from '../../database/entities/refresh-token.entity';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { MailService } from '../mail/mail.service';
 import { NotificationsService } from '../notifications/notifications.service';
+import {
+  mergeSocialLinks,
+  sanitizeSocialLinks,
+  socialLinksPublicView,
+} from '../../common/social-links';
 
 const KYC_STATUSES = new Set(['pending', 'verified', 'rejected']);
 
@@ -76,6 +81,17 @@ export class UsersService {
         }
       }
       user.phone = phone;
+    }
+
+    if (dto.socialLinks !== undefined) {
+      try {
+        const patch = sanitizeSocialLinks(dto.socialLinks);
+        user.socialLinks = mergeSocialLinks(user.socialLinks, patch);
+      } catch (e) {
+        throw new BadRequestException(
+          e instanceof Error ? e.message : 'Invalid social links',
+        );
+      }
     }
 
     await this.users.save(user);
@@ -142,6 +158,7 @@ export class UsersService {
       avatarUrl: user.avatarUrl
         ? `/api/users/public/${encodeURIComponent(user.mergeId)}/avatar`
         : null,
+      socialLinks: socialLinksPublicView(user.socialLinks),
       profilePath: `/u/${encodeURIComponent(user.mergeId)}`,
       brandPath: user.brandLineId
         ? `/b/${encodeURIComponent(user.brandLineId)}`

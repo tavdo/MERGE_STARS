@@ -29,6 +29,7 @@ export default {
     noDescription: 'ბრენდის აღწერა ჯერ არ არის.',
     joinViaBrand: 'შემოგვიერთდი ამ ბრენდით',
     copyLink: 'პროფილის ბმულის კოპირება',
+    socialLinks: 'სოციალური ბმულები',
   },
   cookies: {
     title: 'ჩვენ ვიყენებთ ქუქი-ფაილებს',
@@ -77,8 +78,8 @@ export default {
   dashboard: {
     welcomeBack: 'კეთილი დაბრუნება', logout: 'გასვლა', collapseMenu: 'მენიუს დაკეცვა', expandMenu: 'მენიუს გაშლა',
     notifications: 'შეტყობინებები', messages: 'შეტყობინებები', myProfile: 'ჩემი პროფილი',
-    nav: { dashboard: 'პანელი', profile: 'ჩემი პროფილი', applications: 'განაცხადები', orders: 'შეკვეთები', coins: 'ჩემი მონეტები', investments: 'Product Registry', brandLine: 'ბრენდი', collections: 'კოლექციები', qrIdentity: 'QR იდენტობა', payment: 'გადახდა', delivery: 'მიწოდება', referral: 'რეფერალი', messages: 'შეტყობინებები', aiAssistant: 'AI ასისტენტი', support: 'მხარდაჭერა', settings: 'პარამეტრები' },
-    titles: { dashboard: 'პანელი', profile: 'ჩემი პროფილი', coins: 'ჩემი მონეტები', investments: 'Product Registry', messages: 'შეტყობინებები', settings: 'პარამეტრები', support: 'მხარდაჭერა', brandLine: 'ბრენდის ხაზი', collections: 'კოლექციები', qrIdentity: 'QR იდენტობა', orders: 'შეკვეთები', payment: 'გადახდა', delivery: 'მიწოდება', referral: 'რეფერალი', aiAssistant: 'AI ასისტენტი', application: 'მონეტის განაცხადი', status: 'განაცხადის სტატუსი' },
+    nav: { dashboard: 'პანელი', profile: 'ჩემი პროფილი', applications: 'განაცხადები', orders: 'შეკვეთები', coins: 'ჩემი მონეტები', investments: 'Product Registry', brandLine: 'ბრენდი', collections: 'კოლექციები', qrIdentity: 'QR იდენტობა', payment: 'გადახდა', wallet: 'შემოსავლების საფულე', delivery: 'მიწოდება', referral: 'რეფერალი', messages: 'შეტყობინებები', aiAssistant: 'AI ასისტენტი', support: 'მხარდაჭერა', settings: 'პარამეტრები' },
+    titles: { dashboard: 'პანელი', profile: 'ჩემი პროფილი', coins: 'ჩემი მონეტები', investments: 'Product Registry', messages: 'შეტყობინებები', settings: 'პარამეტრები', support: 'მხარდაჭერა', brandLine: 'ბრენდის ხაზი', collections: 'კოლექციები', qrIdentity: 'QR იდენტობა', orders: 'შეკვეთები', payment: 'გადახდა', wallet: 'შემოსავლების საფულე', delivery: 'მიწოდება', referral: 'რეფერალი', aiAssistant: 'AI ასისტენტი', application: 'მონეტის განაცხადი', status: 'განაცხადის სტატუსი' },
   },
   collections: {
     title: 'ჩემი კოლექციები და კატალოგები',

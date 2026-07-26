@@ -20,6 +20,7 @@ const NAV = [
   { icon: '◦', labelKey: 'dashboard.nav.collections', href: '/dashboard/collections', match: ['/dashboard/collections'] },
   { icon: '◦', labelKey: 'dashboard.nav.qrIdentity', href: '/dashboard/qr' },
   { icon: '◦', labelKey: 'dashboard.nav.payment', href: '/dashboard/payment' },
+  { icon: '◈', labelKey: 'dashboard.nav.wallet', href: '/dashboard/wallet' },
   { icon: '◦', labelKey: 'dashboard.nav.delivery', href: '/dashboard/delivery' },
   { icon: '◦', labelKey: 'dashboard.nav.referral', href: '/dashboard/referral' },
   { icon: '◦', labelKey: 'dashboard.nav.messages', href: '/dashboard/messages', badgeKey: 'messages' as const },
