@@ -1,4 +1,5 @@
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom'
+import SiteBackground from './components/SiteBackground'
 
 // Core pages
 import LandingPage       from './pages/LandingPage'
@@ -172,7 +173,10 @@ function AppRoutes() {
 export default function App() {
   return (
     <BrowserRouter>
-      <AppRoutes />
+      <SiteBackground />
+      <div className="site-app">
+        <AppRoutes />
+      </div>
     </BrowserRouter>
   )
 }

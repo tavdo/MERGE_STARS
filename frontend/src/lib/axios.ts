@@ -12,10 +12,13 @@ export const api = axios.create({
   headers: { 'Content-Type': 'application/json' },
 })
 
-// Attach access token on every request
+// Attach access token on every request; let the browser set multipart boundaries
 api.interceptors.request.use((config) => {
   const token = useAuthStore.getState().accessToken
   if (token) config.headers.Authorization = `Bearer ${token}`
+  if (typeof FormData !== 'undefined' && config.data instanceof FormData) {
+    delete config.headers['Content-Type']
+  }
   return config
 })
 

@@ -9,12 +9,13 @@ import {
   Query,
   Res,
   UploadedFile,
+  UploadedFiles,
   UseGuards,
   UseInterceptors,
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
-import { FileInterceptor } from '@nestjs/platform-express';
+import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
 import { diskStorage, memoryStorage } from 'multer';
 import type { Response } from 'express';
 import { createReadStream } from 'fs';
@@ -25,9 +26,12 @@ import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { CurrentUser } from '../../common/decorators/current-user.decorator';
 import { User } from '../../database/entities/user.entity';
 import { CatalogService } from './catalog.service';
+import { MeshyService } from './meshy.service';
 import {
   CreateCatalogItemDto,
   CreateCollectionDto,
+  MeshyGenerateDto,
+  MoveCatalogItemDto,
   UpdateCatalogItemDto,
   UpdateCollectionDto,
 } from './dto/catalog.dto';
@@ -49,7 +53,10 @@ const modelUpload = FileInterceptor('file', {
 
 @Controller('catalog')
 export class CatalogController {
-  constructor(private readonly catalog: CatalogService) {}
+  constructor(
+    private readonly catalog: CatalogService,
+    private readonly meshy: MeshyService,
+  ) {}
 
   @Get('public')
   listPublic(@Query('category') category?: string) {
@@ -140,6 +147,17 @@ export class CatalogController {
     return this.catalog.updateItem(user.id, itemId, dto);
   }
 
+  @Post('items/:itemId/move')
+  @UseGuards(JwtAuthGuard)
+  @UsePipes(new ValidationPipe({ whitelist: true, transform: true }))
+  moveItem(
+    @CurrentUser() user: User,
+    @Param('itemId') itemId: string,
+    @Body() dto: MoveCatalogItemDto,
+  ) {
+    return this.catalog.moveItem(user.id, itemId, dto);
+  }
+
   @Delete('items/:itemId')
   @UseGuards(JwtAuthGuard)
   removeItem(@CurrentUser() user: User, @Param('itemId') itemId: string) {
@@ -186,5 +204,49 @@ export class CatalogController {
     res.setHeader('Content-Type', file.mimeType);
     res.setHeader('Cache-Control', 'private, max-age=3600');
     createReadStream(file.filePath).pipe(res);
+  }
+
+  @Post('meshy/generate')
+  @UseGuards(JwtAuthGuard)
+  @UsePipes(new ValidationPipe({ whitelist: true, transform: true }))
+  meshyGenerate(@CurrentUser() user: User, @Body() dto: MeshyGenerateDto) {
+    return this.meshy.startGenerate(user.id, dto.prompt, dto.style ?? '');
+  }
+
+  @Post('meshy/generate-from-image')
+  @UseGuards(JwtAuthGuard)
+  @UseInterceptors(
+    FilesInterceptor('files', 4, {
+      storage: memoryStorage(),
+      limits: { fileSize: 10 * 1024 * 1024 },
+    }),
+  )
+  meshyGenerateFromImage(
+    @CurrentUser() user: User,
+    @UploadedFiles() files: Express.Multer.File[],
+    @Body('style') style?: string,
+    @Body('prompt') prompt?: string,
+  ) {
+    return this.meshy.startGenerateFromImages(
+      user.id,
+      files ?? [],
+      style ?? '',
+      prompt ?? '',
+    );
+  }
+
+  @Get('meshy/jobs/:jobId')
+  @UseGuards(JwtAuthGuard)
+  meshyJob(@CurrentUser() user: User, @Param('jobId') jobId: string) {
+    return this.meshy.getJob(user.id, jobId);
+  }
+
+  @Get('meshy/files/:fileName')
+  meshyFile(@Param('fileName') fileName: string, @Res() res: Response) {
+    const file = this.meshy.getStoredFile(fileName);
+    res.setHeader('Content-Type', file.mimeType);
+    res.setHeader('Content-Disposition', `inline; filename="${file.filename}"`);
+    res.setHeader('Cache-Control', 'private, max-age=3600');
+    file.stream.pipe(res);
   }
 }

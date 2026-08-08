@@ -6,7 +6,7 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { randomBytes, randomUUID } from 'crypto';
-import { mkdir, rename, unlink, writeFile } from 'fs/promises';
+import { mkdir, rename, unlink, writeFile, copyFile } from 'fs/promises';
 import { join } from 'path';
 import { In, Repository } from 'typeorm';
 import { BrandLineProfile } from '../../database/entities/brand-line-profile.entity';
@@ -22,6 +22,7 @@ import { User } from '../../database/entities/user.entity';
 import {
   CreateCatalogItemDto,
   CreateCollectionDto,
+  MoveCatalogItemDto,
   UpdateCatalogItemDto,
   UpdateCollectionDto,
 } from './dto/catalog.dto';
@@ -30,6 +31,7 @@ import {
   isCatalogCategory,
   normalizeCatalogCategory,
 } from './catalog-categories';
+import { MeshyService } from './meshy.service';
 
 const IMAGE_MIME = new Set(['image/jpeg', 'image/png', 'image/webp', 'image/gif']);
 const MODEL_MIME = new Set([
@@ -65,6 +67,7 @@ export class CatalogService {
     private readonly items: Repository<CatalogItem>,
     @InjectRepository(BrandLineProfile)
     private readonly brandProfiles: Repository<BrandLineProfile>,
+    private readonly meshy: MeshyService,
   ) {}
 
   private itemDir(itemId: string) {
@@ -266,7 +269,23 @@ export class CatalogService {
       status: 'ACTIVE',
     });
     await this.items.save(item);
+    if (dto.meshyJobId?.trim()) {
+      await this.attachMeshyGlb(userId, item, dto.meshyJobId.trim());
+    }
     return catalogItemView(item);
+  }
+
+  /** Copy a Meshy-generated GLB already on disk into the catalog item folder. */
+  private async attachMeshyGlb(userId: string, item: CatalogItem, jobId: string) {
+    const src = this.meshy.resolveOwnedGlbPath(userId, jobId);
+    const dir = this.itemDir(item.id);
+    await mkdir(dir, { recursive: true });
+    const stored = `model-${randomUUID()}.glb`;
+    const dest = join(dir, stored);
+    await copyFile(src, dest);
+    item.model3dUrl = stored;
+    item.model3dFormat = 'glb';
+    await this.items.save(item);
   }
 
   async updateItem(userId: string, itemId: string, dto: UpdateCatalogItemDto) {
@@ -283,6 +302,23 @@ export class CatalogService {
           : Math.round(Number(dto.priceUsd) * 100) / 100;
     }
     await this.items.save(item);
+    return catalogItemView(item);
+  }
+
+  /** Move a design to another collection owned by the same user. */
+  async moveItem(userId: string, itemId: string, dto: MoveCatalogItemDto) {
+    const item = await this.ownedItem(userId, itemId);
+    const targetId = dto.collectionId?.trim();
+    if (!targetId) {
+      throw new BadRequestException('Target collection is required');
+    }
+    if (item.collectionId === targetId) {
+      return catalogItemView(item);
+    }
+    await this.ownedCollection(userId, targetId);
+    // Use update() — save() with a loaded `collection` relation can keep the old FK.
+    await this.items.update({ id: itemId }, { collectionId: targetId });
+    item.collectionId = targetId;
     return catalogItemView(item);
   }
 

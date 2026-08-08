@@ -49,55 +49,99 @@ export default function CollectionsPage() {
     create.mutate()
   }
 
+  const totalItems = collections.reduce((sum, c) => sum + (c.itemCount || 0), 0)
+  const publicCount = collections.filter((c) => c.visibility === 'PUBLIC').length
+
   return (
     <DashboardLayout titleKey="collections">
-      <div className="max-w-5xl">
-        <div className="flex flex-wrap items-start justify-between gap-4 mb-8">
-          <div>
-            <p className="dash-label mb-2">{t('collections.kicker', { defaultValue: 'STAR JEWELRY HOUSE' })}</p>
-            <h2 className="text-xl font-bold text-white tracking-wide">
-              {t('collections.title', { defaultValue: 'My collections & catalogs' })}
-            </h2>
-            <p className="text-sm text-neutral-500 mt-2 max-w-xl">
-              {t('collections.subtitle', { defaultValue: 'Create catalogs to showcase your products. Each collection can hold multiple items.' })}
+      <div className="collections-hub">
+        <header className="collections-hub-hero">
+          <div className="collections-hub-hero-copy">
+            <p className="dash-label">{t('collections.kicker', { defaultValue: 'STAR JEWELRY HOUSE' })}</p>
+            <h2>{t('collections.title', { defaultValue: 'My collections & catalogs' })}</h2>
+            <p>
+              {t('collections.subtitle', {
+                defaultValue: 'Create catalogs to showcase your products. Each collection can hold multiple items.',
+              })}
             </p>
           </div>
-          <button type="button" className="luxury-btn-glass" onClick={() => setShowForm((v) => !v)}>
-            {showForm ? t('collections.cancel', { defaultValue: 'Cancel' }) : t('collections.new', { defaultValue: '+ New collection' })}
-          </button>
-        </div>
+          <div className="collections-hub-hero-aside">
+            {!isLoading && collections.length > 0 && (
+              <div className="collections-hub-stats">
+                <div>
+                  <strong>{collections.length}</strong>
+                  <span>{t('collections.statCatalogs', { defaultValue: 'Catalogs' })}</span>
+                </div>
+                <div>
+                  <strong>{totalItems}</strong>
+                  <span>{t('collections.statDesigns', { defaultValue: 'Designs' })}</span>
+                </div>
+                <div>
+                  <strong>{publicCount}</strong>
+                  <span>{t('collections.statPublic', { defaultValue: 'Public' })}</span>
+                </div>
+              </div>
+            )}
+            <button type="button" className="luxury-btn-glass" onClick={() => setShowForm((v) => !v)}>
+              {showForm
+                ? t('collections.cancel', { defaultValue: 'Cancel' })
+                : t('collections.new', { defaultValue: '+ New collection' })}
+            </button>
+          </div>
+        </header>
 
         {showForm && (
-          <form onSubmit={handleCreate} className="dash-panel mb-8 space-y-4">
+          <form onSubmit={handleCreate} className="collections-hub-create">
             <p className="dash-label">{t('collections.createTitle', { defaultValue: 'Create collection' })}</p>
-            <div>
-              <label className="auth-field-label">{t('collections.name', { defaultValue: 'Collection name' })}</label>
-              <input className="gold-input" value={title} onChange={(e) => setTitle(e.target.value)} required maxLength={120} />
-            </div>
-            <div>
-              <label className="auth-field-label">{t('collections.description', { defaultValue: 'Description' })}</label>
-              <textarea className="gold-input" rows={3} value={description} onChange={(e) => setDescription(e.target.value)} />
-            </div>
-            <div>
-              <label className="auth-field-label">{t('collections.category', { defaultValue: 'Category' })}</label>
-              <select
-                className="gold-input"
-                value={category}
-                onChange={(e) => setCategory(e.target.value as CatalogCategory)}
-              >
-                {CATALOG_CATEGORIES.map((key) => (
-                  <option key={key} value={key}>
-                    {t(`landing.categories.${key}`)}
+            <div className="collections-hub-create-grid">
+              <div className="collections-hub-create-wide">
+                <label className="auth-field-label">{t('collections.name', { defaultValue: 'Collection name' })}</label>
+                <input
+                  className="gold-input"
+                  value={title}
+                  onChange={(e) => setTitle(e.target.value)}
+                  required
+                  maxLength={120}
+                />
+              </div>
+              <div>
+                <label className="auth-field-label">{t('collections.category', { defaultValue: 'Category' })}</label>
+                <select
+                  className="gold-input"
+                  value={category}
+                  onChange={(e) => setCategory(e.target.value as CatalogCategory)}
+                >
+                  {CATALOG_CATEGORIES.map((key) => (
+                    <option key={key} value={key}>
+                      {t(`landing.categories.${key}`)}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div>
+                <label className="auth-field-label">{t('collections.visibility', { defaultValue: 'Visibility' })}</label>
+                <select
+                  className="gold-input"
+                  value={visibility}
+                  onChange={(e) => setVisibility(e.target.value as CatalogVisibility)}
+                >
+                  <option value="PRIVATE">
+                    {t('collections.private', { defaultValue: 'Private — only you' })}
                   </option>
-                ))}
-              </select>
-            </div>
-            <div>
-              <label className="auth-field-label">{t('collections.visibility', { defaultValue: 'Visibility' })}</label>
-              <select className="gold-input" value={visibility} onChange={(e) => setVisibility(e.target.value as CatalogVisibility)}>
-                <option value="PRIVATE">{t('collections.private', { defaultValue: 'Private — only you' })}</option>
-                <option value="PUBLIC">{t('collections.public', { defaultValue: 'Public — visible in catalog' })}</option>
-              </select>
+                  <option value="PUBLIC">
+                    {t('collections.public', { defaultValue: 'Public — visible in catalog' })}
+                  </option>
+                </select>
+              </div>
+              <div className="collections-hub-create-wide">
+                <label className="auth-field-label">{t('collections.description', { defaultValue: 'Description' })}</label>
+                <textarea
+                  className="gold-input"
+                  rows={2}
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
+                />
+              </div>
             </div>
             {error && <p className="text-sm text-red-400">{error}</p>}
             <button type="submit" disabled={create.isPending} className="luxury-btn-glass">
@@ -109,47 +153,54 @@ export default function CollectionsPage() {
         {isLoading ? (
           <p className="text-neutral-500 text-sm">{t('common.loading', { defaultValue: 'Loading…' })}</p>
         ) : collections.length === 0 ? (
-          <div className="dash-panel text-center py-12">
-            <p className="text-4xl mb-4">📚</p>
-            <p className="text-white font-semibold mb-2">{t('collections.emptyTitle', { defaultValue: 'No collections yet' })}</p>
-            <p className="text-sm text-neutral-500 mb-6">{t('collections.emptyHint', { defaultValue: 'Create your first catalog to start adding products.' })}</p>
+          <div className="collections-hub-empty">
+            <span aria-hidden>◆</span>
+            <h3>{t('collections.emptyTitle', { defaultValue: 'No collections yet' })}</h3>
+            <p>
+              {t('collections.emptyHint', {
+                defaultValue: 'Create your first catalog to start adding products.',
+              })}
+            </p>
             <button type="button" className="luxury-btn-glass" onClick={() => setShowForm(true)}>
               {t('collections.new', { defaultValue: '+ New collection' })}
             </button>
           </div>
         ) : (
-          <div className="grid sm:grid-cols-2 gap-4">
+          <div className="collections-hub-grid">
             {collections.map((c) => (
-              <Link key={c.id} to={`/dashboard/collections/${c.id}`} className="dash-panel block hover:border-[#D4AF37]/40 transition-colors no-underline">
-                <div className="flex items-start justify-between gap-3 mb-3">
-                  <h3 className="text-base font-bold text-white">{c.title}</h3>
-                  <div className="flex flex-col items-end gap-1">
-                    <span className={`text-[10px] font-bold tracking-wider px-2 py-1 rounded ${c.visibility === 'PUBLIC' ? 'bg-emerald-500/10 text-emerald-400' : 'bg-neutral-500/10 text-neutral-400'}`}>
+              <Link key={c.id} to={`/dashboard/collections/${c.id}`} className="collections-hub-card">
+                <div className="collections-hub-card-visual" aria-hidden>
+                  <span>{c.title.slice(0, 1).toUpperCase()}</span>
+                  <div className="collections-hub-card-badges">
+                    <em className={c.visibility === 'PUBLIC' ? 'is-public' : 'is-private'}>
                       {c.visibility}
-                    </span>
-                    {c.category && (
-                      <span className="text-[10px] tracking-wider text-[#c9a84c]">
-                        {t(`landing.categories.${c.category}`)}
-                      </span>
-                    )}
+                    </em>
+                    {c.category && <em>{t(`landing.categories.${c.category}`)}</em>}
                   </div>
                 </div>
-                {c.description && (
-                  <p className="text-sm text-neutral-500 line-clamp-2 mb-4">{c.description}</p>
-                )}
-                <div className="flex items-center justify-between text-xs text-neutral-500">
-                  <span>{c.itemCount} {t('collections.items', { defaultValue: 'items' })}</span>
-                  <span className="text-[#D4AF37]">{t('collections.manage', { defaultValue: 'Manage →' })}</span>
+                <div className="collections-hub-card-body">
+                  <h3>{c.title}</h3>
+                  {c.description ? (
+                    <p>{c.description}</p>
+                  ) : (
+                    <p className="is-muted">
+                      {t('collections.noDescription', { defaultValue: 'No description yet.' })}
+                    </p>
+                  )}
+                  <div className="collections-hub-card-foot">
+                    <span>
+                      {c.itemCount} {t('collections.items', { defaultValue: 'items' })}
+                    </span>
+                    <strong>{t('collections.manage', { defaultValue: 'Manage →' })}</strong>
+                  </div>
                 </div>
               </Link>
             ))}
           </div>
         )}
 
-        <div className="mt-10 pt-6 border-t border-white/5">
-          <Link to="/collections" className="text-sm text-[#D4AF37] hover:underline">
-            {t('collections.browsePublic', { defaultValue: 'Browse public collections →' })}
-          </Link>
+        <div className="collections-hub-footer">
+          <Link to="/collections">{t('collections.browsePublic', { defaultValue: 'Browse public collections →' })}</Link>
         </div>
       </div>
     </DashboardLayout>

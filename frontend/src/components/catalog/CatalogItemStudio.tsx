@@ -14,6 +14,7 @@ export type CatalogItemStudioPayload = {
   modelUrl?: string | null
   modelFormat?: string | null
   meshyPrompt?: string
+  meshyJobId?: string | null
 }
 
 type Tab = 'details' | 'image' | 'model'
@@ -44,6 +45,7 @@ export default function CatalogItemStudio({ onSubmit, submitting, error }: Props
   const [modelFile, setModelFile] = useState<File | null>(null)
   const [modelPreview, setModelPreview] = useState<string | null>(null)
   const [meshyModelUrl, setMeshyModelUrl] = useState<string | null>(null)
+  const [meshyJobId, setMeshyJobId] = useState<string | null>(null)
 
   useEffect(() => {
     if (!imageFile) {
@@ -84,9 +86,17 @@ export default function CatalogItemStudio({ onSubmit, submitting, error }: Props
       metalType: metal.trim() || undefined,
       imageUrl: imageUrl.trim() || undefined,
       imageFile,
-      modelFile,
+      // Prefer server-side Meshy attach — avoid re-uploading huge GLBs from the browser
+      modelFile: meshyJobId ? null : modelFile,
       modelUrl: activeModelUrl,
-      modelFormat: modelFile ? modelFormatFromName(modelFile.name) : meshyModelUrl ? 'glb' : null,
+      modelFormat: meshyJobId
+        ? 'glb'
+        : modelFile
+          ? modelFormatFromName(modelFile.name)
+          : meshyModelUrl
+            ? 'glb'
+            : null,
+      meshyJobId,
     })
   }
 
@@ -95,6 +105,7 @@ export default function CatalogItemStudio({ onSubmit, submitting, error }: Props
     setImageUrl('')
     setModelFile(null)
     setMeshyModelUrl(null)
+    setMeshyJobId(null)
   }
 
   return (
@@ -181,17 +192,22 @@ export default function CatalogItemStudio({ onSubmit, submitting, error }: Props
                 fileName={modelFile?.name}
                 onFile={(f) => {
                   setModelFile(f)
-                  if (f) setMeshyModelUrl(null)
+                  if (f) {
+                    setMeshyModelUrl(null)
+                    setMeshyJobId(null)
+                  }
                 }}
               />
               <p className="catalog-studio-divider">
                 <span>{t('collections.or', { defaultValue: 'or' })}</span>
               </p>
               <MeshyAIPanel
-                onGenerate={async ({ prompt }) => {
-                  // Parent/backend will replace this — demo returns null preview
-                  void prompt
-                  return { prompt, style: '', previewUrl: null }
+                onGenerate={async (res) => {
+                  if (!res.previewUrl) return
+                  setMeshyModelUrl(res.previewUrl)
+                  setMeshyJobId(res.jobId ?? null)
+                  // Keep preview URL only — server attaches GLB by jobId on save
+                  setModelFile(null)
                 }}
                 resultUrl={meshyModelUrl}
               />
@@ -209,13 +225,14 @@ export default function CatalogItemStudio({ onSubmit, submitting, error }: Props
         )}
       </div>
 
-      {(imageFile || modelFile || imageUrl) && (
+      {(imageFile || modelFile || imageUrl || meshyJobId || meshyModelUrl) && (
         <div className="catalog-studio-assets">
           <span>{t('collections.attached', { defaultValue: 'Attached:' })}</span>
           {imageFile && <span className="catalog-studio-pill">🖼 {imageFile.name}</span>}
           {!imageFile && imageUrl && <span className="catalog-studio-pill">🔗 Image URL</span>}
           {modelFile && <span className="catalog-studio-pill">◆ {modelFile.name}</span>}
-          {meshyModelUrl && <span className="catalog-studio-pill">✦ Meshy AI</span>}
+          {meshyJobId && <span className="catalog-studio-pill">✦ Meshy AI ready</span>}
+          {!meshyJobId && meshyModelUrl && <span className="catalog-studio-pill">✦ Meshy AI</span>}
           <button type="button" className="catalog-studio-clear" onClick={resetMedia}>
             {t('collections.clearMedia', { defaultValue: 'Clear media' })}
           </button>

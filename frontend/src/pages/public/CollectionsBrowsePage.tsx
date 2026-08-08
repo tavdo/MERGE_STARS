@@ -88,87 +88,109 @@ export default function CollectionsBrowsePage() {
 
   return (
     <SiteLayout>
-      <div className="max-w-5xl mx-auto px-6 py-16">
+      <div className="pub-catalog-page">
         {!slug ? (
           <>
-            <p className="landing-sans-head mb-3">
-              {t('collections.browseKicker', { defaultValue: 'COMMUNITY CATALOG' })}
-            </p>
-            <h1 className="landing-section-title mb-4">
-              {t('collections.browseTitle', { defaultValue: 'Public collections' })}
-            </h1>
-            <p className="landing-body mb-10 max-w-2xl">
-              {t('collections.browseSubtitle', {
-                defaultValue: 'Explore catalogs created by MERGE STARS members.',
-              })}
-            </p>
+            <header className="pub-catalog-hero">
+              <p className="landing-sans-head">
+                {t('collections.browseKicker', { defaultValue: 'COMMUNITY CATALOG' })}
+              </p>
+              <h1>{t('collections.browseTitle', { defaultValue: 'Public collections' })}</h1>
+              <p>
+                {t('collections.browseSubtitle', {
+                  defaultValue: 'Explore catalogs created by MERGE STARS members.',
+                })}
+              </p>
+            </header>
+
             {listLoading ? (
-              <p className="text-neutral-500">{t('common.loading')}</p>
+              <p className="pub-catalog-status">{t('common.loading')}</p>
             ) : list.length === 0 ? (
-              <p className="text-neutral-500">
+              <p className="pub-catalog-status">
                 {t('collections.browseEmpty', { defaultValue: 'No public collections yet.' })}
               </p>
             ) : (
-              <div className="grid sm:grid-cols-2 gap-5">
-                {list.map((c) => (
-                  <div key={c.id} className="gold-card p-6">
-                    <Link to={`/collections/${c.slug}`} className="block no-underline hover:opacity-90">
-                      <h2 className="text-lg font-bold text-white mb-2">{c.title}</h2>
-                    </Link>
-                    <p className="text-sm text-neutral-500 mb-3">
-                      {c.mergeId || c.brandLineId ? (
-                        <Link
-                          to={
-                            c.mergeId
-                              ? `/u/${encodeURIComponent(c.mergeId)}`
-                              : `/b/${encodeURIComponent(c.brandLineId!)}`
-                          }
-                          className="text-[#D4AF37] hover:underline no-underline"
-                        >
-                          {c.ownerName}
-                        </Link>
-                      ) : (
-                        c.ownerName
-                      )}
-                    </p>
-                    {c.description && (
-                      <Link to={`/collections/${c.slug}`} className="block no-underline">
-                        <p className="text-sm text-neutral-400 line-clamp-2 mb-4">{c.description}</p>
+              <div className="pub-catalog-grid">
+                {list.map((c) => {
+                  const profileTo = c.mergeId
+                    ? `/u/${encodeURIComponent(c.mergeId)}`
+                    : c.brandLineId
+                      ? `/b/${encodeURIComponent(c.brandLineId)}`
+                      : null
+                  const visual = c.logoUrl || c.avatarUrl
+                  return (
+                    <article key={c.id} className="pub-catalog-card">
+                      <Link to={`/collections/${c.slug}`} className="pub-catalog-card-media">
+                        {visual ? (
+                          <img
+                            src={visual}
+                            alt=""
+                            className={c.logoUrl ? 'is-logo' : 'is-avatar'}
+                          />
+                        ) : (
+                          <span>{(c.brandName || c.ownerName || c.title).slice(0, 1).toUpperCase()}</span>
+                        )}
+                        {c.category && (
+                          <em>{t(`landing.categories.${c.category}`, { defaultValue: c.category })}</em>
+                        )}
                       </Link>
-                    )}
-                    <Link to={`/collections/${c.slug}`} className="text-xs text-[#D4AF37] no-underline">
-                      {c.itemCount} items →
-                    </Link>
-                  </div>
-                ))}
+                      <div className="pub-catalog-card-body">
+                        <Link to={`/collections/${c.slug}`} className="pub-catalog-card-title">
+                          {c.title}
+                        </Link>
+                        {profileTo ? (
+                          <Link to={profileTo} className="pub-catalog-card-owner">
+                            {c.brandName?.trim() || c.ownerName}
+                          </Link>
+                        ) : (
+                          <p className="pub-catalog-card-owner is-plain">{c.ownerName}</p>
+                        )}
+                        {c.description && <p className="pub-catalog-card-desc">{c.description}</p>}
+                        <Link to={`/collections/${c.slug}`} className="pub-catalog-card-cta">
+                          <span>
+                            {c.itemCount} {t('collections.items', { defaultValue: 'items' })}
+                          </span>
+                          <strong>{t('collections.openCatalog', { defaultValue: 'Open catalog' })}</strong>
+                        </Link>
+                      </div>
+                    </article>
+                  )
+                })}
               </div>
             )}
           </>
         ) : detailLoading || !detail ? (
-          <p className="text-neutral-500">{t('common.loading')}</p>
+          <p className="pub-catalog-status">{t('common.loading')}</p>
         ) : (
-          <>
-            <Link to="/collections" className="text-sm text-neutral-500 hover:text-[#D4AF37] no-underline">
+          <div className="pub-catalog-detail">
+            <Link to="/collections" className="pub-catalog-back">
               ← {t('collections.browseTitle', { defaultValue: 'Public collections' })}
             </Link>
-            <h1 className="landing-section-title mt-6 mb-2">{detail.title}</h1>
-            <p className="text-sm text-[#D4AF37] mb-2">
-              {detail.mergeId || detail.brandLineId ? (
-                <Link
-                  to={
-                    detail.mergeId
-                      ? `/u/${encodeURIComponent(detail.mergeId)}`
-                      : `/b/${encodeURIComponent(detail.brandLineId!)}`
-                  }
-                  className="text-[#D4AF37] hover:underline no-underline"
-                >
-                  {detail.ownerName}
-                </Link>
-              ) : (
-                detail.ownerName
-              )}
-            </p>
-            {detail.description && <p className="landing-body mb-8">{detail.description}</p>}
+            <header className="pub-catalog-detail-hero">
+              <div>
+                <h1>{detail.title}</h1>
+                <p className="pub-catalog-detail-owner">
+                  {detail.mergeId || detail.brandLineId ? (
+                    <Link
+                      to={
+                        detail.mergeId
+                          ? `/u/${encodeURIComponent(detail.mergeId)}`
+                          : `/b/${encodeURIComponent(detail.brandLineId!)}`
+                      }
+                    >
+                      {detail.brandName?.trim() || detail.ownerName}
+                    </Link>
+                  ) : (
+                    detail.ownerName
+                  )}
+                </p>
+                {detail.description && <p className="pub-catalog-detail-desc">{detail.description}</p>}
+              </div>
+              <div className="pub-catalog-detail-meta">
+                <strong>{detail.items.length}</strong>
+                <span>{t('collections.designs', { defaultValue: 'Designs' })}</span>
+              </div>
+            </header>
 
             <div className="pub-design-list">
               {detail.items.map((item) => (
@@ -179,7 +201,7 @@ export default function CollectionsBrowsePage() {
                 />
               ))}
             </div>
-          </>
+          </div>
         )}
       </div>
     </SiteLayout>

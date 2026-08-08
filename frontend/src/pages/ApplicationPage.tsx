@@ -12,6 +12,7 @@ import { useLiveMetalPrices } from '@/features/coins/hooks/useLiveMetalPrice'
 import { useAuthStore } from '@/features/auth/store/auth.store'
 import { estimateCoinValue, financingPreview, metalForCoinIndex } from '@/shared/utils/coinPricing'
 import { DEFAULT_FINENESS_PER_MILLE, formatMetalFineness } from '@/shared/utils/metalPurity'
+import coinRender from '@/assets/merge_coin_3d_render.png'
 
 type Step = 1 | 2 | 3 | 4 | 5
 
@@ -152,15 +153,16 @@ export default function ApplicationPage() {
   return (
     <DashboardLayout titleKey="application">
       <div className="apply-flow-wrap apply-flow-max space-y-8">
-        <header>
-          <p className="landing-sans-head mb-2">{t('application.kicker')}</p>
-          <h2 className="font-serif-display text-2xl sm:text-3xl tracking-wide text-[#f5f2eb]">
-            {stepGuide[idx]?.title}
-          </h2>
-          <span className="apply-step-pill">{t('application.stepOf', { step })}</span>
-          <p className="apply-lead">{stepGuide[idx]?.blurb}</p>
+        <header className="apply-header">
+          <div className="apply-header-row">
+            <h2 className="apply-header-title">{stepGuide[idx]?.title}</h2>
+            <span className="apply-step-pill">{t('application.stepOf', { step })}</span>
+          </div>
+          {step === 2 && stepGuide[idx]?.blurb && (
+            <p className="apply-lead">{stepGuide[idx].blurb}</p>
+          )}
           {catalogItemId && catalogDesign && (
-            <p className="mt-3 text-sm text-[#c9a84c]">
+            <p className="apply-catalog-note">
               {t('application.usingCatalogDesign', {
                 defaultValue: 'Using catalog design “{{title}}” by {{owner}}. Designer receives 50% when you pay.',
                 title: catalogDesign.item.title,
@@ -174,10 +176,9 @@ export default function ApplicationPage() {
 
         <div className="grid lg:grid-cols-12 gap-8 lg:gap-10">
           <div className="lg:col-span-8">
-            <div className="apply-surface p-8 sm:p-10">
+            <div className="apply-surface ld-glass p-8 sm:p-10">
               {step === 1 && (
                 <div className="flex flex-col gap-7 sm:gap-8">
-                  <h3 className="apply-section-head">{t('application.coinSpec')}</h3>
                   <div>
                     <label className="apply-label" htmlFor="apply-coin-type">
                       {t('application.selectCoin')}
@@ -265,7 +266,6 @@ export default function ApplicationPage() {
 
               {step === 2 && (
                 <div className="flex flex-col gap-7 sm:gap-8">
-                  <h3 className="apply-section-head">{t('application.aiDesign')}</h3>
                   {catalogItemId ? (
                     <div className="rounded border border-[#c9a84c]/30 bg-[#c9a84c]/08 p-5 space-y-2">
                       <p className="text-sm font-bold text-[#c9a84c]">
@@ -307,7 +307,6 @@ export default function ApplicationPage() {
 
               {step === 3 && (
                 <div className="flex flex-col gap-7 sm:gap-8">
-                  <h3 className="apply-section-head">{t('application.yourProfile')}</h3>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 sm:gap-8">
                     <div>
                       <label className="apply-label" htmlFor="apply-fn">
@@ -386,7 +385,6 @@ export default function ApplicationPage() {
 
               {step === 4 && (
                 <div className="flex flex-col gap-7 sm:gap-8">
-                  <h3 className="apply-section-head">{t('application.optionsAddress')}</h3>
                   <div>
                     <label className="apply-label" htmlFor="apply-fin">
                       {t('application.financingPref')}
@@ -435,7 +433,6 @@ export default function ApplicationPage() {
 
               {step === 5 && (
                 <div className="flex flex-col gap-4">
-                  <h3 className="apply-section-head">{t('application.summary')}</h3>
                   {[
                     { label: t('application.summaryCoinType'), value: coinType },
                     { label: t('application.summaryQuantity'), value: `${quantity} KG` },
@@ -462,7 +459,7 @@ export default function ApplicationPage() {
                         checked={confirmed}
                         onChange={(e) => setConfirmed(e.target.checked)}
                       />
-                      <span className="text-[11px] leading-relaxed tracking-wide text-neutral-500">
+                      <span className="text-sm leading-relaxed tracking-wide text-neutral-300">
                         {t('application.confirmAccurate')}{' '}
                         <Link to="/terms" className="text-[#D4AF37] hover:underline underline-offset-2">
                           {t('auth.termsLink')}
@@ -510,8 +507,15 @@ export default function ApplicationPage() {
           </div>
 
           <aside className="lg:col-span-4">
-            <div className="apply-surface-sidebar p-7 sm:p-8 lg:sticky lg:top-6">
-              <p className="dash-label mb-6">{t('application.financingPreview')}</p>
+            <div className="apply-surface-sidebar ld-glass p-7 sm:p-8 lg:sticky lg:top-6">
+              <img
+                src={coinRender}
+                alt=""
+                className="apply-coin-thumb"
+                width={160}
+                height={160}
+              />
+              <p className="dash-label mb-5">{t('application.financingPreview')}</p>
               {[
                 { label: t('application.coinValue'), value: `$${(coinValue * quantity).toLocaleString()}.00` },
                 { label: t('application.downPayment20'), value: `$${downPayment.toFixed(2)}` },

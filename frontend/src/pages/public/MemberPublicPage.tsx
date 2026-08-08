@@ -101,12 +101,16 @@ export default function MemberPublicPage({ mode = 'member' }: Props) {
           <>
             <header className="mp-hero">
               <div className="mp-hero-main">
-                <div className={`mp-portrait ${heroIsAvatar ? 'mp-portrait--round' : ''}`}>
+                <div
+                  className={`mp-portrait ${heroIsAvatar ? 'mp-portrait--round' : ''}${
+                    heroImage && !heroIsAvatar ? ' mp-portrait--fit' : ''
+                  }`}
+                >
                   {heroImage ? (
                     <img
                       src={heroImage}
                       alt=""
-                      className={heroIsAvatar ? 'object-cover' : 'object-contain p-3'}
+                      className={heroIsAvatar ? 'object-cover' : 'object-contain'}
                     />
                   ) : (
                     <span>{(headline || 'M').slice(0, 1).toUpperCase()}</span>

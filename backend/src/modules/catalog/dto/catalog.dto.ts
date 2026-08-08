@@ -5,6 +5,7 @@ import {
   IsNumber,
   IsOptional,
   IsString,
+  IsUUID,
   MaxLength,
   Min,
 } from 'class-validator';
@@ -74,6 +75,12 @@ export class CreateCatalogItemDto {
   @MaxLength(500)
   imageUrl?: string;
 
+  /** Attach an already-generated Meshy GLB without re-uploading from the browser. */
+  @IsOptional()
+  @IsString()
+  @MaxLength(40)
+  meshyJobId?: string;
+
   @IsOptional()
   @Type(() => Number)
   @IsNumber()
@@ -112,4 +119,25 @@ export class UpdateCatalogItemDto {
   @IsNumber()
   @Min(0)
   priceUsd?: number | null;
+}
+
+export class MoveCatalogItemDto {
+  @IsUUID()
+  collectionId: string;
+}
+
+export class MeshyGenerateDto {
+  @IsString()
+  @IsNotEmpty()
+  @MaxLength(600)
+  prompt: string;
+
+  @IsOptional()
+  @IsString()
+  @MaxLength(80)
+  style?: string;
+
+  @IsOptional()
+  @IsString()
+  collectionId?: string;
 }

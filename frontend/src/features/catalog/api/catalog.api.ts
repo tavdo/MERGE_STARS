@@ -119,28 +119,37 @@ export const catalogApi = {
   remove: (id: string) =>
     api.delete<ApiResponse<{ ok: boolean }>>(`/catalog/collections/${id}`),
 
-  addItem: (collectionId: string, payload: { title: string; description?: string; metalType?: string; imageUrl?: string; priceUsd?: number }) =>
-    api.post<ApiResponse<CatalogItem>>(`/catalog/collections/${collectionId}/items`, payload),
+  addItem: (
+    collectionId: string,
+    payload: {
+      title: string
+      description?: string
+      metalType?: string
+      imageUrl?: string
+      priceUsd?: number
+      meshyJobId?: string
+    },
+  ) => api.post<ApiResponse<CatalogItem>>(`/catalog/collections/${collectionId}/items`, payload),
 
   uploadImage: (itemId: string, file: File) => {
     const form = new FormData()
     form.append('file', file)
-    return api.post<ApiResponse<CatalogItem>>(`/catalog/items/${itemId}/image`, form, {
-      headers: { 'Content-Type': 'multipart/form-data' },
-    })
+    return api.post<ApiResponse<CatalogItem>>(`/catalog/items/${itemId}/image`, form)
   },
 
   uploadModel3d: (itemId: string, file: File) => {
     const form = new FormData()
     form.append('file', file)
     return api.post<ApiResponse<CatalogItem>>(`/catalog/items/${itemId}/model3d`, form, {
-      headers: { 'Content-Type': 'multipart/form-data' },
       timeout: 600_000,
     })
   },
 
   updateItem: (itemId: string, payload: Partial<{ title: string; description: string; metalType: string; imageUrl: string; status: 'ACTIVE' | 'ARCHIVED'; priceUsd: number | null }>) =>
     api.patch<ApiResponse<CatalogItem>>(`/catalog/items/${itemId}`, payload),
+
+  moveItem: (itemId: string, collectionId: string) =>
+    api.post<ApiResponse<CatalogItem>>(`/catalog/items/${itemId}/move`, { collectionId }),
 
   removeItem: (itemId: string) =>
     api.delete<ApiResponse<{ ok: boolean }>>(`/catalog/items/${itemId}`),

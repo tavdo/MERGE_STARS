@@ -10,7 +10,7 @@ export default function TermsPage() {
   const sections = t('termsSections', { returnObjects: true }) as Section[]
 
   return (
-    <div style={{ background: '#080808', minHeight: '100vh' }}>
+    <div style={{ background: 'transparent', minHeight: '100vh' }}>
       <Navbar />
       <div style={{ paddingTop: '110px' }}>
         <section style={{ textAlign: 'center', padding: '80px 32px 48px', maxWidth: '720px', margin: '0 auto' }}>

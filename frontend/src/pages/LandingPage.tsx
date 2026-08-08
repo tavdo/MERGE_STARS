@@ -7,8 +7,6 @@ import Hero3DCoin, { landingCoinModelUrl } from '../components/Hero3DCoin'
 import { useGLTF } from '@react-three/drei'
 import { useLiveMetalPrices } from '@/features/coins/hooks/useLiveMetalPrice'
 import RegistrationGoalBanner from '../components/RegistrationGoalBanner'
-
-useGLTF.preload(landingCoinModelUrl)
 import {
   IconFilament3D,
   IconGlobal,
@@ -18,6 +16,8 @@ import {
 } from '../components/LandingFeatureIcons'
 import BrandIcon from '../components/BrandIcon'
 import { CATEGORY_ICONS, type CategoryIconKey } from '@/assets/brandIcons'
+
+useGLTF.preload(landingCoinModelUrl)
 
 const FEATURES = [
   { id: 'filament' as const, Icon: IconFilament3D },
@@ -74,38 +74,27 @@ export default function LandingPage() {
   })
 
   return (
-    <div className="landing-page">
+    <div className="landing-page ld-page">
       <Navbar variant="landing" />
 
-      {/* ── HERO ─────────────────────────────────────── */}
-      <section className="landing-hero-section relative flex flex-col lg:flex-row items-center justify-center gap-12 lg:gap-8 min-h-screen pt-32 pb-20 px-8 lg:px-16 overflow-hidden max-w-1440 mx-auto w-full">
-        <div
-          className="absolute pointer-events-none w-[min(90vw,640px)] h-[min(90vw,640px)] rounded-full"
-          style={{
-            background: 'radial-gradient(circle, rgba(212,175,55,0.08) 0%, transparent 68%)',
-            top: '50%',
-            left: '50%',
-            transform: 'translate(-42%, -48%)',
-          }}
-        />
+      {/* Hero — copy | 3D coin | metals (coin stays center) */}
+      <section className="ld-hero">
+        <div className="ld-hero-atmosphere" aria-hidden />
 
-        {/* Left — editorial headline */}
-        <div className="landing-hero-copy relative z-10 flex-1 max-w-[440px] animate-fade-in-up order-2 lg:order-none">
-          <p className="landing-hero-kicker mb-6">{t('landing.heroKicker')}</p>
-          <h1
-            className="landing-hero-title mb-2"
-            style={{ fontSize: 'clamp(2.75rem, 5.5vw, 4.5rem)' }}
-          >
-            <span className="landing-hero-gold">{t('landing.heroTitleGold')}</span>
+        <div className="ld-hero-copy ld-glass">
+          <p className="ld-brand">MERGE STARS</p>
+          <p className="ld-kicker">{t('landing.heroKicker')}</p>
+          <h1 className="ld-hero-title">
+            <span className="ld-hero-gold">{t('landing.heroTitleGold')}</span>
             <br />
             {t('landing.heroTitleRest')}
           </h1>
-          <p className="landing-tagline mt-6 mb-4">{t('landing.tagline')}</p>
-          <p className="landing-body max-w-[340px] mb-6">{t('landing.heroBody')}</p>
+          <p className="ld-tagline">{t('landing.tagline')}</p>
+          <p className="ld-body">{t('landing.heroBody')}</p>
 
-          <RegistrationGoalBanner variant="hero" className="mb-10 max-w-[400px]" />
+          <RegistrationGoalBanner variant="hero" className="ld-goal" />
 
-          <div className="landing-hero-actions flex flex-wrap items-center gap-4">
+          <div className="ld-hero-actions">
             <Link to="/apply" className="luxury-btn-glass">
               {t('landing.exploreCollection')}
             </Link>
@@ -115,100 +104,71 @@ export default function LandingPage() {
             </Link>
           </div>
 
-          <p className="mt-10">
-            <a
-              href="#technology"
-              className="landing-tagline inline-block opacity-70 hover:opacity-100 transition-all duration-300 ease-in-out no-underline border-b border-[rgba(212,175,55,0.25)] pb-0.5"
-            >
-              {t('landing.exploreTech')}
-            </a>
-          </p>
+          <a href="#technology" className="ld-jump">
+            {t('landing.exploreTech')}
+          </a>
         </div>
 
-        {/* Center — 3D coin */}
-        <div className="landing-hero-coin-wrap relative z-10 flex-1 flex justify-center items-center order-first lg:order-none w-full min-h-[min(72vw,420px)] lg:min-h-0">
-          <div
-            className="relative flex items-center justify-center w-full max-w-[500px] aspect-square"
-            style={{
-              background:
-                'radial-gradient(circle at 50% 50%, rgba(212,175,55,0.07) 0%, transparent 62%)',
-            }}
-          >
-            <Suspense fallback={null}>
-              <Hero3DCoin
-                className="w-full h-full"
-                aria-label={t('landing.coinEmblem')}
-              />
-            </Suspense>
-          </div>
+        <div className="ld-hero-coin">
+          <div className="ld-hero-coin-glow" aria-hidden />
+          <Suspense fallback={null}>
+            <Hero3DCoin
+              className="ld-coin-canvas"
+              aria-label={t('landing.coinEmblem', { defaultValue: 'Merge Coin' })}
+            />
+          </Suspense>
         </div>
 
-        {/* Right — metal spot (desktop) */}
-        <div className="hidden xl:flex flex-col gap-5 flex-shrink-0 w-[240px] order-3">
+        <aside className="ld-hero-metals">
           {metalCards.map((m, i) => (
-            <div
+            <Link
               key={m.nameKey}
-              className={`flex items-start gap-4 py-4 px-5 border bg-black/30 backdrop-blur-sm transition-all duration-300 ease-in-out ${
-                i === 0
-                  ? 'border-[rgba(212,175,55,0.35)]'
-                  : 'border-[rgba(212,175,55,0.1)] hover:border-[rgba(212,175,55,0.28)]'
-              }`}
-              style={{ borderRadius: '2px' }}
+              to="/price-indicator"
+              className={`ld-metal-stat ld-glass no-underline${i === 0 ? ' is-primary' : ''}`}
             >
-              <IconPreciousMetals className="w-8 h-8 shrink-0 mt-0.5" />
+              <IconPreciousMetals className="ld-metal-icon" />
               <div>
-                <p className="text-[10px] font-medium tracking-[0.2em] text-[#D4AF37] mb-1.5">
-                  {t(m.nameKey)}
-                </p>
-                <p className="text-[10px] leading-relaxed tracking-wide text-neutral-500">
-                  {m.pricePerKgUsd > 0 ? formatUsd(m.pricePerKgUsd) : '—'} {t('landing.perKg')}
+                <p className="ld-metal-name">{t(m.nameKey)}</p>
+                <p className="ld-metal-price">
+                  {m.pricePerKgUsd > 0 ? formatUsd(m.pricePerKgUsd) : '—'}{' '}
+                  <span>{t('landing.perKg')}</span>
                 </p>
                 {m.pricePerKgUsd > 0 && (
-                  <p
-                    className="text-[10px] font-medium tracking-wide mt-1"
-                    style={{ color: m.up ? '#4ade80' : '#f87171' }}
-                  >
+                  <p className="ld-metal-change" style={{ color: m.up ? '#6ee7b7' : '#f87171' }}>
                     {m.changePct > 0 ? '+' : ''}
                     {m.changePct.toFixed(2)}%
                   </p>
                 )}
               </div>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* Mobile / tablet — live metal prices */}
-      <section className="landing-metal-strip xl:hidden max-w-1440 mx-auto w-full">
-        <div className="landing-metal-grid">
-          {metalCards.map((m, i) => (
-            <Link
-              key={m.nameKey}
-              to="/price-indicator"
-              className={`landing-metal-card no-underline${
-                i === 0 ? ' landing-metal-card--primary' : ''
-              }`}
-            >
-              <p className="landing-metal-name">{t(m.nameKey)}</p>
-              <p className="landing-metal-price">
-                {m.pricePerKgUsd > 0 ? formatUsd(m.pricePerKgUsd) : '—'}{' '}
-                <span>{t('landing.perKg')}</span>
-              </p>
-              {m.pricePerKgUsd > 0 && (
-                <p
-                  className="landing-metal-change"
-                  style={{ color: m.up ? '#4ade80' : '#f87171' }}
-                >
-                  {m.changePct > 0 ? '+' : ''}
-                  {m.changePct.toFixed(2)}%
-                </p>
-              )}
             </Link>
           ))}
-        </div>
+        </aside>
       </section>
 
-      {/* ── FEATURES BAR ─────────────────────────────── */}
+      {/* Mobile metals */}
+      <section className="ld-metal-strip" aria-label={t('landing.metalPrices', { defaultValue: 'Live metal prices' })}>
+        {metalCards.map((m, i) => (
+          <Link
+            key={m.nameKey}
+            to="/price-indicator"
+            className={`ld-metal-stat ld-glass no-underline${i === 0 ? ' is-primary' : ''}`}
+          >
+            <p className="ld-metal-name">{t(m.nameKey)}</p>
+            <p className="ld-metal-price">
+              {m.pricePerKgUsd > 0 ? formatUsd(m.pricePerKgUsd) : '—'} <span>{t('landing.perKg')}</span>
+            </p>
+            {m.pricePerKgUsd > 0 && (
+              <p className="ld-metal-change" style={{ color: m.up ? '#6ee7b7' : '#f87171' }}>
+                {m.changePct > 0 ? '+' : ''}
+                {m.changePct.toFixed(2)}%
+              </p>
+            )}
+          </Link>
+        ))}
+      </section>
+
+      {/* Features */}
+      {/* Features — original strip design */}
       <div className="section-divider max-w-1440 mx-auto w-full" />
       <section className="landing-features-bar max-w-1440 mx-auto w-full">
         {FEATURES.map((f, i) => (
@@ -224,7 +184,7 @@ export default function LandingPage() {
       </section>
       <div className="section-divider max-w-1440 mx-auto w-full" />
 
-      {/* ── CATEGORIES ───────────────────────────────── */}
+      {/* Categories — original grid design */}
       <section className="landing-categories-section max-w-1440 mx-auto w-full">
         <h2 className="landing-categories-heading">{t('landing.categoriesTitle')}</h2>
         <div className="landing-categories-grid">
@@ -244,74 +204,60 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ── TECHNOLOGY ───────────────────────────────── */}
-      <div className="section-divider max-w-1440 mx-auto w-full" />
-      <section id="technology" className="landing-split landing-split--tech scroll-mt-32 max-w-1440 mx-auto w-full">
-        <div className="landing-split-visual">
-          <div className="landing-split-visual-glow" aria-hidden />
-          <IconFilament3D className="landing-split-visual-icon" />
-          <p className="landing-split-visual-kicker">{t('landing.techPanel')}</p>
-        </div>
-
-        <div className="landing-split-content landing-tech-section">
-          <h2 className="landing-section-title landing-split-title">
-            {t('landing.techTitle1')}
-            <br />
-            <span className="landing-hero-gold not-italic font-normal">{t('landing.techTitle2')}</span>
-            <br />
-            {t('landing.techTitle3')}
-          </h2>
-          <p className="landing-body landing-split-lead">{t('landing.techBody')}</p>
-          <Link to="/filament" className="luxury-btn-glass landing-split-cta">
-            {t('landing.discoverTech')}
-          </Link>
-          <div className="landing-tech-points">
-            {TECH_POINT_KEYS.map((key) => (
-              <div key={key} className="landing-tech-point">
-                <div className="landing-tech-point-bar" aria-hidden />
-                <div>
-                  <p className="landing-tech-point-title">{t(`landing.techPoints.${key}.title`)}</p>
-                  <p className="landing-tech-point-sub">{t(`landing.techPoints.${key}.sub`)}</p>
+      {/* Technology */}
+      <section id="technology" className="ld-section ld-tech">
+        <div className="ld-tech-panel ld-glass">
+          <div className="ld-tech-visual ld-glass-inset">
+            <div className="ld-tech-glow" aria-hidden />
+            <IconFilament3D className="ld-tech-icon" />
+            <p>{t('landing.techPanel')}</p>
+          </div>
+          <div className="ld-tech-copy">
+            <p className="ld-kicker">{t('landing.techKicker', { defaultValue: 'Technology' })}</p>
+            <h2>
+              {t('landing.techTitle1')}{' '}
+              <span className="ld-hero-gold">{t('landing.techTitle2')}</span>{' '}
+              {t('landing.techTitle3')}
+            </h2>
+            <p className="ld-body">{t('landing.techBody')}</p>
+            <Link to="/filament" className="luxury-btn-glass">
+              {t('landing.discoverTech')}
+            </Link>
+            <div className="ld-tech-points">
+              {TECH_POINT_KEYS.map((key) => (
+                <div key={key} className="ld-tech-point ld-glass-inset">
+                  <strong>{t(`landing.techPoints.${key}.title`)}</strong>
+                  <span>{t(`landing.techPoints.${key}.sub`)}</span>
                 </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
         </div>
       </section>
-      <div className="section-divider max-w-1440 mx-auto w-full" />
 
-      {/* ── INVEST ───────────────────────────────────── */}
-      <section className="landing-split landing-split--invest max-w-1440 mx-auto w-full">
-        <div className="landing-split-content landing-invest-section">
-          <h2 className="landing-section-title landing-split-title">
-            {t('landing.investTitle1')}
-            {t('landing.investTitle2') ? (
-              <>
-                <br />
-                {t('landing.investTitle2')}{' '}
-              </>
-            ) : (
-              <br />
-            )}
-            <span className="landing-hero-gold not-italic">{t('landing.investTitleGold')}</span>
-          </h2>
-          <p className="landing-body landing-split-lead">{t('landing.investBody')}</p>
-          <Link to="/merge-coin" className="luxury-btn-glass landing-split-cta">
-            {t('landing.learnMore')}
-          </Link>
-        </div>
-
-        <div className="landing-split-aside landing-invest-points">
-          <div className="landing-invest-grid">
+      {/* Invest */}
+      <section className="ld-section">
+        <div className="ld-invest-panel ld-glass">
+          <div className="ld-invest-copy">
+            <p className="ld-kicker">{t('landing.investKicker', { defaultValue: 'Opportunity' })}</p>
+            <h2>
+              {t('landing.investTitle1')} {t('landing.investTitle2')}{' '}
+              <span className="ld-hero-gold">{t('landing.investTitleGold')}</span>
+            </h2>
+            <p className="ld-body">{t('landing.investBody')}</p>
+            <Link to="/merge-coin" className="luxury-btn-glass">
+              {t('landing.learnMore')}
+            </Link>
+          </div>
+          <div className="ld-invest-grid">
             {INVEST_POINT_KEYS.map((key) => (
-              <div key={key} className="landing-invest-point">
+              <div key={key} className="ld-invest-point ld-glass-inset">
                 <p>{t(`landing.investPoints.${key}`)}</p>
               </div>
             ))}
           </div>
         </div>
       </section>
-      <div className="section-divider max-w-1440 mx-auto w-full" />
 
       <Footer />
     </div>

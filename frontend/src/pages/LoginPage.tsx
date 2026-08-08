@@ -201,10 +201,9 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen flex" style={{ background: '#080808' }}>
+    <div className="min-h-screen flex auth-shell">
       <div
-        className="hidden lg:flex flex-col justify-between w-[45%] relative overflow-hidden px-16 py-12"
-        style={{ background: 'linear-gradient(135deg, #080808 0%, #0f0f0f 100%)' }}
+        className="auth-brand-panel hidden lg:flex flex-col justify-between w-[45%] relative overflow-hidden px-16 py-12"
       >
         <div
           className="absolute pointer-events-none"
