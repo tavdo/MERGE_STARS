@@ -50,6 +50,10 @@ export class CatalogCollection {
   @Column({ type: 'varchar', length: 32, default: 'more' })
   category: CatalogCategory;
 
+  /** Platform Master Catalog shelf — products are shared by reference, not copied. */
+  @Column({ name: 'is_master', type: 'boolean', default: false })
+  isMaster: boolean;
+
   @OneToMany(() => CatalogItem, (item) => item.collection)
   items: CatalogItem[];
 
@@ -69,6 +73,7 @@ export function catalogCollectionView(c: CatalogCollection, itemCount?: number) 
     slug: c.slug,
     visibility: c.visibility,
     category: c.category || 'more',
+    isMaster: !!c.isMaster,
     itemCount: itemCount ?? c.items?.length ?? 0,
     createdAt: c.createdAt.toISOString(),
     updatedAt: c.updatedAt.toISOString(),

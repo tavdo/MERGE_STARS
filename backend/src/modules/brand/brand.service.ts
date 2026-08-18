@@ -21,6 +21,7 @@ import { catalogItemView } from '../../database/entities/catalog-item.entity';
 import { User } from '../../database/entities/user.entity';
 import { UpdateBrandLineDto } from './dto/brand.dto';
 import { socialLinksPublicView } from '../../common/social-links';
+import { CatalogService } from '../catalog/catalog.service';
 
 const LOGO_MIME = new Set(['image/jpeg', 'image/png', 'image/webp', 'image/svg+xml']);
 const LOGO_MAX = 5 * 1024 * 1024;
@@ -39,6 +40,7 @@ export class BrandService {
     private readonly items: Repository<CatalogItem>,
     @InjectRepository(User)
     private readonly users: Repository<User>,
+    private readonly catalog: CatalogService,
   ) {}
 
   private logoDir(userId: string) {
@@ -62,12 +64,16 @@ export class BrandService {
   }
 
   private async activeProductCount(userId: string) {
-    return this.items
+    const owned = await this.items
       .createQueryBuilder('item')
       .innerJoin('item.collection', 'c')
       .where('c.userId = :userId', { userId })
       .andWhere('item.status = :status', { status: 'ACTIVE' })
+      .andWhere('c.isMaster = false')
+      .andWhere("(item.ownership IS NULL OR item.ownership <> 'MASTER_CATALOG')")
       .getCount();
+    const picks = await this.catalog.listBrandRoomPicksForPublic(userId);
+    return owned + picks.length;
   }
 
   private async findOwnerByPublicId(id: string) {
@@ -166,6 +172,7 @@ export class BrandService {
       .createQueryBuilder('c')
       .select('DISTINCT c.user_id', 'userId')
       .where('c.visibility = :v', { v: 'PUBLIC' })
+      .andWhere('c.isMaster = false')
       .getRawMany<{ userId: string }>();
 
     const profileRows = await this.profiles.find({
@@ -202,9 +209,10 @@ export class BrandService {
       if (result.length >= take) break;
       const user = await this.users.findOne({ where: { id: userId } });
       if (!user) continue;
+      if (user.roles?.includes('platform') || user.status === 'system') continue;
       const row = await this.ensureProfile(user);
       const publicCollections = await this.collections.find({
-        where: { userId: user.id, visibility: 'PUBLIC' },
+        where: { userId: user.id, visibility: 'PUBLIC', isMaster: false },
         relations: { items: true },
         take: 8,
         order: { updatedAt: 'DESC' },
@@ -267,10 +275,13 @@ export class BrandService {
   /** Public brand / member profile by brandLineId or mergeId */
   async getPublicProfile(id: string) {
     const user = await this.findOwnerByPublicId(id);
+    if (user.roles?.includes('platform') || user.status === 'system') {
+      throw new NotFoundException('Brand not found');
+    }
     const row = await this.ensureProfile(user);
     const activeProducts = await this.activeProductCount(user.id);
     const collections = await this.collections.find({
-      where: { userId: user.id, visibility: 'PUBLIC' },
+      where: { userId: user.id, visibility: 'PUBLIC', isMaster: false },
       order: { updatedAt: 'DESC' },
       relations: { items: true },
       take: 50,
@@ -293,7 +304,24 @@ export class BrandService {
       };
     });
 
-    const products = collectionPayload.flatMap((c) => c.items);
+    const products: Array<Record<string, unknown>> = collectionPayload.flatMap((c) =>
+      c.items.map((i) => ({ ...i, source: 'owned' })),
+    );
+    const seen = new Set(products.map((p) => String(p.id)));
+    const picks = await this.catalog.listBrandRoomPicksForPublic(user.id);
+    for (const pick of picks) {
+      if (seen.has(pick.catalogItemId)) continue;
+      seen.add(pick.catalogItemId);
+      products.push({
+        ...pick,
+        collectionSlug: 'collectionSlug' in pick ? pick.collectionSlug : undefined,
+        collectionTitle:
+          'collectionTitle' in pick && pick.collectionTitle
+            ? pick.collectionTitle
+            : 'Master Catalog',
+        source: 'master',
+      });
+    }
 
     return {
       brandLineId: user.brandLineId,

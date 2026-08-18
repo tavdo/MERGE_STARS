@@ -32,6 +32,7 @@ export default {
       auditLog: 'AUDIT LOG',
       settings: 'SETTINGS',
       aiTraining: 'AI TRAINING',
+      masterCatalog: 'MASTER CATALOG',
     },
     aiTraining: {
       title: 'AI Training',

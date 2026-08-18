@@ -23,17 +23,22 @@ import { mkdirSync } from 'fs';
 import { join } from 'path';
 import { randomUUID } from 'crypto';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
+import { RolesGuard } from '../../common/guards/roles.guard';
+import { Roles } from '../../common/decorators/roles.decorator';
 import { CurrentUser } from '../../common/decorators/current-user.decorator';
 import { User } from '../../database/entities/user.entity';
 import { CatalogService } from './catalog.service';
 import { MeshyService } from './meshy.service';
 import {
+  AddBrandRoomPickDto,
   CreateCatalogItemDto,
   CreateCollectionDto,
+  CreateMasterProductDto,
   MeshyGenerateDto,
   MoveCatalogItemDto,
   UpdateCatalogItemDto,
   UpdateCollectionDto,
+  UpdateMasterProductDto,
 } from './dto/catalog.dto';
 
 const uploadRoot = process.env.UPLOAD_DIR ?? join(process.cwd(), 'uploads');
@@ -57,6 +62,86 @@ export class CatalogController {
     private readonly catalog: CatalogService,
     private readonly meshy: MeshyService,
   ) {}
+
+  @Get('master/houses')
+  masterHouses() {
+    return this.catalog.listMasterNav();
+  }
+
+  @Get('master/products')
+  @UseGuards(JwtAuthGuard)
+  listMasterProducts(
+    @CurrentUser() user: User,
+    @Query('q') q?: string,
+    @Query('house') house?: string,
+    @Query('cluster') cluster?: string,
+    @Query('collectionId') collectionId?: string,
+  ) {
+    return this.catalog.listMasterProducts({
+      q,
+      house,
+      cluster,
+      collectionId,
+      userId: user.id,
+    });
+  }
+
+  @Get('brand-room/catalog')
+  @UseGuards(JwtAuthGuard)
+  brandRoomCatalog(@CurrentUser() user: User) {
+    return this.catalog.listBrandRoomCatalog(user.id);
+  }
+
+  @Post('brand-room/picks')
+  @UseGuards(JwtAuthGuard)
+  addBrandRoomPick(@CurrentUser() user: User, @Body() dto: AddBrandRoomPickDto) {
+    return this.catalog.addBrandRoomPick(user.id, dto.catalogItemId);
+  }
+
+  @Delete('brand-room/picks/:itemId')
+  @UseGuards(JwtAuthGuard)
+  removeBrandRoomPick(@CurrentUser() user: User, @Param('itemId') itemId: string) {
+    return this.catalog.removeBrandRoomPick(user.id, itemId);
+  }
+
+  @Get('master/admin')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('admin', 'manager')
+  adminMasterList() {
+    return this.catalog.listAdminMasterProducts();
+  }
+
+  @Post('master/admin')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('admin', 'manager')
+  adminMasterCreate(@CurrentUser() user: User, @Body() dto: CreateMasterProductDto) {
+    return this.catalog.createMasterProduct(user.id, dto);
+  }
+
+  @Patch('master/admin/:itemId')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('admin', 'manager')
+  adminMasterUpdate(@Param('itemId') itemId: string, @Body() dto: UpdateMasterProductDto) {
+    return this.catalog.updateMasterProduct(itemId, dto);
+  }
+
+  @Post('master/admin/:itemId/image')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('admin', 'manager')
+  @UseInterceptors(
+    FileInterceptor('file', { storage: memoryStorage(), limits: { fileSize: 10 * 1024 * 1024 } }),
+  )
+  adminMasterImage(@Param('itemId') itemId: string, @UploadedFile() file: Express.Multer.File) {
+    return this.catalog.uploadMasterImage(itemId, file);
+  }
+
+  @Post('master/admin/:itemId/model3d')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('admin', 'manager')
+  @UseInterceptors(modelUpload)
+  adminMasterModel(@Param('itemId') itemId: string, @UploadedFile() file: Express.Multer.File) {
+    return this.catalog.uploadMasterModel3d(itemId, file);
+  }
 
   @Get('public')
   listPublic(@Query('category') category?: string) {

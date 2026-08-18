@@ -19,7 +19,7 @@ type Tab = 'login' | 'register'
 type Step = 1 | 2 | 3
 
 const TERM_COUNT = 3
-const emailVerifyEnabled = import.meta.env.VITE_EMAIL_VERIFY === 'true'
+const emailVerifyEnabled = import.meta.env.VITE_EMAIL_VERIFY !== 'false'
 const ID_ACCEPT = 'image/jpeg,image/png,image/webp'
 const MAX_ID_FILE_BYTES = 10 * 1024 * 1024
 

@@ -10,6 +10,14 @@ import {
 import { CatalogCollection } from './catalog-collection.entity';
 
 export type CatalogItemStatus = 'ACTIVE' | 'ARCHIVED';
+export type CatalogLifecycle =
+  | 'DRAFT'
+  | 'REVIEW'
+  | 'APPROVED'
+  | 'ACTIVE'
+  | 'SUSPENDED'
+  | 'ARCHIVED';
+export type CatalogOwnership = 'PRIVATE' | 'NETWORK' | 'MASTER_CATALOG';
 
 @Entity('catalog_items')
 export class CatalogItem {
@@ -44,6 +52,16 @@ export class CatalogItem {
   @Column({ type: 'varchar', default: 'ACTIVE' })
   status: CatalogItemStatus;
 
+  /** Master Catalog house direction (not a Brand Room limit). */
+  @Column({ type: 'varchar', length: 40, nullable: true })
+  house: string | null;
+
+  @Column({ type: 'varchar', length: 24, default: 'ACTIVE' })
+  lifecycle: CatalogLifecycle;
+
+  @Column({ type: 'varchar', length: 24, default: 'PRIVATE' })
+  ownership: CatalogOwnership;
+
   /** Sale price in USD; null or 0 = not for sale */
   @Column({ name: 'price_usd', type: 'decimal', precision: 14, scale: 2, nullable: true })
   priceUsd: number | null;
@@ -68,6 +86,9 @@ export function catalogItemView(item: CatalogItem) {
     hasImage: !!item.imageUrl,
     hasModel3d: !!item.model3dUrl,
     status: item.status,
+    house: item.house ?? null,
+    lifecycle: item.lifecycle ?? 'ACTIVE',
+    ownership: item.ownership ?? 'PRIVATE',
     priceUsd: item.priceUsd != null ? Number(item.priceUsd) : null,
     createdAt: item.createdAt.toISOString(),
     updatedAt: item.updatedAt.toISOString(),

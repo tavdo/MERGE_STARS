@@ -5,6 +5,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import DashboardLayout from '../../components/DashboardLayout'
 import { brandApi } from '@/features/brand/api/brand.api'
 import { useAuthAssetUrl } from '@/features/catalog/hooks/useAuthAssetUrl'
+import { catalogApi } from '@/features/catalog/api/catalog.api'
 import { getApiErrorMessage } from '@/shared/utils/apiError'
 
 export default function BrandLinePage() {
@@ -21,6 +22,19 @@ export default function BrandLinePage() {
   const { data: brand, isLoading } = useQuery({
     queryKey: ['brand-me'],
     queryFn: () => brandApi.getMine().then((r) => r.data.data),
+  })
+
+  const { data: picks = [] } = useQuery({
+    queryKey: ['brand-room-catalog'],
+    queryFn: () => catalogApi.brandRoomCatalog().then((r) => r.data.data),
+  })
+
+  const dropPick = useMutation({
+    mutationFn: (id: string) => catalogApi.removeBrandRoomPick(id),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['brand-room-catalog'] })
+      qc.invalidateQueries({ queryKey: ['brand-me'] })
+    },
   })
 
   const logoSrc = useAuthAssetUrl(brand?.logoUrl ? brandApi.logoFileUrl() : null)
@@ -211,6 +225,9 @@ export default function BrandLinePage() {
                     <button type="submit" className="profile-btn-primary" disabled={save.isPending}>
                       {save.isPending ? '…' : t('brandLine.save')}
                     </button>
+                    <Link to="/dashboard/master-catalog" className="profile-btn-primary">
+                      {t('masterCatalog.open', { defaultValue: 'Open Master Catalog' })}
+                    </Link>
                     <Link to="/dashboard/collections" className="profile-btn-secondary">
                       {t('dashboard.nav.collections')}
                     </Link>
@@ -218,6 +235,43 @@ export default function BrandLinePage() {
                 </form>
               </section>
             </div>
+
+            <section className="profile-section" style={{ marginTop: '1.5rem' }}>
+              <div className="profile-section-head">
+                <h2>{t('masterCatalog.brandCatalog', { defaultValue: 'Brand Room catalog' })}</h2>
+                <p>
+                  {t('masterCatalog.brandCatalogHint', {
+                    defaultValue: 'Products you selected from the Master Catalog. Same product can serve many Brand Rooms — nothing is duplicated.',
+                  })}
+                </p>
+              </div>
+              {picks.length === 0 ? (
+                <p className="profile-muted">
+                  {t('masterCatalog.noPicks', { defaultValue: 'No products selected yet. Open the Master Catalog to build your vitrine.' })}
+                </p>
+              ) : (
+                <div className="collections-hub-grid">
+                  {picks.map((item) => (
+                    <article key={item.pickId || item.id} className="collections-hub-card master-product-card">
+                      <div className="collections-hub-card-visual">
+                        {item.imageUrl ? <img src={item.imageUrl} alt="" /> : <span>★</span>}
+                      </div>
+                      <div className="master-product-body">
+                        <h3>{item.title}</h3>
+                        <p>{item.houseLabel || item.house}</p>
+                        <button
+                          type="button"
+                          className="profile-btn-ghost"
+                          onClick={() => dropPick.mutate(item.catalogItemId || item.id)}
+                        >
+                          {t('masterCatalog.remove', { defaultValue: 'Remove from Brand Room' })}
+                        </button>
+                      </div>
+                    </article>
+                  ))}
+                </div>
+              )}
+            </section>
           </>
         )}
       </div>

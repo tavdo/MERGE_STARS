@@ -20,6 +20,10 @@ export interface PublicBrandProduct {
   description: string | null
   metalType: string | null
   imageUrl: string | null
+  model3dUrl?: string | null
+  model3dFormat?: string | null
+  hasImage?: boolean
+  hasModel3d?: boolean
   collectionSlug?: string
   collectionTitle?: string
 }

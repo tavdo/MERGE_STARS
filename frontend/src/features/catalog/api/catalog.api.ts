@@ -13,6 +13,15 @@ export interface CatalogItem {
   hasImage?: boolean
   hasModel3d?: boolean
   status: 'ACTIVE' | 'ARCHIVED'
+  house?: string | null
+  lifecycle?: string
+  ownership?: string
+  houseLabel?: string | null
+  cluster?: string | null
+  collectionTitle?: string | null
+  collectionSlug?: string | null
+  inBrandRoom?: boolean
+  source?: 'master' | 'owned'
   priceUsd: number | null
   createdAt: string
   updatedAt: string
@@ -75,16 +84,20 @@ export function catalogItemModelUrl(item: CatalogItem) {
   return null
 }
 
+export type CatalogItemPublicMedia = Pick<CatalogItem, 'id'> &
+  Partial<Pick<CatalogItem, 'imageUrl' | 'model3dUrl' | 'hasImage' | 'hasModel3d'>>
+
 /** Public browse — no auth required (item must be in a PUBLIC collection) */
-export function catalogItemPublicImageUrl(item: CatalogItem) {
+export function catalogItemPublicImageUrl(item: CatalogItemPublicMedia) {
   if (item.imageUrl?.startsWith('http')) return item.imageUrl
+  if (item.imageUrl?.startsWith('/api/')) return item.imageUrl
   if (item.hasImage || (item.imageUrl && !item.imageUrl.startsWith('http'))) {
     return `${apiBase}/catalog/public/items/${item.id}/image`
   }
   return null
 }
 
-export function catalogItemPublicModelUrl(item: CatalogItem) {
+export function catalogItemPublicModelUrl(item: CatalogItemPublicMedia) {
   if (item.model3dUrl?.startsWith('http')) return item.model3dUrl
   if (item.hasModel3d || (item.model3dUrl && !item.model3dUrl.startsWith('http'))) {
     return `${apiBase}/catalog/public/items/${item.id}/model3d`
@@ -164,4 +177,58 @@ export const catalogApi = {
 
   getPublic: (slug: string) =>
     api.get<ApiResponse<CatalogCollectionDetail>>(`/catalog/public/${slug}`),
+
+  masterHouses: () =>
+    api.get<
+      ApiResponse<{
+        clusters: Array<{
+          key: string
+          label: string
+          houses: Array<{ key: string; label: string; cluster: string }>
+        }>
+        houses: Array<{ key: string; label: string; cluster: string }>
+      }>
+    >('/catalog/master/houses'),
+
+  masterProducts: (params?: { q?: string; house?: string; cluster?: string; collectionId?: string }) =>
+    api.get<
+      ApiResponse<{
+        products: CatalogItem[]
+        collections: Array<{ id: string; title: string; slug: string }>
+      }>
+    >('/catalog/master/products', { params }),
+
+  brandRoomCatalog: () =>
+    api.get<ApiResponse<Array<CatalogItem & { pickId?: string; available?: boolean; catalogItemId?: string }>>>(
+      '/catalog/brand-room/catalog',
+    ),
+
+  addBrandRoomPick: (catalogItemId: string) =>
+    api.post<ApiResponse<{ ok: boolean; already: boolean }>>('/catalog/brand-room/picks', { catalogItemId }),
+
+  removeBrandRoomPick: (itemId: string) =>
+    api.delete<ApiResponse<{ ok: boolean }>>(`/catalog/brand-room/picks/${itemId}`),
+
+  adminMasterList: () =>
+    api.get<ApiResponse<CatalogItem[]>>('/catalog/master/admin'),
+
+  adminMasterCreate: (payload: { title: string; house: string; description?: string; metalType?: string; priceUsd?: number }) =>
+    api.post<ApiResponse<CatalogItem>>('/catalog/master/admin', payload),
+
+  adminMasterUpdate: (itemId: string, payload: { lifecycle?: string; status?: string; house?: string; title?: string }) =>
+    api.patch<ApiResponse<CatalogItem>>(`/catalog/master/admin/${itemId}`, payload),
+
+  adminMasterUploadImage: (itemId: string, file: File) => {
+    const form = new FormData()
+    form.append('file', file)
+    return api.post<ApiResponse<CatalogItem>>(`/catalog/master/admin/${itemId}/image`, form)
+  },
+
+  adminMasterUploadModel3d: (itemId: string, file: File) => {
+    const form = new FormData()
+    form.append('file', file)
+    return api.post<ApiResponse<CatalogItem>>(`/catalog/master/admin/${itemId}/model3d`, form, {
+      timeout: 600_000,
+    })
+  },
 }

@@ -11,6 +11,7 @@ import {
 } from 'class-validator';
 import { Type } from 'class-transformer';
 import { CATALOG_CATEGORIES } from '../catalog-categories';
+import { MASTER_HOUSE_KEYS } from '../master-houses';
 
 const CATEGORY_VALUES = [...CATALOG_CATEGORIES];
 
@@ -124,6 +125,62 @@ export class UpdateCatalogItemDto {
 export class MoveCatalogItemDto {
   @IsUUID()
   collectionId: string;
+}
+
+export class CreateMasterProductDto {
+  @IsString()
+  @IsNotEmpty()
+  @MaxLength(160)
+  title: string;
+
+  @IsOptional()
+  @IsString()
+  @MaxLength(2000)
+  description?: string;
+
+  @IsIn([...MASTER_HOUSE_KEYS])
+  house: (typeof MASTER_HOUSE_KEYS)[number];
+
+  @IsOptional()
+  @IsString()
+  @MaxLength(80)
+  metalType?: string;
+
+  @IsOptional()
+  @Type(() => Number)
+  @IsNumber()
+  @Min(0)
+  priceUsd?: number;
+}
+
+export class AddBrandRoomPickDto {
+  @IsUUID()
+  catalogItemId: string;
+}
+
+export class UpdateMasterProductDto {
+  @IsOptional()
+  @IsString()
+  @IsNotEmpty()
+  @MaxLength(160)
+  title?: string;
+
+  @IsOptional()
+  @IsString()
+  @MaxLength(2000)
+  description?: string;
+
+  @IsOptional()
+  @IsIn([...MASTER_HOUSE_KEYS])
+  house?: (typeof MASTER_HOUSE_KEYS)[number];
+
+  @IsOptional()
+  @IsIn(['DRAFT', 'REVIEW', 'APPROVED', 'ACTIVE', 'SUSPENDED', 'ARCHIVED'])
+  lifecycle?: 'DRAFT' | 'REVIEW' | 'APPROVED' | 'ACTIVE' | 'SUSPENDED' | 'ARCHIVED';
+
+  @IsOptional()
+  @IsEnum(['ACTIVE', 'ARCHIVED'])
+  status?: 'ACTIVE' | 'ARCHIVED';
 }
 
 export class MeshyGenerateDto {

@@ -3,7 +3,12 @@ import { Link, useNavigate, useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useQuery } from '@tanstack/react-query'
 import SiteLayout from '../../components/SiteLayout'
-import { brandApi } from '@/features/brand/api/brand.api'
+import Model3DViewer from '@/components/catalog/Model3DViewer'
+import { brandApi, type PublicBrandProduct } from '@/features/brand/api/brand.api'
+import {
+  catalogItemPublicImageUrl,
+  catalogItemPublicModelUrl,
+} from '@/features/catalog/api/catalog.api'
 import { SOCIAL_LINK_KEYS, type SocialLinkKey } from '@/features/users/api/users.api'
 import { useAuthStore } from '@/features/auth/store/auth.store'
 
@@ -21,6 +26,32 @@ const SOCIAL_LABELS: Record<SocialLinkKey, string> = {
   x: 'X',
   telegram: 'Telegram',
   website: 'Website',
+}
+
+function BrandProductPreview({ item }: { item: PublicBrandProduct }) {
+  const { t } = useTranslation()
+  const modelUrl = catalogItemPublicModelUrl(item)
+  const imageUrl = catalogItemPublicImageUrl(item)
+
+  if (modelUrl) {
+    return (
+      <Model3DViewer
+        modelUrl={modelUrl}
+        emptyLabel={t('collections.preview3d', { defaultValue: '3D design preview' })}
+        className="mp-product-viewer"
+      />
+    )
+  }
+
+  if (imageUrl) {
+    return <img src={imageUrl} alt="" />
+  }
+
+  return (
+    <div className="mp-product-placeholder">
+      <span>{item.title.slice(0, 1).toUpperCase()}</span>
+    </div>
+  )
 }
 
 function socialEntries(links: Partial<Record<SocialLinkKey, string>> | undefined | null) {
@@ -219,13 +250,7 @@ export default function MemberPublicPage({ mode = 'member' }: Props) {
                   {brand.products.map((item) => (
                     <article key={item.id} className="mp-product">
                       <div className="mp-product-media">
-                        {item.imageUrl ? (
-                          <img src={item.imageUrl} alt="" />
-                        ) : (
-                          <div className="mp-product-placeholder">
-                            <span>{item.title.slice(0, 1).toUpperCase()}</span>
-                          </div>
-                        )}
+                        <BrandProductPreview item={item} />
                       </div>
                       <div className="mp-product-body">
                         <h3>{item.title}</h3>

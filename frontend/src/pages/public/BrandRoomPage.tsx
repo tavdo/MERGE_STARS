@@ -64,27 +64,28 @@ function AvatarMark({
 function BrandPanel({ b, featured }: { b: BrandRoomCard; featured?: boolean }) {
   const { t } = useTranslation()
   const profileTo = `/u/${encodeURIComponent(b.mergeId)}`
-  const visual = brandVisual(b)
-  const title = b.name?.trim() || b.ownerName
-  const cover = coverOf(b)
   const catalog = b.collections[0]
+  const catalogTo = catalog ? `/collections/${catalog.slug}` : null
+  const title = b.name?.trim() || b.ownerName
+  const cover = coverOf(b) || b.logoUrl || b.avatarUrl
+  const coverIsLogo = !!b.logoUrl && cover === b.logoUrl && !coverOf(b)
 
   return (
-    <Link
-      to={profileTo}
-      className={`br-panel no-underline${featured ? ' br-panel--featured' : ''}`}
-    >
+    <article className={`br-panel${featured ? ' br-panel--featured' : ''}`}>
       <div className="br-panel-visual">
         {cover ? (
-          <SafeImg src={cover} className="br-panel-cover" />
+          <SafeImg
+            src={cover}
+            className={`br-panel-cover${coverIsLogo ? ' br-panel-cover--logo' : ''}`}
+          />
         ) : (
-          <div className="br-panel-cover br-panel-cover--empty" aria-hidden />
+          <div className="br-panel-cover br-panel-cover--empty" aria-hidden>
+            <span>{title.slice(0, 1).toUpperCase()}</span>
+          </div>
         )}
-        <div className="br-panel-veil" aria-hidden />
       </div>
 
       <div className="br-panel-meta">
-        <AvatarMark visual={visual} title={title} className="br-panel-avatar" />
         <div className="br-panel-copy">
           <h2>{title}</h2>
           {b.brandLineId && <p className="br-panel-id">{b.brandLineId}</p>}
@@ -110,18 +111,20 @@ function BrandPanel({ b, featured }: { b: BrandRoomCard; featured?: boolean }) {
               })}
             </span>
           </p>
-          {catalog && (
-            <p className="br-panel-catalog">
-              {catalog.title}
-              {b.collections.length > 1 ? ` +${b.collections.length - 1}` : ''}
-            </p>
+        </div>
+
+        <div className="br-panel-actions">
+          <Link to={profileTo} className="br-panel-btn">
+            {t('brandRoom.viewProfile', { defaultValue: 'Open profile' })}
+          </Link>
+          {catalogTo && (
+            <Link to={catalogTo} className="br-panel-btn br-panel-btn--ghost">
+              {t('brandRoom.openCatalog', { defaultValue: 'Open catalog' })}
+            </Link>
           )}
         </div>
-        <span className="br-panel-cta">
-          {t('brandRoom.viewProfile', { defaultValue: 'Open profile' })}
-        </span>
       </div>
-    </Link>
+    </article>
   )
 }
 

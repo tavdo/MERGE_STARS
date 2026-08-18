@@ -27,6 +27,7 @@ import LegalClassificationPage from './pages/public/LegalClassificationPage'
 import BrandLinePage     from './pages/dashboard/BrandLinePage'
 import CollectionsPage   from './pages/dashboard/CollectionsPage'
 import CollectionDetailPage from './pages/dashboard/CollectionDetailPage'
+import MasterCatalogPage from './pages/dashboard/MasterCatalogPage'
 import CollectionsBrowsePage from './pages/public/CollectionsBrowsePage'
 import BrandPublicPage from './pages/public/BrandPublicPage'
 import BrandRoomPage from './pages/public/BrandRoomPage'
@@ -56,6 +57,7 @@ import AdminAuditPage    from './pages/admin/AdminAuditPage'
 import AdminAnalyticsPage from './pages/admin/AdminAnalyticsPage'
 import AdminSettingsPage from './pages/admin/AdminSettingsPage'
 import AdminAiTrainingPage from './pages/admin/AdminAiTrainingPage'
+import AdminMasterCatalogPage from './pages/admin/AdminMasterCatalogPage'
 import BankReviewPage from './pages/admin/BankReviewPage'
 import SecurityCenterPage from './pages/admin/SecurityCenterPage'
 import DataGovernancePage from './pages/admin/DataGovernancePage'
@@ -125,6 +127,7 @@ function AppRoutes() {
           <Route path="/dashboard/settings"     element={<SettingsPage />} />
           <Route path="/dashboard/support"      element={<SupportPage />} />
           <Route path="/dashboard/brand"        element={<BrandLinePage />} />
+          <Route path="/dashboard/master-catalog" element={<MasterCatalogPage />} />
           <Route path="/dashboard/collections"  element={<CollectionsPage />} />
           <Route path="/dashboard/collections/:id" element={<CollectionDetailPage />} />
           <Route path="/dashboard/qr"           element={<QRIdentityPage />} />
@@ -158,6 +161,7 @@ function AppRoutes() {
           <Route path="/admin/analytics" element={<AdminAnalyticsPage />} />
           <Route path="/admin/settings" element={<AdminSettingsPage />} />
           <Route path="/admin/ai-training" element={<AdminAiTrainingPage />} />
+          <Route path="/admin/master-catalog" element={<AdminMasterCatalogPage />} />
           <Route path="/admin/bank-review" element={<BankReviewPage />} />
           <Route path="/admin/compliance" element={<ComplianceHubPage />} />
           <Route path="/admin/audit-center" element={<AuditCenterPage />} />

@@ -20,6 +20,7 @@ const NAV_GROUPS: { titleKey: string; items: NavItem[] }[] = [
       { icon: '🏦', labelKey: 'admin.nav.finance', href: '/admin/finance' },
       { icon: '💎', labelKey: 'admin.nav.crystal', href: '/admin/crystal' },
       { icon: '🏭', labelKey: 'admin.nav.production', href: '/admin/production' },
+      { icon: '★', labelKey: 'admin.nav.masterCatalog', href: '/admin/master-catalog' },
       { icon: '📊', labelKey: 'admin.nav.analytics', href: '/admin/analytics' },
     ],
   },
