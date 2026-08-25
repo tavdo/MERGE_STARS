@@ -18,6 +18,11 @@ import { PhoneVerificationCode } from './phone-verification-code.entity';
 import { WalletTransaction } from './wallet-transaction.entity';
 import { CatalogOrder } from './catalog-order.entity';
 import { AiTrainingItem } from './ai-training-item.entity';
+import { CoinPackageConfig } from './coin-package-config.entity';
+import { CoinConfiguratorSession } from './coin-configurator-session.entity';
+import { CoinConfiguratorProduct } from './coin-configurator-product.entity';
+
+import { ProductPassport } from './product-passport.entity';
 
 export const entities = [
   User,
@@ -40,6 +45,10 @@ export const entities = [
   WalletTransaction,
   CatalogOrder,
   AiTrainingItem,
+  CoinPackageConfig,
+  CoinConfiguratorSession,
+  CoinConfiguratorProduct,
+  ProductPassport,
 ];
 
 export {
@@ -63,4 +72,8 @@ export {
   WalletTransaction,
   CatalogOrder,
   AiTrainingItem,
+  CoinPackageConfig,
+  CoinConfiguratorSession,
+  CoinConfiguratorProduct,
+  ProductPassport,
 };

@@ -5,6 +5,7 @@ import { CatalogItem } from '../../database/entities/catalog-item.entity';
 import { UsersModule } from '../users/users.module';
 import { NotificationsModule } from '../notifications/notifications.module';
 import { OrdersModule } from '../orders/orders.module';
+import { CoinConfiguratorModule } from '../coin-configurator/coin-configurator.module';
 import { CoinsController } from './coins.controller';
 import { CoinsService } from './coins.service';
 
@@ -14,6 +15,7 @@ import { CoinsService } from './coins.service';
     UsersModule,
     NotificationsModule,
     OrdersModule,
+    CoinConfiguratorModule,
   ],
   controllers: [CoinsController],
   providers: [CoinsService],

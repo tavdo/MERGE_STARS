@@ -78,4 +78,9 @@ export class SubmitApplicationDto {
   @IsOptional()
   @IsString()
   catalogItemId?: string;
+
+  /** Finalized Smart Coin Configurator session */
+  @IsOptional()
+  @IsString()
+  configuratorSessionId?: string;
 }

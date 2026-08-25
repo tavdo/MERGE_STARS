@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import Model3DViewer from './Model3DViewer'
 import {
   generateMeshyFromImages,
   generateMeshyModel,
@@ -66,6 +65,14 @@ export default function MeshyAIPanel({ onGenerate, resultUrl: externalResult }: 
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   const resultUrl = externalResult ?? localResult
+  const isReady = Boolean(resultUrl) && status !== 'generating' && status !== 'error'
+
+  useEffect(() => {
+    if (externalResult && status === 'idle') {
+      setStatus('done')
+      setProgress(100)
+    }
+  }, [externalResult, status])
 
   useEffect(() => {
     return () => {
@@ -147,6 +154,7 @@ export default function MeshyAIPanel({ onGenerate, resultUrl: externalResult }: 
     setStatus('generating')
     setProgress(5)
     setErrorMsg(null)
+    if (!externalResult) setLocalResult(null)
 
     try {
       const res =
@@ -177,22 +185,29 @@ export default function MeshyAIPanel({ onGenerate, resultUrl: externalResult }: 
     }
   }
 
+  const generateButtonLabel =
+    status === 'generating'
+      ? t('collections.meshyGenerating', { defaultValue: 'Generating…' })
+      : isReady
+        ? t('collections.meshyRegenerate', { defaultValue: 'Regenerate' })
+        : t('collections.meshyGenerate', { defaultValue: 'Generate' })
+
   return (
     <div className="catalog-meshy-panel">
       <div className="catalog-meshy-header">
-        <div className="catalog-meshy-badge">
-          <span aria-hidden>✦</span>
-          Meshy AI
-        </div>
         <p className="catalog-meshy-sub">
-          {t('collections.meshySub', {
-            defaultValue:
-              'Describe your piece, or upload 1–4 multi-view photos with an optional prompt — AI generates a 3D model.',
-          })}
+          {isReady
+            ? t('collections.meshyReady', {
+                defaultValue:
+                  'Your 3D model is ready. Update the prompt below and tap Regenerate for a new version.',
+              })
+            : t('collections.meshySub', {
+                defaultValue: 'Describe your piece — AI will generate a 3D model for your catalog.',
+              })}
         </p>
       </div>
 
-      <div className="catalog-meshy-modes" role="tablist" aria-label="Meshy input mode">
+      <div className="catalog-meshy-modes" role="tablist" aria-label="3D generation input mode">
         <button
           type="button"
           role="tab"
@@ -329,15 +344,20 @@ export default function MeshyAIPanel({ onGenerate, resultUrl: externalResult }: 
           value={prompt}
           onChange={(e) => setPrompt(e.target.value)}
           placeholder={
-            mode === 'image'
-              ? t('collections.meshyPhotoPromptPlaceholder', {
+            isReady
+              ? t('collections.meshyRegeneratePlaceholder', {
                   defaultValue:
-                    'Optional: describe materials, separated parts, crystal, engravings… Or tap “Use style standard”.',
+                    'Describe changes — e.g. sharper engraving, brushed gold finish, slimmer case…',
                 })
-              : t('collections.meshyPlaceholder', {
-                  defaultValue:
-                    'e.g. A luxury gold coin with MERGE STARS engraving, brushed metal finish…',
-                })
+              : mode === 'image'
+                ? t('collections.meshyPhotoPromptPlaceholder', {
+                    defaultValue:
+                      'Optional: describe materials, separated parts, crystal, engravings… Or tap “Use style standard”.',
+                  })
+                : t('collections.meshyPlaceholder', {
+                    defaultValue:
+                      'e.g. A luxury gold coin with MERGE STARS engraving, brushed metal finish…',
+                  })
           }
         />
       </div>
@@ -366,30 +386,8 @@ export default function MeshyAIPanel({ onGenerate, resultUrl: externalResult }: 
           disabled={!canGenerate || status === 'generating'}
           onClick={handleGenerate}
         >
-          {status === 'generating'
-            ? t('collections.meshyGenerating', { defaultValue: 'Generating…' })
-            : mode === 'image'
-              ? t('collections.meshyGenerateMulti', {
-                  defaultValue:
-                    photos.length > 1
-                      ? `Generate 3D from ${photos.length} views`
-                      : 'Generate 3D from photo',
-                })
-              : t('collections.meshyGenerate', {
-                  defaultValue: 'Generate 3D with Meshy AI',
-                })}
+          {generateButtonLabel}
         </button>
-        <span className="catalog-meshy-api-note">
-          {mode === 'image'
-            ? t('collections.meshyImageLiveNote', {
-                defaultValue:
-                  'Multi-view Image-to-3D · ~100k polys + 4K PBR · uses Meshy credits. Draft only — CAD validation still required for manufacturing.',
-              })
-            : t('collections.meshyLiveNote', {
-                defaultValue:
-                  'High quality: ~100k polys + 4K PBR refine (uses more Meshy credits).',
-              })}
-        </span>
       </div>
 
       {status === 'generating' && (
@@ -403,22 +401,10 @@ export default function MeshyAIPanel({ onGenerate, resultUrl: externalResult }: 
         <p className="text-sm text-red-400 mt-2">
           {errorMsg ||
             t('collections.meshyError', {
-              defaultValue: 'Generation failed. Check Meshy API configuration.',
+              defaultValue: 'Generation failed. Please try again.',
             })}
         </p>
       )}
-
-      <div className="catalog-meshy-preview mt-6">
-        <p className="dash-label mb-3">
-          {t('collections.meshyPreview', { defaultValue: 'AI preview' })}
-        </p>
-        <Model3DViewer
-          modelUrl={resultUrl}
-          emptyLabel={t('collections.meshyPreviewEmpty', {
-            defaultValue: 'Generated model will appear here',
-          })}
-        />
-      </div>
     </div>
   )
 }

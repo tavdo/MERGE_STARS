@@ -113,7 +113,7 @@ export default function CatalogItemStudio({ onSubmit, submitting, error }: Props
       <div className="catalog-studio-head">
         <p className="dash-label">{t('collections.addItem', { defaultValue: 'Add catalog item' })}</p>
         <p className="catalog-studio-sub">
-          {t('collections.studioSub', { defaultValue: 'Upload media or generate a 3D model with Meshy AI.' })}
+          {t('collections.studioSub', { defaultValue: 'Upload media or generate a 3D model with AI.' })}
         </p>
       </div>
 
@@ -231,8 +231,16 @@ export default function CatalogItemStudio({ onSubmit, submitting, error }: Props
           {imageFile && <span className="catalog-studio-pill">🖼 {imageFile.name}</span>}
           {!imageFile && imageUrl && <span className="catalog-studio-pill">🔗 Image URL</span>}
           {modelFile && <span className="catalog-studio-pill">◆ {modelFile.name}</span>}
-          {meshyJobId && <span className="catalog-studio-pill">✦ Meshy AI ready</span>}
-          {!meshyJobId && meshyModelUrl && <span className="catalog-studio-pill">✦ Meshy AI</span>}
+          {meshyJobId && (
+            <span className="catalog-studio-pill">
+              {t('collections.generated3dReady', { defaultValue: '✦ 3D model ready' })}
+            </span>
+          )}
+          {!meshyJobId && meshyModelUrl && (
+            <span className="catalog-studio-pill">
+              {t('collections.generated3d', { defaultValue: '✦ 3D generated' })}
+            </span>
+          )}
           <button type="button" className="catalog-studio-clear" onClick={resetMedia}>
             {t('collections.clearMedia', { defaultValue: 'Clear media' })}
           </button>

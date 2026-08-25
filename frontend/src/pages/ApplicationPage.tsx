@@ -5,8 +5,9 @@ import { useMutation, useQuery } from '@tanstack/react-query'
 import DashboardLayout from '../components/DashboardLayout'
 import FlowStepper from '../components/FlowStepper'
 import CustomSelect from '../components/CustomSelect'
-import OrderAIDesignPanel from '../components/application/OrderAIDesignPanel'
+import ConfiguratorApplySummaryPanel from '../components/application/ConfiguratorApplySummaryPanel'
 import { coinsApi } from '@/features/coins/api/coins.api'
+import { configuratorApi } from '@/features/coin-configurator/api/configurator.api'
 import { catalogApi } from '@/features/catalog/api/catalog.api'
 import { useLiveMetalPrices } from '@/features/coins/hooks/useLiveMetalPrice'
 import { useAuthStore } from '@/features/auth/store/auth.store'
@@ -23,6 +24,8 @@ export default function ApplicationPage() {
   const { t, i18n } = useTranslation()
   const [searchParams] = useSearchParams()
   const catalogItemId = searchParams.get('catalogItemId')?.trim() || ''
+  const configuratorSessionId = searchParams.get('sessionId')?.trim() || ''
+  const kgParam = searchParams.get('kg')
   const authUser = useAuthStore((s) => s.user)
   const coinTypes = t('application.coinTypes', { returnObjects: true }) as string[]
   const stepLabels = t('application.steps', { returnObjects: true }) as string[]
@@ -39,9 +42,6 @@ export default function ApplicationPage() {
   const [quantity, setQuantity] = useState(1)
   const metalType = metalForCoinIndex(coinIdx)
   const [notes, setNotes] = useState('')
-  const [aiPrompt, setAiPrompt] = useState('')
-  const [aiStyle, setAiStyle] = useState('luxuryCoin')
-  const [aiAttempted, setAiAttempted] = useState(false)
   const [firstName, setFirstName] = useState('')
   const [lastName, setLastName] = useState('')
   const [personalId, setPersonalId] = useState('')
@@ -79,8 +79,17 @@ export default function ApplicationPage() {
   })
 
   useEffect(() => {
-    if (catalogItemId) setAiAttempted(true)
-  }, [catalogItemId])
+    if (kgParam) {
+      const kg = Math.max(1, Number(kgParam) || 1)
+      setQuantity(kg)
+    }
+  }, [kgParam])
+
+  const { data: configuratorSession } = useQuery({
+    queryKey: ['configurator-session-apply', configuratorSessionId],
+    queryFn: () => configuratorApi.getSession(configuratorSessionId).then((r) => r.data.data),
+    enabled: !!configuratorSessionId,
+  })
 
   useEffect(() => {
     if (!authUser) return
@@ -97,15 +106,22 @@ export default function ApplicationPage() {
   const termMonths = financingIdx === 0 ? 0 : financingIdx === 1 ? 12 : 24
   const { downPayment, toFinance, monthly } = financingPreview(coinValue * quantity, termMonths || 12)
 
-  const designNotes = useMemo(() => {
-    const parts = [
-      notes.trim(),
-      aiPrompt.trim()
-        ? `[AI design] style=${aiStyle}; prompt=${aiPrompt.trim()}`
-        : '',
-    ].filter(Boolean)
-    return parts.join('\n') || undefined
-  }, [notes, aiPrompt, aiStyle])
+  const designNotes = useMemo(() => notes.trim() || undefined, [notes])
+
+  const designSummary = useMemo(() => {
+    if (configuratorSession) {
+      const count = configuratorSession.products.filter((p) =>
+        ['approved', 'cad_review', 'verified'].includes(p.status),
+      ).length
+      return t('application.configuratorLinked', {
+        count,
+        used: configuratorSession.usedWeightG,
+        capacity: configuratorSession.productCapacityG,
+      })
+    }
+    if (catalogDesign?.item.title) return catalogDesign.item.title
+    return '—'
+  }, [configuratorSession, catalogDesign, t])
 
   const submitApp = useMutation({
     mutationFn: () =>
@@ -126,6 +142,7 @@ export default function ApplicationPage() {
         deliveryAddress: deliveryAddress.trim() || undefined,
         additionalNotes: additionalNotes.trim() || undefined,
         catalogItemId: catalogItemId || undefined,
+        configuratorSessionId: configuratorSessionId || undefined,
       }),
     onSuccess: () => navigate('/status'),
   })
@@ -133,15 +150,13 @@ export default function ApplicationPage() {
   const idx = step - 1
 
   const goNext = () => {
-    if (step === 2 && !aiAttempted) return
+    if (step === 2 && !canContinue) return
     if (step === 3 && (!firstName.trim() || !lastName.trim() || !email.trim())) return
     if (step === 4 && !deliveryAddress.trim()) return
     setStep((s) => Math.min(TOTAL_STEPS, s + 1) as Step)
   }
 
-  const canContinue =
-    step !== 2 ||
-    aiAttempted
+  const canContinue = step !== 2 || !!configuratorSessionId || !!catalogItemId
 
   const summaryFinancing =
     financingIdx === 0
@@ -161,12 +176,16 @@ export default function ApplicationPage() {
           {step === 2 && stepGuide[idx]?.blurb && (
             <p className="apply-lead">{stepGuide[idx].blurb}</p>
           )}
-          {catalogItemId && catalogDesign && (
+          {configuratorSession && (
             <p className="apply-catalog-note">
-              {t('application.usingCatalogDesign', {
-                defaultValue: 'Using catalog design “{{title}}” by {{owner}}. Designer receives 50% when you pay.',
-                title: catalogDesign.item.title,
-                owner: catalogDesign.ownerName ?? 'member',
+              {t('application.configuratorLinked', {
+                defaultValue:
+                  'Smart Coin configuration attached: {{count}} approved product(s), {{used}} g used of {{capacity}} g capacity.',
+                count: configuratorSession.products.filter((p) =>
+                  ['approved', 'cad_review', 'verified'].includes(p.status),
+                ).length,
+                used: configuratorSession.usedWeightG,
+                capacity: configuratorSession.productCapacityG,
               })}
             </p>
           )}
@@ -292,15 +311,25 @@ export default function ApplicationPage() {
                         })}
                       </p>
                     </div>
+                  ) : configuratorSession ? (
+                    <ConfiguratorApplySummaryPanel session={configuratorSession} />
                   ) : (
-                    <OrderAIDesignPanel
-                      attempted={aiAttempted}
-                      onAttempted={() => setAiAttempted(true)}
-                      prompt={aiPrompt}
-                      onPromptChange={setAiPrompt}
-                      styleKey={aiStyle}
-                      onStyleChange={setAiStyle}
-                    />
+                    <div className="rounded border border-[#c9a84c]/25 bg-black/40 p-6 space-y-4">
+                      <p className="text-white font-semibold">
+                        {t('application.fillCoinPrompt', {
+                          defaultValue: 'Design your custom MERGE Coin products with AI',
+                        })}
+                      </p>
+                      <p className="text-sm text-neutral-400">
+                        {t('application.fillCoinHint', {
+                          defaultValue:
+                            'Select products, upload references, generate 3D models, and fill your coin before applying.',
+                        })}
+                      </p>
+                      <Link to="/fill-coin" className="gold-btn inline-flex no-underline">
+                        {t('configurator.fillCoinCta', { defaultValue: 'Fill your MERGE Coin' })}
+                      </Link>
+                    </div>
                   )}
                 </div>
               )}
@@ -441,7 +470,7 @@ export default function ApplicationPage() {
                     { label: t('application.summaryValue'), value: `$${(coinValue * quantity).toLocaleString()}` },
                     {
                       label: t('application.summaryAiDesign'),
-                      value: aiPrompt.trim() || '—',
+                      value: designSummary,
                     },
                     { label: t('application.summaryFinancing'), value: summaryFinancing },
                     { label: t('application.deliveryAddress'), value: deliveryAddress || '—' },

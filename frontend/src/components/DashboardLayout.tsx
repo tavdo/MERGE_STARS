@@ -14,6 +14,7 @@ const NAV = [
   { icon: '⊞', labelKey: 'dashboard.nav.dashboard', href: '/dashboard', exact: true },
   { icon: '◦', labelKey: 'dashboard.nav.profile', href: '/dashboard/profile' },
   { icon: '◦', labelKey: 'dashboard.nav.applications', href: '/apply', match: ['/apply', '/status'] },
+  { icon: '◎', labelKey: 'dashboard.nav.fillCoin', href: '/fill-coin' },
   { icon: '◦', labelKey: 'dashboard.nav.orders', href: '/dashboard/orders' },
   { icon: '◦', labelKey: 'dashboard.nav.coins', href: '/dashboard/coins' },
   { icon: '◦', labelKey: 'dashboard.nav.brandLine', href: '/dashboard/brand' },

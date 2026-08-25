@@ -8,6 +8,7 @@ import ForgotPasswordPage from './pages/ForgotPasswordPage'
 import ResetPasswordPage from './pages/ResetPasswordPage'
 import DashboardPage     from './pages/DashboardPage'
 import ApplicationPage   from './pages/ApplicationPage'
+import CoinConfiguratorPage from './pages/dashboard/CoinConfiguratorPage'
 import StatusPage        from './pages/StatusPage'
 
 // Public pages
@@ -32,6 +33,7 @@ import CollectionsBrowsePage from './pages/public/CollectionsBrowsePage'
 import BrandPublicPage from './pages/public/BrandPublicPage'
 import BrandRoomPage from './pages/public/BrandRoomPage'
 import MemberPublicPage from './pages/public/MemberPublicPage'
+import ProductPassportPage from './pages/public/ProductPassportPage'
 import QRIdentityPage    from './pages/dashboard/QRIdentityPage'
 import OrdersPage        from './pages/dashboard/OrdersPage'
 import PaymentPage       from './pages/dashboard/PaymentPage'
@@ -58,6 +60,7 @@ import AdminAnalyticsPage from './pages/admin/AdminAnalyticsPage'
 import AdminSettingsPage from './pages/admin/AdminSettingsPage'
 import AdminAiTrainingPage from './pages/admin/AdminAiTrainingPage'
 import AdminMasterCatalogPage from './pages/admin/AdminMasterCatalogPage'
+import AdminCoinConfiguratorPage from './pages/admin/AdminCoinConfiguratorPage'
 import BankReviewPage from './pages/admin/BankReviewPage'
 import SecurityCenterPage from './pages/admin/SecurityCenterPage'
 import DataGovernancePage from './pages/admin/DataGovernancePage'
@@ -112,6 +115,7 @@ function AppRoutes() {
         <Route path="/brand-room"          element={<BrandRoomPage />} />
         <Route path="/b/:brandLineId"      element={<BrandPublicPage />} />
         <Route path="/u/:mergeId"          element={<MemberPublicPage mode="member" />} />
+        <Route path="/passport/:publicId"   element={<ProductPassportPage />} />
         <Route path="/login"           element={<LoginPage />} />
         <Route path="/register"        element={<Navigate to="/login?tab=register" replace />} />
         <Route path="/forgot-password" element={<ForgotPasswordPage />} />
@@ -137,8 +141,10 @@ function AppRoutes() {
           <Route path="/dashboard/delivery"      element={<DeliveryPage />} />
           <Route path="/dashboard/referral"      element={<ReferralPage />} />
           <Route path="/dashboard/ai"            element={<AIAssistantPage />} />
+          <Route path="/fill-coin"            element={<CoinConfiguratorPage />} />
+          <Route path="/dashboard/fill-coin"  element={<CoinConfiguratorPage />} />
           <Route path="/apply"              element={<ApplicationPage />} />
-          <Route path="/calculator"         element={<Navigate to="/apply" replace />} />
+          <Route path="/calculator"         element={<Navigate to="/fill-coin" replace />} />
           <Route path="/status"             element={<StatusPage />} />
         </Route>
 
@@ -162,6 +168,7 @@ function AppRoutes() {
           <Route path="/admin/settings" element={<AdminSettingsPage />} />
           <Route path="/admin/ai-training" element={<AdminAiTrainingPage />} />
           <Route path="/admin/master-catalog" element={<AdminMasterCatalogPage />} />
+          <Route path="/admin/coin-configurator" element={<AdminCoinConfiguratorPage />} />
           <Route path="/admin/bank-review" element={<BankReviewPage />} />
           <Route path="/admin/compliance" element={<ComplianceHubPage />} />
           <Route path="/admin/audit-center" element={<AuditCenterPage />} />

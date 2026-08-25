@@ -37,6 +37,7 @@ export interface SubmitApplicationPayload {
   deliveryAddress?: string
   additionalNotes?: string
   catalogItemId?: string
+  configuratorSessionId?: string
 }
 
 export const coinsApi = {

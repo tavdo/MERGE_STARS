@@ -111,11 +111,11 @@ async function pollMeshyJob(
       }
     }
     if (job.status === 'failed') {
-      throw new Error(job.error || 'Meshy generation failed')
+      throw new Error(job.error || '3D generation failed')
     }
   }
 
-  throw new Error('Meshy generation timed out')
+  throw new Error('3D generation timed out')
 }
 
 export async function generateMeshyModel(

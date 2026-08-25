@@ -8,7 +8,14 @@ export default {
       denied: 'წვდომა აკრძალულია. საჭიროა admin ან manager როლი.',
       backToSite: '← საჯარო საიტზე დაბრუნება',
     },
-    nav: { dashboard: 'პანელი', bankReview: 'ბანკის განხილვა', auditCenter: 'აუდიტი', compliance: 'კომპლაიენსი', security: 'უსაფრთხოება', dataGov: 'მონაცემები', continuity: 'უწყვეტობა', users: 'მომხმარებლები', kyc: 'KYC', applications: 'განაცხადები', finance: 'ფინანსები', crystal: 'CRYSTAL', production: 'წარმოება', masterCatalog: 'MASTER CATALOG', analytics: 'ანალიტიკა', auditLog: 'აუდიტ ლოგი', settings: 'პარამეტრები', aiTraining: 'AI სწავლება', groupOperations: 'ოპერაციები', groupCompliance: 'კომპლაიენსი', groupSystem: 'სისტემა' },
+    nav: { dashboard: 'პანელი', bankReview: 'ბანკის განხილვა', auditCenter: 'აუდიტი', compliance: 'კომპლაიენსი', security: 'უსაფრთხოება', dataGov: 'მონაცემები', continuity: 'უწყვეტობა', users: 'მომხმარებლები', kyc: 'KYC', applications: 'განაცხადები', finance: 'ფინანსები', crystal: 'CRYSTAL', production: 'წარმოება', masterCatalog: 'MASTER CATALOG', coinConfigurator: 'COIN CONFIGURATOR', analytics: 'ანალიტიკა', auditLog: 'აუდიტ ლოგი', settings: 'პარამეტრები', aiTraining: 'AI სწავლება', groupOperations: 'ოპერაციები', groupCompliance: 'კომპლაიენსი', groupSystem: 'სისტემა' },
+    coinConfigurator: {
+      title: 'Smart Coin Configurator',
+      sub: 'პაკეტის წონები, CAD განხილვა, ვერიფიცირებული წონები',
+      packages: 'მონეტის პაკეტის კონფიგურაცია',
+      packagesHint: 'კეისისა და პროდუქტის წონის განაწილება (არა ჰარდკოდი). სულ = კგ × 1000 გ.',
+      cadQueue: 'CAD / წარმოების განხილვის რიგი',
+    },
     aiTraining: {
       title: 'AI სწავლება',
       subtitle: 'უცნობი კითხვები და ნასწავლი პასუხები',

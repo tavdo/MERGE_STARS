@@ -7,7 +7,7 @@ import React, {
 } from 'react'
 import { createPortal } from 'react-dom'
 import { Canvas } from '@react-three/fiber'
-import { Center, Environment, OrbitControls, useGLTF } from '@react-three/drei'
+import { Center, Environment, OrbitControls, useGLTF, useProgress } from '@react-three/drei'
 
 function GlbModel({ url, onLoaded }: { url: string; onLoaded?: () => void }) {
   const { scene } = useGLTF(url)
@@ -44,15 +44,44 @@ class GlbErrorBoundary extends React.Component<
   }
 }
 
+function LoadProgressReporter({ onProgress }: { onProgress: (progress: number) => void }) {
+  const { progress, active } = useProgress()
+
+  useEffect(() => {
+    onProgress(active ? progress : 100)
+  }, [progress, active, onProgress])
+
+  return null
+}
+
+function LoadingOverlay({ progress }: { progress: number }) {
+  const pct = Math.min(100, Math.max(0, Math.round(progress)))
+
+  return (
+    <div className="catalog-3d-viewer-loading" aria-live="polite" aria-busy="true">
+      <div className="catalog-3d-viewer-spinner-wrap" aria-hidden>
+        <div className="catalog-3d-viewer-spinner" />
+        <span className="catalog-3d-viewer-spinner-pct">{pct}%</span>
+      </div>
+      <p>Loading 3D model… {pct}%</p>
+      <div className="catalog-3d-viewer-shimmer" aria-hidden>
+        <div className="catalog-3d-viewer-shimmer-fill" style={{ width: `${pct}%` }} />
+      </div>
+    </div>
+  )
+}
+
 function ViewerCanvas({
   modelUrl,
   onLoaded,
   onError,
+  onProgress,
   fullscreen,
 }: {
   modelUrl: string
   onLoaded: () => void
   onError: () => void
+  onProgress: (progress: number) => void
   fullscreen?: boolean
 }) {
   return (
@@ -67,6 +96,7 @@ function ViewerCanvas({
       <ambientLight intensity={0.55} />
       <directionalLight position={[4, 6, 3]} intensity={1.1} />
       <Suspense fallback={null}>
+        <LoadProgressReporter onProgress={onProgress} />
         <GlbErrorBoundary onError={onError}>
           <GlbModel url={modelUrl} onLoaded={onLoaded} />
         </GlbErrorBoundary>
@@ -92,13 +122,18 @@ type Props = {
 export default function Model3DViewer({ modelUrl, emptyLabel = '3D preview', className = '' }: Props) {
   const [failed, setFailed] = useState(false)
   const [loading, setLoading] = useState(Boolean(modelUrl))
+  const [loadProgress, setLoadProgress] = useState(0)
   const [fullscreen, setFullscreen] = useState(false)
   const [fsLoading, setFsLoading] = useState(false)
+  const [fsLoadProgress, setFsLoadProgress] = useState(0)
 
   useEffect(() => {
     setFailed(false)
     setLoading(Boolean(modelUrl))
+    setLoadProgress(0)
     setFullscreen(false)
+    setFsLoading(false)
+    setFsLoadProgress(0)
   }, [modelUrl])
 
   useEffect(() => {
@@ -134,6 +169,7 @@ export default function Model3DViewer({ modelUrl, emptyLabel = '3D preview', cla
   }
 
   const openFullscreen = () => {
+    setFsLoadProgress(0)
     setFsLoading(true)
     setFullscreen(true)
   }
@@ -141,16 +177,14 @@ export default function Model3DViewer({ modelUrl, emptyLabel = '3D preview', cla
   return (
     <>
       <div className={`catalog-3d-viewer ${className}`.trim()}>
-        {loading && (
-          <div className="catalog-3d-viewer-loading" aria-live="polite" aria-busy="true">
-            <div className="catalog-3d-viewer-spinner" aria-hidden />
-            <p>Loading 3D model…</p>
-            <div className="catalog-3d-viewer-shimmer" aria-hidden />
-          </div>
-        )}
+        {loading && <LoadingOverlay progress={loadProgress} />}
         <ViewerCanvas
           modelUrl={modelUrl}
-          onLoaded={() => setLoading(false)}
+          onProgress={setLoadProgress}
+          onLoaded={() => {
+            setLoadProgress(100)
+            setLoading(false)
+          }}
           onError={() => {
             setFailed(true)
             setLoading(false)
@@ -176,17 +210,15 @@ export default function Model3DViewer({ modelUrl, emptyLabel = '3D preview', cla
           <div className="catalog-3d-fs" role="dialog" aria-modal="true" aria-label="Fullscreen 3D preview">
             <div className="catalog-3d-fs-backdrop" onClick={() => setFullscreen(false)} />
             <div className="catalog-3d-fs-stage">
-              {fsLoading && (
-                <div className="catalog-3d-viewer-loading" aria-live="polite" aria-busy="true">
-                  <div className="catalog-3d-viewer-spinner" aria-hidden />
-                  <p>Loading 3D model…</p>
-                  <div className="catalog-3d-viewer-shimmer" aria-hidden />
-                </div>
-              )}
+              {fsLoading && <LoadingOverlay progress={fsLoadProgress} />}
               <ViewerCanvas
                 modelUrl={modelUrl}
                 fullscreen
-                onLoaded={() => setFsLoading(false)}
+                onProgress={setFsLoadProgress}
+                onLoaded={() => {
+                  setFsLoadProgress(100)
+                  setFsLoading(false)
+                }}
                 onError={() => {
                   setFsLoading(false)
                   setFullscreen(false)

@@ -467,6 +467,11 @@ export default {
     previewNote: 'Indicative only. Crystal and our underwriting partners set final financing terms.',
     viewIndicator: 'View live reference indicator',
     howPricing: 'How pricing works →',
+    configuratorLinked:
+      'Smart Coin configuration attached: {{count}} approved product(s), {{used}} g used of {{capacity}} g capacity.',
+    fillCoinPrompt: 'Design your custom MERGE Coin products with AI',
+    fillCoinHint:
+      'Select products, upload references, generate 3D models, and fill your coin before applying.',
     metals: { silver: 'Silver (Ag)', gold: 'Gold (Au)' },
     grams: '{{n}} grams',
     puritySilver: '999.9 silver',

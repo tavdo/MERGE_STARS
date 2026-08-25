@@ -32,6 +32,7 @@ import { SettingsModule } from './modules/settings/settings.module';
 import { AiModule } from './modules/ai/ai.module';
 import { SmsModule } from './modules/sms/sms.module';
 import { RedisModule } from './modules/redis/redis.module';
+import { CoinConfiguratorModule } from './modules/coin-configurator/coin-configurator.module';
 import { WalletModule } from './modules/wallet/wallet.module';
 
 @Module({
@@ -69,6 +70,7 @@ import { WalletModule } from './modules/wallet/wallet.module';
     SmsModule,
     RedisModule,
     WalletModule,
+    CoinConfiguratorModule,
   ],
   controllers: [AppController],
   providers: [

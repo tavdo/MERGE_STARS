@@ -12,6 +12,7 @@ import { UsersService } from '../users/users.service';
 import { MailService } from '../mail/mail.service';
 import { NotificationsService } from '../notifications/notifications.service';
 import { OrdersService } from '../orders/orders.service';
+import { CoinConfiguratorService } from '../coin-configurator/coin-configurator.service';
 
 @Injectable()
 export class CoinsService {
@@ -24,6 +25,7 @@ export class CoinsService {
     private readonly mail: MailService,
     private readonly notifications: NotificationsService,
     private readonly orders: OrdersService,
+    private readonly configurator: CoinConfiguratorService,
   ) {}
 
   private nextPublicId() {
@@ -88,6 +90,14 @@ export class CoinsService {
 
     const design = await this.resolveDesign(dto.catalogItemId, user.id);
 
+    let orderSnapshot: Record<string, unknown> | null = null;
+    if (dto.configuratorSessionId?.trim()) {
+      orderSnapshot = (await this.configurator.getOrderSnapshot(
+        dto.configuratorSessionId.trim(),
+        user.id,
+      )) as unknown as Record<string, unknown>;
+    }
+
     let publicId = this.nextPublicId();
     while (await this.apps.findOne({ where: { publicId } })) {
       publicId = this.nextPublicId();
@@ -110,10 +120,16 @@ export class CoinsService {
       additionalNotes: dto.additionalNotes ?? null,
       catalogItemId: design.catalogItemId,
       designAuthorId: design.designAuthorId,
+      configuratorSessionId: dto.configuratorSessionId?.trim() || null,
+      orderSnapshotJson: orderSnapshot,
       status: 'submitted',
       crystalSent: false,
     });
     await this.apps.save(app);
+
+    if (dto.configuratorSessionId?.trim()) {
+      await this.configurator.lockSession(dto.configuratorSessionId.trim(), user.id);
+    }
 
     const freshUser = await this.usersService.findById(user.id);
     const email = dto.contactEmail ?? freshUser.email;

@@ -281,6 +281,11 @@ export default {
     aiPreviewEmpty: 'გენერირებული მოდელი აქ გამოჩნდება',
     aiAcknowledged: 'შეგიძლიათ გააგრძელოთ — AI გენერაცია ჩაირთვება API-ის დაკავშირების შემდეგ.',
     summaryAiDesign: 'AI დიზაინის აღწერა',
+    configuratorLinked:
+      'Smart Coin კონფიგურაცია მიბმულია: {{count}} დამტკიცებული პროდუქტი, {{used}} გ გამოყენებული {{capacity}} გ ტევადობიდან.',
+    fillCoinPrompt: 'შექმენით თქვენი MERGE Coin პროდუქტები AI-ით',
+    fillCoinHint:
+      'აირჩიეთ პროდუქტები, ატვირთეთ რეფერენსები, გენერირება 3D მოდელები და შეავსეთ მონეტა განაცხადამდე.',
   },
   status: {
     title: 'განაცხადის ტაიმლაინი', current: 'მიმდინარე', underReview: 'განხილვაში', header: 'განაცხადის სტატუსი',

@@ -33,6 +33,14 @@ export default {
       settings: 'SETTINGS',
       aiTraining: 'AI TRAINING',
       masterCatalog: 'MASTER CATALOG',
+      coinConfigurator: 'COIN CONFIGURATOR',
+    },
+    coinConfigurator: {
+      title: 'Smart Coin Configurator',
+      sub: 'Package weights, CAD review queue, verified weights',
+      packages: 'Coin package configs',
+      packagesHint: 'Adjust case vs product capacity split (not hard-coded). Total = package kg × 1000 g.',
+      cadQueue: 'CAD / production review queue',
     },
     aiTraining: {
       title: 'AI Training',

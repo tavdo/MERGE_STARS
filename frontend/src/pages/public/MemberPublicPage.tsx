@@ -164,6 +164,13 @@ export default function MemberPublicPage({ mode = 'member' }: Props) {
                     <p className="mp-desc">{brand.description}</p>
                   ) : null}
 
+                  <Link
+                    to={`/fill-coin?source=${encodeURIComponent(brand.brandLineId || brand.mergeId)}`}
+                    className="gold-btn mp-fill-coin-cta no-underline"
+                  >
+                    {t('configurator.fillCoinCta', { defaultValue: 'Fill your MERGE Coin' })}
+                  </Link>
+
                   {socials.length > 0 ? (
                     <nav className="mp-socials" aria-label={t('brandPublic.socialLinks', { defaultValue: 'Social links' })}>
                       {socials.map((s) => (

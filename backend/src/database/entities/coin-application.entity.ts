@@ -86,6 +86,13 @@ export class CoinApplication {
   @Column({ name: 'design_author_id', type: 'uuid', nullable: true })
   designAuthorId: string | null;
 
+  /** Smart Coin Configurator session linked to this application */
+  @Column({ name: 'configurator_session_id', type: 'uuid', nullable: true })
+  configuratorSessionId: string | null;
+
+  @Column({ name: 'order_snapshot_json', type: 'jsonb', nullable: true })
+  orderSnapshotJson: Record<string, unknown> | null;
+
   @OneToMany(() => Order, (o) => o.application)
   orders: Order[];
 
@@ -117,6 +124,7 @@ export function applicationView(app: CoinApplication, userName?: string) {
     statusNote: app.statusNote,
     catalogItemId: app.catalogItemId,
     designAuthorId: app.designAuthorId,
+    configuratorSessionId: app.configuratorSessionId,
     submittedAt: app.submittedAt.toISOString(),
     updatedAt: app.updatedAt.toISOString(),
   };
