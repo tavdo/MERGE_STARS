@@ -89,9 +89,7 @@ export default function MemberPublicPage({ mode = 'member' }: Props) {
   }
 
   const owner = brand?.owner
-  const personName = owner
-    ? `${owner.firstName} ${owner.lastName}`.trim()
-    : brand?.ownerName ?? ''
+  const personName = owner?.displayName ?? brand?.ownerName ?? ''
   const brandName = brand?.name?.trim() ?? ''
   const sameName =
     !!brandName && !!personName && brandName.toLowerCase() === personName.toLowerCase()

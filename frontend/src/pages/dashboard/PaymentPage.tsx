@@ -6,9 +6,8 @@ import DashboardLayout from '../../components/DashboardLayout'
 import { coinsApi } from '@/features/coins/api/coins.api'
 import { ordersApi } from '@/features/orders/api/orders.api'
 import { walletApi } from '@/features/wallet/api/wallet.api'
-import { financingPreview } from '@/shared/utils/coinPricing'
 
-type Method = 'full' | 'bank' | 'earnings'
+type Method = 'full' | 'earnings'
 
 const money = (n: number) =>
   n.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })
@@ -17,8 +16,7 @@ export default function PaymentPage() {
   const { t } = useTranslation()
   const navigate = useNavigate()
   const qc = useQueryClient()
-  const [method, setMethod] = useState<Method>('bank')
-  const [termMonths, setTermMonths] = useState(12)
+  const [method, setMethod] = useState<Method>('full')
 
   const { data: app, isLoading } = useQuery({
     queryKey: ['application-latest'],
@@ -45,7 +43,6 @@ export default function PaymentPage() {
   const walletActivated = wallet?.activated ?? false
   const canPayEarnings = earningsBalance >= coinValue && coinValue > 0
   const shortfall = Math.max(0, coinValue - earningsBalance)
-  const { downPayment, toFinance } = financingPreview(coinValue, termMonths)
 
   if (isLoading) {
     return (
@@ -119,13 +116,6 @@ export default function PaymentPage() {
               '#22c55e',
             )}
             {methodCard(
-              'bank',
-              t('payment.bankFinancing'),
-              t('payment.bankDesc'),
-              t('payment.notGuaranteed'),
-              '#f59e0b',
-            )}
-            {methodCard(
               'earnings',
               t('payment.payWithEarnings'),
               t('payment.payWithEarningsDesc', { balance: money(earningsBalance) }),
@@ -140,9 +130,7 @@ export default function PaymentPage() {
 
           <div className="gold-card" style={{ padding: '28px', borderRadius: '4px' }}>
             <p style={{ fontSize: '11px', fontWeight: 700, letterSpacing: '0.2em', color: '#c9a84c', marginBottom: '20px' }}>
-              {method === 'full' && t('payment.fullSummary')}
-              {method === 'bank' && t('payment.financingPreviewTitle')}
-              {method === 'earnings' && t('payment.earningsSummary')}
+              {method === 'full' ? t('payment.fullSummary') : t('payment.earningsSummary')}
             </p>
             {method === 'full' ? (
               <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
@@ -165,7 +153,7 @@ export default function PaymentPage() {
                   {createOrder.isPending ? '…' : t('payment.proceed')}
                 </button>
               </div>
-            ) : method === 'earnings' ? (
+            ) : (
               <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
                 {[
                   { label: t('payment.coinValue'), value: `$${coinValue.toLocaleString()}.00` },
@@ -218,45 +206,6 @@ export default function PaymentPage() {
                 <p style={{ fontSize: '10px', color: 'rgba(255,255,255,0.25)', textAlign: 'center', marginTop: '10px', lineHeight: 1.6 }}>
                   {canPayEarnings ? t('payment.earningsNote') : t('payment.earningsPendingNote')}
                 </p>
-              </div>
-            ) : (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                {[
-                  { label: t('payment.coinValue'), value: `$${coinValue.toLocaleString()}.00` },
-                  { label: t('payment.downPayment'), value: `$${downPayment.toFixed(2)}` },
-                  { label: t('payment.amountFinance'), value: `$${toFinance.toFixed(2)}` },
-                ].map((r) => (
-                  <div key={r.label} style={{ display: 'flex', justifyContent: 'space-between', padding: '10px 0', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
-                    <span style={{ fontSize: '12px', color: 'rgba(255,255,255,0.4)' }}>{r.label}</span>
-                    <span style={{ fontSize: '12px', fontWeight: 700, color: '#fff' }}>{r.value}</span>
-                  </div>
-                ))}
-                <p style={{ fontSize: '11px', color: 'rgba(255,255,255,0.3)', margin: '8px 0' }}>{t('payment.chooseTerm')}</p>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', margin: '4px 0 16px' }}>
-                  {[12, 24].map((months) => (
-                    <button
-                      key={months}
-                      type="button"
-                      className="gold-card"
-                      style={{ padding: '12px', textAlign: 'center', cursor: 'pointer', borderRadius: '4px', borderColor: termMonths === months ? '#c9a84c' : undefined }}
-                      onClick={() => setTermMonths(months)}
-                    >
-                      <p style={{ fontSize: '16px', fontWeight: 900, color: '#c9a84c' }}>{t('payment.months', { n: months })}</p>
-                      <p style={{ fontSize: '11px', color: 'rgba(255,255,255,0.5)', marginTop: '4px' }}>
-                        {t('payment.perMonth', { amount: (toFinance / months).toFixed(2) })}
-                      </p>
-                    </button>
-                  ))}
-                </div>
-                <button
-                  type="button"
-                  className="gold-btn w-full justify-center"
-                  disabled={createOrder.isPending}
-                  onClick={() => createOrder.mutate()}
-                >
-                  {createOrder.isPending ? '…' : t('payment.applyFinancing')}
-                </button>
-                <p style={{ fontSize: '10px', color: 'rgba(255,255,255,0.25)', textAlign: 'center', marginTop: '12px', lineHeight: 1.6 }}>{t('payment.crystalNote')}</p>
               </div>
             )}
           </div>

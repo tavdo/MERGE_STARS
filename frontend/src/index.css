@@ -10802,7 +10802,7 @@ textarea.gold-input {
 }
 
 .coin-config-page {
-  max-width: 1200px;
+  max-width: 1400px;
   margin: 0 auto;
   padding: 0 0 3rem;
 }
@@ -10829,9 +10829,160 @@ textarea.gold-input {
 
 .coin-config-layout {
   display: grid;
-  grid-template-columns: 280px 1fr;
+  grid-template-columns: 1fr;
   gap: 1.5rem;
   margin-top: 2rem;
+  position: relative;
+  z-index: 2;
+}
+
+.coin-config-main {
+  order: 1;
+  position: relative;
+  z-index: 2;
+  min-height: 280px;
+  padding: 1.25rem;
+  border: 1px solid rgba(201, 168, 76, 0.22);
+  border-radius: 12px;
+  background: rgba(6, 6, 6, 0.94);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+}
+
+.coin-config-side {
+  order: 2;
+}
+
+.coin-config-section-title {
+  margin: 0 0 1.25rem;
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: #fff;
+}
+
+.coin-config-status {
+  margin-top: 2rem;
+  padding: 1.25rem;
+  border-radius: 12px;
+  background: rgba(6, 6, 6, 0.9);
+  border: 1px solid rgba(201, 168, 76, 0.2);
+  color: rgba(255, 255, 255, 0.65);
+}
+
+.coin-config-status--error {
+  border-color: rgba(239, 68, 68, 0.35);
+}
+
+.coin-config-action-error {
+  margin: 0 0 1rem;
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  background: rgba(239, 68, 68, 0.12);
+  border: 1px solid rgba(239, 68, 68, 0.35);
+  color: #fca5a5;
+  font-size: 0.875rem;
+}
+
+.coin-config-hint {
+  margin: -0.5rem 0 1rem;
+  font-size: 0.8125rem;
+  color: rgba(255, 255, 255, 0.45);
+}
+
+.coin-config-steps {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 1.25rem 0 0;
+}
+
+.coin-config-step-pill {
+  padding: 0.45rem 1rem;
+  border-radius: 999px;
+  border: 1px solid rgba(201, 168, 76, 0.25);
+  background: rgba(0, 0, 0, 0.35);
+  color: rgba(255, 255, 255, 0.55);
+  font-size: 0.75rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.coin-config-step-pill--active {
+  border-color: #c9a84c;
+  color: #e8d4a0;
+  background: rgba(201, 168, 76, 0.12);
+}
+
+.coin-config-step-pill--locked {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.coin-config-hero-layout {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+  margin-top: 1.25rem;
+}
+
+.coin-config-hero-3d {
+  position: relative;
+  z-index: 2;
+}
+
+.coin-case-assembly3d-label {
+  margin: 0 0 0.5rem;
+  font-size: 0.6875rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #c9a84c;
+}
+
+.coin-case-assembly3d-canvas-wrap {
+  height: 420px;
+  border-radius: 14px;
+  border: 1px solid rgba(201, 168, 76, 0.3);
+  background: radial-gradient(ellipse at 50% 30%, rgba(40, 30, 15, 0.5), rgba(4, 4, 4, 0.95));
+  overflow: hidden;
+}
+
+.coin-case-assembly3d-hint {
+  margin: 0.5rem 0 0;
+  font-size: 0.6875rem;
+  color: rgba(255, 255, 255, 0.35);
+  text-align: center;
+}
+
+@media (min-width: 1100px) {
+  .coin-config-hero-layout {
+    grid-template-columns: 1fr 1fr;
+    align-items: start;
+  }
+
+  .coin-config-hero-3d {
+    position: sticky;
+    top: 1rem;
+  }
+
+  .coin-case-assembly3d-canvas-wrap {
+    height: min(72vh, 560px);
+  }
+}
+
+@media (min-width: 901px) {
+  .coin-config-layout {
+    grid-template-columns: 1fr 280px;
+    align-items: start;
+  }
+
+  .coin-config-main {
+    order: 1;
+  }
+
+  .coin-config-side {
+    order: 2;
+  }
 }
 
 .coin-config-calculator {
@@ -11150,4 +11301,138 @@ textarea.gold-input {
   height: 280px;
   border-radius: 12px;
   overflow: hidden;
+}
+
+/* MERGE Coin case — circular compartment layout */
+.coin-case-layout {
+  margin-top: 1.25rem;
+}
+
+.coin-case-layout--compact .coin-case-tray {
+  max-width: 100%;
+}
+
+.coin-case-layout-label {
+  margin: 0 0 0.75rem;
+  font-size: 0.6875rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgba(201, 168, 76, 0.85);
+}
+
+.coin-case-tray {
+  position: relative;
+  width: 100%;
+  max-width: 280px;
+  margin: 0 auto;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  border: 2px solid rgba(201, 168, 76, 0.45);
+  background:
+    radial-gradient(circle at 50% 45%, rgba(80, 55, 25, 0.35) 0%, rgba(12, 10, 8, 0.95) 55%),
+    linear-gradient(145deg, rgba(30, 22, 12, 0.9), rgba(8, 8, 8, 0.98));
+  box-shadow:
+    inset 0 0 40px rgba(0, 0, 0, 0.6),
+    0 8px 32px rgba(0, 0, 0, 0.45);
+  padding: 6%;
+}
+
+.coin-case-tray-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  border: 1px dashed rgba(201, 168, 76, 0.2);
+}
+
+.coin-case-center-coin {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  border: 2px solid rgba(201, 168, 76, 0.7);
+  background: radial-gradient(circle, rgba(201, 168, 76, 0.25), rgba(20, 16, 8, 0.9));
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  z-index: 2;
+  box-shadow: inset 0 0 12px rgba(201, 168, 76, 0.2);
+}
+
+.coin-case-center-coin span {
+  font-size: 0.55rem;
+  letter-spacing: 0.12em;
+  color: #c9a84c;
+  font-weight: 700;
+}
+
+.coin-case-center-coin em {
+  font-size: 0.45rem;
+  font-style: normal;
+  letter-spacing: 0.08em;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.coin-case-slot {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  border: 1px solid rgba(201, 168, 76, 0.35);
+  background: rgba(20, 14, 8, 0.88);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2px;
+  overflow: hidden;
+  z-index: 1;
+  box-shadow: inset 0 0 8px rgba(0, 0, 0, 0.5);
+}
+
+.coin-case-slot--oval {
+  border-radius: 45% / 50%;
+}
+
+.coin-case-slot--circle {
+  border-radius: 50%;
+}
+
+.coin-case-slot--narrow {
+  border-radius: 999px;
+}
+
+.coin-case-slot--rect {
+  border-radius: 6px;
+}
+
+.coin-case-slot--tier-2 {
+  border-style: dashed;
+  opacity: 0.92;
+}
+
+.coin-case-slot-title {
+  font-size: 0.45rem;
+  line-height: 1.2;
+  text-align: center;
+  color: rgba(255, 255, 255, 0.85);
+  font-weight: 600;
+  padding: 0 2px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+.coin-case-slot-weight {
+  font-size: 0.4rem;
+  color: rgba(201, 168, 76, 0.75);
+  margin-top: 1px;
+}
+
+.coin-case-layout-note {
+  margin: 0.5rem 0 0;
+  font-size: 0.6875rem;
+  color: rgba(255, 255, 255, 0.4);
+  text-align: center;
 }

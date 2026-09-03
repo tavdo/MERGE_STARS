@@ -40,6 +40,8 @@ export interface PublicBrandCollection {
 export interface PublicBrandOwner {
   firstName: string
   lastName: string
+  nickname?: string | null
+  displayName: string
   mergeId: string
   brandLineId: string | null
   founderId: string | null

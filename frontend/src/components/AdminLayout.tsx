@@ -29,7 +29,6 @@ const NAV_GROUPS: { titleKey: string; items: NavItem[] }[] = [
     titleKey: 'admin.nav.groupCompliance',
     items: [
       { icon: '📜', labelKey: 'admin.nav.auditLog', href: '/admin/audit' },
-      { icon: '🏛', labelKey: 'admin.nav.bankReview', href: '/admin/bank-review' },
       { icon: '🛡', labelKey: 'admin.nav.compliance', href: '/admin/compliance' },
     ],
   },

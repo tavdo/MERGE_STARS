@@ -61,7 +61,6 @@ import AdminSettingsPage from './pages/admin/AdminSettingsPage'
 import AdminAiTrainingPage from './pages/admin/AdminAiTrainingPage'
 import AdminMasterCatalogPage from './pages/admin/AdminMasterCatalogPage'
 import AdminCoinConfiguratorPage from './pages/admin/AdminCoinConfiguratorPage'
-import BankReviewPage from './pages/admin/BankReviewPage'
 import SecurityCenterPage from './pages/admin/SecurityCenterPage'
 import DataGovernancePage from './pages/admin/DataGovernancePage'
 import BusinessContinuityPage from './pages/admin/BusinessContinuityPage'
@@ -150,7 +149,6 @@ function AppRoutes() {
 
         {/* Admin zone — separate secured area at /admin/* */}
         <Route path="/admin/login" element={<AdminLoginPage />} />
-        <Route path="/bank-review" element={<Navigate to="/admin/bank-review" replace />} />
         <Route path="/audit" element={<Navigate to="/admin/audit" replace />} />
         <Route path="/security" element={<Navigate to="/admin/compliance?tab=security" replace />} />
         <Route path="/data-governance" element={<Navigate to="/admin/compliance?tab=data" replace />} />
@@ -169,7 +167,6 @@ function AppRoutes() {
           <Route path="/admin/ai-training" element={<AdminAiTrainingPage />} />
           <Route path="/admin/master-catalog" element={<AdminMasterCatalogPage />} />
           <Route path="/admin/coin-configurator" element={<AdminCoinConfiguratorPage />} />
-          <Route path="/admin/bank-review" element={<BankReviewPage />} />
           <Route path="/admin/compliance" element={<ComplianceHubPage />} />
           <Route path="/admin/audit-center" element={<AuditCenterPage />} />
           <Route path="/admin/security" element={<SecurityCenterPage />} />

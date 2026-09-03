@@ -60,6 +60,8 @@ const IMAGE_MIMES = new Set(['image/jpeg', 'image/jpg', 'image/png']);
 
 /** MERGE Design Studio — style defaults for photo/multi-view texturing */
 const STYLE_TEXTURE_PROMPTS: Record<string, string> = {
+  Case:
+    'EMPTY luxury circular coin storage case shell ONLY, open top hollow interior visible, absolutely NO products inside, NO watch NO sunglasses NO jewelry NO bottles NO pens, single isolated object: branded exterior with MERGE STARS logo on lid, silver filigree renaissance mosaic on case walls, dark empty velvet compartment molds with NO items, 30cm diameter 500g weight class, black studio background, hard-surface product design, watertight case geometry, clean topology',
   Watch:
     'Ultra-premium mechanical wristwatch, hard-surface industrial product design, clean symmetrical watch case, separate polished metal bezel, visibly separate transparent sapphire crystal with realistic thickness, separate dial, separate hour and minute hands, detailed side crown, four clean lugs, clearly visible bracelet-to-case mechanical connections and spring-bar areas, articulated metal bracelet with individually defined links and clasp, separate case back, realistic luxury watch proportions, precise mechanical construction, polished metal PBR surfaces, transparent glass, sharp clean edges, high-detail geometry, clean topology, segmented parts, no floating parts, no fused bracelet links, no melted geometry, no distorted dial, no duplicate parts, no random ornaments, no asymmetry',
   Jewelry:
@@ -198,9 +200,14 @@ export class MeshyService {
 
   async startGenerate(userId: string, prompt: string, style: string) {
     this.prune();
-    if (!prompt?.trim()) throw new BadRequestException('Prompt is required');
+    const effectivePrompt =
+      prompt?.trim() ||
+      STYLE_TEXTURE_PROMPTS[style.trim()]?.slice(0, 200) ||
+      style?.trim() ||
+      '';
+    if (!effectivePrompt) throw new BadRequestException('Prompt or style is required');
 
-    const fullPrompt = this.buildPrompt(prompt, style);
+    const fullPrompt = this.buildPrompt(effectivePrompt, style);
     const created = await this.meshyFetch<{ result: string }>(
       '/openapi/v2/text-to-3d',
       {
@@ -220,7 +227,7 @@ export class MeshyService {
     const job: LocalJob = {
       id: randomUUID(),
       userId,
-      prompt: prompt.trim(),
+      prompt: effectivePrompt.trim(),
       style: style.trim(),
       source: 'text',
       phase: 'preview',

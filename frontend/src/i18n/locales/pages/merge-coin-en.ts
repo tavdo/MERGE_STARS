@@ -273,6 +273,7 @@ export default {
   },
   collections: {
     meshyStyles: {
+      case: 'Case',
       jewelry: 'Jewelry',
       luxuryCoin: 'Luxury coin',
       watch: 'Watch',

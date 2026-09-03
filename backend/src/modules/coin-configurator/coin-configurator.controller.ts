@@ -21,6 +21,7 @@ import {
   CreateConfiguratorSessionDto,
   UpdateConfiguratorProductDto,
   UpdatePackageConfigDto,
+  SaveCaseDesignDto,
 } from './dto/configurator.dto';
 
 @Controller('coin-configurator')
@@ -94,6 +95,23 @@ export class CoinConfiguratorController {
     @Body() dto: ApproveConfiguratorProductDto,
   ) {
     return this.configurator.approveProduct(user.id, id, productId, dto);
+  }
+
+  @Post('sessions/:id/case-design')
+  @UseGuards(JwtAuthGuard)
+  @UsePipes(new ValidationPipe({ whitelist: true, transform: true }))
+  saveCaseDesign(
+    @CurrentUser() user: User,
+    @Param('id') id: string,
+    @Body() dto: SaveCaseDesignDto,
+  ) {
+    return this.configurator.saveCaseDesign(user.id, id, dto);
+  }
+
+  @Post('sessions/:id/case-design/approve')
+  @UseGuards(JwtAuthGuard)
+  approveCaseDesign(@CurrentUser() user: User, @Param('id') id: string) {
+    return this.configurator.approveCaseDesign(user.id, id);
   }
 
   @Post('sessions/:id/finalize')

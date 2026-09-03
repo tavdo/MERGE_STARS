@@ -118,6 +118,17 @@ export const configuratorApi = {
       verifiedWeightG,
     }),
 
+  saveCaseDesign: (
+    sessionId: string,
+    body: { prompt?: string; meshyJobId?: string; model3dUrl?: string },
+  ) =>
+    api.post<ApiResponse<ConfiguratorSession>>(`/coin-configurator/sessions/${sessionId}/case-design`, body),
+
+  approveCaseDesign: (sessionId: string) =>
+    api.post<ApiResponse<ConfiguratorSession>>(
+      `/coin-configurator/sessions/${sessionId}/case-design/approve`,
+    ),
+
   getPassport: (publicId: string) =>
     api.get<ApiResponse<Record<string, unknown>>>(`/coin-configurator/passports/${publicId}`),
 }

@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import Model3DViewer from '@/components/catalog/Model3DViewer'
+import CoinCaseAssembly3D from '@/components/coin-configurator/CoinCaseAssembly3D'
 import type { ConfiguratorSession } from '@/features/coin-configurator/api/configurator.api'
 
 type Props = {
@@ -59,18 +60,11 @@ export default function ConfiguratorApplySummaryPanel({ session }: Props) {
       </ul>
 
       {session.caseLayoutJson && (
-        <div className="configurator-apply-layout">
-          <h4>{t('configurator.autoFitCase', { defaultValue: 'Auto-fit case layout' })}</h4>
-          <p className="text-sm text-neutral-400">
-            {t('configurator.autoFitNote', {
-              defaultValue:
-                'Internal compartments are auto-arranged for your approved products. Production team validates before manufacturing.',
-            })}
-          </p>
-          <pre className="configurator-apply-layout-json">
-            {JSON.stringify(session.caseLayoutJson, null, 2)}
-          </pre>
-        </div>
+        <CoinCaseAssembly3D layout={session.caseLayoutJson} items={products.map((p) => ({
+          id: p.id,
+          title: p.title,
+          model3dUrl: p.model3dUrl,
+        }))} />
       )}
     </div>
   )

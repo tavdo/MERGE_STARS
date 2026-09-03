@@ -19,7 +19,7 @@ import {
   CatalogItem,
   catalogItemView,
 } from '../../database/entities/catalog-item.entity';
-import { User } from '../../database/entities/user.entity';
+import { User, userDisplayName } from '../../database/entities/user.entity';
 import {
   CreateCatalogItemDto,
   CreateCollectionDto,
@@ -104,7 +104,7 @@ export class CatalogService {
     }
     const publicKey = user.brandLineId || user.mergeId;
     return {
-      ownerName: `${user.firstName} ${user.lastName}`.trim() || 'Member',
+      ownerName: userDisplayName(user) || 'Member',
       brandLineId: user.brandLineId ?? null,
       mergeId: user.mergeId ?? null,
       brandName: profile?.name?.trim() || null,

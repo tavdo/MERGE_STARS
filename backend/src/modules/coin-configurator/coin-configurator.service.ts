@@ -20,13 +20,14 @@ import {
 import { CatalogCollection } from '../../database/entities/catalog-collection.entity';
 import { CatalogItem } from '../../database/entities/catalog-item.entity';
 import { ProductPassport, productPassportView } from '../../database/entities/product-passport.entity';
-import { CONFIGURATOR_PRODUCT_TYPES, productTypeMeta } from './configurator.constants';
+import { CONFIGURATOR_PRODUCT_TYPES, PRODUCT_SLOT_LAYOUT, productTypeMeta } from './configurator.constants';
 import {
   AddConfiguratorProductDto,
   ApproveConfiguratorProductDto,
   CreateConfiguratorSessionDto,
   UpdateConfiguratorProductDto,
   UpdatePackageConfigDto,
+  SaveCaseDesignDto,
 } from './dto/configurator.dto';
 
 function sessionView(
@@ -73,23 +74,103 @@ export class CoinConfiguratorService {
     return `MERGE-PP-${n}`;
   }
 
+  private getCaseDesign(session: CoinConfiguratorSession) {
+    const layout = session.caseLayoutJson as {
+      caseDesign?: { model3dUrl?: string; approved?: boolean; prompt?: string; meshyJobId?: string };
+    } | null;
+    return layout?.caseDesign ?? null;
+  }
+
+  private assertCaseReady(session: CoinConfiguratorSession) {
+    const cd = this.getCaseDesign(session);
+    if (!cd?.approved || !cd?.model3dUrl) {
+      throw new BadRequestException('Generate and approve your brand case (500 g) before adding products');
+    }
+  }
+
+  private mergeCaseLayout(
+    session: CoinConfiguratorSession,
+    products: CoinConfiguratorProduct[],
+    caseDesignPatch?: Record<string, unknown>,
+  ) {
+    const prev = (session.caseLayoutJson ?? {}) as Record<string, unknown>;
+    const layout = this.computeAutoFitLayout(products);
+    session.caseLayoutJson = {
+      ...layout,
+      caseDesign: caseDesignPatch ?? prev.caseDesign ?? this.getCaseDesign(session),
+    } as unknown as Record<string, unknown>;
+  }
+
+  async saveCaseDesign(userId: string, sessionId: string, dto: SaveCaseDesignDto) {
+    const session = await this.loadSessionForUser(sessionId, userId);
+    this.assertEditable(session);
+    const items = await this.loadProducts(sessionId);
+    const prev = this.getCaseDesign(session) ?? {};
+    const caseDesign = {
+      ...prev,
+      prompt: dto.prompt ?? prev.prompt ?? null,
+      meshyJobId: dto.meshyJobId ?? prev.meshyJobId ?? null,
+      model3dUrl: dto.model3dUrl ?? prev.model3dUrl ?? null,
+      approved: false,
+      weightG: session.caseWeightG,
+      updatedAt: new Date().toISOString(),
+    };
+    this.mergeCaseLayout(session, items, caseDesign);
+    await this.sessions.save(session);
+    return sessionView(session, items);
+  }
+
+  async approveCaseDesign(userId: string, sessionId: string) {
+    const session = await this.loadSessionForUser(sessionId, userId);
+    this.assertEditable(session);
+    const cd = this.getCaseDesign(session);
+    if (!cd?.model3dUrl) {
+      throw new BadRequestException('Generate your brand case 3D model first');
+    }
+    const items = await this.loadProducts(sessionId);
+    const caseDesign = { ...cd, approved: true, approvedAt: new Date().toISOString() };
+    this.mergeCaseLayout(session, items, caseDesign);
+    await this.sessions.save(session);
+    return sessionView(session, items);
+  }
+
   private computeAutoFitLayout(products: CoinConfiguratorProduct[]) {
     const inCoin = products.filter((p) =>
-      ['approved', 'cad_review', 'verified'].includes(p.status),
+      ['approved', 'cad_review', 'verified', 'generated'].includes(p.status),
     );
-    return {
-      version: 1,
-      algorithm: 'auto-fit-v1',
-      generatedAt: new Date().toISOString(),
-      compartments: inCoin.map((p, i) => ({
+    const typeCount: Record<string, number> = {};
+
+    const compartments = inCoin.map((p) => {
+      const base = PRODUCT_SLOT_LAYOUT[p.productType] ?? PRODUCT_SLOT_LAYOUT.custom;
+      const n = typeCount[p.productType] ?? 0;
+      typeCount[p.productType] = n + 1;
+      const angle = (n * 36 * Math.PI) / 180;
+      const driftX = n > 0 ? Math.cos(angle) * 4 : 0;
+      const driftY = n > 0 ? Math.sin(angle) * 4 : 0;
+
+      return {
         productId: p.id,
         title: p.title,
         productType: p.productType,
-        weightG: p.verifiedWeightG ?? p.estimatedWeightG ?? 0,
-        slotIndex: i,
-        gridRow: Math.floor(i / 2),
-        gridCol: i % 2,
-      })),
+        model3dUrl: p.model3dUrl,
+        weightG: p.verifiedWeightG ?? p.estimatedWeightG ?? productTypeMeta(p.productType).defaultWeightG,
+        shape: base.shape,
+        tier: base.tier,
+        xPct: Math.min(88, Math.max(8, base.x + driftX)),
+        yPct: Math.min(88, Math.max(8, base.y + driftY)),
+        wPct: base.w,
+        hPct: base.h,
+      };
+    });
+
+    return {
+      version: 2,
+      caseStyle: 'merge-coin-circular-v1',
+      diameterCm: 30,
+      tiers: 2,
+      material: 'Pure Silver Filament 999.9',
+      centerMergeCoin: { xPct: 50, yPct: 48, rPct: 11 },
+      compartments,
     };
   }
 
@@ -236,6 +317,7 @@ export class CoinConfiguratorService {
   async addProduct(userId: string, sessionId: string, dto: AddConfiguratorProductDto) {
     const session = await this.loadSessionForUser(sessionId, userId);
     this.assertEditable(session);
+    this.assertCaseReady(session);
     const meta = productTypeMeta(dto.productType);
     const count = await this.products.count({ where: { sessionId } });
     const product = this.products.create({
@@ -269,6 +351,10 @@ export class CoinConfiguratorService {
     if (dto.status !== undefined) product.status = dto.status as CoinConfiguratorProduct['status'];
     await this.products.save(product);
     const items = await this.loadProducts(sessionId);
+    if (dto.model3dUrl || dto.status === 'generated') {
+      this.mergeCaseLayout(session, items);
+      await this.sessions.save(session);
+    }
     return sessionView(session, items);
   }
 
@@ -311,6 +397,8 @@ export class CoinConfiguratorService {
     }
 
     const items = await this.recalcSession(session);
+    this.mergeCaseLayout(session, items);
+    await this.sessions.save(session);
     return sessionView(session, items);
   }
 
@@ -356,7 +444,7 @@ export class CoinConfiguratorService {
       throw new BadRequestException('Approve at least one product before finalizing');
     }
 
-    session.caseLayoutJson = this.computeAutoFitLayout(items) as unknown as Record<string, unknown>;
+    this.mergeCaseLayout(session, items);
     const snapshot = sessionView(session, items);
     session.status = 'finalized';
     session.finalizedAt = new Date();

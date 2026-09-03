@@ -273,6 +273,7 @@ export default {
   },
   collections: {
     meshyStyles: {
+      case: 'კეისი',
       jewelry: 'სამკაული',
       luxuryCoin: 'ლუქს მონეტა',
       watch: 'საათი',

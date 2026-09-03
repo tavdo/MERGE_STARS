@@ -21,6 +21,13 @@ export class UpdateUserDto {
   lastName?: string;
 
   @IsOptional()
+  @ValidateIf((_, v) => v !== null && v !== undefined && String(v).trim() !== '')
+  @IsString()
+  @MinLength(2)
+  @MaxLength(40)
+  nickname?: string | null;
+
+  @IsOptional()
   @IsString()
   @MaxLength(30)
   phone?: string;

@@ -60,6 +60,23 @@ export class UpdateConfiguratorProductDto {
   status?: string;
 }
 
+export class SaveCaseDesignDto {
+  @IsOptional()
+  @IsString()
+  @MaxLength(2000)
+  prompt?: string;
+
+  @IsOptional()
+  @IsString()
+  @MaxLength(64)
+  meshyJobId?: string;
+
+  @IsOptional()
+  @IsString()
+  @MaxLength(512)
+  model3dUrl?: string;
+}
+
 export class ApproveConfiguratorProductDto {
   @IsOptional()
   @IsIn(['private', 'catalog'])

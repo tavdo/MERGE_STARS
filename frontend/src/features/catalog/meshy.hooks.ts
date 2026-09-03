@@ -30,6 +30,8 @@ export interface MeshyGenerateResult {
 
 /** Studio defaults — fill into photo-mode prompt (user can edit). */
 export const MESHY_STYLE_PROMPTS: Record<string, string> = {
+  Case:
+    'EMPTY luxury circular coin storage case shell ONLY, open top hollow interior visible, absolutely NO products inside, NO watch NO sunglasses NO jewelry NO bottles NO pens, single isolated object: branded exterior with MERGE STARS logo on lid, silver filigree renaissance mosaic on case walls, dark empty velvet compartment molds with NO items, 30cm diameter 500g weight class, black studio background, hard-surface product design, watertight case geometry, clean topology',
   Watch:
     'Ultra-premium mechanical wristwatch, hard-surface industrial product design, clean symmetrical watch case, separate polished metal bezel, visibly separate transparent sapphire crystal with realistic thickness, separate dial, separate hour and minute hands, detailed side crown, four clean lugs, clearly visible bracelet-to-case mechanical connections and spring-bar areas, articulated metal bracelet with individually defined links and clasp, separate case back, realistic luxury watch proportions, precise mechanical construction, polished metal PBR surfaces, transparent glass, sharp clean edges, high-detail geometry, clean topology, segmented parts, no floating parts, no fused bracelet links, no melted geometry, no distorted dial, no duplicate parts, no random ornaments, no asymmetry',
   Jewelry:
@@ -49,6 +51,35 @@ const apiBase = (
 ).replace(/\/$/, '')
 
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms))
+
+export function extractApiError(err: unknown): string {
+  const ax = err as {
+    response?: { data?: { error?: { message?: string }; message?: string | string[] } }
+    message?: string
+  }
+  const data = ax.response?.data
+  if (data?.error?.message) return data.error.message
+  if (Array.isArray(data?.message)) return data.message.join(', ')
+  if (typeof data?.message === 'string') return data.message
+  if (err instanceof Error) return err.message
+  return 'Request failed'
+}
+
+/** Store relative meshy path in DB (varchar 512). */
+export function modelUrlForSave(jobId?: string, previewUrl?: string | null): string | undefined {
+  if (jobId) return `/api/catalog/meshy/files/${jobId}`
+  if (!previewUrl) return undefined
+  const match = previewUrl.match(/\/api\/catalog\/meshy\/files\/[^/?#]+/)
+  if (match) return match[0]
+  if (previewUrl.length <= 512) return previewUrl
+  return previewUrl.slice(0, 512)
+}
+
+function effectiveMeshyPrompt(prompt: string, style: string): string {
+  const trimmed = prompt.trim()
+  if (trimmed) return trimmed
+  return MESHY_STYLE_PROMPTS[style] || style.trim() || 'Luxury MERGE STARS product'
+}
 
 /** Turn `/api/catalog/meshy/files/...` into a loadable absolute/relative URL for Three.js */
 export function resolveMeshyAssetUrl(path: string | null | undefined): string | null {
@@ -122,14 +153,15 @@ export async function generateMeshyModel(
   req: MeshyGenerateRequest,
   onProgress?: (progress: number) => void,
 ): Promise<MeshyGenerateResult> {
+  const prompt = effectiveMeshyPrompt(req.prompt, req.style)
   const started = await api.post<ApiResponse<MeshyJob>>('/catalog/meshy/generate', {
-    prompt: req.prompt,
+    prompt,
     style: req.style,
     collectionId: req.collectionId,
   })
   const jobId = started.data.data.jobId
   onProgress?.(started.data.data.progress ?? 5)
-  return pollMeshyJob(jobId, { prompt: req.prompt, style: req.style }, onProgress)
+  return pollMeshyJob(jobId, { prompt, style: req.style }, onProgress)
 }
 
 export async function generateMeshyFromImages(

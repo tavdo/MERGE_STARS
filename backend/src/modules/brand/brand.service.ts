@@ -18,7 +18,7 @@ import {
   catalogCollectionView,
 } from '../../database/entities/catalog-collection.entity';
 import { catalogItemView } from '../../database/entities/catalog-item.entity';
-import { User } from '../../database/entities/user.entity';
+import { User, userDisplayName } from '../../database/entities/user.entity';
 import { UpdateBrandLineDto } from './dto/brand.dto';
 import { socialLinksPublicView } from '../../common/social-links';
 import { CatalogService } from '../catalog/catalog.service';
@@ -248,7 +248,7 @@ export class BrandService {
         profileViews: row.profileViews,
         activeProducts,
         collectionCount: publicCollections.length,
-        ownerName: `${user.firstName} ${user.lastName}`.trim(),
+        ownerName: userDisplayName(user),
         hasAvatar: !!user.avatarUrl,
         avatarUrl: user.avatarUrl
           ? `/api/users/public/${encodeURIComponent(user.mergeId)}/avatar`
@@ -335,10 +335,12 @@ export class BrandService {
       profileViews: row.profileViews,
       qrScans: row.qrScans,
       activeProducts,
-      ownerName: `${user.firstName} ${user.lastName}`.trim(),
+      ownerName: userDisplayName(user),
       owner: {
         firstName: user.firstName,
         lastName: user.lastName,
+        nickname: user.nickname,
+        displayName: userDisplayName(user),
         mergeId: user.mergeId,
         brandLineId: user.brandLineId,
         founderId: user.founderId,

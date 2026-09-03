@@ -184,10 +184,10 @@ export class UpdateMasterProductDto {
 }
 
 export class MeshyGenerateDto {
+  @IsOptional()
   @IsString()
-  @IsNotEmpty()
   @MaxLength(600)
-  prompt: string;
+  prompt?: string;
 
   @IsOptional()
   @IsString()

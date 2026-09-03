@@ -273,6 +273,7 @@ export default {
   },
   collections: {
     meshyStyles: {
+      case: 'Kasa',
       jewelry: 'Mücevher',
       luxuryCoin: 'Lüks coin',
       watch: 'Saat',

@@ -117,6 +117,7 @@ export default function ProfilePage() {
 
   const [firstName, setFirstName] = useState('')
   const [lastName, setLastName] = useState('')
+  const [nickname, setNickname] = useState('')
   const [phone, setPhone] = useState('')
   const [saved, setSaved] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -158,6 +159,7 @@ export default function ProfilePage() {
     if (!profile) return
     setFirstName(profile.firstName)
     setLastName(profile.lastName)
+    setNickname(profile.nickname ?? '')
     setPhone(profile.phone ?? '')
     const next = emptySocialForm()
     const links = (profile.socialLinks ?? {}) as SocialLinks
@@ -219,6 +221,7 @@ export default function ProfilePage() {
       usersApi.updateMe({
         firstName: firstName.trim(),
         lastName: lastName.trim(),
+        nickname: nickname.trim() || null,
         phone: phone.trim(),
       }),
     onSuccess: ({ data }) => {
@@ -389,6 +392,26 @@ export default function ProfilePage() {
                         required
                       />
                     </div>
+                  </div>
+                  <div className="profile-field">
+                    <label htmlFor="profile-nickname">
+                      {t('pages.profile.nickname', { defaultValue: 'Nickname' })}
+                    </label>
+                    <input
+                      id="profile-nickname"
+                      value={nickname}
+                      onChange={(e) => setNickname(e.target.value)}
+                      placeholder={t('pages.profile.nicknamePlaceholder', {
+                        defaultValue: 'Shown in Brand House instead of your full name',
+                      })}
+                      maxLength={40}
+                    />
+                    <p className="profile-muted" style={{ marginTop: '0.35rem', fontSize: '0.75rem' }}>
+                      {t('pages.profile.nicknameHint', {
+                        defaultValue:
+                          'Optional public name for Brand Room and catalogs. Leave empty to use first and last name.',
+                      })}
+                    </p>
                   </div>
                   <div className="profile-field">
                     <label htmlFor="profile-phone">{t('application.phone')}</label>

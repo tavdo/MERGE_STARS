@@ -33,6 +33,10 @@ export class User {
   @Column({ name: 'last_name' })
   lastName: string;
 
+  /** Public display name in Brand House (shown instead of first + last name when set). */
+  @Column({ type: 'varchar', length: 40, nullable: true })
+  nickname: string | null;
+
   @Column({ name: 'personal_id', type: 'varchar', nullable: true, unique: true })
   personalId: string | null;
 
@@ -84,6 +88,14 @@ export class User {
   updatedAt: Date;
 }
 
+export function userDisplayName(
+  user: Pick<User, 'nickname' | 'firstName' | 'lastName'>,
+): string {
+  const nick = user.nickname?.trim();
+  if (nick) return nick;
+  return `${user.firstName} ${user.lastName}`.trim();
+}
+
 export function userPublicView(user: User) {
   return {
     id: user.id,
@@ -91,6 +103,8 @@ export function userPublicView(user: User) {
     phone: user.phone,
     firstName: user.firstName,
     lastName: user.lastName,
+    nickname: user.nickname,
+    displayName: userDisplayName(user),
     mergeId: user.mergeId,
     founderId: user.founderId,
     brandLineId: user.brandLineId,

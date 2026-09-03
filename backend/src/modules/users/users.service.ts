@@ -12,7 +12,7 @@ import * as bcrypt from 'bcrypt';
 import { mkdir, writeFile } from 'fs/promises';
 import { join } from 'path';
 import { randomInt, randomUUID } from 'crypto';
-import { User, userPublicView } from '../../database/entities/user.entity';
+import { User, userDisplayName, userPublicView } from '../../database/entities/user.entity';
 import { EmailVerificationCode } from '../../database/entities/email-verification-code.entity';
 import { RefreshToken } from '../../database/entities/refresh-token.entity';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -72,6 +72,10 @@ export class UsersService {
 
     if (dto.firstName !== undefined) user.firstName = dto.firstName.trim();
     if (dto.lastName !== undefined) user.lastName = dto.lastName.trim();
+    if (dto.nickname !== undefined) {
+      const nick = dto.nickname === null ? '' : String(dto.nickname).trim();
+      user.nickname = nick.length ? nick : null;
+    }
     if (dto.phone !== undefined) {
       const phone = dto.phone.trim() || null;
       if (phone) {
@@ -150,7 +154,8 @@ export class UsersService {
     return {
       firstName: user.firstName,
       lastName: user.lastName,
-      displayName: `${user.firstName} ${user.lastName}`.trim(),
+      nickname: user.nickname,
+      displayName: userDisplayName(user),
       mergeId: user.mergeId,
       brandLineId: user.brandLineId,
       founderId: user.founderId,

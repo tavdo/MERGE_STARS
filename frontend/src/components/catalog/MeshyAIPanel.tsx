@@ -3,11 +3,13 @@ import { useTranslation } from 'react-i18next'
 import {
   generateMeshyFromImages,
   generateMeshyModel,
+  extractApiError,
   MESHY_STYLE_PROMPTS,
   triggerGlbDownload,
 } from '@/features/catalog/meshy.hooks'
 
 const STYLES = [
+  { value: 'Case', labelKey: 'case' },
   { value: 'Jewelry', labelKey: 'jewelry' },
   { value: 'Luxury coin', labelKey: 'luxuryCoin' },
   { value: 'Watch', labelKey: 'watch' },
@@ -15,6 +17,8 @@ const STYLES = [
   { value: 'Ring', labelKey: 'ring' },
   { value: 'Pendant', labelKey: 'pendant' },
 ] as const
+
+export type MeshyStyleOption = { value: string; labelKey: string }
 
 const VIEW_HINTS = [
   { key: 'front', label: 'Front 3/4' },
@@ -33,6 +37,10 @@ export type MeshyGenerateResult = {
 type Props = {
   onGenerate?: (payload: MeshyGenerateResult) => void | Promise<void>
   resultUrl?: string | null
+  defaultStyle?: string
+  defaultPrompt?: string
+  /** Override style chips (e.g. brand-case step shows only Case). */
+  styles?: readonly MeshyStyleOption[]
 }
 
 type Mode = 'text' | 'image'
@@ -52,11 +60,18 @@ function isAllowedImage(file: File) {
   )
 }
 
-export default function MeshyAIPanel({ onGenerate, resultUrl: externalResult }: Props) {
+export default function MeshyAIPanel({
+  onGenerate,
+  resultUrl: externalResult,
+  defaultStyle,
+  defaultPrompt,
+  styles: stylesProp,
+}: Props) {
   const { t } = useTranslation()
+  const styleOptions = stylesProp ?? STYLES
   const [mode, setMode] = useState<Mode>('text')
-  const [prompt, setPrompt] = useState('')
-  const [style, setStyle] = useState<string>(STYLES[0].value)
+  const [prompt, setPrompt] = useState(defaultPrompt ?? '')
+  const [style, setStyle] = useState<string>(defaultStyle ?? styleOptions[0]?.value ?? 'Case')
   const [photos, setPhotos] = useState<PhotoSlot[]>([])
   const [status, setStatus] = useState<'idle' | 'generating' | 'done' | 'error'>('idle')
   const [progress, setProgress] = useState(0)
@@ -66,6 +81,14 @@ export default function MeshyAIPanel({ onGenerate, resultUrl: externalResult }: 
 
   const resultUrl = externalResult ?? localResult
   const isReady = Boolean(resultUrl) && status !== 'generating' && status !== 'error'
+
+  useEffect(() => {
+    if (defaultStyle) setStyle(defaultStyle)
+  }, [defaultStyle])
+
+  useEffect(() => {
+    if (defaultPrompt) setPrompt((p) => p.trim() || defaultPrompt)
+  }, [defaultPrompt])
 
   useEffect(() => {
     if (externalResult && status === 'idle') {
@@ -147,7 +170,9 @@ export default function MeshyAIPanel({ onGenerate, resultUrl: externalResult }: 
   }
 
   const canGenerate =
-    mode === 'text' ? Boolean(prompt.trim()) : photos.length >= 1
+    mode === 'text'
+      ? Boolean(prompt.trim() || MESHY_STYLE_PROMPTS[style] || style.trim())
+      : photos.length >= 1
 
   const handleGenerate = async () => {
     if (!canGenerate) return
@@ -176,12 +201,21 @@ export default function MeshyAIPanel({ onGenerate, resultUrl: externalResult }: 
           `merge-stars-${(res.jobId || 'model').slice(0, 8)}.glb`,
         )
       }
-      await onGenerate?.(res)
+      try {
+        await onGenerate?.(res)
+      } catch (saveErr) {
+        setErrorMsg(
+          t('configurator.saveAfterGenerateFailed', {
+            defaultValue: '3D model generated but could not save: {{msg}}',
+            msg: extractApiError(saveErr),
+          }),
+        )
+      }
       setStatus('done')
       setProgress(100)
     } catch (err) {
       setStatus('error')
-      setErrorMsg(err instanceof Error ? err.message : null)
+      setErrorMsg(extractApiError(err))
     }
   }
 
@@ -366,7 +400,7 @@ export default function MeshyAIPanel({ onGenerate, resultUrl: externalResult }: 
         {t('collections.meshyStyle', { defaultValue: 'Style' })}
       </p>
       <div className="catalog-meshy-chips">
-        {STYLES.map((s) => (
+        {styleOptions.map((s) => (
           <button
             key={s.value}
             type="button"

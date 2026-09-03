@@ -23,6 +23,8 @@ export interface UserProfile {
   phone: string | null
   firstName: string
   lastName: string
+  nickname?: string | null
+  displayName?: string
   mergeId: string
   founderId: string | null
   brandLineId: string | null
@@ -37,6 +39,7 @@ export interface UserProfile {
 export interface UpdateProfilePayload {
   firstName?: string
   lastName?: string
+  nickname?: string | null
   phone?: string
   socialLinks?: Partial<Record<SocialLinkKey, string | null>>
 }

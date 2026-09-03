@@ -11,14 +11,14 @@ import { configuratorApi } from '@/features/coin-configurator/api/configurator.a
 import { catalogApi } from '@/features/catalog/api/catalog.api'
 import { useLiveMetalPrices } from '@/features/coins/hooks/useLiveMetalPrice'
 import { useAuthStore } from '@/features/auth/store/auth.store'
-import { estimateCoinValue, financingPreview, metalForCoinIndex } from '@/shared/utils/coinPricing'
+import { estimateCoinValue, metalForCoinIndex } from '@/shared/utils/coinPricing'
 import { DEFAULT_FINENESS_PER_MILLE, formatMetalFineness } from '@/shared/utils/metalPurity'
 import coinRender from '@/assets/merge_coin_3d_render.png'
 
 type Step = 1 | 2 | 3 | 4 | 5
 
 const TOTAL_STEPS = 5
-const FINANCING_KEYS = ['full', 'bank12', 'bank24'] as const
+const FINANCING_KEYS = ['full'] as const
 
 export default function ApplicationPage() {
   const { t, i18n } = useTranslation()
@@ -30,12 +30,6 @@ export default function ApplicationPage() {
   const coinTypes = t('application.coinTypes', { returnObjects: true }) as string[]
   const stepLabels = t('application.steps', { returnObjects: true }) as string[]
   const stepGuide = t('application.guides', { returnObjects: true }) as { title: string; blurb: string }[]
-  const financingOptions = [
-    t('application.fullPaymentOpt'),
-    t('application.bank12'),
-    t('application.bank24'),
-  ]
-
   const [step, setStep] = useState<Step>(1)
   const [coinIdx, setCoinIdx] = useState(0)
   const [coinType, setCoinType] = useState(coinTypes[0] ?? '')
@@ -48,7 +42,6 @@ export default function ApplicationPage() {
   const [phoneCode, setPhoneCode] = useState('+995')
   const [phone, setPhone] = useState('')
   const [email, setEmail] = useState('')
-  const [financingIdx, setFinancingIdx] = useState(1)
   const [deliveryAddress, setDeliveryAddress] = useState('')
   const [additionalNotes, setAdditionalNotes] = useState('')
   const [confirmed, setConfirmed] = useState(false)
@@ -103,9 +96,6 @@ export default function ApplicationPage() {
     [coinIdx, quantity, metals],
   )
 
-  const termMonths = financingIdx === 0 ? 0 : financingIdx === 1 ? 12 : 24
-  const { downPayment, toFinance, monthly } = financingPreview(coinValue * quantity, termMonths || 12)
-
   const designNotes = useMemo(() => notes.trim() || undefined, [notes])
 
   const designSummary = useMemo(() => {
@@ -137,8 +127,7 @@ export default function ApplicationPage() {
         personalId: personalId.trim() || undefined,
         phone: phone.trim() ? `${phoneCode} ${phone.trim()}` : undefined,
         contactEmail: email.trim() || undefined,
-        financingPreference: FINANCING_KEYS[financingIdx],
-        financingTermMonths: termMonths || undefined,
+        financingPreference: FINANCING_KEYS[0],
         deliveryAddress: deliveryAddress.trim() || undefined,
         additionalNotes: additionalNotes.trim() || undefined,
         catalogItemId: catalogItemId || undefined,
@@ -158,12 +147,7 @@ export default function ApplicationPage() {
 
   const canContinue = step !== 2 || !!configuratorSessionId || !!catalogItemId
 
-  const summaryFinancing =
-    financingIdx === 0
-      ? t('application.fullPaymentOpt')
-      : financingIdx === 1
-        ? t('application.bankFinancing12')
-        : t('application.bankFinancing24', { defaultValue: t('application.bank24') })
+  const summaryFinancing = t('application.fullPaymentOpt')
 
   return (
     <DashboardLayout titleKey="application">
@@ -415,23 +399,6 @@ export default function ApplicationPage() {
               {step === 4 && (
                 <div className="flex flex-col gap-7 sm:gap-8">
                   <div>
-                    <label className="apply-label" htmlFor="apply-fin">
-                      {t('application.financingPref')}
-                    </label>
-                    <select
-                      id="apply-fin"
-                      className="apply-field"
-                      value={financingIdx}
-                      onChange={(e) => setFinancingIdx(Number(e.target.value))}
-                    >
-                      {financingOptions.map((opt, i) => (
-                        <option key={opt} value={i}>
-                          {opt}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                  <div>
                     <label className="apply-label" htmlFor="apply-address">
                       {t('application.deliveryAddress')}
                     </label>
@@ -544,18 +511,10 @@ export default function ApplicationPage() {
                 width={160}
                 height={160}
               />
-              <p className="dash-label mb-5">{t('application.financingPreview')}</p>
+              <p className="dash-label mb-5">{t('application.orderPreview', { defaultValue: 'Order preview' })}</p>
               {[
                 { label: t('application.coinValue'), value: `$${(coinValue * quantity).toLocaleString()}.00` },
-                { label: t('application.downPayment20'), value: `$${downPayment.toFixed(2)}` },
-                { label: t('application.amountFinance'), value: `$${toFinance.toFixed(2)}` },
-                {
-                  label: t('application.financingTerm'),
-                  value: termMonths ? t('application.term12', { defaultValue: `${termMonths} months` }) : t('application.fullPaymentOpt'),
-                },
-                ...(financingIdx > 0
-                  ? [{ label: t('application.estMonthly'), value: `$${monthly.toFixed(2)}` }]
-                  : []),
+                { label: t('application.summaryFinancing'), value: summaryFinancing },
               ].map((r) => (
                 <div key={r.label} className="preview-row">
                   <span className="preview-muted">{r.label}</span>
