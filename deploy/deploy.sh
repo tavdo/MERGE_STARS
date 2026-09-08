@@ -60,6 +60,11 @@ export NODE_OPTIONS="${NODE_OPTIONS:---max-old-space-size=2048}"
 
 echo "==> Deploy MERGE STARS from $REPO_ROOT"
 
+# Remove leftover untracked source from other branches (can break nest build)
+if [ -d "$REPO_ROOT/.git" ]; then
+  git -C "$REPO_ROOT" clean -fd -e .env -e uploads -e backend/uploads -e frontend/uploads || true
+fi
+
 # nginx + systemd on first deploy (no-op if already configured)
 bash "$SCRIPT_DIR/bootstrap.sh"
 
