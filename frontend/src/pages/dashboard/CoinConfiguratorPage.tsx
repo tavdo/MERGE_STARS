@@ -6,12 +6,12 @@ import DashboardLayout from '@/components/DashboardLayout'
 import MeshyAIPanel from '@/components/catalog/MeshyAIPanel'
 import Model3DViewer from '@/components/catalog/Model3DViewer'
 import CoinCaseAssembly3D, { parseCaseDesign } from '@/components/coin-configurator/CoinCaseAssembly3D'
-import { MESHY_STYLE_PROMPTS, modelUrlForSave } from '@/features/catalog/meshy.hooks'
+import { modelUrlForSave } from '@/features/catalog/meshy.hooks'
 import {
   configuratorApi,
   type ConfiguratorProduct,
 } from '@/features/coin-configurator/api/configurator.api'
-import { BRAND_CASE_MESHY_STYLE, BRAND_CASE_PROMPT, BRAND_CASE_STYLE_OPTIONS, CONFIGURATOR_PRODUCT_TYPES_FALLBACK } from '@/features/coin-configurator/constants'
+import { BRAND_CASE_MESHY_STYLE, BRAND_CASE_STYLE_OPTIONS, CONFIGURATOR_PRODUCT_TYPES_FALLBACK } from '@/features/coin-configurator/constants'
 
 type Step = 'case' | 'pick' | 'studio' | 'review'
 
@@ -22,6 +22,13 @@ function sessionQueryKey(
   selectedPackageId: string | null,
 ) {
   return ['configurator-session', sessionParam || 'active', initialKg, sourceBrand, selectedPackageId] as const
+}
+
+function localizedProductLabel(
+  t: (key: string, opts?: { defaultValue?: string }) => string,
+  pt: { key: string; label: string },
+) {
+  return t(`configurator.productTypes.${pt.key}`, { defaultValue: pt.label })
 }
 
 export default function CoinConfiguratorPage() {
@@ -265,7 +272,12 @@ export default function CoinConfiguratorPage() {
                 >
                   {packageConfigs.map((p) => (
                     <option key={p.id} value={p.id}>
-                      {p.label} — {p.productCapacityG} g products / {p.caseWeightG} g case
+                      {t('configurator.packageOption', {
+                        defaultValue: '{{label}} — {{productG}} g products / {{caseG}} g case',
+                        label: p.label,
+                        productG: p.productCapacityG,
+                        caseG: p.caseWeightG,
+                      })}
                     </option>
                   ))}
                 </select>
@@ -285,7 +297,7 @@ export default function CoinConfiguratorPage() {
           </div>
         ) : (
           <>
-            <nav className="coin-config-steps" aria-label="Configurator steps">
+            <nav className="coin-config-steps" aria-label={t('configurator.stepsAriaLabel', { defaultValue: 'Configurator steps' })}>
               {(
                 [
                   ['case', t('configurator.stepCase', { defaultValue: '1. Brand case' })],
@@ -335,7 +347,10 @@ export default function CoinConfiguratorPage() {
                   <MeshyAIPanel
                     defaultStyle={BRAND_CASE_MESHY_STYLE}
                     styles={BRAND_CASE_STYLE_OPTIONS}
-                    defaultPrompt={BRAND_CASE_PROMPT}
+                    promptPlaceholder={t('configurator.casePromptPlaceholder', {
+                      defaultValue:
+                        'Describe your empty luxury case — e.g. circular MERGE STARS branded shell, silver filigree, velvet interior molds, no products inside.',
+                    })}
                     resultUrl={caseDesign?.model3dUrl ?? null}
                     onGenerate={async (res) => {
                       await saveCaseDesign.mutateAsync({
@@ -387,11 +402,11 @@ export default function CoinConfiguratorPage() {
                         disabled={addProduct.isPending || session.status !== 'draft'}
                         onClick={() => addProduct.mutate(pt.key)}
                       >
-                        <span className="coin-config-product-label">{pt.label}</span>
+                        <span className="coin-config-product-label">{localizedProductLabel(t, pt)}</span>
                         <span className="coin-config-product-cta">
                           {t('configurator.generateMy', {
                             defaultValue: 'Generate my {{product}}',
-                            product: pt.label,
+                            product: localizedProductLabel(t, pt),
                           })}
                         </span>
                         <em>~{pt.defaultWeightG} g</em>
@@ -565,7 +580,6 @@ function ConfiguratorStudio({
   const meshyStyle =
     CONFIGURATOR_PRODUCT_TYPES_FALLBACK.find((p) => p.key === product.productType)?.meshyStyle ??
     'Jewelry'
-  const stylePrompt = MESHY_STYLE_PROMPTS[meshyStyle] ?? ''
 
   return (
     <div className="coin-config-studio">
@@ -579,7 +593,6 @@ function ConfiguratorStudio({
       <div className="coin-config-studio-grid">
         <MeshyAIPanel
           defaultStyle={meshyStyle}
-          defaultPrompt={stylePrompt}
           resultUrl={product.model3dUrl}
           onGenerate={async (res) => {
             onGenerated({

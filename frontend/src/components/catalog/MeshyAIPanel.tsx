@@ -21,10 +21,10 @@ const STYLES = [
 export type MeshyStyleOption = { value: string; labelKey: string }
 
 const VIEW_HINTS = [
-  { key: 'front', label: 'Front 3/4' },
-  { key: 'back', label: 'Back 3/4' },
-  { key: 'left', label: 'Left' },
-  { key: 'right', label: 'Right' },
+  { key: 'front', labelKey: 'collections.meshyViewFront' },
+  { key: 'back', labelKey: 'collections.meshyViewBack' },
+  { key: 'left', labelKey: 'collections.meshyViewLeft' },
+  { key: 'right', labelKey: 'collections.meshyViewRight' },
 ] as const
 
 export type MeshyGenerateResult = {
@@ -39,6 +39,8 @@ type Props = {
   resultUrl?: string | null
   defaultStyle?: string
   defaultPrompt?: string
+  /** User-facing placeholder; avoids pre-filling English API prompts in the textarea. */
+  promptPlaceholder?: string
   /** Override style chips (e.g. brand-case step shows only Case). */
   styles?: readonly MeshyStyleOption[]
 }
@@ -65,6 +67,7 @@ export default function MeshyAIPanel({
   resultUrl: externalResult,
   defaultStyle,
   defaultPrompt,
+  promptPlaceholder,
   styles: stylesProp,
 }: Props) {
   const { t } = useTranslation()
@@ -294,13 +297,24 @@ export default function MeshyAIPanel({
                   {photo ? (
                     <>
                       <img src={photo.preview} alt="" />
-                      <span className="catalog-meshy-slot-label">{hint.label}</span>
+                      <span className="catalog-meshy-slot-label">
+                        {t(hint.labelKey, {
+                          defaultValue:
+                            hint.key === 'front'
+                              ? 'Front 3/4'
+                              : hint.key === 'back'
+                                ? 'Back 3/4'
+                                : hint.key === 'left'
+                                  ? 'Left'
+                                  : 'Right',
+                        })}
+                      </span>
                       <button
                         type="button"
                         className="catalog-meshy-slot-remove"
                         onClick={() => removePhoto(photo.id)}
                         disabled={status === 'generating'}
-                        aria-label="Remove photo"
+                        aria-label={t('collections.meshyRemovePhoto', { defaultValue: 'Remove photo' })}
                       >
                         ×
                       </button>
@@ -313,7 +327,18 @@ export default function MeshyAIPanel({
                       disabled={status === 'generating' || photos.length >= 4}
                     >
                       <span>+</span>
-                      <em>{hint.label}</em>
+                      <em>
+                        {t(hint.labelKey, {
+                          defaultValue:
+                            hint.key === 'front'
+                              ? 'Front 3/4'
+                              : hint.key === 'back'
+                                ? 'Back 3/4'
+                                : hint.key === 'left'
+                                  ? 'Left'
+                                  : 'Right',
+                        })}
+                      </em>
                     </button>
                   )}
                 </div>
@@ -388,7 +413,8 @@ export default function MeshyAIPanel({
                     defaultValue:
                       'Optional: describe materials, separated parts, crystal, engravings… Or tap “Use style standard”.',
                   })
-                : t('collections.meshyPlaceholder', {
+                : promptPlaceholder ||
+                  t('collections.meshyPlaceholder', {
                     defaultValue:
                       'e.g. A luxury gold coin with MERGE STARS engraving, brushed metal finish…',
                   })
@@ -408,7 +434,9 @@ export default function MeshyAIPanel({
             onClick={() => setStyle(s.value)}
             disabled={status === 'generating'}
           >
-            {t(`collections.meshyStyles.${s.labelKey}`)}
+            {t(`collections.meshyStyles.${s.labelKey}`, {
+              defaultValue: s.value,
+            })}
           </button>
         ))}
       </div>
