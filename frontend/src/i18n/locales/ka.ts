@@ -257,6 +257,12 @@ export default {
     stepCase: '1. ბრენდ კეისი',
     stepProducts: '2. პროდუქტები',
     stepReview: '3. განხილვა',
+    stepCaseLabel: 'ბრენდ კეისი',
+    stepProductsLabel: 'პროდუქტები',
+    stepReviewLabel: 'განხილვა',
+    previewHintCase: 'კეისის გარეთი ნაწილის პრევიუ · პროდუქტები ნაბიჯ 2-ში',
+    previewHintAssembly: 'პროდუქტები კეისში ჩადის · ბრუნვისთვის გადაათრიეთ',
+    previewHintAssemblyEmpty: 'ბრენდ კეისი დამტკიცებულია · დაუმატეთ პროდუქტები',
     stepsAriaLabel: 'კონფიგურატორის ნაბიჯები',
     caseStepTitle: 'შექმენით თქვენი ბრენდ კეისი ({{g}} გ)',
     caseStepHint:

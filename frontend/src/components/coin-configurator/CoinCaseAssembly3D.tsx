@@ -1,4 +1,5 @@
 import { Suspense, useMemo, useRef } from 'react'
+import { useTranslation } from 'react-i18next'
 import { Canvas, useFrame } from '@react-three/fiber'
 import { Center, Environment, OrbitControls, useGLTF } from '@react-three/drei'
 import * as THREE from 'three'
@@ -275,12 +276,19 @@ export default function CoinCaseAssembly3D({
   const previewMode =
     previewModeProp ?? (items.length > 0 ? 'assembly' : 'case-shell')
 
+  const { t } = useTranslation()
   const hint =
     previewMode === 'assembly'
       ? items.length
-        ? 'Your products animate into the case · drag to rotate'
-        : 'Approved brand case · add products to fill it'
-      : 'Exterior case design preview · products added in step 2'
+        ? t('configurator.previewHintAssembly', {
+            defaultValue: 'Your products animate into the case · drag to rotate',
+          })
+        : t('configurator.previewHintAssemblyEmpty', {
+            defaultValue: 'Approved brand case · add products to fill it',
+          })
+      : t('configurator.previewHintCase', {
+          defaultValue: 'Exterior case design preview · products added in step 2',
+        })
 
   return (
     <div className={`coin-case-assembly3d ${className}`.trim()}>

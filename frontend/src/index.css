@@ -6391,6 +6391,36 @@ textarea.gold-input {
   color: rgba(201, 168, 76, 0.85);
 }
 
+.catalog-meshy-panel--configurator {
+  border-color: rgba(201, 168, 76, 0.28);
+  background: linear-gradient(155deg, rgba(201, 168, 76, 0.08), rgba(0, 0, 0, 0.35));
+}
+
+.catalog-meshy-panel--configurator .catalog-meshy-mode--active {
+  color: #f5ecd4;
+  background: rgba(201, 168, 76, 0.22);
+}
+
+.catalog-meshy-panel--configurator .catalog-meshy-chip--active {
+  border-color: rgba(201, 168, 76, 0.65);
+  background: rgba(201, 168, 76, 0.14);
+  color: #e8d4a0;
+}
+
+.catalog-meshy-panel--configurator .catalog-meshy-generate {
+  background: linear-gradient(135deg, #c9a84c, #a8862e);
+  color: #0a0a0a;
+}
+
+.catalog-meshy-panel--configurator .catalog-meshy-fill-prompt {
+  color: #c9a84c;
+  border-color: rgba(201, 168, 76, 0.35);
+}
+
+.catalog-meshy-panel--configurator .catalog-meshy-progress-bar {
+  background: linear-gradient(90deg, #c9a84c, #e8d4a0);
+}
+
 .catalog-meshy-panel {
   padding: 1rem;
   border-radius: 10px;
@@ -10802,29 +10832,215 @@ textarea.gold-input {
 }
 
 .coin-config-page {
-  max-width: 1400px;
+  max-width: 1320px;
   margin: 0 auto;
-  padding: 0 0 3rem;
+  padding: 0 0 2.5rem;
+}
+
+.coin-config-top {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1rem 1.5rem;
+  margin-bottom: 1.25rem;
+}
+
+.coin-config-top-copy {
+  flex: 1 1 280px;
+  min-width: 0;
 }
 
 .coin-config-kicker {
   font-size: 0.6875rem;
-  letter-spacing: 0.14em;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
   color: rgba(201, 168, 76, 0.75);
-  margin: 0 0 0.5rem;
+  margin: 0 0 0.35rem;
 }
 
+.coin-config-top h1,
 .coin-config-head h1 {
   margin: 0;
-  font-size: clamp(1.75rem, 4vw, 2.25rem);
+  font-size: clamp(1.5rem, 3vw, 2rem);
   color: #fff;
+  line-height: 1.15;
 }
 
 .coin-config-source {
-  margin: 0.75rem 0 0;
+  margin: 0.5rem 0 0;
   font-size: 0.8125rem;
   color: rgba(255, 255, 255, 0.5);
+}
+
+.coin-config-wizard {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  margin: 0 0 1rem;
+  padding: 0.75rem 1rem;
+  border-radius: 14px;
+  border: 1px solid rgba(201, 168, 76, 0.18);
+  background: rgba(8, 8, 8, 0.75);
+}
+
+.coin-config-wizard-item {
+  display: flex;
+  align-items: center;
+  flex: 1;
+  min-width: 0;
+}
+
+.coin-config-wizard-line {
+  flex: 1;
+  height: 1px;
+  margin: 0 0.5rem;
+  background: linear-gradient(90deg, rgba(201, 168, 76, 0.35), rgba(201, 168, 76, 0.08));
+}
+
+.coin-config-wizard-step {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  padding: 0.35rem 0.5rem;
+  border: none;
+  background: transparent;
+  color: rgba(255, 255, 255, 0.45);
+  cursor: pointer;
+  font: inherit;
+  white-space: nowrap;
+}
+
+.coin-config-wizard-num {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.65rem;
+  height: 1.65rem;
+  border-radius: 50%;
+  border: 1px solid rgba(201, 168, 76, 0.3);
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.55);
+  flex-shrink: 0;
+}
+
+.coin-config-wizard-label {
+  font-size: 0.8125rem;
+  font-weight: 500;
+}
+
+.coin-config-wizard-step--active {
+  color: #f5ecd4;
+}
+
+.coin-config-wizard-step--active .coin-config-wizard-num {
+  border-color: #c9a84c;
+  background: rgba(201, 168, 76, 0.2);
+  color: #e8d4a0;
+}
+
+.coin-config-wizard-step--done .coin-config-wizard-num {
+  border-color: rgba(74, 222, 128, 0.45);
+  color: #86efac;
+}
+
+.coin-config-wizard-step--locked {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.coin-config-stats {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.65rem;
+  margin-bottom: 1.25rem;
+  padding: 0.85rem 1rem;
+  border-radius: 12px;
+  border: 1px solid rgba(201, 168, 76, 0.16);
+  background: rgba(6, 6, 6, 0.82);
+}
+
+.coin-config-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  min-width: 0;
+}
+
+.coin-config-stat span {
+  font-size: 0.6875rem;
+  color: rgba(255, 255, 255, 0.42);
+  line-height: 1.3;
+}
+
+.coin-config-stat strong {
+  font-size: 0.9375rem;
+  color: #fff;
+  font-weight: 600;
+}
+
+.coin-config-stat--remaining strong {
+  color: #c9a84c;
+}
+
+.coin-config-stats-progress {
+  grid-column: 1 / -1;
+  padding-top: 0.15rem;
+}
+
+.coin-config-stats-bar {
+  height: 4px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.08);
+  overflow: hidden;
+}
+
+.coin-config-stats-fill {
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #c9a84c, #e8d4a0);
+  transition: width 0.35s ease;
+}
+
+.coin-config-body {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.25rem;
+  align-items: start;
+}
+
+.coin-config-work {
+  min-width: 0;
+  padding: 1.35rem;
+  border-radius: 14px;
+  border: 1px solid rgba(201, 168, 76, 0.2);
+  background: rgba(6, 6, 6, 0.92);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+.coin-config-preview-pane {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  min-width: 0;
+}
+
+.coin-config-work-head {
+  margin-bottom: 1rem;
+}
+
+.coin-config-primary-action {
+  margin-top: 1rem;
+  width: 100%;
+  justify-content: center;
+}
+
+.coin-config-preview-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
 }
 
 .coin-config-layout {
@@ -10854,7 +11070,7 @@ textarea.gold-input {
 }
 
 .coin-config-section-title {
-  margin: 0 0 1.25rem;
+  margin: 0 0 0.5rem;
   font-size: 1.05rem;
   font-weight: 600;
   color: #fff;
@@ -10884,8 +11100,9 @@ textarea.gold-input {
 }
 
 .coin-config-hint {
-  margin: -0.5rem 0 1rem;
+  margin: 0;
   font-size: 0.8125rem;
+  line-height: 1.55;
   color: rgba(255, 255, 255, 0.45);
 }
 
@@ -10934,39 +11151,42 @@ textarea.gold-input {
 .coin-case-assembly3d-label {
   margin: 0 0 0.5rem;
   font-size: 0.6875rem;
-  letter-spacing: 0.12em;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
   color: #c9a84c;
 }
 
 .coin-case-assembly3d-canvas-wrap {
-  height: 420px;
+  height: min(52vh, 480px);
+  min-height: 300px;
   border-radius: 14px;
-  border: 1px solid rgba(201, 168, 76, 0.3);
-  background: radial-gradient(ellipse at 50% 30%, rgba(40, 30, 15, 0.5), rgba(4, 4, 4, 0.95));
+  border: 1px solid rgba(201, 168, 76, 0.28);
+  background: radial-gradient(ellipse at 50% 25%, rgba(50, 38, 18, 0.45), rgba(4, 4, 4, 0.96));
   overflow: hidden;
+  box-shadow: inset 0 0 60px rgba(0, 0, 0, 0.45);
 }
 
 .coin-case-assembly3d-hint {
   margin: 0.5rem 0 0;
-  font-size: 0.6875rem;
-  color: rgba(255, 255, 255, 0.35);
+  font-size: 0.75rem;
+  line-height: 1.45;
+  color: rgba(255, 255, 255, 0.4);
   text-align: center;
 }
 
-@media (min-width: 1100px) {
-  .coin-config-hero-layout {
-    grid-template-columns: 1fr 1fr;
-    align-items: start;
+@media (min-width: 1024px) {
+  .coin-config-body {
+    grid-template-columns: minmax(0, 1fr) minmax(340px, 42%);
+    gap: 1.5rem;
   }
 
-  .coin-config-hero-3d {
+  .coin-config-preview-pane {
     position: sticky;
     top: 1rem;
   }
 
   .coin-case-assembly3d-canvas-wrap {
-    height: min(72vh, 560px);
+    height: min(68vh, 560px);
   }
 }
 
@@ -10982,6 +11202,35 @@ textarea.gold-input {
 
   .coin-config-side {
     order: 2;
+  }
+}
+
+@media (max-width: 720px) {
+  .coin-config-stats {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .coin-config-wizard {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.35rem;
+  }
+
+  .coin-config-wizard-item {
+    flex: none;
+  }
+
+  .coin-config-wizard-line {
+    display: none;
+  }
+
+  .coin-config-wizard-step {
+    width: 100%;
+  }
+
+  .coin-config-top {
+    flex-direction: column;
+    align-items: stretch;
   }
 }
 
@@ -11063,45 +11312,63 @@ textarea.gold-input {
 
 .coin-config-product-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-  gap: 1rem;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 0.75rem;
+  margin-top: 1rem;
 }
 
 .coin-config-product-card {
-  border: 1px solid rgba(201, 168, 76, 0.2);
-  background: rgba(10, 10, 10, 0.9);
-  padding: 1.25rem 1rem;
+  border: 1px solid rgba(201, 168, 76, 0.18);
+  background: rgba(12, 12, 12, 0.85);
+  padding: 1rem 0.9rem;
   text-align: left;
-  border-radius: 10px;
+  border-radius: 12px;
   cursor: pointer;
-  transition: border-color 0.2s ease, transform 0.15s ease;
+  transition: border-color 0.2s ease, background 0.2s ease, transform 0.15s ease;
   display: flex;
   flex-direction: column;
-  gap: 0.35rem;
+  gap: 0.25rem;
 }
 
 .coin-config-product-card:hover:not(:disabled) {
-  border-color: rgba(201, 168, 76, 0.5);
-  transform: translateY(-2px);
+  border-color: rgba(201, 168, 76, 0.45);
+  background: rgba(201, 168, 76, 0.06);
+  transform: translateY(-1px);
 }
 
 .coin-config-product-label {
   font-weight: 600;
   color: #fff;
-  font-size: 0.9375rem;
+  font-size: 0.9rem;
+}
+
+.coin-config-product-weight {
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.35);
 }
 
 .coin-config-product-cta {
+  margin-top: 0.35rem;
   font-size: 0.6875rem;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
+  letter-spacing: 0.04em;
   color: #c9a84c;
+  line-height: 1.35;
 }
 
 .coin-config-product-card em {
   font-style: normal;
   font-size: 0.75rem;
   color: rgba(255, 255, 255, 0.35);
+}
+
+.coin-config-studio-head {
+  margin-bottom: 1rem;
+}
+
+.coin-config-studio-head h2 {
+  margin: 0.35rem 0 0;
+  font-size: 1.15rem;
+  color: #fff;
 }
 
 .coin-config-studio-grid {
@@ -11156,26 +11423,27 @@ textarea.gold-input {
 }
 
 .coin-config-kg-picker {
+  flex: 0 1 300px;
   display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 0.75rem;
+  flex-direction: column;
+  gap: 0.35rem;
 }
 
 .coin-config-kg-picker label {
-  font-size: 0.75rem;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: rgba(201, 168, 76, 0.8);
+  font-size: 0.6875rem;
+  letter-spacing: 0.06em;
+  color: rgba(255, 255, 255, 0.45);
 }
 
 .coin-config-kg-picker select {
-  min-width: 220px;
-  padding: 0.5rem 0.75rem;
-  border-radius: 8px;
+  width: 100%;
+  min-width: 0;
+  padding: 0.65rem 0.85rem;
+  border-radius: 10px;
   border: 1px solid rgba(201, 168, 76, 0.25);
-  background: rgba(0, 0, 0, 0.5);
+  background: rgba(0, 0, 0, 0.55);
   color: #fff;
+  font-size: 0.8125rem;
 }
 
 .configurator-apply-summary {

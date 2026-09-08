@@ -43,6 +43,8 @@ type Props = {
   promptPlaceholder?: string
   /** Override style chips (e.g. brand-case step shows only Case). */
   styles?: readonly MeshyStyleOption[]
+  /** Gold luxury theme for coin configurator; default purple catalog style. */
+  variant?: 'catalog' | 'configurator'
 }
 
 type Mode = 'text' | 'image'
@@ -69,6 +71,7 @@ export default function MeshyAIPanel({
   defaultPrompt,
   promptPlaceholder,
   styles: stylesProp,
+  variant = 'catalog',
 }: Props) {
   const { t } = useTranslation()
   const styleOptions = stylesProp ?? STYLES
@@ -230,7 +233,9 @@ export default function MeshyAIPanel({
         : t('collections.meshyGenerate', { defaultValue: 'Generate' })
 
   return (
-    <div className="catalog-meshy-panel">
+    <div
+      className={`catalog-meshy-panel${variant === 'configurator' ? ' catalog-meshy-panel--configurator' : ''}`}
+    >
       <div className="catalog-meshy-header">
         <p className="catalog-meshy-sub">
           {isReady

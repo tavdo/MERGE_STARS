@@ -408,6 +408,12 @@ export default {
     stepCase: '1. Brand case',
     stepProducts: '2. Products',
     stepReview: '3. Review',
+    stepCaseLabel: 'Brand case',
+    stepProductsLabel: 'Products',
+    stepReviewLabel: 'Review',
+    previewHintCase: 'Exterior case design preview · products added in step 2',
+    previewHintAssembly: 'Your products animate into the case · drag to rotate',
+    previewHintAssemblyEmpty: 'Approved brand case · add products to fill it',
     stepsAriaLabel: 'Configurator steps',
     caseStepTitle: 'Generate your brand case ({{g}} g)',
     caseStepHint:

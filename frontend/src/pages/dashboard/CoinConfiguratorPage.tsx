@@ -247,11 +247,24 @@ export default function CoinConfiguratorPage() {
 
   const canFinalize = approvedProducts.length > 0 && session?.status === 'draft'
 
+  const wizardSteps = [
+    { key: 'case' as const, label: t('configurator.stepCaseLabel', { defaultValue: 'Brand case' }) },
+    { key: 'pick' as const, label: t('configurator.stepProductsLabel', { defaultValue: 'Products' }) },
+    { key: 'review' as const, label: t('configurator.stepReviewLabel', { defaultValue: 'Review' }) },
+  ]
+
+  const activeWizardKey =
+    step === 'studio' ? 'pick' : step
+
+  const usedPct = session
+    ? Math.min(100, (session.usedWeightG / Math.max(session.productCapacityG, 1)) * 100)
+    : 0
+
   return (
     <DashboardLayout>
       <div className="coin-config-page">
-        <header className="coin-config-head">
-          <div>
+        <header className="coin-config-top">
+          <div className="coin-config-top-copy">
             <p className="coin-config-kicker">
               {t('configurator.kicker', { defaultValue: 'SMART COIN CONFIGURATOR' })}
             </p>
@@ -261,29 +274,29 @@ export default function CoinConfiguratorPage() {
                 {t('configurator.source', { defaultValue: 'Source Brand House' })}: <strong>{sourceBrand}</strong>
               </p>
             ) : null}
-            {!sessionParam && session?.status === 'draft' && packageConfigs.length > 0 && (
-              <div className="coin-config-kg-picker mt-3">
-                <label htmlFor="pkg-select">{t('configurator.package', { defaultValue: 'Package size' })}</label>
-                <select
-                  id="pkg-select"
-                  value={selectedPackageId ?? packageConfigs.find((p) => p.isDefault)?.id ?? packageConfigs[0]?.id ?? ''}
-                  onChange={(e) => setSelectedPackageId(e.target.value)}
-                  disabled={(session?.products.length ?? 0) > 0}
-                >
-                  {packageConfigs.map((p) => (
-                    <option key={p.id} value={p.id}>
-                      {t('configurator.packageOption', {
-                        defaultValue: '{{label}} — {{productG}} g products / {{caseG}} g case',
-                        label: p.label,
-                        productG: p.productCapacityG,
-                        caseG: p.caseWeightG,
-                      })}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            )}
           </div>
+          {!sessionParam && session?.status === 'draft' && packageConfigs.length > 0 && (
+            <div className="coin-config-kg-picker">
+              <label htmlFor="pkg-select">{t('configurator.package', { defaultValue: 'Package size' })}</label>
+              <select
+                id="pkg-select"
+                value={selectedPackageId ?? packageConfigs.find((p) => p.isDefault)?.id ?? packageConfigs[0]?.id ?? ''}
+                onChange={(e) => setSelectedPackageId(e.target.value)}
+                disabled={(session?.products.length ?? 0) > 0}
+              >
+                {packageConfigs.map((p) => (
+                  <option key={p.id} value={p.id}>
+                    {t('configurator.packageOption', {
+                      defaultValue: '{{label}} — {{productG}} g products / {{caseG}} g case',
+                      label: p.label,
+                      productG: p.productCapacityG,
+                      caseG: p.caseWeightG,
+                    })}
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
         </header>
 
         {sessionLoading ? (
@@ -297,242 +310,244 @@ export default function CoinConfiguratorPage() {
           </div>
         ) : (
           <>
-            <nav className="coin-config-steps" aria-label={t('configurator.stepsAriaLabel', { defaultValue: 'Configurator steps' })}>
-              {(
-                [
-                  ['case', t('configurator.stepCase', { defaultValue: '1. Brand case' })],
-                  ['pick', t('configurator.stepProducts', { defaultValue: '2. Products' })],
-                  ['review', t('configurator.stepReview', { defaultValue: '3. Review' })],
-                ] as const
-              ).map(([key, label]) => (
-                <button
-                  key={key}
-                  type="button"
-                  className={`coin-config-step-pill${step === key || (key === 'pick' && step === 'studio') ? ' coin-config-step-pill--active' : ''}${key === 'pick' && !caseDesign?.approved ? ' coin-config-step-pill--locked' : ''}`}
-                  disabled={key === 'pick' && !caseDesign?.approved}
-                  onClick={() => {
-                    if (key === 'case') setStep('case')
-                    else if (key === 'pick' && caseDesign?.approved) setStep('pick')
-                    else if (key === 'review' && approvedProducts.length) setStep('review')
-                  }}
-                >
-                  {label}
-                </button>
-              ))}
+            <nav
+              className="coin-config-wizard"
+              aria-label={t('configurator.stepsAriaLabel', { defaultValue: 'Configurator steps' })}
+            >
+              {wizardSteps.map((s, i) => {
+                const isActive = activeWizardKey === s.key
+                const isLocked = s.key === 'pick' && !caseDesign?.approved
+                const isDone =
+                  (s.key === 'case' && Boolean(caseDesign?.approved)) ||
+                  (s.key === 'pick' && approvedProducts.length > 0) ||
+                  (s.key === 'review' && session.status !== 'draft')
+                return (
+                  <div key={s.key} className="coin-config-wizard-item">
+                    {i > 0 && <span className="coin-config-wizard-line" aria-hidden />}
+                    <button
+                      type="button"
+                      className={`coin-config-wizard-step${isActive ? ' coin-config-wizard-step--active' : ''}${isDone ? ' coin-config-wizard-step--done' : ''}${isLocked ? ' coin-config-wizard-step--locked' : ''}`}
+                      disabled={isLocked || (s.key === 'review' && !approvedProducts.length)}
+                      onClick={() => {
+                        if (s.key === 'case') setStep('case')
+                        else if (s.key === 'pick' && caseDesign?.approved) setStep('pick')
+                        else if (s.key === 'review' && approvedProducts.length) setStep('review')
+                      }}
+                    >
+                      <span className="coin-config-wizard-num">{i + 1}</span>
+                      <span className="coin-config-wizard-label">{s.label}</span>
+                    </button>
+                  </div>
+                )
+              })}
             </nav>
 
-            <div className="coin-config-hero-layout">
-            <div className="coin-config-layout">
-            <main className="coin-config-main">
-              {actionError && (
-                <p className="coin-config-action-error" role="alert">
-                  {actionError}
-                </p>
-              )}
+            <div className="coin-config-stats" aria-label={t('configurator.calculator', { defaultValue: 'Coin Calculator' })}>
+              <div className="coin-config-stat">
+                <span>{t('configurator.capacity', { defaultValue: 'Product capacity' })}</span>
+                <strong>{session.productCapacityG} g</strong>
+              </div>
+              <div className="coin-config-stat">
+                <span>{t('configurator.case', { defaultValue: 'MERGE Coin case' })}</span>
+                <strong>{session.caseWeightG} g</strong>
+              </div>
+              <div className="coin-config-stat coin-config-stat--used">
+                <span>{t('configurator.used', { defaultValue: 'Used' })}</span>
+                <strong>{session.usedWeightG} g</strong>
+              </div>
+              <div className="coin-config-stat coin-config-stat--remaining">
+                <span>{t('configurator.remaining', { defaultValue: 'Remaining' })}</span>
+                <strong>{session.remainingWeightG} g</strong>
+              </div>
+              <div className="coin-config-stats-progress">
+                <div className="coin-config-stats-bar">
+                  <div className="coin-config-stats-fill" style={{ width: `${usedPct}%` }} />
+                </div>
+              </div>
+            </div>
 
-              {step === 'case' && (
-                <div className="coin-config-case-step">
-                  <h2 className="coin-config-section-title">
-                    {t('configurator.caseStepTitle', {
-                      defaultValue: 'Generate your brand case ({{g}} g)',
-                      g: session.caseWeightG,
-                    })}
-                  </h2>
-                  <p className="coin-config-hint">
-                    {t('configurator.caseStepHint', {
-                      defaultValue:
-                        'Step 1: generate only the empty branded case exterior (no products inside). Step 2: your items animate into the empty case in 3D.',
-                    })}
+            <div className="coin-config-body">
+              <section className="coin-config-work">
+                {actionError && (
+                  <p className="coin-config-action-error" role="alert">
+                    {actionError}
                   </p>
-                  <MeshyAIPanel
-                    defaultStyle={BRAND_CASE_MESHY_STYLE}
-                    styles={BRAND_CASE_STYLE_OPTIONS}
-                    promptPlaceholder={t('configurator.casePromptPlaceholder', {
-                      defaultValue:
-                        'Describe your empty luxury case — e.g. circular MERGE STARS branded shell, silver filigree, velvet interior molds, no products inside.',
-                    })}
-                    resultUrl={caseDesign?.model3dUrl ?? null}
-                    onGenerate={async (res) => {
-                      await saveCaseDesign.mutateAsync({
+                )}
+
+                {step === 'case' && (
+                  <div className="coin-config-case-step">
+                    <div className="coin-config-work-head">
+                      <h2 className="coin-config-section-title">
+                        {t('configurator.caseStepTitle', {
+                          defaultValue: 'Generate your brand case ({{g}} g)',
+                          g: session.caseWeightG,
+                        })}
+                      </h2>
+                      <p className="coin-config-hint">
+                        {t('configurator.caseStepHint', {
+                          defaultValue:
+                            'Step 1: generate only the empty branded case exterior (no products inside). Step 2: your items animate into the empty case in 3D.',
+                        })}
+                      </p>
+                    </div>
+                    <MeshyAIPanel
+                      variant="configurator"
+                      defaultStyle={BRAND_CASE_MESHY_STYLE}
+                      styles={BRAND_CASE_STYLE_OPTIONS}
+                      promptPlaceholder={t('configurator.casePromptPlaceholder', {
+                        defaultValue:
+                          'Describe your empty luxury case — e.g. circular MERGE STARS branded shell, silver filigree, velvet interior molds, no products inside.',
+                      })}
+                      resultUrl={caseDesign?.model3dUrl ?? null}
+                      onGenerate={async (res) => {
+                        await saveCaseDesign.mutateAsync({
+                          prompt: res.prompt,
+                          previewUrl: res.previewUrl,
+                          jobId: res.jobId,
+                        })
+                      }}
+                    />
+                    {caseDesign?.model3dUrl && !caseDesign.approved && (
+                      <button
+                        type="button"
+                        className="luxury-btn-glass coin-config-primary-action"
+                        disabled={approveCaseDesign.isPending}
+                        onClick={() => approveCaseDesign.mutate()}
+                      >
+                        {t('configurator.approveCase', { defaultValue: 'Approve brand case — add products' })}
+                      </button>
+                    )}
+                    {caseDesign?.approved && (
+                      <button type="button" className="gold-btn coin-config-primary-action" onClick={() => setStep('pick')}>
+                        {t('configurator.continueProducts', { defaultValue: 'Continue to products →' })}
+                      </button>
+                    )}
+                  </div>
+                )}
+
+                {step === 'pick' && (
+                  <div className="coin-config-pick-step">
+                    <h2 className="coin-config-section-title">
+                      {t('configurator.selectProduct', { defaultValue: 'Select a product to generate' })}
+                    </h2>
+                    {productTypesLoading && <p className="coin-config-hint">{t('common.loading')}</p>}
+                    {productTypesError && (
+                      <p className="coin-config-hint">
+                        {t('configurator.productTypesFallback', {
+                          defaultValue: 'Using default product list — tap a product to start.',
+                        })}
+                      </p>
+                    )}
+                    <div className="coin-config-product-grid">
+                      {productTypes.map((pt) => (
+                        <button
+                          key={pt.key}
+                          type="button"
+                          className="coin-config-product-card"
+                          disabled={addProduct.isPending || session.status !== 'draft'}
+                          onClick={() => addProduct.mutate(pt.key)}
+                        >
+                          <span className="coin-config-product-label">{localizedProductLabel(t, pt)}</span>
+                          <span className="coin-config-product-weight">~{pt.defaultWeightG} g</span>
+                          <span className="coin-config-product-cta">
+                            {t('configurator.generateMy', {
+                              defaultValue: 'Generate my {{product}}',
+                              product: localizedProductLabel(t, pt),
+                            })}
+                          </span>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {step === 'studio' && activeProduct && (
+                  <ConfiguratorStudio
+                    product={activeProduct}
+                    publishCatalog={publishCatalog}
+                    onPublishChange={setPublishCatalog}
+                    onBack={() => {
+                      setStep('pick')
+                      setActiveProductId(null)
+                    }}
+                    onGenerated={(res) =>
+                      saveGeneration.mutate({
+                        productId: activeProduct.id,
                         prompt: res.prompt,
                         previewUrl: res.previewUrl,
                         jobId: res.jobId,
                       })
-                    }}
+                    }
+                    onApprove={() => approveProduct.mutate(activeProduct.id)}
+                    approving={approveProduct.isPending}
+                    canApprove={activeProduct.status === 'generated' || !!activeProduct.model3dUrl}
                   />
-                  {caseDesign?.model3dUrl && !caseDesign.approved && (
+                )}
+
+                {step === 'studio' && !activeProduct && (
+                  <div className="coin-config-status">
+                    <p>{t('configurator.pickProductAgain', { defaultValue: 'Select a product to continue.' })}</p>
+                    <button type="button" className="gold-btn" onClick={() => setStep('pick')}>
+                      {t('configurator.back', { defaultValue: 'All products' })}
+                    </button>
+                  </div>
+                )}
+
+                {step === 'review' && (
+                  <div className="coin-config-review">
+                    <h2>{t('configurator.reviewTitle', { defaultValue: 'Your coin configuration is ready' })}</h2>
+                    <ProductList products={approvedProducts} />
+                  </div>
+                )}
+              </section>
+
+              <aside className="coin-config-preview-pane">
+                <CoinCaseAssembly3D
+                  caseModelUrl={caseDesign?.model3dUrl}
+                  caseWeightG={session.caseWeightG}
+                  layout={session.caseLayoutJson}
+                  items={assemblyItems}
+                  caseApproved={Boolean(caseDesign?.approved)}
+                  previewMode={
+                    step === 'case' || (!caseDesign?.approved && assemblyItems.length === 0)
+                      ? 'case-shell'
+                      : 'assembly'
+                  }
+                  label={t('configurator.preview3dLive', { defaultValue: '3D LIVE PREVIEW' })}
+                />
+
+                {approvedProducts.length > 0 && (
+                  <div className="coin-config-approved">
+                    <h3>{t('configurator.inCoin', { defaultValue: 'In your coin' })}</h3>
+                    <ul>
+                      {approvedProducts.map((p) => (
+                        <li key={p.id}>
+                          <span>{p.title}</span>
+                          <em>{p.weightG ?? p.estimatedWeightG} g</em>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+
+                <div className="coin-config-preview-actions">
+                  {canFinalize && (
                     <button
                       type="button"
-                      className="luxury-btn-glass mt-4"
-                      disabled={approveCaseDesign.isPending}
-                      onClick={() => approveCaseDesign.mutate()}
+                      className="luxury-btn-glass w-full justify-center"
+                      disabled={finalize.isPending}
+                      onClick={() => finalize.mutate()}
                     >
-                      {t('configurator.approveCase', { defaultValue: 'Approve brand case — add products' })}
+                      {t('configurator.finalApprove', { defaultValue: 'Final approval — continue to order' })}
                     </button>
                   )}
-                  {caseDesign?.approved && (
-                    <button type="button" className="gold-btn mt-4" onClick={() => setStep('pick')}>
-                      {t('configurator.continueProducts', { defaultValue: 'Continue to products →' })}
-                    </button>
+                  {session.status !== 'draft' && (
+                    <Link to={`/apply?sessionId=${session.id}`} className="gold-btn w-full justify-center">
+                      {t('configurator.continueApply', { defaultValue: 'Continue to application' })}
+                    </Link>
                   )}
                 </div>
-              )}
-
-              {step === 'pick' && (
-                <>
-                  <h2 className="coin-config-section-title">
-                    {t('configurator.selectProduct', { defaultValue: 'Select a product to generate' })}
-                  </h2>
-                  {productTypesLoading && (
-                    <p className="coin-config-hint">{t('common.loading')}</p>
-                  )}
-                  {productTypesError && (
-                    <p className="coin-config-hint">
-                      {t('configurator.productTypesFallback', {
-                        defaultValue: 'Using default product list — tap a product to start.',
-                      })}
-                    </p>
-                  )}
-                  <div className="coin-config-product-grid">
-                    {productTypes.map((pt) => (
-                      <button
-                        key={pt.key}
-                        type="button"
-                        className="coin-config-product-card"
-                        disabled={addProduct.isPending || session.status !== 'draft'}
-                        onClick={() => addProduct.mutate(pt.key)}
-                      >
-                        <span className="coin-config-product-label">{localizedProductLabel(t, pt)}</span>
-                        <span className="coin-config-product-cta">
-                          {t('configurator.generateMy', {
-                            defaultValue: 'Generate my {{product}}',
-                            product: localizedProductLabel(t, pt),
-                          })}
-                        </span>
-                        <em>~{pt.defaultWeightG} g</em>
-                      </button>
-                    ))}
-                  </div>
-                </>
-              )}
-
-              {step === 'studio' && activeProduct && (
-                <ConfiguratorStudio
-                  product={activeProduct}
-                  publishCatalog={publishCatalog}
-                  onPublishChange={setPublishCatalog}
-                  onBack={() => {
-                    setStep('pick')
-                    setActiveProductId(null)
-                  }}
-                  onGenerated={(res) =>
-                    saveGeneration.mutate({
-                      productId: activeProduct.id,
-                      prompt: res.prompt,
-                      previewUrl: res.previewUrl,
-                      jobId: res.jobId,
-                    })
-                  }
-                  onApprove={() => approveProduct.mutate(activeProduct.id)}
-                  approving={approveProduct.isPending}
-                  canApprove={activeProduct.status === 'generated' || !!activeProduct.model3dUrl}
-                />
-              )}
-
-              {step === 'studio' && !activeProduct && (
-                <div className="coin-config-status">
-                  <p>{t('configurator.pickProductAgain', { defaultValue: 'Select a product to continue.' })}</p>
-                  <button type="button" className="gold-btn" onClick={() => setStep('pick')}>
-                    {t('configurator.back', { defaultValue: 'All products' })}
-                  </button>
-                </div>
-              )}
-
-              {step === 'review' && (
-                <div className="coin-config-review">
-                  <h2>{t('configurator.reviewTitle', { defaultValue: 'Your coin configuration is ready' })}</h2>
-                  <ProductList products={approvedProducts} />
-                </div>
-              )}
-            </main>
-
-            <aside className="coin-config-side">
-              <div className="coin-config-calculator">
-                <h2>{t('configurator.calculator', { defaultValue: 'Coin Calculator' })}</h2>
-                <div className="coin-config-calc-row">
-                  <span>{t('configurator.capacity', { defaultValue: 'Product capacity' })}</span>
-                  <strong>{session.productCapacityG} g</strong>
-                </div>
-                <div className="coin-config-calc-row">
-                  <span>{t('configurator.case', { defaultValue: 'MERGE Coin case' })}</span>
-                  <strong>{session.caseWeightG} g</strong>
-                </div>
-                <div className="coin-config-calc-row coin-config-calc-used">
-                  <span>{t('configurator.used', { defaultValue: 'Used' })}</span>
-                  <strong>{session.usedWeightG} g</strong>
-                </div>
-                <div className="coin-config-calc-row coin-config-calc-remaining">
-                  <span>{t('configurator.remaining', { defaultValue: 'Remaining' })}</span>
-                  <strong>{session.remainingWeightG} g</strong>
-                </div>
-                <div className="coin-config-calc-bar">
-                  <div
-                    className="coin-config-calc-fill"
-                    style={{
-                      width: `${Math.min(100, (session.usedWeightG / session.productCapacityG) * 100)}%`,
-                    }}
-                  />
-                </div>
-              </div>
-
-              {approvedProducts.length > 0 && (
-                <div className="coin-config-approved">
-                  <h3>{t('configurator.inCoin', { defaultValue: 'In your coin' })}</h3>
-                  <ul>
-                    {approvedProducts.map((p) => (
-                      <li key={p.id}>
-                        <span>{p.title}</span>
-                        <em>{p.weightG ?? p.estimatedWeightG} g</em>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              )}
-
-              {canFinalize && (
-                <button
-                  type="button"
-                  className="luxury-btn-glass w-full justify-center"
-                  disabled={finalize.isPending}
-                  onClick={() => finalize.mutate()}
-                >
-                  {t('configurator.finalApprove', { defaultValue: 'Final approval — continue to order' })}
-                </button>
-              )}
-
-              {session.status !== 'draft' && (
-                <Link to={`/apply?sessionId=${session.id}`} className="gold-btn w-full justify-center mt-3">
-                  {t('configurator.continueApply', { defaultValue: 'Continue to application' })}
-                </Link>
-              )}
-            </aside>
-            </div>
-
-            <div className="coin-config-hero-3d">
-              <CoinCaseAssembly3D
-                caseModelUrl={caseDesign?.model3dUrl}
-                caseWeightG={session.caseWeightG}
-                layout={session.caseLayoutJson}
-                items={assemblyItems}
-                caseApproved={Boolean(caseDesign?.approved)}
-                previewMode={
-                  step === 'case' || (!caseDesign?.approved && assemblyItems.length === 0)
-                    ? 'case-shell'
-                    : 'assembly'
-                }
-                label={t('configurator.preview3dLive', { defaultValue: '3D LIVE PREVIEW' })}
-              />
-            </div>
+              </aside>
             </div>
           </>
         )}
@@ -587,26 +602,26 @@ function ConfiguratorStudio({
         <button type="button" className="coin-config-back" onClick={onBack}>
           ← {t('configurator.back', { defaultValue: 'All products' })}
         </button>
-        <h2>{product.title}</h2>
+        <h2>
+          {localizedProductLabel(t, {
+            key: product.productType,
+            label: product.title,
+          })}
+        </h2>
       </div>
 
-      <div className="coin-config-studio-grid">
-        <MeshyAIPanel
-          defaultStyle={meshyStyle}
-          resultUrl={product.model3dUrl}
-          onGenerate={async (res) => {
-            onGenerated({
-              prompt: res.prompt,
-              previewUrl: res.previewUrl,
-              jobId: res.jobId,
-            })
-          }}
-        />
-        <div className="coin-config-studio-preview">
-          <p className="dash-label">{t('configurator.preview3d', { defaultValue: '3D preview' })}</p>
-          <Model3DViewer modelUrl={product.model3dUrl} />
-        </div>
-      </div>
+      <MeshyAIPanel
+        variant="configurator"
+        defaultStyle={meshyStyle}
+        resultUrl={product.model3dUrl}
+        onGenerate={async (res) => {
+          onGenerated({
+            prompt: res.prompt,
+            previewUrl: res.previewUrl,
+            jobId: res.jobId,
+          })
+        }}
+      />
 
       {canApprove && (
         <div className="coin-config-approve-bar">
