@@ -20,15 +20,22 @@ export default function CategoryExploreGrid({
 }: Props) {
   const { t } = useTranslation()
 
+  const categories = CATALOG_CATEGORIES.filter((key) => {
+    if (!counts) return true
+    const count = counts[key] ?? 0
+    // Hide empty categories, but keep the active filter visible so it can be cleared
+    return count > 0 || key === active
+  })
+
   return (
     <section className="cat-explore">
       <h2 className="cat-explore-heading">{t('landing.categoriesTitle')}</h2>
       <div className="cat-explore-grid">
-        {CATALOG_CATEGORIES.map((key, i) => {
+        {categories.map((key, i) => {
           const selected = active === key
           const count = counts?.[key]
           const className = `cat-explore-card${selected ? ' cat-explore-card--active' : ''}${
-            i === CATALOG_CATEGORIES.length - 1 ? ' cat-explore-card--last' : ''
+            i === categories.length - 1 ? ' cat-explore-card--last' : ''
           }`
 
           if (onSelect) {
@@ -41,7 +48,9 @@ export default function CategoryExploreGrid({
               >
                 <BrandIcon src={CATEGORY_ICONS[key as CategoryIconKey]} className="cat-explore-icon" />
                 <span className="cat-explore-label">{t(`landing.categories.${key}`)}</span>
-                {typeof count === 'number' && <span className="cat-explore-count">{count}</span>}
+                {typeof count === 'number' && count > 0 && (
+                  <span className="cat-explore-count">{count}</span>
+                )}
               </button>
             )
           }
@@ -54,7 +63,9 @@ export default function CategoryExploreGrid({
             >
               <BrandIcon src={CATEGORY_ICONS[key as CategoryIconKey]} className="cat-explore-icon" />
               <span className="cat-explore-label">{t(`landing.categories.${key}`)}</span>
-              {typeof count === 'number' && <span className="cat-explore-count">{count}</span>}
+              {typeof count === 'number' && count > 0 && (
+                <span className="cat-explore-count">{count}</span>
+              )}
             </Link>
           )
         })}
