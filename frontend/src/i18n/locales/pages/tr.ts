@@ -1,10 +1,12 @@
 import enPages from './en'
 import trLegal from './tr-legal'
+import trPublic from './tr-public'
 
-const { faq, contact, howItWorks, authPanel, dashboardHome, admin, ...rest } = enPages
+const { faq, contact, howItWorks, authPanel, dashboardHome, admin, filament, ...rest } = enPages
 
 export default {
   ...rest,
+  ...trPublic,
   ...trLegal,
   authPanel: { ...authPanel, theNext: 'YENİ', eraOf: 'LÜKS', luxury: 'ÇAĞI', welcome: '★ MERGE STARS\'A HOŞ GELDİNİZ ★', loginTab: '★ GİRİŞ', registerTab: '★ HESAP OLUŞTUR', enterPlatform: 'PLATFORMa GİR', backToHome: '← ANA SAYFA' },
   faq: { ...faq, title: 'SIKÇA SORULAN', titleGold: 'SORULAR', stillHaveQuestions: 'Başka sorularınız var mı?', contactUs: 'İLETİŞİM →' },

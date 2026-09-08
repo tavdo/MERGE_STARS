@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import Navbar from '../../components/Navbar'
 import Footer from '../../components/Footer'
+import ProductShowcaseGallery from '../../components/ProductShowcaseGallery'
 
 const FACTS = [
   {
@@ -99,6 +100,8 @@ export default function MergeCoinPage() {
           </dl>
         </aside>
       </header>
+
+      <ProductShowcaseGallery layout="grid" />
 
       <section className="mc-section">
         <div className="mc-section-head">

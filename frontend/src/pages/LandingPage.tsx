@@ -15,6 +15,7 @@ import {
   IconSustainable,
 } from '../components/LandingFeatureIcons'
 import BrandIcon from '../components/BrandIcon'
+import ProductShowcaseGallery from '../components/ProductShowcaseGallery'
 import { CATEGORY_ICONS, type CategoryIconKey } from '@/assets/brandIcons'
 
 useGLTF.preload(landingCoinModelUrl)
@@ -182,6 +183,15 @@ export default function LandingPage() {
           </div>
         ))}
       </section>
+      <div className="section-divider max-w-1440 mx-auto w-full" />
+
+      <ProductShowcaseGallery
+        layout="mosaic"
+        items={['brandCoinGold', 'brandCoinSilver', 'silverAr', 'businessCard', 'mergeStoneGoldLight']}
+        showCta
+        className="max-w-1440 w-full"
+      />
+
       <div className="section-divider max-w-1440 mx-auto w-full" />
 
       {/* Categories — original grid design */}

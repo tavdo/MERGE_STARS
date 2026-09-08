@@ -19,6 +19,15 @@ export default {
     noProducts: 'საჯარო დიზაინები ჯერ არ არის.',
     catalogs: 'კატალოგი',
     products: 'დიზაინი',
+    statCatalogsCount: '{{count}} კატალოგი',
+    statDesignsCount: '{{count}} დიზაინი',
+    statViewsCount: '{{count}} ნახვა',
+    browseCta: 'ბრენდების ნახვა',
+    joinCta: 'ბრენდ რუმში შესვლა',
+    livePulse: '{{brands}} ბრენდი · {{designs}} საჯარო დიზაინი',
+    featured: 'აქტიური ბრენდები',
+    openCatalog: 'კატალოგის გახსნა',
+    allBrands: 'ყველა ბრენდი',
   },
   brandPublic: {
     kicker: 'ბრენდის პროფილი',
@@ -116,6 +125,41 @@ export default {
     discoverTech: 'ტექნოლოგიის აღმოჩენა', techPoints: { metals: { title: 'ძვირფასი მეტალები', sub: 'ვერცხალი, ოქრო' }, composite: { title: 'კომპოზიტი', sub: 'სიძლიერე და სილამაზე' }, lightweight: { title: 'მსუბუქობა', sub: 'საუკეთესო შესრულება' } },
     investTitle1: 'დაინვესტირეთ', investTitle2: '', investTitleGold: 'მომავალში', investBody: 'გახდით გლობალური მოძრაობის ნაწილი, რომელიც ახლებს ლუქსსა და ტექნოლოგიას.',
     learnMore: 'გაიგეთ მეტი', investPoints: { growth: 'მაღალი პოტენციალი', tech: 'ინოვაციური ტექნოლოგია', partner: 'ძლიერი პარტნიორობა', impact: 'გლობალური გავლენა' },
+  },
+  productShowcase: {
+    kicker: 'პროდუქტის ხაზები',
+    title: 'შენი სახელი.',
+    titleGold: 'შენი ბრენდი.',
+    lead: 'პერსონალური MERGE Brand Coin QR იდენტობით, სერიულ ნომერთი, ლუქს ყუთით და ციფრული პასპორტით.',
+    tagline: 'შენი სახელი. შენი ბრენდი. შენი მემკვიდრეობა.',
+    bannerBody: 'ყოველი წევრი შეუძლია ჰქონდეს პერსონალური ბრენდ მონეტა — ფიზიკური ლუქსი და ციფრული იდენტობა MERGE STARS-ზე.',
+    cta: 'Merge Coin-ის ნახვა',
+    items: {
+      brandCoinGold: {
+        title: 'ოქროს Brand Coin',
+        body: 'პერსონალური ოქროს მონეტა სახელით, მონოგრამით, QR კოდით და ნამდვილობის სერტიფიკატით.',
+      },
+      brandCoinSilver: {
+        title: 'ვერცხლის Brand Coin',
+        body: 'მატი შავი და ვერცხლის დასრულება — სახელი, მონოგრამა, სერიული და QR იდენტობა.',
+      },
+      silverAr: {
+        title: 'ვერცხალი 8K · 999.9',
+        body: 'წმინდა ინოვაცია ვერცხალში — QR სკანირებით AR-გაძლიერებული ციფრული იდენტობა.',
+      },
+      mergeStoneGoldLight: {
+        title: 'Merge Stone Gold Light',
+        body: '13 ფასეტის ბრწყინვალება — ლუქს ქვის ფორმები, რომლებიც ერთიანს ბრწყინვალებას უკვდავებასთან.',
+      },
+      mergeStoneGems: {
+        title: 'Merge Stone კოლექცია',
+        body: 'სამკუთხედი, ოვალი და წვეთის ფორმები ვარსკვლავებით შიგნით — MERGE STARS-ის სიგნატურული ფორმები.',
+      },
+      businessCard: {
+        title: 'MERGE STARS ბარათი',
+        body: 'მეტალის ბიზნეს ბარათი QR-ით, რომელიც გიყვანთ პროფილზე mergestars.one-ზე.',
+      },
+    },
   },
   dashboard: {
     welcomeBack: 'კეთილი დაბრუნება', logout: 'გასვლა', collapseMenu: 'მენიუს დაკეცვა', expandMenu: 'მენიუს გაშლა',

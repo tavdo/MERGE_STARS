@@ -45,6 +45,15 @@ export default {
     noProducts: 'No public designs yet.',
     catalogs: 'catalogs',
     products: 'designs',
+    statCatalogsCount: '{{count}} catalogs',
+    statDesignsCount: '{{count}} designs',
+    statViewsCount: '{{count}} views',
+    browseCta: 'Browse brands',
+    joinCta: 'Join Brand Room',
+    livePulse: '{{brands}} brands · {{designs}} public designs',
+    featured: 'Active brands',
+    openCatalog: 'Open catalog',
+    allBrands: 'All brands',
   },
   brandPublic: {
     kicker: 'BRAND PROFILE',
@@ -148,6 +157,41 @@ export default {
       tech: 'INNOVATIVE TECHNOLOGY',
       partner: 'STRONG PARTNERSHIP',
       impact: 'GLOBAL IMPACT',
+    },
+  },
+  productShowcase: {
+    kicker: 'PRODUCT LINES',
+    title: 'Your name.',
+    titleGold: 'Your brand.',
+    lead: 'Personal MERGE Brand Coins with QR identity, serial numbers, luxury packaging, and a matched digital passport.',
+    tagline: 'YOUR NAME. YOUR BRAND. YOUR LEGACY.',
+    bannerBody: 'Every member can own a personalized brand coin — physical luxury paired with a digital identity on MERGE STARS.',
+    cta: 'Explore Merge Coin',
+    items: {
+      brandCoinGold: {
+        title: 'Gold Brand Coin',
+        body: 'Personalized gold coin with your name, monogram, QR code, and certificate of authenticity.',
+      },
+      brandCoinSilver: {
+        title: 'Silver Brand Coin',
+        body: 'Matte black and silver finish with engraved name, monogram, serial, and QR identity.',
+      },
+      silverAr: {
+        title: 'Silver 8K · 999.9',
+        body: 'Pure innovation in silver — scan the QR on the reverse for AR-enhanced digital identity.',
+      },
+      mergeStoneGoldLight: {
+        title: 'Merge Stone Gold Light',
+        body: 'The brilliance of 13 facets — luxury gemstone forms that unite brilliance with eternity.',
+      },
+      mergeStoneGems: {
+        title: 'Merge Stone Collection',
+        body: 'Triangle, oval, and pear cuts with star-filled interiors — signature MERGE STARS forms.',
+      },
+      businessCard: {
+        title: 'MERGE STARS Card',
+        body: 'Metal business card with QR linking to your profile at mergestars.one.',
+      },
     },
   },
   mergeCoinPage: {

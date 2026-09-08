@@ -1,10 +1,12 @@
 import enPages from './en'
 import frLegal from './fr-legal'
+import frPublic from './fr-public'
 
-const { faq, contact, howItWorks, authPanel, dashboardHome, admin, ...rest } = enPages
+const { faq, contact, howItWorks, authPanel, dashboardHome, admin, filament, ...rest } = enPages
 
 export default {
   ...rest,
+  ...frPublic,
   ...frLegal,
   authPanel: { ...authPanel, theNext: 'LA PROCHAINE', eraOf: 'ÈRE DE', luxury: 'LUXE', welcome: '★ BIENVENUE SUR MERGE STARS ★', loginTab: '★ CONNEXION', registerTab: '★ CRÉER UN COMPTE', enterPlatform: 'ENTRER', backToHome: '← ACCUEIL' },
   faq: { ...faq, title: 'QUESTIONS', titleGold: 'FRÉQUENTES', stillHaveQuestions: 'Encore des questions ?', contactUs: 'NOUS CONTACTER →' },

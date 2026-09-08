@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import Navbar from '../../components/Navbar'
 import Footer from '../../components/Footer'
+import ProductShowcaseGallery from '../../components/ProductShowcaseGallery'
 import BrandIcon from '../../components/BrandIcon'
 import { HOW_IT_WORKS_ICONS } from '@/assets/brandIcons'
 
@@ -41,6 +42,8 @@ export default function HowItWorksPage() {
             ))}
           </div>
         </section>
+
+        <ProductShowcaseGallery layout="strip" showHeader={false} />
 
         <section className="hiw-cta">
           <h2>

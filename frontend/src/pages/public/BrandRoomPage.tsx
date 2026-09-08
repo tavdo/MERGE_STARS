@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { useQuery } from '@tanstack/react-query'
 import { useState } from 'react'
 import SiteLayout from '../../components/SiteLayout'
+import ProductShowcaseGallery from '../../components/ProductShowcaseGallery'
 import BrandIcon from '@/components/BrandIcon'
 import { CATEGORY_ICONS, type CategoryIconKey } from '@/assets/brandIcons'
 import { brandApi, type BrandRoomCard } from '@/features/brand/api/brand.api'
@@ -240,6 +241,11 @@ export default function BrandRoomPage() {
             )}
           </div>
         </header>
+
+        <ProductShowcaseGallery
+          layout="banner"
+          items={['brandCoinGold', 'brandCoinSilver', 'businessCard']}
+        />
 
         <CategoryStrip active={activeCategory} counts={counts} onSelect={setCategory} />
 
