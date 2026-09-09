@@ -74,7 +74,7 @@ export default {
       },
       businessCard: {
         title: 'MERGE STARS Kartı',
-        body: 'mergestars.one profilinize bağlanan QR\'lı metal kartvizit.',
+        body: 'mergestars.com profilinize bağlanan QR\'lı metal kartvizit.',
       },
     },
   },

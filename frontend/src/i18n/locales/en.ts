@@ -190,7 +190,7 @@ export default {
       },
       businessCard: {
         title: 'MERGE STARS Card',
-        body: 'Metal business card with QR linking to your profile at mergestars.one.',
+        body: 'Metal business card with QR linking to your profile at mergestars.com.',
       },
     },
   },

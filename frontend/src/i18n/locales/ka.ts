@@ -157,7 +157,7 @@ export default {
       },
       businessCard: {
         title: 'MERGE STARS ბარათი',
-        body: 'მეტალის ბიზნეს ბარათი QR-ით, რომელიც გიყვანთ პროფილზე mergestars.one-ზე.',
+        body: 'მეტალის ბიზნეს ბარათი QR-ით, რომელიც გიყვანთ პროფილზე mergestars.com-ზე.',
       },
     },
   },

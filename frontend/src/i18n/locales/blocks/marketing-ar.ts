@@ -74,7 +74,7 @@ export default {
       },
       businessCard: {
         title: 'بطاقة MERGE STARS',
-        body: 'بطاقة عمل معدنية برمز QR يربط بملفك على mergestars.one.',
+        body: 'بطاقة عمل معدنية برمز QR يربط بملفك على mergestars.com.',
       },
     },
   },

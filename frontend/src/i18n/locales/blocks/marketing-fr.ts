@@ -74,7 +74,7 @@ export default {
       },
       businessCard: {
         title: 'Carte MERGE STARS',
-        body: 'Carte de visite en métal avec QR menant à votre profil sur mergestars.one.',
+        body: 'Carte de visite en métal avec QR menant à votre profil sur mergestars.com.',
       },
     },
   },

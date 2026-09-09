@@ -73,7 +73,7 @@ export default {
       },
       businessCard: {
         title: 'Карта MERGE STARS',
-        body: 'Металлическая визитная карта с QR-кодом, ведущим на ваш профиль на mergestars.one.',
+        body: 'Металлическая визитная карта с QR-кодом, ведущим на ваш профиль на mergestars.com.',
       },
     },
   },
