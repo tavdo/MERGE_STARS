@@ -111,7 +111,7 @@ export default {
   landing: {
     heroKicker: 'ლუქსის ახალი ერა', heroTitleGold: 'ლუქსი', heroTitleRest: 'აქ არის', tagline: 'რევოლუციური · უნიკალური · უსაზღვრო',
     heroBody: 'MERGE STARS არის რევოლუციური პლატფორმა, რომელიც აერთიანებს 3D ფილამენტის ტექნოლოგიას ძვირფას მეტალებთან.',
-    exploreCollection: 'კოლექციის ნახვა', watchVideo: 'ვიდეოს ნახვა', exploreTech: 'ტექნოლოგიის შესწავლა ↓',
+    exploreCollection: 'კოლექციის ნახვა', watchVideo: 'ვიდეოს ნახვა', exploreTech: 'ტექნოლოგიის შესწავლა ↓', featureGo: 'გაიგეთ მეტი', featuresBar: 'პლატფორმის უპირატესობები',
     features: {
       filament: { title: '3D ტექნოლოგია', sub: 'პატენტირებული ინოვაცია' },
       metals: { title: 'ნამდვილი მეტალები', sub: 'ყოველ პროდუქტში' },

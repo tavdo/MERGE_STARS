@@ -65,6 +65,16 @@ export default {
     ctaTitle: 'READY TO START YOUR',
     ctaGold: 'JOURNEY?',
     ctaButton: 'CREATE YOUR ACCOUNT →',
+    actions: {
+      register: 'Create account →',
+      kyc: 'Complete verification →',
+      brandLine: 'Set up brand →',
+      mergeCoin: 'Fill your coin →',
+      order: 'Start application →',
+      payment: 'Go to payment →',
+      production: 'Track orders →',
+      delivery: 'Delivery settings →',
+    },
     steps: [
       { n: '01', title: 'REGISTER', desc: 'Create your account with email and phone verification. Receive your unique User ID, Founder ID, and Brand Line ID instantly.' },
       { n: '02', title: 'KYC VERIFICATION', desc: 'Complete identity verification by providing your personal details. KYC status: PENDING → VERIFIED. Required to proceed.' },

@@ -114,6 +114,8 @@ export default {
     exploreCollection: 'Explore Collection',
     watchVideo: 'Watch Video',
     exploreTech: 'Explore technology ↓',
+    featureGo: 'Learn more',
+    featuresBar: 'Platform highlights',
     metalSilver: 'Silver',
     metalGold: 'Gold',
     perKg: '/ kg',

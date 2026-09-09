@@ -21,12 +21,12 @@ import { CATEGORY_ICONS, type CategoryIconKey } from '@/assets/brandIcons'
 useGLTF.preload(landingCoinModelUrl)
 
 const FEATURES = [
-  { id: 'filament' as const, Icon: IconFilament3D },
-  { id: 'metals' as const, Icon: IconPreciousMetals },
-  { id: 'limitless' as const, Icon: IconLimitless },
-  { id: 'sustainable' as const, Icon: IconSustainable },
-  { id: 'global' as const, Icon: IconGlobal },
-]
+  { id: 'filament' as const, Icon: IconFilament3D, href: '/filament' },
+  { id: 'metals' as const, Icon: IconPreciousMetals, href: '/price-indicator' },
+  { id: 'limitless' as const, Icon: IconLimitless, href: '/brand-room' },
+  { id: 'sustainable' as const, Icon: IconSustainable, href: '#technology' },
+  { id: 'global' as const, Icon: IconGlobal, href: '/collections' },
+] as const
 
 const CATEGORIES = [
   { key: 'jewelry', to: '/brand-room?category=jewelry' },
@@ -171,17 +171,34 @@ export default function LandingPage() {
       {/* Features */}
       {/* Features — original strip design */}
       <div className="section-divider max-w-1440 mx-auto w-full" />
-      <section className="landing-features-bar max-w-1440 mx-auto w-full">
-        {FEATURES.map((f, i) => (
-          <div
-            key={f.id}
-            className={`landing-feature-cell${i === FEATURES.length - 1 ? ' landing-feature-cell--last' : ''}`}
-          >
-            <f.Icon className="landing-feature-icon" />
-            <p className="landing-feature-title">{t(`landing.features.${f.id}.title`)}</p>
-            <p className="landing-feature-sub">{t(`landing.features.${f.id}.sub`)}</p>
-          </div>
-        ))}
+      <section className="landing-features-bar max-w-1440 mx-auto w-full" aria-label={t('landing.featuresBar', { defaultValue: 'Platform highlights' })}>
+        {FEATURES.map((f, i) => {
+          const className = `landing-feature-cell landing-feature-cell--link${
+            i === FEATURES.length - 1 ? ' landing-feature-cell--last' : ''
+          }`
+          const label = `${t(`landing.features.${f.id}.title`)} — ${t('landing.featureGo', { defaultValue: 'Learn more' })}`
+          const content = (
+            <>
+              <f.Icon className="landing-feature-icon" />
+              <p className="landing-feature-title">{t(`landing.features.${f.id}.title`)}</p>
+              <p className="landing-feature-sub">{t(`landing.features.${f.id}.sub`)}</p>
+            </>
+          )
+
+          if (f.href.startsWith('#')) {
+            return (
+              <a key={f.id} href={f.href} className={className} aria-label={label}>
+                {content}
+              </a>
+            )
+          }
+
+          return (
+            <Link key={f.id} to={f.href} className={className} aria-label={label}>
+              {content}
+            </Link>
+          )
+        })}
       </section>
       <div className="section-divider max-w-1440 mx-auto w-full" />
 

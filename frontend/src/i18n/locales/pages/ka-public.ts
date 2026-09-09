@@ -58,6 +58,16 @@ export default {
     ctaTitle: 'მზად ხართ დაიწყოთ',
     ctaGold: 'გზა?',
     ctaButton: 'ანგარიშის შექმნა →',
+    actions: {
+      register: 'ანგარიშის შექმნა →',
+      kyc: 'ვერიფიკაციის გავლა →',
+      brandLine: 'ბრენდის დაყენება →',
+      mergeCoin: 'მონეტის შევსება →',
+      order: 'განაცხადის დაწყება →',
+      payment: 'გადახდაზე გადასვლა →',
+      production: 'შეკვეთების თრეკინგი →',
+      delivery: 'მიწოდების პარამეტრები →',
+    },
     steps: [
       { n: '01', title: 'რეგისტრაცია', desc: 'ანგარიში ელფოსტითა და ტელეფონით. მიიღებთ User ID, Founder ID, Brand Line ID.' },
       { n: '02', title: 'KYC', desc: 'ვინაობის დადასტურება. PENDING → VERIFIED.' },
