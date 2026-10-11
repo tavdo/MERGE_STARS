@@ -1,0 +1,9 @@
+User-agent: *
+Allow: /
+Disallow: /dashboard
+Disallow: /admin
+Disallow: /apply
+Disallow: /fill-coin
+Disallow: /status
+
+Sitemap: https://mergestars.com/sitemap.xml

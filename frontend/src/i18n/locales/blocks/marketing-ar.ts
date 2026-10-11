@@ -1,7 +1,8 @@
 export default {
   nav: {
-    filament: 'Filament',
+    filament: 'الخيوط ثلاثية الأبعاد',
     brandRoom: 'Brand Room',
+    livingMuseum: 'المتحف الحي',
   },
   brandRoom: {
     kicker: 'BRAND ROOM',

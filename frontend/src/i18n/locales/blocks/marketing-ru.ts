@@ -2,6 +2,7 @@ export default {
   nav: {
     filament: 'Филамент',
     brandRoom: 'Brand Room',
+    livingMuseum: 'Живой музей',
   },
   brandRoom: {
     kicker: 'BRAND ROOM',

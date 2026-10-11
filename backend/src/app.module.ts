@@ -34,6 +34,7 @@ import { SmsModule } from './modules/sms/sms.module';
 import { RedisModule } from './modules/redis/redis.module';
 import { CoinConfiguratorModule } from './modules/coin-configurator/coin-configurator.module';
 import { WalletModule } from './modules/wallet/wallet.module';
+import { MuseumCoreModule } from './modules/museum-core/museum-core.module';
 
 @Module({
   imports: [
@@ -71,6 +72,7 @@ import { WalletModule } from './modules/wallet/wallet.module';
     RedisModule,
     WalletModule,
     CoinConfiguratorModule,
+    MuseumCoreModule,
   ],
   controllers: [AppController],
   providers: [

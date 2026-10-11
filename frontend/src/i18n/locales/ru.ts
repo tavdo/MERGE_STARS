@@ -1,6 +1,36 @@
 export default {
   lang: { label: 'Язык', en: 'English', ru: 'Русский', fr: 'Français', de: 'Deutsch', tr: 'Türkçe', ka: 'ქართული', ar: 'العربية' },
-  nav: { home: 'Главная', howItWorks: 'Как это работает', mergeCoin: 'Merge Coin', prices: 'Цены', apply: 'Заявка', faq: 'FAQ', contact: 'Контакты', trust: 'Trust Center', legalClassification: 'Legal Classification', login: 'Вход', dashboard: 'Кабинет', menu: 'Меню' },
+  seo: {
+    pages: {
+      livingMuseum: {
+        title: 'Живой музей брендов | Ювелир брендов — MERGE STARS',
+        description:
+          'Живой музей MERGE STARS — Brand House, цифровой двойник, FIT TO ME, Create My Version, ДНК мозаики MERGE и производство цифра→физика на CORE mergestars.com.',
+      },
+      brandRoom: {
+        title: 'Brand Room | Бренды участников MERGE STARS',
+        description: 'Публичные каталоги брендов, ювелирные изделия, аксессуары и дизайны участников MERGE STARS.',
+      },
+    },
+  },
+  nav: {
+    home: 'Главная',
+    howItWorks: 'Как это работает',
+    mergeCoin: 'Merge Coin',
+    filament: 'Филамент',
+    brandRoom: 'Brand Room',
+    livingMuseum: 'Живой музей',
+    prices: 'Цены',
+    apply: 'Заявка',
+    faq: 'FAQ',
+    contact: 'Контакты',
+    trust: 'Центр доверия',
+    legalClassification: 'Правовая классификация',
+    login: 'Вход',
+    dashboard: 'Кабинет',
+    menu: 'Меню',
+    closeMenu: 'Закрыть меню',
+  },
   footer: {
     secure: 'БЕЗОПАСНАЯ ПЛАТФОРМА', secureSub: 'Ваши данные защищены', fast: 'БЫСТРО И НАДЁЖНО', fastSub: 'Безупречный опыт',
     global: 'ГЛОБАЛЬНОЕ СООБЩЕСТВО', globalSub: 'Тысячи участников', supportTitle: 'ПОДДЕРЖКА', supportSub: 'Мы всегда на связи',

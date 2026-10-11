@@ -2,6 +2,7 @@ export default {
   nav: {
     filament: 'Filament',
     brandRoom: 'Brand Room',
+    livingMuseum: 'Yaşayan Müze',
   },
   brandRoom: {
     kicker: 'BRAND ROOM',

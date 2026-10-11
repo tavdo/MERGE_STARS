@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import Navbar from '../components/Navbar'
 import Footer from '../components/Footer'
+import LandingSeoSection from '../components/LandingSeoSection'
 import Hero3DCoin, { landingCoinModelUrl } from '../components/Hero3DCoin'
 import { useGLTF } from '@react-three/drei'
 import { useLiveMetalPrices } from '@/features/coins/hooks/useLiveMetalPrice'
@@ -285,6 +286,8 @@ export default function LandingPage() {
           </div>
         </div>
       </section>
+
+      <LandingSeoSection />
 
       <Footer />
     </div>

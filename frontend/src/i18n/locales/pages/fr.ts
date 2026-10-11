@@ -1,13 +1,15 @@
 import enPages from './en'
 import frLegal from './fr-legal'
 import frPublic from './fr-public'
+import museumFr from './museum-fr'
 
-const { faq, contact, howItWorks, authPanel, dashboardHome, admin, filament, ...rest } = enPages
+const { faq, contact, howItWorks, authPanel, dashboardHome, admin, filament, museum, ...rest } = enPages
 
 export default {
   ...rest,
   ...frPublic,
   ...frLegal,
+  ...museumFr,
   authPanel: { ...authPanel, theNext: 'LA PROCHAINE', eraOf: 'ÈRE DE', luxury: 'LUXE', welcome: '★ BIENVENUE SUR MERGE STARS ★', loginTab: '★ CONNEXION', registerTab: '★ CRÉER UN COMPTE', enterPlatform: 'ENTRER', backToHome: '← ACCUEIL' },
   faq: { ...faq, title: 'QUESTIONS', titleGold: 'FRÉQUENTES', stillHaveQuestions: 'Encore des questions ?', contactUs: 'NOUS CONTACTER →' },
   contact: { ...contact, title: 'NOUS', titleGold: 'CONTACTER', messageSent: 'MESSAGE ENVOYÉ', sendButton: 'ENVOYER →' },

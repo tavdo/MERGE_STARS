@@ -1,6 +1,95 @@
 export default {
   lang: { label: 'ენა', en: 'English', ru: 'Русский', fr: 'Français', de: 'Deutsch', tr: 'Türkçe', ka: 'ქართული', ar: 'العربية' },
-  nav: { home: 'მთავარი', howItWorks: 'როგორ მუშაობს', mergeCoin: 'Merge Coin', filament: 'ფილამენტი', brandRoom: 'ბრენდ რუმი', prices: 'ფასები', apply: 'განაცხადი', faq: 'FAQ', contact: 'კონტაქტი', trust: 'Trust Center', legalClassification: 'Legal Classification', login: 'შესვლა', dashboard: 'პანელი', menu: 'მენიუ', closeMenu: 'მენიუს დახურვა' },
+  seo: {
+    defaultTitle: 'MERGE STARS | ოფიციალური ლუქს პლატფორმა',
+    defaultDescription:
+      'MERGE STARS (mergestars.com) — ოფიციალური ლუქს ბრენდ პლატფორმა შპს „მერგე ვარსკვლავები"-ისგან: ძვირფასი ლითონის 3D ფილამენტი, MERGE Coin ფიზიკური პროდუქტი QR ციფრული პასპორტით. არა მობილური თამაში, არა Dart პაკეტი და არა კრიპტოვალუტა.',
+    registerCta: 'ანგარიშის შექმნა',
+    pages: {
+      home: {
+        title: 'MERGE STARS | ლუქსი, ძვირფასი ლითონი და MERGE Coin',
+        description:
+          'ოფიციალური MERGE STARS პლატფორმა — პატენტირებული 3D ფილამენტი ნამდვილი ვერცხლითა და ოქროთი, MERGE Coin QR იდენტობით, ბრენდ კატალოგები და გლობალური წარმოება. mergestars.com',
+      },
+      howItWorks: {
+        title: 'როგორ მუშაობს MERGE STARS',
+        description:
+          'MERGE STARS ნაბიჯ-ნაბიჯ: რეგისტრაცია, KYC, ბრენდ ხაზი, MERGE Coin კონფიგურაცია, შეკვეთა, გადახდა, წარმოება და მიწოდება.',
+      },
+      mergeCoin: {
+        title: 'MERGE Coin | ფიზიკური ლუქს პროდუქტი QR პასპორტით',
+        description:
+          'MERGE Coin — ფიზიკური ლუქს ნივთი ძვირფასი ლითონის ფილამენტით და სერიული ციფრული პასპორტით. არა კრიპტო და არა ტოკენი.',
+      },
+      filament: {
+        title: 'MERGE STARS ფილამენტის ტექნოლოგია',
+        description:
+          'საინჟინრო ძვირფასი ლითონის კომპოზიტური ფილამენტი ლუქსის წარმოებისთვის — ნანო დონის ლითონის ნაწილაკები პოლიმერულ მატრიცაში.',
+      },
+      prices: {
+        title: 'MERGE Coin ფასის ინდიკატორი',
+        description:
+          'საცნობარო ინდიკატორი ვერცხლის ცოცხალ ბაზარზე დაყრდნობით. საბოლოო ფასი განისაზღვრება თითო შეკვეთაზე.',
+      },
+      faq: {
+        title: 'MERGE STARS — ხშირად დასმული კითხვები',
+        description:
+          'პასუხები MERGE STARS-ზე, MERGE Coin-ზე, KYC-ზე, შეკვეთებზე და ოფიციალურ mergestars.com პლატფორმაზე.',
+      },
+      contact: {
+        title: 'კონტაქტი — MERGE STARS',
+        description: 'დაგვიკავშირდით შპს „მერგე ვარსკვლავები" — თბილისი, საქართველო.',
+      },
+      brandRoom: {
+        title: 'ბრენდ რუმი | MERGE STARS წევრების ბრენდები',
+        description: 'საჯარო ბრენდ კატალოგები, სამკაული, აქსესუარები და დიზაინები.',
+      },
+      livingMuseum: {
+        title: 'ბრენდების ცოცხალი მუზეუმი | ბრენდების საიუველირი — MERGE STARS',
+        description:
+          'MERGE STARS ცოცხალი მუზეუმი — Brand House, ციფრული ორმაგი, FIT TO ME, შექმენით ჩემი ვერსია, MERGE მოზაიკა და ციფრული→ფიზიკური წარმოება mergestars.com CORE-ზე.',
+      },
+      collections: {
+        title: 'საჯარო კატალოგები | MERGE STARS',
+        description: 'გაეცანით საჯარო პროდუქტის კატალოგებს, რომლებიც შექმნეს ვერიფიცირებული წევრები.',
+      },
+      terms: {
+        title: 'წესები და პირობები | MERGE STARS',
+        description: 'MERGE STARS პლატფორმის გამოყენების წესები.',
+      },
+      privacy: {
+        title: 'კონფიდენციალურობა | MERGE STARS',
+        description: 'როგორ იცავს MERGE STARS თქვენს პერსონალურ მონაცემებს.',
+      },
+      trust: {
+        title: 'Trust Center | MERGE STARS',
+        description: 'უსაფრთხოება და ნდობა MERGE STARS პლატფორმაზე.',
+      },
+      login: {
+        title: 'შესვლა | MERGE STARS',
+        description: 'შედით ან შექმენით ანგარიში თქვენი ბრენდ პანელისთვის.',
+      },
+    },
+    faq: [
+      {
+        q: 'რა არის MERGE STARS?',
+        a: 'MERGE STARS არის ოფიციალური ლუქს ბრენდ პლატფორმა mergestars.com-ზე, რომელიც აერთიანებს ძვირფასი ლითონის 3D ფილამენტის ტექნოლოგიას, QR ციფრულ იდენტობას, ბრენდ კატალოგებსა და MERGE Coin ფიზიკურ პროდუქტს.',
+      },
+      {
+        q: 'MERGE STARS ეს მობილური თამაში Merge Stars: Journey არის?',
+        a: 'არა. mergestars.com-ზე MERGE STARS არის ლუქსის წარმოებისა და ბრენდის პლატფორმა და არ არის დაკავშირებული მობილურ merge თამაშებთან.',
+      },
+      {
+        q: 'MERGE STARS კრიპტოვალუტა ან Dart პროგრამირების პაკეტია?',
+        a: 'არა. MERGE STARS არ არის კრიპტოვალუტა, ტოკენი ან პროგრამული ბიბლიოთეკა. MERGE Coin არის ფიზიკური ლუქს პროდუქტი ციფრული პასპორტით.',
+      },
+      {
+        q: 'ვინ შექმნა MERGE STARS?',
+        a: 'MERGE STARS-ს მართავს შპს „მერგე ვარსკვლავები" თბილისში, საქართველოში — ძვირფასი ლითონის ფილამენტის ტექნოლოგიის პირველი ლუქს პლატფორმა.',
+      },
+    ],
+  },
+  nav: { home: 'მთავარი', howItWorks: 'როგორ მუშაობს', mergeCoin: 'Merge Coin', filament: 'ფილამენტი', brandRoom: 'ბრენდ რუმი', livingMuseum: 'ცოცხალი მუზეუმი', prices: 'ფასები', apply: 'განაცხადი', faq: 'FAQ', contact: 'კონტაქტი', trust: 'Trust Center', legalClassification: 'Legal Classification', login: 'შესვლა', dashboard: 'პანელი', menu: 'მენიუ', closeMenu: 'მენიუს დახურვა' },
   brandRoom: {
     kicker: 'ბრენდ რუმი',
     title: 'ბრენდ რუმი',
@@ -122,9 +211,19 @@ export default {
     categoriesTitle: 'კატეგორიების მიხედვით', categories: { jewelry: 'სამკაული', accessories: 'აქსესუარები', souvenirs: 'სუვენირები', sanitaryware: 'სანიტარია', stationery: 'კანცელარია', construction: 'სამშენებლო', more: 'მეტი' },
     techPanel: '3D ფილამენტის ტექნოლოგია', techTitle1: 'რევოლუციური', techTitle2: '3D ფილამენტის', techTitle3: 'ტექნოლოგია',
     techBody: 'ჩვენი პატენტირებული 3D ფილამენტი გამდიდრებულია ძვირფასი მეტალებით — მსუბუქი, გამძლე და ლუქსური პროდუქტები.',
-    discoverTech: 'ტექნოლოგიის აღმოჩენა', techPoints: { metals: { title: 'ძვირფასი მეტალები', sub: 'ვერცხალი, ოქრო' }, composite: { title: 'კომპოზიტი', sub: 'სიძლიერე და სილამაზე' }, lightweight: { title: 'მსუბუქობა', sub: 'საუკეთესო შესრულება' } },
+    discoverTech: 'ტექნოლოგიის აღმოჩენა', techPoints: { metals: { title: 'ძვირფასი მეტალები', sub: 'ვერცხლი, ოქრო' }, composite: { title: 'კომპოზიტი', sub: 'სიძლიერე და სილამაზე' }, lightweight: { title: 'მსუბუქობა', sub: 'საუკეთესო შესრულება' } },
     investTitle1: 'დაინვესტირეთ', investTitle2: '', investTitleGold: 'მომავალში', investBody: 'გახდით გლობალური მოძრაობის ნაწილი, რომელიც ახლებს ლუქსსა და ტექნოლოგიას.',
-    learnMore: 'გაიგეთ მეტი', investPoints: { growth: 'მაღალი პოტენციალი', tech: 'ინოვაციური ტექნოლოგია', partner: 'ძლიერი პარტნიორობა', impact: 'გლობალური გავლენა' },
+    learnMore: 'გაიგეთ მეტი',
+    seoSection: {
+      kicker: 'ოფიციალური პლატფორმა · mergestars.com',
+      title: 'MERGE STARS — ლუქს ბრენდი და ძვირფასი ლითონის წარმოება',
+      lead:
+        'MERGE STARS mergestars.com-ზე არის ოფიციალური ლუქს პლატფორმა შპს „მერგე ვარსკვლავები"-ისგან, თბილისი. პატენტირებული 3D ფილამენტი ვერცხლითა და ოქროთი, MERGE Coin QR ციფრული პასპორტით — არა მობილური თამაში, არა Dart პაკეტი და არა კრიპტოვალუტა.',
+      sub:
+        'შექმენით ბრენდ ხაზი, კონფიგურირეთ MERGE Coin, გაიარეთ KYC ვერიფიკაცია და შეუკვეთეთ ლუქს ნივთები ნამდვილი ვერცხლითა და ოქროთი.',
+      navLabel: 'გაეცანით MERGE STARS',
+    },
+    investPoints: { growth: 'მაღალი პოტენციალი', tech: 'ინოვაციური ტექნოლოგია', partner: 'ძლიერი პარტნიორობა', impact: 'გლობალური გავლენა' },
   },
   productShowcase: {
     kicker: 'პროდუქტის ხაზები',
@@ -144,8 +243,8 @@ export default {
         body: 'მატი შავი და ვერცხლის დასრულება — სახელი, მონოგრამა, სერიული და QR იდენტობა.',
       },
       silverAr: {
-        title: 'ვერცხალი 8K · 999.9',
-        body: 'წმინდა ინოვაცია ვერცხალში — QR სკანირებით AR-გაძლიერებული ციფრული იდენტობა.',
+        title: 'ვერცხლი 8K · 999.9',
+        body: 'წმინდა ინოვაცია ვერცხლში — QR სკანირებით AR-გაძლიერებული ციფრული იდენტობა.',
       },
       mergeStoneGoldLight: {
         title: 'Merge Stone Gold Light',

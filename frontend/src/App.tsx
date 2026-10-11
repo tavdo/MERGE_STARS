@@ -32,6 +32,8 @@ import MasterCatalogPage from './pages/dashboard/MasterCatalogPage'
 import CollectionsBrowsePage from './pages/public/CollectionsBrowsePage'
 import BrandPublicPage from './pages/public/BrandPublicPage'
 import BrandRoomPage from './pages/public/BrandRoomPage'
+import LivingMuseumPage from './pages/public/LivingMuseumPage'
+import LivingMuseumExperienceRedirect from './pages/public/LivingMuseumExperienceRedirect'
 import MemberPublicPage from './pages/public/MemberPublicPage'
 import ProductPassportPage from './pages/public/ProductPassportPage'
 import QRIdentityPage    from './pages/dashboard/QRIdentityPage'
@@ -74,6 +76,7 @@ import AuthGuard from './router/guards/AuthGuard'
 import AdminGuard from './router/guards/AdminGuard'
 import AdminLoginPage from './pages/admin/AdminLoginPage'
 import CookieConsent from './components/CookieConsent'
+import SeoHead from './components/SeoHead'
 
 function useLuxuryCursorEnabled() {
   const { pathname } = useLocation()
@@ -94,6 +97,7 @@ function AppRoutes() {
       {luxuryCursor && <LuxuryCursor />}
       {!adminZone && <AIAssistantWidget />}
       <CookieConsent />
+      <SeoHead />
       <Routes>
         {/* Public */}
         <Route path="/"                element={<LandingPage />} />
@@ -112,6 +116,9 @@ function AppRoutes() {
         <Route path="/collections"          element={<CollectionsBrowsePage />} />
         <Route path="/collections/:slug"   element={<CollectionsBrowsePage />} />
         <Route path="/brand-room"          element={<BrandRoomPage />} />
+        <Route path="/living-museum"       element={<LivingMuseumPage />} />
+        <Route path="/living-museum/enter" element={<LivingMuseumExperienceRedirect />} />
+        <Route path="/museum"              element={<LivingMuseumPage />} />
         <Route path="/b/:brandLineId"      element={<BrandPublicPage />} />
         <Route path="/u/:mergeId"          element={<MemberPublicPage mode="member" />} />
         <Route path="/passport/:publicId"   element={<ProductPassportPage />} />

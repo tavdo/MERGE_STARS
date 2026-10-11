@@ -10,6 +10,98 @@ export default {
     ka: 'Georgian',
     ar: 'Arabic',
   },
+  seo: {
+    defaultTitle: 'MERGE STARS | Official Luxury 3D Precious Metal Platform',
+    defaultDescription:
+      'MERGE STARS (mergestars.com) is the official luxury brand platform by MERGE STARS LLC — 3D precious-metal filament technology, MERGE Coin physical products with QR digital passport, and brand creation tools. Not a mobile game, not a Dart package, and not cryptocurrency.',
+    registerCta: 'Create account',
+    pages: {
+      home: {
+        title: 'MERGE STARS | Luxury 3D Precious Metal & MERGE Coin Platform',
+        description:
+          'Official MERGE STARS platform — patented 3D filament infused with real silver and gold, MERGE Coin with QR identity, brand catalogs, and global production. Visit mergestars.com.',
+      },
+      howItWorks: {
+        title: 'How MERGE STARS Works | Register to Delivery',
+        description:
+          'Step-by-step MERGE STARS workflow: registration, KYC, brand line, MERGE Coin configuration, order, payment, production, and delivery.',
+      },
+      mergeCoin: {
+        title: 'MERGE Coin | Physical Luxury Product with QR Passport',
+        description:
+          'MERGE Coin is a physical luxury piece made with precious-metal filament and a serial-matched digital passport — not crypto or a token.',
+      },
+      filament: {
+        title: 'MERGE STARS Filament Technology | Precious Metal 3D Materials',
+        description:
+          'Engineered precious-metal composite filament for luxury manufacturing — nano-scale metal particles in a structural polymer matrix.',
+      },
+      prices: {
+        title: 'MERGE Coin Price Indicator | Live Silver Reference',
+        description:
+          'Indicative MERGE Coin reference indicator based on live silver market data. Final pricing is set per individual order.',
+      },
+      faq: {
+        title: 'MERGE STARS FAQ',
+        description:
+          'Answers about MERGE STARS, MERGE Coin, KYC, orders, precious metals, and the official mergestars.com platform.',
+      },
+      contact: {
+        title: 'Contact MERGE STARS',
+        description:
+          'Contact MERGE STARS LLC in Tbilisi, Georgia — support, partnerships, and platform inquiries.',
+      },
+      brandRoom: {
+        title: 'MERGE STARS Brand Room | Explore Member Brands',
+        description:
+          'Browse public brand catalogs, jewelry, accessories, and designs from MERGE STARS members.',
+      },
+      livingMuseum: {
+        title: 'Living Museum of Brands | The Jeweler of Brands — MERGE STARS',
+        description:
+          'MERGE STARS Living Museum — Brand House, Digital Twin, FIT TO ME, Create My Version, MERGE Mosaic DNA, and digital-to-physical production on mergestars.com CORE.',
+      },
+      collections: {
+        title: 'Public Catalogs | MERGE STARS Community',
+        description:
+          'Explore public product catalogs created by verified MERGE STARS brand owners.',
+      },
+      terms: {
+        title: 'Terms & Conditions | MERGE STARS',
+        description: 'Terms and conditions for using the MERGE STARS platform.',
+      },
+      privacy: {
+        title: 'Privacy Policy | MERGE STARS',
+        description: 'How MERGE STARS LLC collects and protects your personal data.',
+      },
+      trust: {
+        title: 'Trust Center | MERGE STARS',
+        description: 'Security, compliance, and trust information for the MERGE STARS platform.',
+      },
+      login: {
+        title: 'Login | MERGE STARS',
+        description: 'Sign in or create your MERGE STARS account to access your brand dashboard.',
+      },
+    },
+    faq: [
+      {
+        q: 'What is MERGE STARS?',
+        a: 'MERGE STARS is an official luxury brand platform at mergestars.com that combines 3D precious-metal filament technology with QR digital identity, brand catalogs, and MERGE Coin physical products. Every buyer can build their own brand line.',
+      },
+      {
+        q: 'Is MERGE STARS the mobile game Merge Stars: Journey?',
+        a: 'No. MERGE STARS at mergestars.com is a luxury manufacturing and brand platform. It is not related to casual mobile merge games.',
+      },
+      {
+        q: 'Is MERGE STARS a cryptocurrency or Dart programming package?',
+        a: 'No. MERGE STARS is not a cryptocurrency, token, or software library. MERGE Coin is a physical luxury product with a digital passport — not a crypto asset.',
+      },
+      {
+        q: 'Who created MERGE STARS?',
+        a: 'MERGE STARS is operated by MERGE STARS LLC „Merge Varskvlavebi" in Tbilisi, Georgia, pioneering precious-metal filament technology for luxury products.',
+      },
+    ],
+  },
   nav: {
     home: 'Home',
     howItWorks: 'How It Works',
@@ -20,6 +112,7 @@ export default {
     faq: 'FAQ',
     contact: 'Contact',
     brandRoom: 'Brand Room',
+    livingMuseum: 'Living Museum',
     trust: 'Trust Center',
     legalClassification: 'Legal Classification',
     login: 'Login',
@@ -154,6 +247,15 @@ export default {
     investTitleGold: 'Future',
     investBody: 'Be part of a global movement redefining luxury, technology, and value.',
     learnMore: 'Learn More',
+    seoSection: {
+      kicker: 'Official platform · mergestars.com',
+      title: 'MERGE STARS — luxury brand & precious-metal manufacturing',
+      lead:
+        'MERGE STARS at mergestars.com is the official luxury platform by MERGE STARS LLC in Tbilisi, Georgia. Patented 3D precious-metal filament, MERGE Coin with QR digital passport, brand catalogs, and global production — not a mobile game, not a Dart package, and not cryptocurrency.',
+      sub:
+        'Create your brand line, configure your MERGE Coin, complete KYC verification, and order luxury pieces infused with real silver and gold.',
+      navLabel: 'Explore MERGE STARS',
+    },
     investPoints: {
       growth: 'HIGH GROWTH POTENTIAL',
       tech: 'INNOVATIVE TECHNOLOGY',

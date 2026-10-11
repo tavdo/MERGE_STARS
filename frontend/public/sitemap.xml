@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url><loc>https://mergestars.com/</loc><changefreq>weekly</changefreq><priority>1.0</priority></url>
+  <url><loc>https://mergestars.com/how-it-works</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://mergestars.com/merge-coin</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://mergestars.com/filament</loc><changefreq>monthly</changefreq><priority>0.85</priority></url>
+  <url><loc>https://mergestars.com/price-indicator</loc><changefreq>daily</changefreq><priority>0.8</priority></url>
+  <url><loc>https://mergestars.com/brand-room</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://mergestars.com/living-museum</loc><changefreq>monthly</changefreq><priority>0.85</priority></url>
+  <url><loc>https://mergestars.com/collections</loc><changefreq>weekly</changefreq><priority>0.75</priority></url>
+  <url><loc>https://mergestars.com/faq</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://mergestars.com/contact</loc><changefreq>monthly</changefreq><priority>0.65</priority></url>
+  <url><loc>https://mergestars.com/terms</loc><changefreq>yearly</changefreq><priority>0.4</priority></url>
+  <url><loc>https://mergestars.com/privacy</loc><changefreq>yearly</changefreq><priority>0.4</priority></url>
+  <url><loc>https://mergestars.com/trust</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
+  <url><loc>https://mergestars.com/login</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
+</urlset>

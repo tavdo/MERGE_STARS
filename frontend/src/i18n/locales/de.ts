@@ -1,6 +1,36 @@
 export default {
   lang: { label: 'Sprache', en: 'English', ru: 'Русский', fr: 'Français', de: 'Deutsch', tr: 'Türkçe', ka: 'ქართული', ar: 'العربية' },
-  nav: { home: 'Startseite', howItWorks: 'So funktioniert\'s', mergeCoin: 'Merge Coin', prices: 'Preise', apply: 'Bewerbung', faq: 'FAQ', contact: 'Kontakt', trust: 'Trust Center', legalClassification: 'Legal Classification', login: 'Anmelden', dashboard: 'Dashboard', menu: 'Menü' },
+  seo: {
+    pages: {
+      livingMuseum: {
+        title: 'Lebendiges Museum der Marken | Der Juwelier der Marken — MERGE STARS',
+        description:
+          'MERGE STARS Living Museum — Brand House, Digital Twin, FIT TO ME, Create My Version, MERGE-Mosaik-DNA und digital→physisch Produktion auf mergestars.com CORE.',
+      },
+      brandRoom: {
+        title: 'Brand Room | MERGE STARS Mitglieder-Marken',
+        description: 'Öffentliche Markenkataloge, Schmuck, Accessoires und Designs von MERGE STARS Mitgliedern.',
+      },
+    },
+  },
+  nav: {
+    home: 'Startseite',
+    howItWorks: 'So funktioniert\'s',
+    mergeCoin: 'Merge Coin',
+    filament: 'Filament',
+    brandRoom: 'Brand Room',
+    livingMuseum: 'Lebendiges Museum',
+    prices: 'Preise',
+    apply: 'Bewerbung',
+    faq: 'FAQ',
+    contact: 'Kontakt',
+    trust: 'Trust Center',
+    legalClassification: 'Rechtliche Klassifizierung',
+    login: 'Anmelden',
+    dashboard: 'Dashboard',
+    menu: 'Menü',
+    closeMenu: 'Menü schließen',
+  },
   footer: {
     secure: 'SICHERE PLATTFORM', secureSub: 'Ihre Daten sind geschützt', fast: 'SCHNELL & ZUVERLÄSSIG', fastSub: 'Nahtlose Erfahrung',
     global: 'GLOBALE COMMUNITY', globalSub: 'Tausende Mitglieder', supportTitle: 'SUPPORT', supportSub: 'Wir sind für Sie da',

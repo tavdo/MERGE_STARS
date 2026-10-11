@@ -12,6 +12,7 @@ const NAV_LINKS = [
   { labelKey: 'nav.mergeCoin', href: '/merge-coin' },
   { labelKey: 'nav.filament', href: '/filament' },
   { labelKey: 'nav.brandRoom', href: '/brand-room' },
+  { labelKey: 'nav.livingMuseum', href: '/living-museum' },
   { labelKey: 'nav.prices', href: '/price-indicator' },
   { labelKey: 'nav.apply', href: '/apply' },
   { labelKey: 'nav.faq', href: '/faq' },

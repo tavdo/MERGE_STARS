@@ -91,7 +91,7 @@ export default {
     disclaimer3: 'MERGE STARS არ არის საფინანსო ორგანიზაცია. დაბრუნება არ გარანტირებულია.',
   },
   landing: {
-    metalSilver: 'ვერცხალი (Ag)',
+    metalSilver: 'ვერცხლი (Ag)',
     metalGold: 'ოქრო (Au)',
     perKg: '/ კგ',
     loadingCoin: 'MERGE STARS მონეტა იტვირთება',
