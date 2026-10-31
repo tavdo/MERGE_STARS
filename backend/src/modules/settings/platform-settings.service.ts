@@ -53,12 +53,16 @@ export class PlatformSettingsService implements OnModuleInit {
 
   async update(patch: PlatformSettingsPatch) {
     const row = await this.getRow();
-    if (patch.tickerEnabled !== undefined) row.tickerEnabled = patch.tickerEnabled;
+    if (patch.tickerEnabled !== undefined)
+      row.tickerEnabled = patch.tickerEnabled;
     if (patch.aiEnabled !== undefined) row.aiEnabled = patch.aiEnabled;
     if (patch.autoVerify !== undefined) row.autoVerify = patch.autoVerify;
-    if (patch.platformShare !== undefined) row.platformShare = patch.platformShare.trim();
-    if (patch.brandShare !== undefined) row.brandShare = patch.brandShare.trim();
-    if (patch.referrerShare !== undefined) row.referrerShare = patch.referrerShare.trim();
+    if (patch.platformShare !== undefined)
+      row.platformShare = patch.platformShare.trim();
+    if (patch.brandShare !== undefined)
+      row.brandShare = patch.brandShare.trim();
+    if (patch.referrerShare !== undefined)
+      row.referrerShare = patch.referrerShare.trim();
     this.cache = await this.settings.save(row);
     return platformSettingsView(this.cache);
   }

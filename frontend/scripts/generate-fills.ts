@@ -172,7 +172,7 @@ const outDir = join(process.cwd(), 'src/i18n/locales/fills')
 mkdirSync(outDir, { recursive: true })
 
 for (const lang of ['ka', 'ar', 'ru', 'de', 'fr', 'tr', 'en']) {
-  let flat: Record<string, unknown> = {}
+  let flat: Record<string, unknown>
   if (lang !== 'en') {
     flat = JSON.parse(readFileSync(`/tmp/i18n/translated-${lang}.json`, 'utf8'))
   } else {

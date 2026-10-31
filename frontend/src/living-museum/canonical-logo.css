@@ -1,0 +1,63 @@
+.living-museum .brand img,.transparency-header .brand img{width:64px;height:64px;object-fit:contain;max-width:none;filter:none;border-radius:0}
+.living-museum .museum-footer img{width:48px;height:48px;object-fit:contain;filter:none}
+.living-museum .gate-composition img.gate-approved-seal{position:absolute;left:44%;top:31%;width:12%;height:auto;aspect-ratio:1;object-fit:contain;filter:none;pointer-events:none;background:#090909;border-radius:50%}
+.living-museum .gate-composition img.gate-approved-plaque{position:absolute;top:6%;width:7%;height:auto;aspect-ratio:1;object-fit:contain;filter:none;pointer-events:none}
+.living-museum .gate-approved-plaque-left{left:4%}
+.living-museum .gate-approved-plaque-right{right:4%}
+.living-museum .canonical-loading-logo{width:80px;height:80px;object-fit:contain;filter:none}
+.living-museum .gate-open-interior{position:absolute;inset:0;width:100%;height:100%;object-fit:fill;clip-path:ellipse(29% 43% at 50% 40%);pointer-events:none}
+.living-museum .founder-gate-frames{position:absolute;inset:0;display:block;overflow:hidden;background:#050505}
+.living-museum .entrance:has(.founder-gate) .entrance-heading{display:none}
+.living-museum .founder-frame{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;max-width:none;pointer-events:none}
+.living-museum .founder-frame-ajar,.living-museum .founder-frame-museum{opacity:0}
+.living-museum .opening .founder-frame-closed{animation:founder-closed 1.8s ease both}
+.living-museum .opening .founder-frame-ajar{animation:founder-ajar 1.8s ease both}
+.living-museum .opening .founder-frame-museum{animation:founder-arrive 1.8s ease both}
+@keyframes founder-closed{0%,12%{opacity:1}32%,100%{opacity:0}}
+@keyframes founder-ajar{0%,12%{opacity:0;transform:scale(1)}32%,60%{opacity:1}84%,100%{opacity:0;transform:scale(1.045)}}
+@keyframes founder-arrive{0%,60%{opacity:0;transform:scale(1.025)}84%,100%{opacity:1;transform:scale(1)}}
+@media(max-width:760px){.living-museum .founder-gate{height:66.667vw}}
+@media(prefers-reduced-motion:reduce){.living-museum .opening .founder-frame{animation:none}}
+.living-museum .joined-gate-composition{position:absolute;left:50%;top:50%;width:min(100%,150cqh);aspect-ratio:1.5;transform:translate(-50%,-50%);display:block}
+.living-museum .joined-gate-base,.living-museum .joined-gate-interior,.living-museum .joined-gate-arrival{position:absolute;inset:0;width:100%;height:100%;max-width:none;object-fit:fill}
+.living-museum .joined-gate-interior{clip-path:ellipse(20.1% 29.8% at 50% 43.5%)}
+.living-museum .joined-door-window{position:absolute;inset:0;clip-path:ellipse(20.1% 29.8% at 50% 43.5%);perspective:1400px}
+.living-museum .joined-door-leaf{position:absolute;inset:0;backface-visibility:hidden}
+.living-museum .joined-door-gold{clip-path:polygon(0 0,50% 0,50% 100%,0 100%);transform-origin:30% 43.5%}
+.living-museum .joined-door-silver{clip-path:polygon(50% 0,100% 0,100% 100%,50% 100%);transform-origin:70% 43.5%}
+.living-museum .joined-door-identity{position:absolute;left:33.3%;top:18.45%;width:33.4%;aspect-ratio:1;display:block}
+.living-museum .joined-door-symbol{position:absolute;left:0;top:8%;width:100%;height:100%;object-fit:contain;clip-path:polygon(35% 24%,65% 24%,65% 42%,80% 42%,80% 51%,65% 51%,65% 57%,35% 57%,35% 51%,20% 51%,20% 42%,35% 42%);filter:none}
+.living-museum .joined-door-star{position:absolute;left:0;top:-14%;width:100%;height:100%;object-fit:contain;clip-path:inset(82% 44% 8% 44%);filter:none}
+.living-museum .joined-door-lettering{position:absolute;inset:0;width:100%;height:100%;overflow:visible;fill:#eed8a0;font-family:Georgia,serif;letter-spacing:0}
+.living-museum .door-company-name{font-size:7px}
+.living-museum .door-house-name{font-size:4.8px}
+.living-museum .joined-door-lettering{filter:drop-shadow(0 .3px 0 #fff3bf) drop-shadow(0 .8px .3px #100d07);font-weight:600}
+.living-museum .door-jewellery-name{font-size:3.5px}
+.living-museum .door-wording-cleanup,.living-museum .door-wording{position:absolute;inset:0;width:100%;height:100%;max-width:none;pointer-events:none}
+.living-museum .door-wording-cleanup{clip-path:inset(47% 38% 39% 38%);object-fit:fill}
+.living-museum .door-wording{font-family:Georgia,serif;font-weight:600;letter-spacing:0;filter:drop-shadow(0 .1px .1px #000)}
+.living-museum .door-wording-gold{fill:#f0d092}
+.living-museum .door-wording-silver{fill:#e0ddd6}
+.living-museum .joined-gate-arrival{opacity:0;pointer-events:none}
+.living-museum .opening .joined-door-gold{animation:joined-open-gold var(--entry-duration) cubic-bezier(.45,0,.2,1) both}
+.living-museum .opening .joined-door-silver{animation:joined-open-silver var(--entry-duration) cubic-bezier(.45,0,.2,1) both}
+.living-museum .opening .joined-gate-composition{animation:joined-approach var(--entry-duration) cubic-bezier(.45,0,.2,1) both;will-change:transform}
+.living-museum .opening .joined-gate-arrival{animation:joined-arrive var(--entry-duration) ease-in-out both}
+@keyframes joined-open-gold{0%,5%{transform:rotateY(0)}70%,100%{transform:rotateY(-38deg)}}
+@keyframes joined-open-silver{0%,5%{transform:rotateY(0)}70%,100%{transform:rotateY(38deg)}}
+@keyframes joined-approach{0%,35%{transform:translate(-50%,-50%) scale(1)}100%{transform:translate(-50%,-50%) scale(1.09)}}
+@keyframes joined-arrive{0%,58%{opacity:0;transform:scale(.96)}94%,100%{opacity:1;transform:scale(1)}}
+.living-museum .museum-arrival-veil{position:fixed;inset:0;z-index:90;pointer-events:none;background:#080808;animation:museum-soft-handoff 1.8s ease-in-out both}
+.living-museum .museum-arrival-veil img{width:100%;height:100%;object-fit:contain;transform:scale(1.09)}
+@keyframes museum-soft-handoff{0%,20%{opacity:1}100%{opacity:0}}
+@media(prefers-reduced-motion:reduce){.living-museum .opening .joined-door-leaf,.living-museum .opening .joined-gate-arrival,.living-museum .opening .joined-gate-composition{animation:none}.living-museum .museum-arrival-veil{animation-duration:1ms}}
+@media(max-width:600px){
+ .living-museum .spatial-top{flex-direction:column;align-items:stretch;gap:12px;padding:16px 18px 24px}
+ .living-museum .spatial-top>div:first-child{min-width:0}
+ .living-museum .spatial-top strong{overflow-wrap:anywhere}
+ .living-museum .spatial-top-actions{display:grid;grid-template-columns:repeat(auto-fit,minmax(44px,1fr));gap:8px;width:100%;max-width:216px}
+ .living-museum .spatial-top-actions .spatial-icon{min-width:44px;min-height:44px}
+ .living-museum .spatial-bottom{flex-wrap:wrap;justify-content:center;gap:10px}
+ .living-museum .spatial-bottom-actions{flex:0 1 auto;justify-content:center}
+ .living-museum .spatial-look>span{display:none}
+}

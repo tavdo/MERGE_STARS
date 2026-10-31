@@ -34,6 +34,7 @@ export default function ProfileAvatar({
 
   const initials = `${firstName.charAt(0)}${lastName.charAt(0)}`.toUpperCase() || '?'
 
+  /* eslint-disable react-hooks/set-state-in-effect -- Synchronizes browser blob URLs and revokes them on cleanup. */
   useEffect(() => {
     if (!hasAvatar || !token) {
       setSrc(null)
@@ -65,6 +66,7 @@ export default function ProfileAvatar({
       if (objectUrl) URL.revokeObjectURL(objectUrl)
     }
   }, [hasAvatar, token, avatarVersion])
+  /* eslint-enable react-hooks/set-state-in-effect */
 
   useEffect(() => {
     return () => {

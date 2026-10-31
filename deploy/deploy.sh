@@ -124,7 +124,7 @@ test -f dist/main.js || { echo "ERROR: backend build failed - dist/main.js missi
 wait_for_backend() {
   local i
   for i in $(seq 1 45); do
-    if curl -sf --max-time 2 http://127.0.0.1:${PORT:-3000}/api/health >/dev/null 2>&1; then
+    if curl -sf --max-time 2 http://127.0.0.1:${PORT:-3000}/api/health | node -e 'let body=""; process.stdin.on("data", chunk => body += chunk); process.stdin.on("end", () => { try { process.exit(JSON.parse(body).data?.ok === true || JSON.parse(body).ok === true ? 0 : 1); } catch { process.exit(1); } });' >/dev/null 2>&1; then
       echo "    backend health OK"
       return 0
     fi

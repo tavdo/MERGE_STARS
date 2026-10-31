@@ -3,8 +3,7 @@ import type { ApiResponse } from '@/shared/types/api.types'
 
 export interface AiChatResponse {
   text: string
-  provider: 'openai' | 'fallback' | 'trained' | 'pending'
-  needsClarification?: boolean
+  provider: 'openai' | 'fallback'
 }
 
 export const aiApi = {

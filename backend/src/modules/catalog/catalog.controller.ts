@@ -1,3 +1,4 @@
+import { MuseumQueryDto } from './dto/museum-query.dto';
 import {
   Body,
   Controller,
@@ -141,6 +142,12 @@ export class CatalogController {
   @UseInterceptors(modelUpload)
   adminMasterModel(@Param('itemId') itemId: string, @UploadedFile() file: Express.Multer.File) {
     return this.catalog.uploadMasterModel3d(itemId, file);
+  }
+
+  @Get('public/museum')
+  @UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true, transform: true }))
+  museum(@Query() query: MuseumQueryDto) {
+    return this.catalog.museumPage({ ...query });
   }
 
   @Get('public')
@@ -334,4 +341,6 @@ export class CatalogController {
     res.setHeader('Cache-Control', 'private, max-age=3600');
     file.stream.pipe(res);
   }
+
+
 }

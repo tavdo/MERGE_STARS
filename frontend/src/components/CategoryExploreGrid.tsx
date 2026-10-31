@@ -46,8 +46,8 @@ export default function CategoryExploreGrid({
                 className={className}
                 onClick={() => onSelect(selected ? null : key)}
               >
-                <BrandIcon src={CATEGORY_ICONS[key as CategoryIconKey]} className="cat-explore-icon" />
-                <span className="cat-explore-label">{t(`landing.categories.${key}`)}</span>
+                <BrandIcon src={CATEGORY_ICONS[key as CategoryIconKey] || CATEGORY_ICONS.more} className="cat-explore-icon" />
+                <span className="cat-explore-label">{t(`landing.categories.${key}`, { defaultValue: key })}</span>
                 {typeof count === 'number' && count > 0 && (
                   <span className="cat-explore-count">{count}</span>
                 )}
@@ -61,8 +61,8 @@ export default function CategoryExploreGrid({
               to={`${basePath}?category=${encodeURIComponent(key)}`}
               className={className}
             >
-              <BrandIcon src={CATEGORY_ICONS[key as CategoryIconKey]} className="cat-explore-icon" />
-              <span className="cat-explore-label">{t(`landing.categories.${key}`)}</span>
+              <BrandIcon src={CATEGORY_ICONS[key as CategoryIconKey] || CATEGORY_ICONS.more} className="cat-explore-icon" />
+              <span className="cat-explore-label">{t(`landing.categories.${key}`, { defaultValue: key })}</span>
               {typeof count === 'number' && count > 0 && (
                 <span className="cat-explore-count">{count}</span>
               )}

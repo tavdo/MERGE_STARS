@@ -47,14 +47,8 @@ export interface CatalogCollection {
 }
 
 export type CatalogVisibility = 'PUBLIC' | 'PRIVATE'
-export type CatalogCategory =
-  | 'jewelry'
-  | 'accessories'
-  | 'souvenirs'
-  | 'sanitaryware'
-  | 'stationery'
-  | 'construction'
-  | 'more'
+export type { CatalogCategory } from '@/shared/catalogCategories'
+import type { CatalogCategory } from '@/shared/catalogCategories'
 
 export interface CatalogCategoryStat {
   key: CatalogCategory
@@ -65,7 +59,7 @@ export interface CatalogCollectionDetail extends CatalogCollection {
   items: CatalogItem[]
 }
 
-const apiBase = (import.meta.env.VITE_API_URL || (import.meta.env.PROD ? '/api' : 'http://localhost:3000')).replace(
+const apiBase = (import.meta.env.VITE_API_URL || '/api').replace(
   /\/$/,
   '',
 )

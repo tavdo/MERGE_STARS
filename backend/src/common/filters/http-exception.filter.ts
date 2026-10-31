@@ -26,7 +26,9 @@ export class HttpExceptionFilter implements ExceptionFilter {
         message = Array.isArray(o.message)
           ? (o.message as string[]).join('; ')
           : String(o.message ?? message);
-        code = String(o.error ?? code).replace(/\s+/g, '_').toUpperCase();
+        code = String(o.error ?? code)
+          .replace(/\s+/g, '_')
+          .toUpperCase();
       }
     }
 

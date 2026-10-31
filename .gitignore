@@ -1,7 +1,37 @@
 .env
 .env.local
 .env.*.local
+node_modules/
+dist/
+coverage/
+.artifacts/
+outputs/
+*.tsbuildinfo
+*.sqlite
+*.sqlite3
+*.db
+*.pem
+*.key
+*.pfx
+*.p12
+backend/data/
+backend/uploads/
+deploy/data/
+frontend/.env.production
+backend/.env.production
 deploy/data/announce-sent.log
 deploy/data/.announce-recipients.json
 deploy/data/request-phone-sent.log
 deploy/data/.request-phone-recipients.json
+
+# Local integration downloads and backup
+.merge-source/
+.integration-source/
+integration-source.zip
+integration-backup.zip
+source-tree.json
+
+.integration-original/
+
+# Historical integration source backup
+legacy-source/

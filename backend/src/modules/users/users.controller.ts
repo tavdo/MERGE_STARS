@@ -22,9 +22,7 @@ import { CurrentUser } from '../../common/decorators/current-user.decorator';
 import { User, userPublicView } from '../../database/entities/user.entity';
 import { UsersService } from './users.service';
 import { UpdateUserDto } from './dto/update-user.dto';
-import {
-  ChangePasswordDto,
-} from './dto/change-password.dto';
+import { ChangePasswordDto } from './dto/change-password.dto';
 import {
   ConfirmEmailChangeDto,
   RequestEmailChangeDto,

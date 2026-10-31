@@ -12,7 +12,6 @@ const NAV_LINKS = [
   { labelKey: 'nav.mergeCoin', href: '/merge-coin' },
   { labelKey: 'nav.filament', href: '/filament' },
   { labelKey: 'nav.brandRoom', href: '/brand-room' },
-  { labelKey: 'nav.livingMuseum', href: '/living-museum' },
   { labelKey: 'nav.prices', href: '/price-indicator' },
   { labelKey: 'nav.apply', href: '/apply' },
   { labelKey: 'nav.faq', href: '/faq' },
@@ -33,9 +32,11 @@ export default function Navbar({ variant = 'landing' }: NavbarProps) {
   const isLanding = variant === 'landing'
   const currentLang = (i18n.language?.slice(0, 2) || 'en') as LanguageCode
 
-  useEffect(() => {
+  const [menuPath, setMenuPath] = useState(location.pathname)
+  if (menuPath !== location.pathname) {
+    setMenuPath(location.pathname)
     setMobileOpen(false)
-  }, [location.pathname])
+  }
 
   useEffect(() => {
     const mq = window.matchMedia('(min-width: 1024px)')

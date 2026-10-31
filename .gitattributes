@@ -1,3 +1,8 @@
 # Force Unix line endings for shell scripts (prevents "uild: command not found" on Linux)
 *.sh text eol=lf
 deploy/** text eol=lf
+*.pdf binary
+*.glb binary
+*.png binary
+*.jpg binary
+*.webp binary

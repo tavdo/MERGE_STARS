@@ -29,14 +29,16 @@ function mapUser(u: {
 export function useLogin() {
   const setSession = useAuthStore((s) => s.setSession)
   const navigate = useNavigate()
+  const [searchParams] = useSearchParams()
 
   return useMutation({
     mutationFn: (payload: LoginPayload) => authApi.login(payload),
-    onSuccess: ({ data }) => {
+    onSuccess: ({ data }, payload) => {
       const { accessToken, user } = data.data
-      setSession(accessToken, mapUser(user))
+      setSession(accessToken, mapUser(user), payload.rememberMe ?? false)
       connectSocket(accessToken)
-      navigate(ROUTES.DASHBOARD)
+      const next = searchParams.get('next')
+      navigate(next && /^\/(?!\/)/.test(next) && !/[\\\r\n]/.test(next) && !next.startsWith('/admin') && !next.startsWith('/login') ? next : '/my-world')
     },
   })
 }
@@ -70,7 +72,7 @@ export function useRegister() {
       const { accessToken, user } = response.data.data
       setSession(accessToken, mapUser(user))
       connectSocket(accessToken)
-      navigate(kycComplete ? ROUTES.DASHBOARD : '/dashboard/profile?kyc=required')
+      navigate(kycComplete ? '/my-world' : '/dashboard/profile?kyc=required')
     },
   })
 }

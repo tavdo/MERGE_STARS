@@ -1,36 +1,6 @@
 export default {
   lang: { label: 'Язык', en: 'English', ru: 'Русский', fr: 'Français', de: 'Deutsch', tr: 'Türkçe', ka: 'ქართული', ar: 'العربية' },
-  seo: {
-    pages: {
-      livingMuseum: {
-        title: 'Живой музей брендов | Ювелир брендов — MERGE STARS',
-        description:
-          'Живой музей MERGE STARS — Brand House, цифровой двойник, FIT TO ME, Create My Version, ДНК мозаики MERGE и производство цифра→физика на CORE mergestars.com.',
-      },
-      brandRoom: {
-        title: 'Brand Room | Бренды участников MERGE STARS',
-        description: 'Публичные каталоги брендов, ювелирные изделия, аксессуары и дизайны участников MERGE STARS.',
-      },
-    },
-  },
-  nav: {
-    home: 'Главная',
-    howItWorks: 'Как это работает',
-    mergeCoin: 'Merge Coin',
-    filament: 'Филамент',
-    brandRoom: 'Brand Room',
-    livingMuseum: 'Живой музей',
-    prices: 'Цены',
-    apply: 'Заявка',
-    faq: 'FAQ',
-    contact: 'Контакты',
-    trust: 'Центр доверия',
-    legalClassification: 'Правовая классификация',
-    login: 'Вход',
-    dashboard: 'Кабинет',
-    menu: 'Меню',
-    closeMenu: 'Закрыть меню',
-  },
+  nav: { home: 'Главная', howItWorks: 'Как это работает', mergeCoin: 'Merge Coin', prices: 'Цены', apply: 'Заявка', faq: 'FAQ', contact: 'Контакты', trust: 'Trust Center', legalClassification: 'Legal Classification', login: 'Вход', dashboard: 'Кабинет', menu: 'Меню' },
   footer: {
     secure: 'БЕЗОПАСНАЯ ПЛАТФОРМА', secureSub: 'Ваши данные защищены', fast: 'БЫСТРО И НАДЁЖНО', fastSub: 'Безупречный опыт',
     global: 'ГЛОБАЛЬНОЕ СООБЩЕСТВО', globalSub: 'Тысячи участников', supportTitle: 'ПОДДЕРЖКА', supportSub: 'Мы всегда на связи',
@@ -43,7 +13,7 @@ export default {
     heroBody: 'MERGE STARS — революционная платформа, объединяющая передовую 3D-технологию и драгоценные металлы.',
     exploreCollection: 'Смотреть коллекцию', watchVideo: 'Смотреть видео', exploreTech: 'Изучить технологию ↓',
     features: {
-      filament: { title: '3D ТЕХНОЛОГИЯ', sub: 'Запатентованные инновации' },
+      filament: { title: '3D ТЕХНОЛОГИЯ', sub: 'Разработка материала · требуется проверка' },
       metals: { title: 'НАСТОЯЩИЕ МЕТАЛЛЫ', sub: 'В каждом изделии' },
       limitless: { title: 'БЕЗГРАНИЧНЫЕ ВОЗМОЖНОСТИ', sub: 'Неограниченное применение' },
       sustainable: { title: 'ЛЁГКОСТЬ И УСТОЙЧИВОСТЬ', sub: 'Будущее роскоши' },
@@ -51,7 +21,7 @@ export default {
     },
     categoriesTitle: 'Категории', categories: { jewelry: 'ЮВЕЛИРНЫЕ', accessories: 'АКСЕССУАРЫ', souvenirs: 'СУВЕНИРЫ', sanitaryware: 'САНТЕХНИКА', stationery: 'КАНЦТОВАРЫ', construction: 'СТРОИТЕЛЬНЫЕ', more: 'ЕЩЁ' },
     techPanel: '3D Filament Technology', techTitle1: 'Революционная', techTitle2: '3D-нить', techTitle3: 'технология',
-    techBody: 'Наша запатентованная 3D-нить обогащена драгоценными металлами — лёгкие, прочные изделия высочайшей роскоши.',
+    techBody: 'Концепция филамента MERGE объединяет полимерную основу и компонент драгоценного металла. Состав, прочность и безопасность применения требуют лабораторной проверки. Патентный статус должен подтверждаться официальным документом.',
     discoverTech: 'Узнать больше', techPoints: { metals: { title: 'ДРАГМЕТАЛЛЫ', sub: 'Серебро, золото, платина' }, composite: { title: 'КОМПОЗИТ', sub: 'Прочность и красота' }, lightweight: { title: 'ЛЁГКОСТЬ', sub: 'Инженерная точность' } },
     investTitle1: 'Инвестируйте в', investTitle2: '', investTitleGold: 'будущее', investBody: 'Станьте частью глобального движения, переопределяющего роскошь и технологии.',
     learnMore: 'Подробнее', investPoints: { growth: 'ВЫСОКИЙ ПОТЕНЦИАЛ', tech: 'ИННОВАЦИИ', partner: 'ПАРТНЁРСТВО', impact: 'ГЛОБАЛЬНОЕ ВЛИЯНИЕ' },

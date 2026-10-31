@@ -51,7 +51,9 @@ export class PhaseE1741000000000 implements MigrationInterface {
       DROP COLUMN IF EXISTS "courier",
       DROP COLUMN IF EXISTS "tracking_code"
     `);
-    await queryRunner.query(`ALTER TABLE "users" DROP COLUMN IF EXISTS "avatar_url"`);
+    await queryRunner.query(
+      `ALTER TABLE "users" DROP COLUMN IF EXISTS "avatar_url"`,
+    );
     await queryRunner.query(`
       ALTER TABLE "catalog_items"
       DROP COLUMN IF EXISTS "model3d_format",

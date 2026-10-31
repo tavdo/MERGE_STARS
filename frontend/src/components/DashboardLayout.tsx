@@ -11,18 +11,20 @@ import { usersApi } from '@/features/users/api/users.api'
 import { socket } from '@/lib/socket'
 
 const NAV = [
+  { icon: '◇', labelKey: 'My museum', href: '/my-museum' },
+  { icon: '◇', labelKey: 'Material Lab', href: '/material-lab' },
   { icon: '⊞', labelKey: 'dashboard.nav.dashboard', href: '/dashboard', exact: true },
   { icon: '◦', labelKey: 'dashboard.nav.profile', href: '/dashboard/profile' },
   { icon: '◦', labelKey: 'dashboard.nav.applications', href: '/apply', match: ['/apply', '/status'] },
   { icon: '◎', labelKey: 'dashboard.nav.fillCoin', href: '/fill-coin' },
+  { icon: '★', labelKey: 'dashboard.nav.masterCatalog', href: '/dashboard/master-catalog' },
+  { icon: '◈', labelKey: 'dashboard.nav.wallet', href: '/dashboard/wallet' },
   { icon: '◦', labelKey: 'dashboard.nav.orders', href: '/dashboard/orders' },
   { icon: '◦', labelKey: 'dashboard.nav.coins', href: '/dashboard/coins' },
   { icon: '◦', labelKey: 'dashboard.nav.brandLine', href: '/dashboard/brand' },
-  { icon: '★', labelKey: 'dashboard.nav.masterCatalog', href: '/dashboard/master-catalog' },
   { icon: '◦', labelKey: 'dashboard.nav.collections', href: '/dashboard/collections', match: ['/dashboard/collections'] },
   { icon: '◦', labelKey: 'dashboard.nav.qrIdentity', href: '/dashboard/qr' },
   { icon: '◦', labelKey: 'dashboard.nav.payment', href: '/dashboard/payment' },
-  { icon: '◈', labelKey: 'dashboard.nav.wallet', href: '/dashboard/wallet' },
   { icon: '◦', labelKey: 'dashboard.nav.delivery', href: '/dashboard/delivery' },
   { icon: '◦', labelKey: 'dashboard.nav.referral', href: '/dashboard/referral' },
   { icon: '◦', labelKey: 'dashboard.nav.messages', href: '/dashboard/messages', badgeKey: 'messages' as const },
@@ -87,9 +89,11 @@ export default function DashboardLayout({ children, title, titleKey }: Props) {
 
   const showLabels = sidebarExpanded || mobileNavOpen
 
-  useEffect(() => {
+  const [menuPath, setMenuPath] = useState(location.pathname)
+  if (menuPath !== location.pathname) {
+    setMenuPath(location.pathname)
     setMobileNavOpen(false)
-  }, [location.pathname])
+  }
 
   useEffect(() => {
     const mq = window.matchMedia('(min-width: 1024px)')

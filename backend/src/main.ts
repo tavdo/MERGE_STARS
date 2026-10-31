@@ -1,5 +1,5 @@
 import { NestFactory } from '@nestjs/core';
-import { ValidationPipe } from '@nestjs/common';
+import { ValidationPipe, Logger } from '@nestjs/common';
 import { IoAdapter } from '@nestjs/platform-socket.io';
 import * as Sentry from '@sentry/nestjs';
 import cookieParser = require('cookie-parser');
@@ -18,7 +18,10 @@ function parseCorsOrigins(raw: string | undefined): string[] {
   if (!raw?.trim()) {
     return ['http://localhost:5173', 'http://localhost:8080'];
   }
-  return raw.split(',').map((origin) => origin.trim()).filter(Boolean);
+  return raw
+    .split(',')
+    .map((origin) => origin.trim())
+    .filter(Boolean);
 }
 
 async function bootstrap() {
@@ -30,7 +33,11 @@ async function bootstrap() {
 
   app.use(cookieParser());
   app.useGlobalPipes(
-    new ValidationPipe({ whitelist: true, transform: true, forbidNonWhitelisted: false }),
+    new ValidationPipe({
+      whitelist: true,
+      transform: true,
+      forbidNonWhitelisted: false,
+    }),
   );
 
   app.enableCors({
@@ -41,25 +48,33 @@ async function bootstrap() {
   const audit = app.get(AuditService);
   app.use((req: any, res: any, next: any) => {
     const started = Date.now();
-    const actorId = (req.headers['x-actor-id'] as string | undefined) ?? 'ANON';
-    const actorRole = (
-      (req.headers['x-actor-role'] as string | undefined) ?? 'ANONYMOUS'
-    ).toUpperCase();
     res.on('finish', () => {
+      const actorId = req.user?.id ?? 'ANON';
+      const actorRole = !req.user
+        ? 'ANONYMOUS'
+        : req.user.roles.includes('admin')
+          ? 'ADMIN'
+          : req.user.roles.includes('manager')
+            ? 'MANAGER'
+            : 'CUSTOMER';
       const ok = res.statusCode >= 200 && res.statusCode < 400;
-      audit.write({
-        actor_id: actorId,
-        actor_role: actorRole as any,
-        action: `${req.method} ${req.originalUrl ?? req.url}`,
-        object_id: null,
-        ip_address: (req.ip as string | undefined) ?? null,
-        result: ok ? 'SUCCESS' : 'FAILURE',
-        owner: 'system',
-        meta: {
-          status_code: res.statusCode,
-          duration_ms: Date.now() - started,
-        },
-      });
+      try {
+        audit.write({
+          actor_id: actorId,
+          actor_role: actorRole as any,
+          action: `${req.method} ${req.originalUrl ?? req.url}`,
+          object_id: null,
+          ip_address: (req.ip as string | undefined) ?? null,
+          result: ok ? 'SUCCESS' : 'FAILURE',
+          owner: 'system',
+          meta: {
+            status_code: res.statusCode,
+            duration_ms: Date.now() - started,
+          },
+        });
+      } catch {
+        Logger.error('Audit persistence failed', 'Audit');
+      }
     });
     next();
   });

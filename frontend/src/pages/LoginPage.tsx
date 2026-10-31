@@ -30,9 +30,12 @@ export default function LoginPage() {
   const register = useRegister()
   const [tab, setTab] = useState<Tab>(() => (searchParams.get('tab') === 'register' ? 'register' : 'login'))
 
-  useEffect(() => {
-    if (searchParams.get('tab') === 'register') setTab('register')
-  }, [searchParams])
+  const requestedTab = searchParams.get('tab')
+  const [lastRequestedTab, setLastRequestedTab] = useState(requestedTab)
+  if (requestedTab !== lastRequestedTab) {
+    setLastRequestedTab(requestedTab)
+    setTab(requestedTab === 'register' ? 'register' : 'login')
+  }
 
   useEffect(() => {
     persistReferralRef(searchParams.get('ref'))
@@ -48,6 +51,7 @@ export default function LoginPage() {
 
   const [identifier, setIdentifier] = useState('')
   const [password, setPassword] = useState('')
+  const [rememberMe, setRememberMe] = useState(false)
 
   const [firstName, setFirstName] = useState('')
   const [lastName, setLastName] = useState('')
@@ -88,7 +92,7 @@ export default function LoginPage() {
     e.preventDefault()
     setAuthError(null)
     login.mutate(
-      { identifier, password },
+      { identifier, password, rememberMe },
       {
         onError: (err) =>
           setAuthError(getApiErrorMessage(err, t('authPanel.loginFailed', { defaultValue: 'Invalid email/phone or password' }))),
@@ -201,9 +205,10 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen flex auth-shell">
+    <div className="min-h-screen flex" style={{ background: '#080808' }}>
       <div
-        className="auth-brand-panel hidden lg:flex flex-col justify-between w-[45%] relative overflow-hidden px-16 py-12"
+        className="hidden lg:flex flex-col justify-between w-[45%] relative overflow-hidden px-16 py-12"
+        style={{ background: 'linear-gradient(135deg, #080808 0%, #0f0f0f 100%)' }}
       >
         <div
           className="absolute pointer-events-none"
@@ -292,7 +297,7 @@ export default function LoginPage() {
             </div>
             <div className="flex justify-between items-center">
               <label className="flex items-center gap-2 cursor-pointer">
-                <input type="checkbox" className="accent-[#c9a84c]" />
+                <input type="checkbox" className="accent-[#c9a84c]" checked={rememberMe} onChange={(event) => setRememberMe(event.target.checked)} />
                 <span className="text-[12px]" style={{ color: 'rgba(255,255,255,0.5)' }}>{t('authPanel.rememberMe')}</span>
               </label>
               <Link to="/forgot-password" className="text-[12px]" style={{ color: '#c9a84c', textDecoration: 'none' }}>{t('authPanel.forgotPassword')}</Link>

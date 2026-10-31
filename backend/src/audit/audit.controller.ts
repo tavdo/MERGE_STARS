@@ -1,11 +1,34 @@
-import { Body, Controller, Get, Post, Query, Req, UseGuards } from '@nestjs/common'
-import { AuditService } from './audit.service'
-import { AuditActorRole, AuditEvent } from './audit.types'
-import { JwtAuthGuard } from '../common/guards/jwt-auth.guard'
-import { RolesGuard } from '../common/guards/roles.guard'
-import { Roles } from '../common/decorators/roles.decorator'
+import {
+  Body,
+  Controller,
+  Get,
+  Post,
+  Query,
+  Req,
+  UseGuards,
+} from '@nestjs/common';
+import {
+  IsString,
+  IsOptional,
+  IsObject,
+  MaxLength,
+  IsNotEmpty,
+} from 'class-validator';
+import { AuditService } from './audit.service';
+import { AuditActorRole } from './audit.types';
+import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
+import { RolesGuard } from '../common/guards/roles.guard';
+import { Roles } from '../common/decorators/roles.decorator';
+import { User } from '../database/entities/user.entity';
+
+class AuditInput {
+  @IsString() @IsNotEmpty() @MaxLength(200) action: string;
+  @IsOptional() @IsString() @MaxLength(200) object_id?: string;
+  @IsOptional() @IsObject() meta?: Record<string, unknown>;
+}
 
 @Controller('audit')
+@UseGuards(JwtAuthGuard)
 export class AuditController {
   constructor(private readonly audit: AuditService) {}
 
@@ -13,8 +36,11 @@ export class AuditController {
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('admin', 'manager')
   list(@Query('limit') limit?: string) {
-    const n = Math.max(1, Math.min(2000, Number(limit ?? 200)))
-    return this.audit.listLast(n)
+    const parsed = Number(limit ?? 200);
+    const n = Number.isFinite(parsed)
+      ? Math.max(1, Math.min(2000, Math.floor(parsed)))
+      : 200;
+    return this.audit.listLast(n);
   }
 
   /**
@@ -22,10 +48,16 @@ export class AuditController {
    * Actor can be provided via headers (x-actor-id / x-actor-role) or body.
    */
   @Post('events')
-  write(@Req() req: any, @Body() body: Partial<AuditEvent> & { action?: string; object_id?: string | null }) {
-    const actor_id = (req.headers['x-actor-id'] as string | undefined) ?? body.actor_id ?? 'ANON'
-    const actor_role = ((req.headers['x-actor-role'] as string | undefined) ?? body.actor_role ?? 'ANONYMOUS').toUpperCase() as AuditActorRole
-    const action = body.action ?? 'UNSPECIFIED'
+  write(@Req() req: { user: User; ip?: string }, @Body() body: AuditInput) {
+    const actor_id = req.user.id;
+    const actor_role = (
+      req.user.roles.includes('admin')
+        ? 'ADMIN'
+        : req.user.roles.includes('manager')
+          ? 'MANAGER'
+          : 'CUSTOMER'
+    ) as AuditActorRole;
+    const action = body.action ?? 'UNSPECIFIED';
 
     const ev = this.audit.write({
       actor_id,
@@ -33,12 +65,11 @@ export class AuditController {
       action,
       object_id: body.object_id ?? null,
       ip_address: (req.ip as string | undefined) ?? null,
-      result: (body.result as any) ?? 'SUCCESS',
-      owner: body.owner ?? 'system',
+      result: 'SUCCESS',
+      owner: 'client',
       meta: body.meta ?? undefined,
-    })
+    });
 
-    return { ok: true, data: ev }
+    return { ok: true, data: ev };
   }
 }
-

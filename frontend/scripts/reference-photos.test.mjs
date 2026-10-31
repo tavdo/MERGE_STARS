@@ -1,0 +1,11 @@
+import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
+import ts from 'typescript';
+const source = readFileSync(new URL('../src/living-museum/lib/unique-reference-photos.ts', import.meta.url), 'utf8');
+const compiled = ts.transpileModule(source, { compilerOptions: { module: ts.ModuleKind.ES2022 } }).outputText;
+const { uniqueReferencePhotos } = await import(`data:text/javascript;base64,${Buffer.from(compiled).toString('base64')}`);
+const photos = [{ image: '/a.png', title: 'Original' }, { image: '/b.png' }, { image: '/a.png', title: 'Repeated' }];
+assert.deepEqual(uniqueReferencePhotos(photos), photos.slice(0, 2));
+assert.equal(photos.length, 3);
+assert.deepEqual(uniqueReferencePhotos([]), []);
+console.log('Reference photos: stable order, first entry retained, input preserved.');

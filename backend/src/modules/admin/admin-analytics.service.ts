@@ -7,8 +7,21 @@ import { CoinApplication } from '../../database/entities/coin-application.entity
 import { BrandLineProfile } from '../../database/entities/brand-line-profile.entity';
 import { PlatformSettingsService } from '../settings/platform-settings.service';
 
-const PAID_STATUSES = new Set(['paid', 'in_production', 'delivered', 'completed']);
-const APPROVED_STATUSES = new Set(['approved', 'funds_received', 'production_queue', 'in_production', 'quality_check', 'ready', 'delivered']);
+const PAID_STATUSES = new Set([
+  'paid',
+  'in_production',
+  'delivered',
+  'completed',
+]);
+const APPROVED_STATUSES = new Set([
+  'approved',
+  'funds_received',
+  'production_queue',
+  'in_production',
+  'quality_check',
+  'ready',
+  'delivered',
+]);
 
 function monthKey(d: Date) {
   return `${d.getUTCFullYear()}-${String(d.getUTCMonth() + 1).padStart(2, '0')}`;
@@ -34,39 +47,59 @@ export class AdminAnalyticsService {
   constructor(
     @InjectRepository(User) private readonly users: Repository<User>,
     @InjectRepository(Order) private readonly orders: Repository<Order>,
-    @InjectRepository(CoinApplication) private readonly applications: Repository<CoinApplication>,
-    @InjectRepository(BrandLineProfile) private readonly brandProfiles: Repository<BrandLineProfile>,
+    @InjectRepository(CoinApplication)
+    private readonly applications: Repository<CoinApplication>,
+    @InjectRepository(BrandLineProfile)
+    private readonly brandProfiles: Repository<BrandLineProfile>,
     private readonly settings: PlatformSettingsService,
   ) {}
 
   async dashboard() {
-    const [userRows, orderRows, appRows, brandRows, platform] = await Promise.all([
-      this.users.find(),
-      this.orders.find(),
-      this.applications.find(),
-      this.brandProfiles.find(),
-      this.settings.get(),
-    ]);
+    const [userRows, orderRows, appRows, brandRows, platform] =
+      await Promise.all([
+        this.users.find(),
+        this.orders.find(),
+        this.applications.find(),
+        this.brandProfiles.find(),
+        this.settings.get(),
+      ]);
 
     const totalUsers = userRows.length;
-    const verifiedUsers = userRows.filter((u) => u.kycStatus === 'verified').length;
+    const verifiedUsers = userRows.filter(
+      (u) => u.kycStatus === 'verified',
+    ).length;
     const totalOrders = orderRows.length;
-    const approvedApps = appRows.filter((a) => APPROVED_STATUSES.has(a.status)).length;
-    const deliveredOrders = orderRows.filter((o) => o.status === 'delivered').length;
+    const approvedApps = appRows.filter((a) =>
+      APPROVED_STATUSES.has(a.status),
+    ).length;
+    const deliveredOrders = orderRows.filter(
+      (o) => o.status === 'delivered',
+    ).length;
     const paidOrders = orderRows.filter((o) => PAID_STATUSES.has(o.status));
-    const totalRevenue = paidOrders.reduce((sum, o) => sum + Number(o.amount), 0);
+    const totalRevenue = paidOrders.reduce(
+      (sum, o) => sum + Number(o.amount),
+      0,
+    );
     const platformFeeRate = 0.02;
     const platformFee = totalRevenue * platformFeeRate;
 
     const now = new Date();
-    const monthStart = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), 1));
-    const prevMonthStart = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth() - 1, 1));
+    const monthStart = new Date(
+      Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), 1),
+    );
+    const prevMonthStart = new Date(
+      Date.UTC(now.getUTCFullYear(), now.getUTCMonth() - 1, 1),
+    );
 
-    const usersThisMonth = userRows.filter((u) => u.createdAt >= monthStart).length;
+    const usersThisMonth = userRows.filter(
+      (u) => u.createdAt >= monthStart,
+    ).length;
     const usersPrevMonth = userRows.filter(
       (u) => u.createdAt >= prevMonthStart && u.createdAt < monthStart,
     ).length;
-    const ordersThisMonth = orderRows.filter((o) => o.createdAt >= monthStart).length;
+    const ordersThisMonth = orderRows.filter(
+      (o) => o.createdAt >= monthStart,
+    ).length;
     const ordersPrevMonth = orderRows.filter(
       (o) => o.createdAt >= prevMonthStart && o.createdAt < monthStart,
     ).length;
@@ -93,7 +126,9 @@ export class AdminAnalyticsService {
 
     const monthlyMap = new Map<string, { orders: number; revenue: number }>();
     for (let i = 5; i >= 0; i--) {
-      const d = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth() - i, 1));
+      const d = new Date(
+        Date.UTC(now.getUTCFullYear(), now.getUTCMonth() - i, 1),
+      );
       monthlyMap.set(monthKey(d), { orders: 0, revenue: 0 });
     }
     for (const o of orderRows) {
@@ -155,14 +190,68 @@ export class AdminAnalyticsService {
 
     return {
       stats: [
-        { label: 'TOTAL USERS', value: String(totalUsers), change: pctChange(usersThisMonth, usersPrevMonth), up: usersThisMonth >= usersPrevMonth, color: '#fff' },
-        { label: 'VERIFIED USERS', value: String(verifiedUsers), change: pctChange(verifiedUsers, Math.max(verifiedUsers - usersThisMonth, 0)), up: true, color: '#22c55e' },
-        { label: 'TOTAL ORDERS', value: String(totalOrders), change: pctChange(ordersThisMonth, ordersPrevMonth), up: ordersThisMonth >= ordersPrevMonth, color: '#c9a84c' },
-        { label: 'APPROVED', value: String(approvedApps), change: '—', up: true, color: '#22c55e' },
-        { label: 'CONVERSION RATE', value: `${conversionRate.toFixed(1)}%`, change: '—', up: true, color: '#60a5fa' },
-        { label: 'QR SCANS (MTD)', value: String(qrScansMtd), change: '—', up: true, color: '#a78bfa' },
-        { label: 'TOTAL REVENUE', value: `$${Math.round(totalRevenue).toLocaleString()}`, change: pctChange(revenueThisMonth, revenuePrevMonth), up: revenueThisMonth >= revenuePrevMonth, color: '#c9a84c' },
-        { label: 'PLATFORM FEE', value: `$${Math.round(platformFee).toLocaleString()}`, change: pctChange(revenueThisMonth * platformFeeRate, revenuePrevMonth * platformFeeRate), up: true, color: '#f5d78e' },
+        {
+          label: 'TOTAL USERS',
+          value: String(totalUsers),
+          change: pctChange(usersThisMonth, usersPrevMonth),
+          up: usersThisMonth >= usersPrevMonth,
+          color: '#fff',
+        },
+        {
+          label: 'VERIFIED USERS',
+          value: String(verifiedUsers),
+          change: pctChange(
+            verifiedUsers,
+            Math.max(verifiedUsers - usersThisMonth, 0),
+          ),
+          up: true,
+          color: '#22c55e',
+        },
+        {
+          label: 'TOTAL ORDERS',
+          value: String(totalOrders),
+          change: pctChange(ordersThisMonth, ordersPrevMonth),
+          up: ordersThisMonth >= ordersPrevMonth,
+          color: '#c9a84c',
+        },
+        {
+          label: 'APPROVED',
+          value: String(approvedApps),
+          change: '—',
+          up: true,
+          color: '#22c55e',
+        },
+        {
+          label: 'CONVERSION RATE',
+          value: `${conversionRate.toFixed(1)}%`,
+          change: '—',
+          up: true,
+          color: '#60a5fa',
+        },
+        {
+          label: 'QR SCANS (MTD)',
+          value: String(qrScansMtd),
+          change: '—',
+          up: true,
+          color: '#a78bfa',
+        },
+        {
+          label: 'TOTAL REVENUE',
+          value: `$${Math.round(totalRevenue).toLocaleString()}`,
+          change: pctChange(revenueThisMonth, revenuePrevMonth),
+          up: revenueThisMonth >= revenuePrevMonth,
+          color: '#c9a84c',
+        },
+        {
+          label: 'PLATFORM FEE',
+          value: `$${Math.round(platformFee).toLocaleString()}`,
+          change: pctChange(
+            revenueThisMonth * platformFeeRate,
+            revenuePrevMonth * platformFeeRate,
+          ),
+          up: true,
+          color: '#f5d78e',
+        },
       ],
       monthly,
       countries,

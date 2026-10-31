@@ -6,15 +6,21 @@ import type { Transporter } from 'nodemailer';
 export class MailService implements OnModuleInit {
   private readonly log = new Logger(MailService.name);
   private transporter: Transporter | null = null;
-  private readonly sendTimeoutMs = Number(process.env.SMTP_TIMEOUT_MS ?? 30_000);
+  private readonly sendTimeoutMs = Number(
+    process.env.SMTP_TIMEOUT_MS ?? 30_000,
+  );
 
   async onModuleInit() {
     if (this.useResend()) {
-      this.log.log(`Resend API mail transport ready (from: ${this.resendFrom()})`);
+      this.log.log(
+        `Resend API mail transport ready (from: ${this.resendFrom()})`,
+      );
       return;
     }
     if (this.useBrevo()) {
-      this.log.log('Brevo API mail transport ready (HTTPS — works when VPS blocks SMTP ports)');
+      this.log.log(
+        'Brevo API mail transport ready (HTTPS — works when VPS blocks SMTP ports)',
+      );
       return;
     }
     if (!this.isSmtpConfigured()) {
@@ -24,10 +30,14 @@ export class MailService implements OnModuleInit {
     try {
       const transport = this.getTransporter();
       await transport?.verify();
-      this.log.log(`SMTP ready (${process.env.SMTP_USER?.trim().toLowerCase()}, port ${process.env.SMTP_PORT ?? 587})`);
+      this.log.log(
+        `SMTP ready (${process.env.SMTP_USER?.trim().toLowerCase()}, port ${process.env.SMTP_PORT ?? 587})`,
+      );
     } catch (err) {
       this.transporter = null;
-      this.log.error(`SMTP verify failed on startup: ${(err as Error).message}`);
+      this.log.error(
+        `SMTP verify failed on startup: ${(err as Error).message}`,
+      );
     }
   }
 
@@ -55,7 +65,12 @@ export class MailService implements OnModuleInit {
     return this.fromAddress();
   }
 
-  private async sendViaResend(to: string, subject: string, html: string, text: string) {
+  private async sendViaResend(
+    to: string,
+    subject: string,
+    html: string,
+    text: string,
+  ) {
     const key = process.env.RESEND_API_KEY!.trim();
     const res = await fetch('https://api.resend.com/emails', {
       method: 'POST',
@@ -91,7 +106,12 @@ export class MailService implements OnModuleInit {
     return { name: 'MERGE STARS', email: from.trim().toLowerCase() };
   }
 
-  private async sendViaBrevo(to: string, subject: string, html: string, text: string) {
+  private async sendViaBrevo(
+    to: string,
+    subject: string,
+    html: string,
+    text: string,
+  ) {
     const key = this.brevoApiKey();
     const sender = this.parseFromAddress(this.fromAddress());
     const res = await fetch('https://api.brevo.com/v3/smtp/email', {
@@ -140,7 +160,9 @@ export class MailService implements OnModuleInit {
   /** Send without blocking the HTTP response (e.g. password reset). */
   sendInBackground(to: string, subject: string, html: string, text: string) {
     void this.send(to, subject, html, text).catch((err) => {
-      this.log.error(`Background mail to ${to} failed: ${(err as Error).message}`);
+      this.log.error(
+        `Background mail to ${to} failed: ${(err as Error).message}`,
+      );
     });
   }
 
@@ -156,7 +178,8 @@ export class MailService implements OnModuleInit {
       return raw || 'MERGE STARS <noreply@mergestars.com>';
     }
     const nameMatch = raw.match(/^(.+?)\s*</);
-    const name = (nameMatch?.[1] ?? raw.replace(/<[^>]+>/g, '')).trim() || 'MERGE STARS';
+    const name =
+      (nameMatch?.[1] ?? raw.replace(/<[^>]+>/g, '')).trim() || 'MERGE STARS';
     return `${name} <${user}>`;
   }
 
@@ -177,7 +200,9 @@ export class MailService implements OnModuleInit {
         await this.sendViaResend(to, subject, html, text);
         return;
       } catch (err) {
-        this.log.error(`Resend mail to ${to} failed: ${(err as Error).message}`);
+        this.log.error(
+          `Resend mail to ${to} failed: ${(err as Error).message}`,
+        );
         throw err;
       }
     }
@@ -214,7 +239,10 @@ export class MailService implements OnModuleInit {
     });
 
     const timeoutPromise = new Promise<never>((_, reject) => {
-      setTimeout(() => reject(new Error(`SMTP timeout after ${this.sendTimeoutMs}ms`)), this.sendTimeoutMs);
+      setTimeout(
+        () => reject(new Error(`SMTP timeout after ${this.sendTimeoutMs}ms`)),
+        this.sendTimeoutMs,
+      );
     });
 
     try {

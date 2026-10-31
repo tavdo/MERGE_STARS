@@ -19,9 +19,12 @@ const NAV_GROUPS: { titleKey: string; items: NavItem[] }[] = [
       { icon: '🪪', labelKey: 'admin.nav.kyc', href: '/admin/kyc' },
       { icon: '🏦', labelKey: 'admin.nav.finance', href: '/admin/finance' },
       { icon: '💎', labelKey: 'admin.nav.crystal', href: '/admin/crystal' },
+      { icon: '✧', labelKey: 'Design reviews', href: '/admin/design-reviews' },
+      { icon: '🧵', labelKey: 'Material Lab', href: '/admin/material-lab' },
       { icon: '🏭', labelKey: 'admin.nav.production', href: '/admin/production' },
       { icon: '★', labelKey: 'admin.nav.masterCatalog', href: '/admin/master-catalog' },
       { icon: '◎', labelKey: 'admin.nav.coinConfigurator', href: '/admin/coin-configurator' },
+      { icon: '🤖', labelKey: 'admin.nav.aiTraining', href: '/admin/ai-training' },
       { icon: '📊', labelKey: 'admin.nav.analytics', href: '/admin/analytics' },
     ],
   },
@@ -29,15 +32,13 @@ const NAV_GROUPS: { titleKey: string; items: NavItem[] }[] = [
     titleKey: 'admin.nav.groupCompliance',
     items: [
       { icon: '📜', labelKey: 'admin.nav.auditLog', href: '/admin/audit' },
+      { icon: '🏛', labelKey: 'admin.nav.bankReview', href: '/admin/bank-review' },
       { icon: '🛡', labelKey: 'admin.nav.compliance', href: '/admin/compliance' },
     ],
   },
   {
     titleKey: 'admin.nav.groupSystem',
-    items: [
-      { icon: '🤖', labelKey: 'admin.nav.aiTraining', href: '/admin/ai-training' },
-      { icon: '⚙', labelKey: 'admin.nav.settings', href: '/admin/settings' },
-    ],
+    items: [{ icon: '⚙', labelKey: 'admin.nav.settings', href: '/admin/settings' }],
   },
 ]
 
@@ -59,9 +60,11 @@ export default function AdminLayout({ children, title, subtitle }: Props) {
     ? `${user.firstName?.[0] ?? ''}${user.lastName?.[0] ?? ''}`.toUpperCase() || 'A'
     : 'A'
 
-  useEffect(() => {
+  const [menuPath, setMenuPath] = useState(location.pathname)
+  if (menuPath !== location.pathname) {
+    setMenuPath(location.pathname)
     setMobileNavOpen(false)
-  }, [location.pathname])
+  }
 
   useEffect(() => {
     const mq = window.matchMedia('(min-width: 1024px)')
@@ -189,3 +192,4 @@ export default function AdminLayout({ children, title, subtitle }: Props) {
     </div>
   )
 }
+

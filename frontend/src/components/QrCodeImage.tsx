@@ -1,3 +1,4 @@
+/* eslint-disable react-refresh/only-export-components -- This module exposes browser download/share actions used with its component. */
 import { useEffect, useState } from 'react'
 
 type Props = {

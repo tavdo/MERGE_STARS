@@ -86,7 +86,10 @@ export class AuthController {
   @Post('login')
   @Throttle({ default: { limit: 10, ttl: 60_000 } })
   @UsePipes(new ValidationPipe({ whitelist: true, transform: true }))
-  async login(@Body() dto: LoginDto, @Res({ passthrough: true }) res: Response) {
+  async login(
+    @Body() dto: LoginDto,
+    @Res({ passthrough: true }) res: Response,
+  ) {
     const result = await this.auth.login(dto);
     setRefreshCookie(res, result.refreshToken);
     return { accessToken: result.accessToken, user: result.user };
@@ -106,7 +109,10 @@ export class AuthController {
   }
 
   @Post('refresh')
-  async refresh(@Req() req: Request, @Res({ passthrough: true }) res: Response) {
+  async refresh(
+    @Req() req: Request,
+    @Res({ passthrough: true }) res: Response,
+  ) {
     const token = req.cookies?.[REFRESH_COOKIE] as string | undefined;
     if (!token) {
       clearRefreshCookie(res);

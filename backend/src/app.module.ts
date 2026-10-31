@@ -1,3 +1,7 @@
+import { CoinConfiguratorModule } from './modules/coin-configurator/coin-configurator.module';
+import { MuseumCoreModule } from './modules/museum-core/museum-core.module';
+import { ExperienceModule } from './modules/experience/experience.module';
+import { MaterialLabModule } from './modules/material-lab/material-lab.module';
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { APP_GUARD } from '@nestjs/core';
@@ -32,9 +36,8 @@ import { SettingsModule } from './modules/settings/settings.module';
 import { AiModule } from './modules/ai/ai.module';
 import { SmsModule } from './modules/sms/sms.module';
 import { RedisModule } from './modules/redis/redis.module';
-import { CoinConfiguratorModule } from './modules/coin-configurator/coin-configurator.module';
 import { WalletModule } from './modules/wallet/wallet.module';
-import { MuseumCoreModule } from './modules/museum-core/museum-core.module';
+import { validateEnvironment } from './config/security';
 
 @Module({
   imports: [
@@ -42,6 +45,7 @@ import { MuseumCoreModule } from './modules/museum-core/museum-core.module';
       isGlobal: true,
       // VPS: systemd loads repo root .env; local dev may use backend/.env
       envFilePath: ['.env', '../.env'],
+      validate: validateEnvironment,
     }),
     ThrottlerModule.forRoot({
       throttlers: [{ name: 'default', ttl: 60_000, limit: 120 }],
@@ -71,6 +75,8 @@ import { MuseumCoreModule } from './modules/museum-core/museum-core.module';
     SmsModule,
     RedisModule,
     WalletModule,
+    MaterialLabModule,
+    ExperienceModule,
     CoinConfiguratorModule,
     MuseumCoreModule,
   ],

@@ -8,11 +8,17 @@ import { User } from '../database/entities/user.entity';
 export class DatabaseSeedService implements OnModuleInit {
   private readonly log = new Logger(DatabaseSeedService.name);
 
-  constructor(@InjectRepository(User) private readonly users: Repository<User>) {}
+  constructor(
+    @InjectRepository(User) private readonly users: Repository<User>,
+  ) {}
 
   async onModuleInit() {
-    const email = (process.env.SEED_ADMIN_EMAIL ?? 'admin@mergestars.com').toLowerCase();
-    const password = process.env.SEED_ADMIN_PASSWORD ?? 'Admin123!ChangeMe';
+    const email = (
+      process.env.SEED_ADMIN_EMAIL ?? 'admin@mergestars.com'
+    ).toLowerCase();
+    const password =
+      process.env.SEED_ADMIN_PASSWORD ??
+      (process.env.NODE_ENV === 'production' ? '' : 'Admin123!ChangeMe');
 
     if (process.env.SEED_ADMIN_SYNC === 'true') {
       if (process.env.NODE_ENV === 'production') {
@@ -25,10 +31,14 @@ export class DatabaseSeedService implements OnModuleInit {
       if (existing) {
         existing.passwordHash = await bcrypt.hash(password, 12);
         if (!existing.roles.includes('admin')) {
-          existing.roles = [...new Set([...existing.roles, 'admin', 'manager'])];
+          existing.roles = [
+            ...new Set([...existing.roles, 'admin', 'manager']),
+          ];
         }
         await this.users.save(existing);
-        this.log.log(`Synced password for admin ${email} (SEED_ADMIN_SYNC=true)`);
+        this.log.log(
+          `Synced password for admin ${email} (SEED_ADMIN_SYNC=true)`,
+        );
         this.log.warn(
           'Remove SEED_ADMIN_SYNC from .env — if it stays true, admin password resets on every backend restart',
         );
@@ -56,7 +66,18 @@ export class DatabaseSeedService implements OnModuleInit {
       status: 'active',
       kycStatus: 'verified',
     });
+    if (
+      !password ||
+      (process.env.NODE_ENV === 'production' &&
+        (password.length < 16 || /change|your-secure/i.test(password)))
+    ) {
+      throw new Error(
+        'An empty production database requires a strong SEED_ADMIN_PASSWORD',
+      );
+    }
     await this.users.save(user);
-    this.log.log(`Seeded admin user ${email} (change password after first login)`);
+    this.log.log(
+      `Seeded admin user ${email} (change password after first login)`,
+    );
   }
 }

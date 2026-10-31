@@ -2,33 +2,10 @@ import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import Navbar from '../../components/Navbar'
 import Footer from '../../components/Footer'
-import ProductShowcaseGallery from '../../components/ProductShowcaseGallery'
 import BrandIcon from '../../components/BrandIcon'
 import { HOW_IT_WORKS_ICONS } from '@/assets/brandIcons'
 
 type Step = { n: string; title: string; desc: string }
-
-const STEP_LINKS = [
-  '/login?tab=register',
-  '/dashboard/profile',
-  '/dashboard/brand',
-  '/fill-coin',
-  '/apply',
-  '/dashboard/payment',
-  '/dashboard/orders',
-  '/dashboard/delivery',
-] as const
-
-const STEP_ACTION_KEYS = [
-  'register',
-  'kyc',
-  'brandLine',
-  'mergeCoin',
-  'order',
-  'payment',
-  'production',
-  'delivery',
-] as const
 
 export default function HowItWorksPage() {
   const { t } = useTranslation()
@@ -59,21 +36,11 @@ export default function HowItWorksPage() {
                 <div className="gold-card hiw-step-card">
                   <h3>{s.title}</h3>
                   <p>{s.desc}</p>
-                  <Link
-                    to={STEP_LINKS[i] ?? '/dashboard'}
-                    className="hiw-step-action luxury-btn-glass"
-                  >
-                    {t(`howItWorks.actions.${STEP_ACTION_KEYS[i]}`, {
-                      defaultValue: 'Continue →',
-                    })}
-                  </Link>
                 </div>
               </div>
             ))}
           </div>
         </section>
-
-        <ProductShowcaseGallery layout="strip" showHeader={false} />
 
         <section className="hiw-cta">
           <h2>

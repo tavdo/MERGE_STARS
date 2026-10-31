@@ -23,7 +23,11 @@ export class DesignRoyaltyOnCoinApps1753100000000 implements MigrationInterface 
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
-    await queryRunner.query(`ALTER TABLE "coin_applications" DROP COLUMN IF EXISTS "design_author_id"`);
-    await queryRunner.query(`ALTER TABLE "coin_applications" DROP COLUMN IF EXISTS "catalog_item_id"`);
+    await queryRunner.query(
+      `ALTER TABLE "coin_applications" DROP COLUMN IF EXISTS "design_author_id"`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "coin_applications" DROP COLUMN IF EXISTS "catalog_item_id"`,
+    );
   }
 }

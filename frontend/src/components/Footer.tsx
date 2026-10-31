@@ -27,11 +27,11 @@ const SUPPORT = [
 ] as const
 
 const SOCIAL = [
-  { label: 'Facebook', Icon: IconFacebook, href: '#' },
-  { label: 'LinkedIn', Icon: IconLinkedIn, href: '#' },
-  { label: 'YouTube', Icon: IconYouTube, href: '#' },
-  { label: 'Instagram', Icon: IconInstagram, href: '#' },
-  { label: 'X', Icon: IconX, href: '#' },
+  { label: 'Facebook', Icon: IconFacebook, href: import.meta.env.VITE_FACEBOOK_URL },
+  { label: 'LinkedIn', Icon: IconLinkedIn, href: import.meta.env.VITE_LINKEDIN_URL },
+  { label: 'YouTube', Icon: IconYouTube, href: import.meta.env.VITE_YOUTUBE_URL },
+  { label: 'Instagram', Icon: IconInstagram, href: import.meta.env.VITE_INSTAGRAM_URL },
+  { label: 'X', Icon: IconX, href: import.meta.env.VITE_X_URL },
 ] as const
 
 export default function Footer() {
@@ -56,7 +56,7 @@ export default function Footer() {
             </Link>
             <p className="site-footer-tagline">{t('footer.tagline')}</p>
             <div className="site-footer-social">
-              {SOCIAL.map(({ label, Icon, href }) => (
+              {SOCIAL.filter(({ href }) => typeof href === 'string' && href.startsWith('https://')).map(({ label, Icon, href }) => (
                 <a
                   key={label}
                   href={href}

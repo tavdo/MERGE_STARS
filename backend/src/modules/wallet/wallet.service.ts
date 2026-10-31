@@ -1,6 +1,12 @@
-import { Injectable, BadRequestException, NotFoundException } from '@nestjs/common';
+
+import {
+  Injectable,
+  BadRequestException,
+  NotFoundException,
+  Logger,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { DataSource, Repository } from 'typeorm';
+import { DataSource, EntityManager, Repository } from 'typeorm';
 import {
   WalletTransaction,
   walletTxView,
@@ -10,6 +16,7 @@ import { NotificationsService } from '../notifications/notifications.service';
 
 @Injectable()
 export class WalletService {
+  private readonly logger = new Logger(WalletService.name);
   constructor(
     @InjectRepository(WalletTransaction)
     private readonly txs: Repository<WalletTransaction>,
@@ -19,35 +26,43 @@ export class WalletService {
     private readonly notifications: NotificationsService,
   ) {}
 
-  async getBalance(userId: string): Promise<number> {
-    const last = await this.txs.findOne({
-      where: { userId },
-      order: { createdAt: 'DESC', id: 'DESC' },
-    });
-    return last ? Number(last.balanceAfter) : 0;
+  async getBalance(userId: string, manager?: EntityManager): Promise<number> {
+    const repo = manager ? manager.getRepository(WalletTransaction) : this.txs;
+    const row = await repo
+      .createQueryBuilder('t')
+      .select(
+        "COALESCE(SUM(CASE WHEN t.type = 'credit' THEN t.amount ELSE -t.amount END), 0)",
+        'balance',
+      )
+      .where('t.userId = :userId', { userId })
+      .getRawOne<{ balance: string }>();
+    return Number(row?.balance ?? 0);
   }
 
-  /**
-   * Opens the earnings wallet for a member. Idempotent: the first opt-in wins,
-   * later calls just return the existing activation date.
-   */
-  async activate(userId: string, source = 'user') {
-    const user = await this.users.findOne({ where: { id: userId } });
-    if (!user) throw new NotFoundException('User not found');
-
-    if (!user.walletActivatedAt) {
-      user.walletActivatedAt = new Date();
-      await this.users.save(user);
-      await this.notifications.create({
-        userId,
-        type: 'wallet_activated',
-        title: 'Earnings wallet activated',
-        body: 'Your earnings wallet is open. Design royalties and catalog earnings are credited here and can be used to pay for coin orders.',
-        meta: { source },
-      });
+  async lockUsers(manager: EntityManager, userIds: string[]) {
+    // A stable row exists even before the user's first wallet entry. Sorting
+    // avoids deadlocks when a buyer and a design author are locked together.
+    for (const id of [...new Set(userIds)].sort()) {
+      const user = await manager
+        .getRepository(User)
+        .findOne({ where: { id }, lock: { mode: 'pessimistic_write' } });
+      if (!user) throw new NotFoundException('User not found');
     }
+  }
 
-    return { activated: true, activatedAt: user.walletActivatedAt.toISOString() };
+  private money(amount: number) {
+    const cents = Math.round(amount * 100);
+    if (
+      !Number.isFinite(amount) ||
+      amount <= 0 ||
+      !Number.isSafeInteger(cents) ||
+      Math.abs(cents / 100 - amount) > 0.000001
+    ) {
+      throw new BadRequestException(
+        'Amount must be positive with at most two decimal places',
+      );
+    }
+    return cents / 100;
   }
 
   async getMe(userId: string, limit = 30) {
@@ -84,34 +99,23 @@ export class WalletService {
     };
   }
 
-  async credit(params: {
-    userId: string;
-    amount: number;
-    reason: string;
-    note?: string;
-    createdBy?: string;
-    meta?: Record<string, unknown>;
-    notify?: boolean;
-  }) {
-    const amount = Number(params.amount);
-    if (!Number.isFinite(amount) || amount <= 0) {
-      throw new BadRequestException('Credit amount must be greater than zero');
-    }
-
-    const user = await this.users.findOne({ where: { id: params.userId } });
-    if (!user) throw new NotFoundException('User not found');
-    if (!user.walletActivatedAt) {
-      await this.activate(params.userId, `credit:${params.reason}`);
-    }
-
-    const row = await this.dataSource.transaction(async (manager) => {
+  async credit(
+    params: {
+      userId: string;
+      amount: number;
+      reason: string;
+      note?: string;
+      createdBy?: string;
+      meta?: Record<string, unknown>;
+      notify?: boolean;
+    },
+    transaction?: EntityManager,
+  ) {
+    const amount = this.money(Number(params.amount));
+    const write = async (manager: EntityManager) => {
+      await this.lockUsers(manager, [params.userId]);
       const repo = manager.getRepository(WalletTransaction);
-      const last = await repo.findOne({
-        where: { userId: params.userId },
-        order: { createdAt: 'DESC', id: 'DESC' },
-        lock: { mode: 'pessimistic_write' },
-      });
-      const prev = last ? Number(last.balanceAfter) : 0;
+      const prev = await this.getBalance(params.userId, manager);
       const balanceAfter = Math.round((prev + amount) * 100) / 100;
       const tx = repo.create({
         userId: params.userId,
@@ -125,40 +129,46 @@ export class WalletService {
         meta: params.meta ?? null,
       });
       return repo.save(tx);
-    });
+    };
+    const row = transaction
+      ? await write(transaction)
+      : await this.dataSource.transaction(write);
 
-    if (params.notify !== false) {
-      await this.notifications.create({
-        userId: params.userId,
-        type: 'wallet_credit',
-        title: 'Earnings credited',
-        body: `$${amount.toFixed(2)} was added to your earnings wallet.`,
-        meta: { amount, reason: params.reason, txId: row.id },
-      });
+    if (!transaction && params.notify !== false) {
+      await this.notifications
+        .create({
+          userId: params.userId,
+          type: 'wallet_credit',
+          title: 'Earnings credited',
+          body: `$${amount.toFixed(2)} was added to your earnings wallet.`,
+          meta: { amount, reason: params.reason, txId: row.id },
+        })
+        .catch((error: Error) =>
+          this.logger.warn(`Credit notification failed: ${error.message}`),
+        );
     }
 
     return walletTxView(row);
   }
 
-  async debitForOrder(params: {
-    userId: string;
-    amount: number;
-    orderId: string;
-    note?: string;
-  }) {
-    const amount = Number(params.amount);
-    if (!Number.isFinite(amount) || amount <= 0) {
-      throw new BadRequestException('Debit amount must be greater than zero');
-    }
-
-    return this.dataSource.transaction(async (manager) => {
+  async debitForOrder(
+    params: {
+      userId: string;
+      amount: number;
+      orderId: string;
+      note?: string;
+    },
+    transaction?: EntityManager,
+  ) {
+    const amount = this.money(Number(params.amount));
+    const write = async (manager: EntityManager) => {
+      await this.lockUsers(manager, [params.userId]);
       const repo = manager.getRepository(WalletTransaction);
-      const last = await repo.findOne({
-        where: { userId: params.userId },
-        order: { createdAt: 'DESC', id: 'DESC' },
-        lock: { mode: 'pessimistic_write' },
+      const existing = await repo.findOne({
+        where: { orderId: params.orderId, type: 'debit' },
       });
-      const prev = last ? Number(last.balanceAfter) : 0;
+      if (existing) return walletTxView(existing);
+      const prev = await this.getBalance(params.userId, manager);
       if (prev < amount) {
         throw new BadRequestException(
           `Insufficient earnings balance. Available: $${prev.toFixed(2)}, required: $${amount.toFixed(2)}`,
@@ -178,7 +188,10 @@ export class WalletService {
       });
       const saved = await repo.save(tx);
       return walletTxView(saved);
-    });
+    };
+    return transaction
+      ? write(transaction)
+      : this.dataSource.transaction(write);
   }
 
   async creditByEmailOrMergeId(params: {
@@ -203,12 +216,36 @@ export class WalletService {
     });
   }
 
-  async hasDesignRoyaltyForOrder(coinOrderId: string): Promise<boolean> {
-    const row = await this.txs
+  async hasDesignRoyaltyForOrder(
+    coinOrderId: string,
+    manager?: EntityManager,
+  ): Promise<boolean> {
+    const row = await (
+      manager ? manager.getRepository(WalletTransaction) : this.txs
+    )
       .createQueryBuilder('t')
       .where('t.reason = :reason', { reason: 'design_royalty' })
       .andWhere(`t.meta->>'coinOrderId' = :coinOrderId`, { coinOrderId })
       .getOne();
     return !!row;
+  }
+
+async activate(userId: string, source = 'user') {
+    const user = await this.users.findOne({ where: { id: userId } });
+    if (!user) throw new NotFoundException('User not found');
+
+    if (!user.walletActivatedAt) {
+      user.walletActivatedAt = new Date();
+      await this.users.save(user);
+      await this.notifications.create({
+        userId,
+        type: 'wallet_activated',
+        title: 'Earnings wallet activated',
+        body: 'Your earnings wallet is open. Design royalties and catalog earnings are credited here and can be used to pay for coin orders.',
+        meta: { source },
+      });
+    }
+
+    return { activated: true, activatedAt: user.walletActivatedAt.toISOString() };
   }
 }

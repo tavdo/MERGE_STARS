@@ -1,4 +1,9 @@
-import { Injectable, Logger, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
+import {
+  Injectable,
+  Logger,
+  OnModuleDestroy,
+  OnModuleInit,
+} from '@nestjs/common';
 
 type RedisClient = {
   ping(): Promise<string>;
@@ -60,11 +65,17 @@ export class RedisService implements OnModuleInit, OnModuleDestroy {
   }
 
   /** Simple list queue — BullMQ-compatible pattern without extra deps when Redis is up */
-  async enqueueMail(job: { to: string; subject: string; html: string; text: string }) {
+  async enqueueMail(job: {
+    to: string;
+    subject: string;
+    html: string;
+    text: string;
+  }) {
     if (!this.client) return false;
     try {
-      const { default: Redis } = await import('ioredis');
-      const redis = this.client as InstanceType<typeof Redis>;
+      const redis = this.client as RedisClient & {
+        lpush(key: string, value: string): Promise<number>;
+      };
       await redis.lpush('merge-stars:mail-queue', JSON.stringify(job));
       return true;
     } catch {

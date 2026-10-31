@@ -12,7 +12,8 @@ export class ReferralsService {
   private readonly log = new Logger(ReferralsService.name);
 
   constructor(
-    @InjectRepository(Referral) private readonly referrals: Repository<Referral>,
+    @InjectRepository(Referral)
+    private readonly referrals: Repository<Referral>,
     @InjectRepository(User) private readonly users: Repository<User>,
     private readonly notifications: NotificationsService,
     private readonly platformSettings: PlatformSettingsService,
@@ -20,7 +21,10 @@ export class ReferralsService {
   ) {}
 
   shareBase() {
-    return (process.env.FRONTEND_URL ?? 'http://localhost:5173').replace(/\/$/, '');
+    return (process.env.FRONTEND_URL ?? 'http://localhost:5173').replace(
+      /\/$/,
+      '',
+    );
   }
 
   buildShareLink(mergeId: string, source: 'qr' | 'link' = 'link') {
@@ -62,9 +66,12 @@ export class ReferralsService {
     await this.referrals.save(row);
 
     const referredName =
-      `${referredUser.firstName} ${referredUser.lastName}`.trim() || referredUser.email;
+      `${referredUser.firstName} ${referredUser.lastName}`.trim() ||
+      referredUser.email;
     const viaQr = (source ?? '').toLowerCase() === 'qr';
-    const title = viaQr ? 'Someone joined via your QR code' : 'New referral signup';
+    const title = viaQr
+      ? 'Someone joined via your QR code'
+      : 'New referral signup';
     const body = viaQr
       ? `${referredName} registered after scanning your QR code.`
       : `${referredName} registered using your referral link.`;
@@ -113,8 +120,12 @@ export class ReferralsService {
 
   async statsForReferrer(referrerId: string, mergeId: string) {
     const rows = await this.referrals.find({ where: { referrerId } });
-    const verified = rows.filter((r) => r.status === 'verified' || r.status === 'completed').length;
-    const pending = rows.filter((r) => r.status === 'registered' || r.status === 'pending').length;
+    const verified = rows.filter(
+      (r) => r.status === 'verified' || r.status === 'completed',
+    ).length;
+    const pending = rows.filter(
+      (r) => r.status === 'registered' || r.status === 'pending',
+    ).length;
     const shares = await this.platformSettings.get();
     return {
       total: rows.length,

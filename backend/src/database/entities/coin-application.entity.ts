@@ -45,11 +45,20 @@ export class CoinApplication {
   @Column({ type: 'int', default: 1 })
   quantity: number;
 
-  @Column({ name: 'metal_purity', type: 'decimal', precision: 5, scale: 2, default: 999 })
+  @Column({
+    name: 'metal_purity',
+    type: 'decimal',
+    precision: 5,
+    scale: 2,
+    default: 999,
+  })
   metalPurity: number;
 
   @Column({ name: 'coin_value', type: 'decimal', precision: 12, scale: 2 })
   coinValue: number;
+
+  @Column({ name: 'price_quoted_at', type: 'timestamptz', nullable: true })
+  priceQuotedAt: Date | null;
 
   @Column({ default: 'submitted' })
   status: ApplicationStatus;
@@ -86,13 +95,6 @@ export class CoinApplication {
   @Column({ name: 'design_author_id', type: 'uuid', nullable: true })
   designAuthorId: string | null;
 
-  /** Smart Coin Configurator session linked to this application */
-  @Column({ name: 'configurator_session_id', type: 'uuid', nullable: true })
-  configuratorSessionId: string | null;
-
-  @Column({ name: 'order_snapshot_json', type: 'jsonb', nullable: true })
-  orderSnapshotJson: Record<string, unknown> | null;
-
   @OneToMany(() => Order, (o) => o.application)
   orders: Order[];
 
@@ -101,6 +103,11 @@ export class CoinApplication {
 
   @UpdateDateColumn({ name: 'updated_at' })
   updatedAt: Date;
+
+@Column({ name: 'configurator_session_id', type: 'uuid', nullable: true })
+  configuratorSessionId: string | null;
+@Column({ name: 'order_snapshot_json', type: 'jsonb', nullable: true })
+  orderSnapshotJson: Record<string, unknown> | null;
 }
 
 export function applicationView(app: CoinApplication, userName?: string) {
@@ -113,6 +120,7 @@ export function applicationView(app: CoinApplication, userName?: string) {
     quantity: app.quantity,
     metalPurity: Number(app.metalPurity),
     coinValue: Number(app.coinValue),
+    priceQuotedAt: app.priceQuotedAt?.toISOString() ?? null,
     status: app.status,
     crystal: app.crystalSent ? 'Yes' : '—',
     notes: app.notes,
@@ -123,8 +131,8 @@ export function applicationView(app: CoinApplication, userName?: string) {
     additionalNotes: app.additionalNotes,
     statusNote: app.statusNote,
     catalogItemId: app.catalogItemId,
-    designAuthorId: app.designAuthorId,
     configuratorSessionId: app.configuratorSessionId,
+    designAuthorId: app.designAuthorId,
     submittedAt: app.submittedAt.toISOString(),
     updatedAt: app.updatedAt.toISOString(),
   };

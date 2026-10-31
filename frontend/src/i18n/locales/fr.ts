@@ -1,36 +1,6 @@
 export default {
   lang: { label: 'Langue', en: 'English', ru: 'Русский', fr: 'Français', de: 'Deutsch', tr: 'Türkçe', ka: 'ქართული', ar: 'العربية' },
-  seo: {
-    pages: {
-      livingMuseum: {
-        title: 'Musée vivant des marques | Le Joaillier des marques — MERGE STARS',
-        description:
-          'Musée vivant MERGE STARS — Brand House, jumeau numérique, FIT TO ME, Create My Version, ADN mosaïque MERGE et production numérique→physique sur CORE mergestars.com.',
-      },
-      brandRoom: {
-        title: 'Brand Room | Marques membres MERGE STARS',
-        description: 'Catalogues publics, bijoux, accessoires et designs des membres MERGE STARS.',
-      },
-    },
-  },
-  nav: {
-    home: 'Accueil',
-    howItWorks: 'Comment ça marche',
-    mergeCoin: 'Merge Coin',
-    filament: 'Filament',
-    brandRoom: 'Brand Room',
-    livingMuseum: 'Musée vivant',
-    prices: 'Prix',
-    apply: 'Candidature',
-    faq: 'FAQ',
-    contact: 'Contact',
-    trust: 'Centre de confiance',
-    legalClassification: 'Classification juridique',
-    login: 'Connexion',
-    dashboard: 'Tableau de bord',
-    menu: 'Menu',
-    closeMenu: 'Fermer le menu',
-  },
+  nav: { home: 'Accueil', howItWorks: 'Comment ça marche', mergeCoin: 'Merge Coin', prices: 'Prix', apply: 'Candidature', faq: 'FAQ', contact: 'Contact', trust: 'Trust Center', legalClassification: 'Legal Classification', login: 'Connexion', dashboard: 'Tableau de bord', menu: 'Menu' },
   footer: {
     secure: 'PLATEFORME SÉCURISÉE', secureSub: 'Vos données sont protégées', fast: 'RAPIDE ET FIABLE', fastSub: 'Expérience fluide',
     global: 'COMMUNAUTÉ MONDIALE', globalSub: 'Des milliers de membres', supportTitle: 'SUPPORT DÉDIÉ', supportSub: 'Nous sommes là pour vous',

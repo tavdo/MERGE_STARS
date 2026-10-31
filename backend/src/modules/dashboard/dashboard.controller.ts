@@ -16,8 +16,10 @@ export class DashboardController {
     private readonly coins: CoinsService,
     private readonly investments: InvestmentsService,
     @InjectRepository(Order) private readonly orders: Repository<Order>,
-    @InjectRepository(Notification) private readonly notifications: Repository<Notification>,
-    @InjectRepository(CoinApplication) private readonly apps: Repository<CoinApplication>,
+    @InjectRepository(Notification)
+    private readonly notifications: Repository<Notification>,
+    @InjectRepository(CoinApplication)
+    private readonly apps: Repository<CoinApplication>,
   ) {}
 
   @Get('summary')
@@ -95,6 +97,8 @@ export class DashboardController {
 
     items.sort((a, b) => b.at.getTime() - a.at.getTime());
 
-    return items.slice(0, 10).map(({ text, time, type }) => ({ text, time, type }));
+    return items
+      .slice(0, 10)
+      .map(({ text, time, type }) => ({ text, time, type }));
   }
 }

@@ -48,8 +48,12 @@ export class PhaseD1740000000000 implements MigrationInterface {
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
-    await queryRunner.query(`ALTER TABLE "users" DROP COLUMN IF EXISTS "terms_accepted_at"`);
-    await queryRunner.query(`ALTER TABLE "users" DROP COLUMN IF EXISTS "referred_by_id"`);
+    await queryRunner.query(
+      `ALTER TABLE "users" DROP COLUMN IF EXISTS "terms_accepted_at"`,
+    );
+    await queryRunner.query(
+      `ALTER TABLE "users" DROP COLUMN IF EXISTS "referred_by_id"`,
+    );
     await queryRunner.query(`DROP TABLE IF EXISTS "kyc_documents"`);
     await queryRunner.query(`DROP TABLE IF EXISTS "notifications"`);
   }

@@ -1,4 +1,9 @@
-import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 
 @Entity('metal_prices')
 export class MetalPrice {
@@ -11,7 +16,13 @@ export class MetalPrice {
   @Column({ name: 'price_usd', type: 'decimal', precision: 12, scale: 4 })
   priceUsd: number;
 
-  @Column({ name: 'change_pct', type: 'decimal', precision: 6, scale: 3, default: 0 })
+  @Column({
+    name: 'change_pct',
+    type: 'decimal',
+    precision: 6,
+    scale: 3,
+    default: 0,
+  })
   changePct: number;
 
   @CreateDateColumn({ name: 'recorded_at' })

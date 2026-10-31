@@ -1,10 +1,6 @@
-import { useEffect } from 'react'
+import { Navigate } from 'react-router-dom'
 
-/** Full-page navigation into the mirrored atelier SPA (static under /living-museum-experience/). */
+/** Keep the original entry link inside the integrated museum application. */
 export default function LivingMuseumExperienceRedirect() {
-  useEffect(() => {
-    window.location.replace('/living-museum-experience/')
-  }, [])
-
-  return null
+  return <Navigate to="/living-museum" replace />
 }

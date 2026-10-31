@@ -273,7 +273,6 @@ export default {
   },
   collections: {
     meshyStyles: {
-      case: 'Кейс',
       jewelry: 'Украшение',
       luxuryCoin: 'Роскошная монета',
       watch: 'Часы',

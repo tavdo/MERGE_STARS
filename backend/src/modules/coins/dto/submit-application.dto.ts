@@ -7,27 +7,39 @@ import {
   IsString,
   MaxLength,
   Min,
+  Max,
+  IsIn,
 } from 'class-validator';
 
 export class SubmitApplicationDto {
+  @IsString()
+  @IsNotEmpty()
+  @MaxLength(120)
+  brandHouseName: string;
+
   @IsString()
   @IsNotEmpty()
   coinType: string;
 
   @IsInt()
   @Min(1)
+  @Max(1000)
   quantity: number;
 
   @IsOptional()
   @IsNumber()
+  @Min(1)
+  @Max(1000)
   metalPurity?: number;
 
   @IsOptional()
-  @IsString()
+  @IsIn(['silver', 'gold', 'premium'])
   metalType?: string;
 
+  @IsOptional()
   @IsNumber()
-  coinValue: number;
+  @Min(0)
+  coinValue?: number;
 
   @IsOptional()
   @IsString()
@@ -79,8 +91,7 @@ export class SubmitApplicationDto {
   @IsString()
   catalogItemId?: string;
 
-  /** Finalized Smart Coin Configurator session */
-  @IsOptional()
+@IsOptional()
   @IsString()
   configuratorSessionId?: string;
 }

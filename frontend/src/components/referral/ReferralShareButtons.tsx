@@ -1,3 +1,4 @@
+/* eslint-disable react-refresh/only-export-components -- This module exposes browser download/share actions used with its component. */
 import type { CSSProperties } from 'react'
 import { useTranslation } from 'react-i18next'
 

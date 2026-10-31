@@ -1,4 +1,9 @@
-﻿import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import { CoinConfiguratorService } from '../coin-configurator/coin-configurator.service';
+﻿import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import {
@@ -12,7 +17,7 @@ import { UsersService } from '../users/users.service';
 import { MailService } from '../mail/mail.service';
 import { NotificationsService } from '../notifications/notifications.service';
 import { OrdersService } from '../orders/orders.service';
-import { CoinConfiguratorService } from '../coin-configurator/coin-configurator.service';
+import { MetalsService } from '../metals/metals.service';
 
 @Injectable()
 export class CoinsService {
@@ -25,6 +30,7 @@ export class CoinsService {
     private readonly mail: MailService,
     private readonly notifications: NotificationsService,
     private readonly orders: OrdersService,
+    private readonly metals: MetalsService,
     private readonly configurator: CoinConfiguratorService,
   ) {}
 
@@ -57,9 +63,16 @@ export class CoinsService {
     return applicationView(app);
   }
 
-  private async resolveDesign(catalogItemId: string | undefined, buyerId: string) {
+  private async resolveDesign(
+    catalogItemId: string | undefined,
+    buyerId: string,
+  ) {
     if (!catalogItemId?.trim()) {
-      return { catalogItemId: null as string | null, designAuthorId: null as string | null, designNote: '' };
+      return {
+        catalogItemId: null as string | null,
+        designAuthorId: null as string | null,
+        designNote: '',
+      };
     }
     const item = await this.catalogItems.findOne({
       where: { id: catalogItemId.trim() },
@@ -72,14 +85,28 @@ export class CoinsService {
       throw new BadRequestException('Catalog design is not public');
     }
     const authorId = item.collection.userId;
-    const designNote = '[Catalog design] item=' + item.id + '; title=' + item.title;
+    const designNote =
+      '[Catalog design] item=' + item.id + '; title=' + item.title;
     if (authorId === buyerId) {
-      return { catalogItemId: item.id, designAuthorId: null as string | null, designNote };
+      return {
+        catalogItemId: item.id,
+        designAuthorId: null as string | null,
+        designNote,
+      };
     }
     return { catalogItemId: item.id, designAuthorId: authorId, designNote };
   }
 
   async submit(user: User, dto: SubmitApplicationDto) {
+    if (
+      !dto.metalType ||
+      !['silver', 'gold', 'premium'].includes(dto.metalType)
+    ) {
+      throw new BadRequestException('Choose silver, gold or premium');
+    }
+    // Submitted quantity describes the request, not verified pricing weight.
+    const purity = dto.metalPurity ?? 999.9;
+    const price = 0;
     if (dto.firstName || dto.lastName || dto.phone) {
       await this.usersService.updateMe(user.id, {
         firstName: dto.firstName,
@@ -89,13 +116,11 @@ export class CoinsService {
     }
 
     const design = await this.resolveDesign(dto.catalogItemId, user.id);
-
+    const sessionId = dto.configuratorSessionId?.trim() || null;
     let orderSnapshot: Record<string, unknown> | null = null;
-    if (dto.configuratorSessionId?.trim()) {
-      orderSnapshot = (await this.configurator.getOrderSnapshot(
-        dto.configuratorSessionId.trim(),
-        user.id,
-      )) as unknown as Record<string, unknown>;
+    if (sessionId) {
+      await this.configurator.getSessionForApplication(sessionId, user.id);
+      orderSnapshot = await this.configurator.getOrderSnapshot(sessionId, user.id) as unknown as Record<string, unknown>;
     }
 
     let publicId = this.nextPublicId();
@@ -103,16 +128,23 @@ export class CoinsService {
       publicId = this.nextPublicId();
     }
 
-    const notesParts = [dto.notes?.trim(), design.designNote].filter(Boolean);
+    if (!dto.brandHouseName?.trim())
+      throw new BadRequestException('Brand House name is required');
+    const notesParts = [
+      '[Brand House request] ' + dto.brandHouseName.trim(),
+      dto.notes?.trim(),
+      design.designNote,
+    ].filter(Boolean);
 
     const app = this.apps.create({
       publicId,
       userId: user.id,
       coinType: dto.coinType,
       quantity: dto.quantity,
-      metalPurity: dto.metalPurity ?? 999,
+      metalPurity: purity,
       metalType: dto.metalType ?? null,
-      coinValue: dto.coinValue,
+      coinValue: price,
+      priceQuotedAt: null,
       notes: notesParts.length ? notesParts.join('\n') : null,
       financingPreference: dto.financingPreference ?? null,
       financingTermMonths: dto.financingTermMonths ?? null,
@@ -120,20 +152,20 @@ export class CoinsService {
       additionalNotes: dto.additionalNotes ?? null,
       catalogItemId: design.catalogItemId,
       designAuthorId: design.designAuthorId,
-      configuratorSessionId: dto.configuratorSessionId?.trim() || null,
+      configuratorSessionId: sessionId,
       orderSnapshotJson: orderSnapshot,
       status: 'submitted',
       crystalSent: false,
     });
     await this.apps.save(app);
-
-    if (dto.configuratorSessionId?.trim()) {
-      await this.configurator.lockSession(dto.configuratorSessionId.trim(), user.id);
-    }
+    if (sessionId) await this.configurator.lockSession(sessionId, user.id);
 
     const freshUser = await this.usersService.findById(user.id);
     const email = dto.contactEmail ?? freshUser.email;
-    const name = (dto.firstName ?? freshUser.firstName) + ' ' + (dto.lastName ?? freshUser.lastName);
+    const name =
+      (dto.firstName ?? freshUser.firstName) +
+      ' ' +
+      (dto.lastName ?? freshUser.lastName);
     await this.mail.sendApplicationReceived(email, name.trim(), publicId);
 
     await this.notifications.create({
@@ -147,7 +179,12 @@ export class CoinsService {
     return applicationView(app);
   }
 
-  async listAll(params: { status?: string; page?: number; limit?: number; search?: string }) {
+  async listAll(params: {
+    status?: string;
+    page?: number;
+    limit?: number;
+    search?: string;
+  }) {
     const page = Math.max(1, params.page ?? 1);
     const limit = Math.min(100, Math.max(1, params.limit ?? 20));
     const qb = this.apps
@@ -173,7 +210,10 @@ export class CoinsService {
 
     return {
       items: rows.map((a) =>
-        applicationView(a, ((a.user?.firstName ?? '') + ' ' + (a.user?.lastName ?? '')).trim()),
+        applicationView(
+          a,
+          ((a.user?.firstName ?? '') + ' ' + (a.user?.lastName ?? '')).trim(),
+        ),
       ),
       page,
       limit,
@@ -187,10 +227,44 @@ export class CoinsService {
     status: CoinApplication['status'],
     options?: { crystalSent?: boolean; note?: string },
   ) {
-    const app = await this.apps.findOne({ where: { publicId }, relations: { user: true } });
+    const app = await this.apps.findOne({
+      where: { publicId },
+      relations: { user: true },
+    });
     if (!app) throw new NotFoundException('Application not found');
 
     const previousStatus = app.status;
+    const statuses: CoinApplication['status'][] = [
+      'submitted',
+      'under_review',
+      'sent_to_crystal',
+      'approved',
+      'rejected',
+      'funds_received',
+      'production_queue',
+      'in_production',
+      'quality_check',
+      'ready',
+      'delivered',
+    ];
+    if (!statuses.includes(status))
+      throw new BadRequestException('Invalid application status');
+    if (
+      [
+        'approved',
+        'funds_received',
+        'production_queue',
+        'in_production',
+        'quality_check',
+        'ready',
+        'delivered',
+      ].includes(status) &&
+      status !== previousStatus
+    ) {
+      throw new BadRequestException(
+        'A verified Brand House offer, pricing snapshot and fulfillment authorization are required. Legacy application approval cannot authorize production.',
+      );
+    }
     app.status = status;
 
     if (status === 'sent_to_crystal') {
@@ -205,7 +279,7 @@ export class CoinsService {
 
     await this.apps.save(app);
 
-    if (status === 'funds_received' && previousStatus !== 'funds_received') {
+    if (status === 'funds_received') {
       await this.orders.markPaidForApplication(app.id);
     }
 
@@ -237,7 +311,9 @@ export class CoinsService {
     const total = await this.apps.count();
     const approved = await this.apps.count({ where: { status: 'approved' } });
     const rejected = await this.apps.count({ where: { status: 'rejected' } });
-    const inProduction = await this.apps.count({ where: { status: 'in_production' } });
+    const inProduction = await this.apps.count({
+      where: { status: 'in_production' },
+    });
     const sum = await this.apps
       .createQueryBuilder('a')
       .select('COALESCE(SUM(a.coinValue), 0)', 'total')

@@ -1,0 +1,42 @@
+.living-museum .megapolis {
+  background: #0c0c0e;
+  color: #ececef;
+}
+.megapolis-header .megapolis-place,
+.megapolis-header .megapolis-account,
+.megapolis-controls {
+  background: #101012e8;
+  border-color: #b79a6066;
+}
+.megapolis-controls button {
+  background: #18181b;
+  color: #e4ca91;
+  border-color: #b79a6080;
+}
+.megapolis-controls button:hover { background: #303034; }
+.megapolis-backdrop { background: #08080bb3; }
+.megapolis-dialog {
+  background: #111114f7;
+  border-color: #b79a60;
+  box-shadow: 0 24px 80px #0009;
+  scrollbar-color: #a98a50 #17171a;
+}
+.megapolis-dialog p,
+.megapolis-directory small { color: #bfc0c7; }
+.megapolis-dialog h2 { color: #ead09a; overflow-wrap: anywhere; }
+.megapolis-dialog .megapolis-primary {
+  background: #d6bb82;
+  color: #161619;
+}
+.megapolis-subcategories span { overflow-wrap: anywhere; }
+.megapolis-setting output { min-width: 4ch; text-align: center; }
+.megapolis-return-city { background: #141417; color: #ead09a; }
+@media (max-width: 700px) {
+  .megapolis-dialog { width: 100%; }
+  .megapolis-header .megapolis-place { min-width: 0; }
+  .megapolis-place span { overflow-wrap: anywhere; }
+  .megapolis-account { flex-shrink: 0; }
+}
+
+.megapolis-site-link { color: #ead09a; background: #101012e8; border: 1px solid #b79a6066; border-radius: 4px; padding: 12px; font-size: 11px !important; white-space: nowrap; }
+@media (max-width: 700px) { .megapolis-site-link { padding: 10px 8px; font-size: 9px !important; } }

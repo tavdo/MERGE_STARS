@@ -1,127 +1,135 @@
+import { lazy, Suspense } from 'react'
+import { useTranslation } from 'react-i18next'
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom'
-import SiteBackground from './components/SiteBackground'
+
+const HowItWorksPage = lazy(() => import('./pages/public/HowItWorksPage'))
+const FilamentTechnologyPage = lazy(() => import('./pages/public/FilamentTechnologyPage'))
+const MergeCoinPage = lazy(() => import('./pages/public/MergeCoinPage'))
+const CollectionsBrowsePage = lazy(() => import('./pages/public/CollectionsBrowsePage'))
+const BrandRoomPage = lazy(() => import('./pages/public/BrandRoomPage'))
+const LivingMuseumPage = lazy(() => import('./pages/public/LivingMuseumPage'))
+const LandingPage = lazy(() => import('./pages/LandingPage'))
+const AdminCoinConfiguratorPage = lazy(() => import('./pages/admin/AdminCoinConfiguratorPage'))
+const AdminMasterCatalogPage = lazy(() => import('./pages/admin/AdminMasterCatalogPage'))
+const AdminAiTrainingPage = lazy(() => import('./pages/admin/AdminAiTrainingPage'))
+const CoinConfiguratorPage = lazy(() => import('./pages/dashboard/CoinConfiguratorPage'))
+const WalletPage = lazy(() => import('./pages/dashboard/WalletPage'))
+const MasterCatalogPage = lazy(() => import('./pages/dashboard/MasterCatalogPage'))
+const ProductPassportPage = lazy(() => import('./pages/public/ProductPassportPage'))
+const LivingMuseumExperienceRedirect = lazy(() => import('./pages/public/LivingMuseumExperienceRedirect'))
 
 // Core pages
-import LandingPage       from './pages/LandingPage'
-import LoginPage         from './pages/LoginPage'
-import ForgotPasswordPage from './pages/ForgotPasswordPage'
-import ResetPasswordPage from './pages/ResetPasswordPage'
-import DashboardPage     from './pages/DashboardPage'
-import ApplicationPage   from './pages/ApplicationPage'
-import CoinConfiguratorPage from './pages/dashboard/CoinConfiguratorPage'
-import StatusPage        from './pages/StatusPage'
+const DesignReviewPage = lazy(() => import('./pages/admin/DesignReviewPage'))
+const MaterialLabAdmin = lazy(() => import('./material-lab/MaterialLabAdmin'))
+const MergeExperience = lazy(() => import('./experience/MergeExperience'))
+const LivingMuseum = lazy(() => import('./living-museum/LivingMuseum'))
+const PersonalMuseum = lazy(() => import('./living-museum/PersonalMuseum'))
+const MuseumTransparency = lazy(() => import('./living-museum/Transparency'))
+const LoginPage = lazy(() => import('./pages/LoginPage'))
+const ForgotPasswordPage = lazy(() => import('./pages/ForgotPasswordPage'))
+const ResetPasswordPage = lazy(() => import('./pages/ResetPasswordPage'))
+const DashboardPage = lazy(() => import('./pages/DashboardPage'))
+const ApplicationPage = lazy(() => import('./pages/ApplicationPage'))
+const StatusPage = lazy(() => import('./pages/StatusPage'))
 
 // Public pages
-import HowItWorksPage    from './pages/public/HowItWorksPage'
-import MergeCoinPage     from './pages/public/MergeCoinPage'
-import FilamentTechnologyPage from './pages/public/FilamentTechnologyPage'
-import PriceIndicatorPage from './pages/public/PriceIndicatorPage'
-import FAQPage           from './pages/public/FAQPage'
-import ContactPage       from './pages/public/ContactPage'
-import TermsPage         from './pages/public/TermsPage'
-import PrivacyPage       from './pages/public/PrivacyPage'
-import ReferralPolicyPage from './pages/public/ReferralPolicyPage'
-import TrustCenterPage from './pages/public/TrustCenterPage'
-import LegalClassificationPage from './pages/public/LegalClassificationPage'
+const PriceIndicatorPage = lazy(() => import('./pages/public/PriceIndicatorPage'))
+const ReferralPolicyPage = lazy(() => import('./pages/public/ReferralPolicyPage'))
+const TrustCenterPage = lazy(() => import('./pages/public/TrustCenterPage'))
+const LegalClassificationPage = lazy(() => import('./pages/public/LegalClassificationPage'))
 
 // Dashboard pages
-import BrandLinePage     from './pages/dashboard/BrandLinePage'
-import CollectionsPage   from './pages/dashboard/CollectionsPage'
-import CollectionDetailPage from './pages/dashboard/CollectionDetailPage'
-import MasterCatalogPage from './pages/dashboard/MasterCatalogPage'
-import CollectionsBrowsePage from './pages/public/CollectionsBrowsePage'
-import BrandPublicPage from './pages/public/BrandPublicPage'
-import BrandRoomPage from './pages/public/BrandRoomPage'
-import LivingMuseumPage from './pages/public/LivingMuseumPage'
-import LivingMuseumExperienceRedirect from './pages/public/LivingMuseumExperienceRedirect'
-import MemberPublicPage from './pages/public/MemberPublicPage'
-import ProductPassportPage from './pages/public/ProductPassportPage'
-import QRIdentityPage    from './pages/dashboard/QRIdentityPage'
-import OrdersPage        from './pages/dashboard/OrdersPage'
-import PaymentPage       from './pages/dashboard/PaymentPage'
-import WalletPage        from './pages/dashboard/WalletPage'
-import DeliveryPage      from './pages/dashboard/DeliveryPage'
-import ReferralPage      from './pages/dashboard/ReferralPage'
-import AIAssistantPage   from './pages/dashboard/AIAssistantPage'
-import ProfilePage       from './pages/dashboard/ProfilePage'
-import CoinsPage         from './pages/dashboard/CoinsPage'
-import MessagesPage      from './pages/dashboard/MessagesPage'
-import SettingsPage      from './pages/dashboard/SettingsPage'
-import InvestmentsPage   from './pages/dashboard/InvestmentsPage'
-import SupportPage       from './pages/dashboard/SupportPage'
+const BrandLinePage = lazy(() => import('./pages/dashboard/BrandLinePage'))
+const CollectionsPage = lazy(() => import('./pages/dashboard/CollectionsPage'))
+const CollectionDetailPage = lazy(() => import('./pages/dashboard/CollectionDetailPage'))
+const BrandPublicPage = lazy(() => import('./pages/public/BrandPublicPage'))
+const MemberPublicPage = lazy(() => import('./pages/public/MemberPublicPage'))
+const QRIdentityPage = lazy(() => import('./pages/dashboard/QRIdentityPage'))
+const OrdersPage = lazy(() => import('./pages/dashboard/OrdersPage'))
+const PaymentPage = lazy(() => import('./pages/dashboard/PaymentPage'))
+const DeliveryPage = lazy(() => import('./pages/dashboard/DeliveryPage'))
+const ReferralPage = lazy(() => import('./pages/dashboard/ReferralPage'))
+const AIAssistantPage = lazy(() => import('./pages/dashboard/AIAssistantPage'))
+const ProfilePage = lazy(() => import('./pages/dashboard/ProfilePage'))
+const CoinsPage = lazy(() => import('./pages/dashboard/CoinsPage'))
+const MessagesPage = lazy(() => import('./pages/dashboard/MessagesPage'))
+const SettingsPage = lazy(() => import('./pages/dashboard/SettingsPage'))
+const InvestmentsPage = lazy(() => import('./pages/dashboard/InvestmentsPage'))
+const SupportPage = lazy(() => import('./pages/dashboard/SupportPage'))
 
 // Admin pages
-import AdminPage         from './pages/AdminPage'
-import AdminUsersPage    from './pages/admin/AdminUsersPage'
-import AdminKYCPage      from './pages/admin/AdminKYCPage'
-import AdminFinancePage  from './pages/admin/AdminFinancePage'
-import AdminCrystalPage  from './pages/admin/AdminCrystalPage'
-import AdminProductionPage from './pages/admin/AdminProductionPage'
-import AdminAuditPage    from './pages/admin/AdminAuditPage'
-import AdminAnalyticsPage from './pages/admin/AdminAnalyticsPage'
-import AdminSettingsPage from './pages/admin/AdminSettingsPage'
-import AdminAiTrainingPage from './pages/admin/AdminAiTrainingPage'
-import AdminMasterCatalogPage from './pages/admin/AdminMasterCatalogPage'
-import AdminCoinConfiguratorPage from './pages/admin/AdminCoinConfiguratorPage'
-import SecurityCenterPage from './pages/admin/SecurityCenterPage'
-import DataGovernancePage from './pages/admin/DataGovernancePage'
-import BusinessContinuityPage from './pages/admin/BusinessContinuityPage'
-import ComplianceHubPage from './pages/admin/ComplianceHubPage'
-import AuditCenterPage from './pages/admin/AuditCenterPage'
+const AdminPage = lazy(() => import('./pages/AdminPage'))
+const AdminUsersPage = lazy(() => import('./pages/admin/AdminUsersPage'))
+const AdminKYCPage = lazy(() => import('./pages/admin/AdminKYCPage'))
+const AdminFinancePage = lazy(() => import('./pages/admin/AdminFinancePage'))
+const AdminCrystalPage = lazy(() => import('./pages/admin/AdminCrystalPage'))
+const AdminProductionPage = lazy(() => import('./pages/admin/AdminProductionPage'))
+const AdminAuditPage = lazy(() => import('./pages/admin/AdminAuditPage'))
+const AdminAnalyticsPage = lazy(() => import('./pages/admin/AdminAnalyticsPage'))
+const AdminSettingsPage = lazy(() => import('./pages/admin/AdminSettingsPage'))
+const BankReviewPage = lazy(() => import('./pages/admin/BankReviewPage'))
+const SecurityCenterPage = lazy(() => import('./pages/admin/SecurityCenterPage'))
+const DataGovernancePage = lazy(() => import('./pages/admin/DataGovernancePage'))
+const BusinessContinuityPage = lazy(() => import('./pages/admin/BusinessContinuityPage'))
+const ComplianceHubPage = lazy(() => import('./pages/admin/ComplianceHubPage'))
+const AuditCenterPage = lazy(() => import('./pages/admin/AuditCenterPage'))
 
 import './App.css'
 import LuxuryCursor from './components/LuxuryCursor'
 import AIAssistantWidget from './components/AIAssistantWidget'
 import AuthGuard from './router/guards/AuthGuard'
 import AdminGuard from './router/guards/AdminGuard'
-import AdminLoginPage from './pages/admin/AdminLoginPage'
+const AdminLoginPage = lazy(() => import('./pages/admin/AdminLoginPage'))
 import CookieConsent from './components/CookieConsent'
-import SeoHead from './components/SeoHead'
 
-function useLuxuryCursorEnabled() {
-  const { pathname } = useLocation()
-  return pathname === '/' && !pathname.startsWith('/admin')
-}
+function useLuxuryCursorEnabled() { return false }
 
 function useAdminZone() {
   const { pathname } = useLocation()
   return pathname.startsWith('/admin')
 }
 
+const NotFoundPage = lazy(() => import('./pages/NotFoundPage'))
+
 function AppRoutes() {
+  const { t } = useTranslation()
   const luxuryCursor = useLuxuryCursorEnabled()
   const adminZone = useAdminZone()
+  const { pathname } = useLocation()
+  const experienceZone = !pathname.startsWith('/dashboard') && !pathname.startsWith('/admin') && pathname !== '/login'
 
   return (
     <>
       {luxuryCursor && <LuxuryCursor />}
-      {!adminZone && <AIAssistantWidget />}
+      {!adminZone && !experienceZone && <AIAssistantWidget />}
       <CookieConsent />
-      <SeoHead />
+      <Suspense fallback={<div role="status" className="page-hero"><div className="animate-pulse h-6 w-48 bg-neutral-800 mx-auto mb-4 rounded" />{t('common.loading')}</div>}>
       <Routes>
         {/* Public */}
-        <Route path="/"                element={<LandingPage />} />
-        <Route path="/how-it-works"    element={<HowItWorksPage />} />
-        <Route path="/merge-coin"      element={<MergeCoinPage />} />
-        <Route path="/filament"        element={<FilamentTechnologyPage />} />
+        <Route path="/material-lab/demo-admin" element={<MaterialLabAdmin demo />} />
+        {['/my-saved', '/my-world', '/fit-profile', '/digital-twin/local-draft', '/my-designs', '/pulse', '/notifications', '/chat', '/track', '/object/:slug/:id', '/collection/:slug', '/material-lab', '/material-lab/passport/:batchId', '/create', '/calculate', '/materials', '/digital-twin', '/fit-to-me', '/houses', '/brand-house', '/for-brands', '/request-brand', '/production-request', '/passport', '/exhibit/:id', '/about'].map(path => <Route key={path} path={path} element={<MergeExperience />} />)}
+        <Route path="/my-museum" element={<PersonalMuseum />} />
+        <Route path="/"                element={<LivingMuseum />} />
+        <Route path="/transparency" element={<div className="living-museum"><MuseumTransparency /></div>} />
+        <Route path="/living-museum" element={<LivingMuseum />} /><Route path="/museum" element={<LivingMuseum />} />
+        <Route path="/how-it-works" element={<HowItWorksPage />} />
+        <Route path="/merge-coin" element={<MergeCoinPage />} />
+        <Route path="/filament" element={<FilamentTechnologyPage />} />
         <Route path="/price-indicator" element={<PriceIndicatorPage />} />
-        <Route path="/faq"             element={<FAQPage />} />
-        <Route path="/contact"         element={<ContactPage />} />
-        <Route path="/terms"                  element={<TermsPage />} />
+        <Route path="/verification" element={<Navigate to="/material-lab" replace />} />
+        <Route path="/faq"             element={<MergeExperience />} />
+        <Route path="/contact"         element={<MergeExperience />} />
+        <Route path="/terms"                  element={<MergeExperience />} />
         <Route path="/terms-and-conditions"  element={<Navigate to="/terms" replace />} />
-        <Route path="/privacy"         element={<PrivacyPage />} />
+        <Route path="/privacy"         element={<MergeExperience />} />
         <Route path="/referral-policy" element={<ReferralPolicyPage />} />
         <Route path="/trust" element={<TrustCenterPage />} />
         <Route path="/legal-classification" element={<LegalClassificationPage />} />
-        <Route path="/collections"          element={<CollectionsBrowsePage />} />
-        <Route path="/collections/:slug"   element={<CollectionsBrowsePage />} />
-        <Route path="/brand-room"          element={<BrandRoomPage />} />
-        <Route path="/living-museum"       element={<LivingMuseumPage />} />
-        <Route path="/living-museum/enter" element={<LivingMuseumExperienceRedirect />} />
-        <Route path="/museum"              element={<LivingMuseumPage />} />
+        <Route path="/collections" element={<CollectionsBrowsePage />} />
+        <Route path="/collections/:slug" element={<MergeExperience />} />
+        <Route path="/brand-room" element={<BrandRoomPage />} />
         <Route path="/b/:brandLineId"      element={<BrandPublicPage />} />
         <Route path="/u/:mergeId"          element={<MemberPublicPage mode="member" />} />
-        <Route path="/passport/:publicId"   element={<ProductPassportPage />} />
         <Route path="/login"           element={<LoginPage />} />
         <Route path="/register"        element={<Navigate to="/login?tab=register" replace />} />
         <Route path="/forgot-password" element={<ForgotPasswordPage />} />
@@ -129,6 +137,11 @@ function AppRoutes() {
 
         {/* Authenticated — user area */}
         <Route element={<AuthGuard />}>
+          <Route path="/fill-coin" element={<CoinConfiguratorPage />} />
+
+          <Route path="/dashboard/fill-coin"  element={<CoinConfiguratorPage />} />
+          <Route path="/dashboard/wallet"       element={<WalletPage />} />
+          <Route path="/dashboard/master-catalog" element={<MasterCatalogPage />} />
           <Route path="/dashboard"              element={<DashboardPage />} />
           <Route path="/dashboard/profile"      element={<ProfilePage />} />
           <Route path="/dashboard/coins"        element={<CoinsPage />} />
@@ -137,31 +150,33 @@ function AppRoutes() {
           <Route path="/dashboard/settings"     element={<SettingsPage />} />
           <Route path="/dashboard/support"      element={<SupportPage />} />
           <Route path="/dashboard/brand"        element={<BrandLinePage />} />
-          <Route path="/dashboard/master-catalog" element={<MasterCatalogPage />} />
           <Route path="/dashboard/collections"  element={<CollectionsPage />} />
           <Route path="/dashboard/collections/:id" element={<CollectionDetailPage />} />
           <Route path="/dashboard/qr"           element={<QRIdentityPage />} />
           <Route path="/dashboard/orders"       element={<OrdersPage />} />
           <Route path="/dashboard/payment"      element={<PaymentPage />} />
-          <Route path="/dashboard/wallet"       element={<WalletPage />} />
           <Route path="/dashboard/delivery"      element={<DeliveryPage />} />
           <Route path="/dashboard/referral"      element={<ReferralPage />} />
           <Route path="/dashboard/ai"            element={<AIAssistantPage />} />
-          <Route path="/fill-coin"            element={<CoinConfiguratorPage />} />
-          <Route path="/dashboard/fill-coin"  element={<CoinConfiguratorPage />} />
           <Route path="/apply"              element={<ApplicationPage />} />
-          <Route path="/calculator"         element={<Navigate to="/fill-coin" replace />} />
+          <Route path="/production-request" element={<ApplicationPage />} />
+          <Route path="/calculator"         element={<Navigate to="/apply" replace />} />
           <Route path="/status"             element={<StatusPage />} />
         </Route>
 
         {/* Admin zone — separate secured area at /admin/* */}
         <Route path="/admin/login" element={<AdminLoginPage />} />
+        <Route path="/bank-review" element={<Navigate to="/admin/bank-review" replace />} />
         <Route path="/audit" element={<Navigate to="/admin/audit" replace />} />
         <Route path="/security" element={<Navigate to="/admin/compliance?tab=security" replace />} />
         <Route path="/data-governance" element={<Navigate to="/admin/compliance?tab=data" replace />} />
         <Route path="/business-continuity" element={<Navigate to="/admin/compliance?tab=continuity" replace />} />
 
         <Route element={<AdminGuard />}>
+          <Route path="/admin/coin-configurator" element={<AdminCoinConfiguratorPage />} />
+          <Route path="/admin/master-catalog" element={<AdminMasterCatalogPage />} />
+          <Route path="/admin/ai-training" element={<AdminAiTrainingPage />} />
+          <Route path="/admin/design-reviews" element={<DesignReviewPage />} /><Route path="/admin/material-lab" element={<MaterialLabAdmin />} />
           <Route path="/admin" element={<AdminPage />} />
           <Route path="/admin/users" element={<AdminUsersPage />} />
           <Route path="/admin/kyc" element={<AdminKYCPage />} />
@@ -171,16 +186,21 @@ function AppRoutes() {
           <Route path="/admin/audit" element={<AdminAuditPage />} />
           <Route path="/admin/analytics" element={<AdminAnalyticsPage />} />
           <Route path="/admin/settings" element={<AdminSettingsPage />} />
-          <Route path="/admin/ai-training" element={<AdminAiTrainingPage />} />
-          <Route path="/admin/master-catalog" element={<AdminMasterCatalogPage />} />
-          <Route path="/admin/coin-configurator" element={<AdminCoinConfiguratorPage />} />
+          <Route path="/admin/bank-review" element={<BankReviewPage />} />
           <Route path="/admin/compliance" element={<ComplianceHubPage />} />
           <Route path="/admin/audit-center" element={<AuditCenterPage />} />
           <Route path="/admin/security" element={<SecurityCenterPage />} />
           <Route path="/admin/data-governance" element={<DataGovernancePage />} />
           <Route path="/admin/business-continuity" element={<BusinessContinuityPage />} />
         </Route>
+        <Route path="/living-museum/enter" element={<LivingMuseumExperienceRedirect />} />
+        <Route path="/passport/:publicId"   element={<ProductPassportPage />} />
+
+        <Route path="/classic" element={<LandingPage />} />
+        <Route path="/museum/classic" element={<LivingMuseumPage />} />
+        <Route path="*" element={<NotFoundPage />} />
       </Routes>
+      </Suspense>
     </>
   )
 }
@@ -188,10 +208,11 @@ function AppRoutes() {
 export default function App() {
   return (
     <BrowserRouter>
-      <SiteBackground />
-      <div className="site-app">
-        <AppRoutes />
-      </div>
+      <AppRoutes />
     </BrowserRouter>
   )
 }
+
+
+
+

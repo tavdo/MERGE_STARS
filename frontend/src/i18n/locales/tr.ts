@@ -1,36 +1,6 @@
 export default {
   lang: { label: 'Dil', en: 'English', ru: 'Русский', fr: 'Français', de: 'Deutsch', tr: 'Türkçe', ka: 'ქართული', ar: 'العربية' },
-  seo: {
-    pages: {
-      livingMuseum: {
-        title: 'Markaların Yaşayan Müzesi | Markaların Kuyumcusu — MERGE STARS',
-        description:
-          'MERGE STARS Yaşayan Müze — Brand House, Digital Twin, FIT TO ME, Create My Version, MERGE mozaik DNA ve mergestars.com CORE üzerinde dijital→fiziksel üretim.',
-      },
-      brandRoom: {
-        title: 'Brand Room | MERGE STARS üye markaları',
-        description: 'MERGE STARS üyelerinin halka açık marka katalogları, mücevher, aksesuar ve tasarımları.',
-      },
-    },
-  },
-  nav: {
-    home: 'Ana Sayfa',
-    howItWorks: 'Nasıl Çalışır',
-    mergeCoin: 'Merge Coin',
-    filament: 'Filament',
-    brandRoom: 'Brand Room',
-    livingMuseum: 'Yaşayan Müze',
-    prices: 'Fiyatlar',
-    apply: 'Başvuru',
-    faq: 'SSS',
-    contact: 'İletişim',
-    trust: 'Güven Merkezi',
-    legalClassification: 'Yasal Sınıflandırma',
-    login: 'Giriş',
-    dashboard: 'Panel',
-    menu: 'Menü',
-    closeMenu: 'Menüyü kapat',
-  },
+  nav: { home: 'Ana Sayfa', howItWorks: 'Nasıl Çalışır', mergeCoin: 'Merge Coin', prices: 'Fiyatlar', apply: 'Başvuru', faq: 'SSS', contact: 'İletişim', trust: 'Trust Center', legalClassification: 'Legal Classification', login: 'Giriş', dashboard: 'Panel', menu: 'Menü' },
   footer: {
     secure: 'GÜVENLİ PLATFORM', secureSub: 'Verileriniz korunur', fast: 'HIZLI VE GÜVENİLİR', fastSub: 'Kusursuz deneyim',
     global: 'KÜRESEL TOPLULUK', globalSub: 'Binlerce üye', supportTitle: 'DESTEK', supportSub: 'Yanınızdayız',

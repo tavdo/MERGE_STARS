@@ -1,9 +1,14 @@
 import 'reflect-metadata';
 import { DataSource } from 'typeorm';
 import { entities } from './entities';
+import { ConfigModule } from '@nestjs/config';
+
+ConfigModule.forRoot({ envFilePath: ['.env', '../.env'] });
 
 const ssl =
-  process.env.DB_SSL === 'true' ? { rejectUnauthorized: false as const } : false;
+  process.env.DB_SSL === 'true'
+    ? { rejectUnauthorized: false as const }
+    : false;
 
 export default new DataSource(
   process.env.DATABASE_URL

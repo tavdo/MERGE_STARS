@@ -9,11 +9,17 @@ import { MetalsService } from './metals.service';
 
 function parseCorsOrigins(raw: string | undefined): string[] | boolean {
   if (!raw?.trim()) return true;
-  return raw.split(',').map((o) => o.trim()).filter(Boolean);
+  return raw
+    .split(',')
+    .map((o) => o.trim())
+    .filter(Boolean);
 }
 
 @WebSocketGateway({
-  cors: { origin: parseCorsOrigins(process.env.FRONTEND_URL), credentials: true },
+  cors: {
+    origin: parseCorsOrigins(process.env.FRONTEND_URL),
+    credentials: true,
+  },
   transports: ['websocket', 'polling'],
 })
 export class MetalsGateway implements OnGatewayInit, OnGatewayConnection {

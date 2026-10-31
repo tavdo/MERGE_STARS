@@ -5,6 +5,10 @@ export interface LiveMetalPrice {
   metal: string
   priceUsd: number
   changePct: number
+  source: string
+  sourceTimestamp: string
+  retrievedAt: string
+  validUntil: string
   pricePerKgUsd: number
 }
 

@@ -364,3 +364,8 @@ admin
 
 
 *Last updated: May 2026 — aligned with Phase 1 implementation.*
+
+
+## SOURCE / HUMAN / HUMANOID / LEGACY — 2026-10-06
+Canonical architectural extension: [MERGE_SOURCE_HUMAN_LEGACY_MASTER.md](MERGE_SOURCE_HUMAN_LEGACY_MASTER.md). Preserve source revisions, rights evidence, explicit versioned document acceptance, consented Digital Twin/Avatar snapshots, production/QC/passport lineage and privacy boundaries. This extension defines target controls; its implementation-status section distinguishes existing code from services still to be built. Existing CORE identities, calculation rules and fail-closed commerce remain unchanged.
+

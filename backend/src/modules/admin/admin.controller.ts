@@ -17,8 +17,6 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User, userPublicView } from '../../database/entities/user.entity';
 import { Order, orderView } from '../../database/entities/order.entity';
-import { CoinApplication } from '../../database/entities/coin-application.entity';
-import { BrandLineProfile } from '../../database/entities/brand-line-profile.entity';
 import { UsersService } from '../users/users.service';
 import { AdminAnalyticsService } from './admin-analytics.service';
 
@@ -76,7 +74,8 @@ export class AdminController {
   @Patch('applications/:id/status')
   async updateStatus(
     @Param('id') id: string,
-    @Body() body: { status: ApplicationStatus; note?: string; crystalSent?: boolean },
+    @Body()
+    body: { status: ApplicationStatus; note?: string; crystalSent?: boolean },
   ) {
     return this.coins.updateStatus(id, body.status, {
       note: body.note,
@@ -89,7 +88,9 @@ export class AdminController {
     @Query('search') search?: string,
     @Query('kycStatus') kycStatus?: string,
   ) {
-    const qb = this.users.createQueryBuilder('u').orderBy('u.createdAt', 'DESC');
+    const qb = this.users
+      .createQueryBuilder('u')
+      .orderBy('u.createdAt', 'DESC');
     if (search?.trim()) {
       const q = `%${search.trim().toLowerCase()}%`;
       qb.where(
@@ -98,7 +99,9 @@ export class AdminController {
       );
     }
     if (kycStatus?.trim()) {
-      qb.andWhere('u.kycStatus = :kycStatus', { kycStatus: kycStatus.toLowerCase() });
+      qb.andWhere('u.kycStatus = :kycStatus', {
+        kycStatus: kycStatus.toLowerCase(),
+      });
     }
     const rows = await qb.take(100).getMany();
     return rows.map((u) => ({

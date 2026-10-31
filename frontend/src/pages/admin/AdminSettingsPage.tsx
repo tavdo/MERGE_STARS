@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
 import AdminLayout from '../../components/AdminLayout'
@@ -21,15 +21,16 @@ export default function AdminSettingsPage() {
     queryFn: () => adminApi.getSettings().then((r) => r.data.data),
   })
 
-  useEffect(() => {
-    if (!data) return
+  const [loadedDraft, setLoadedDraft] = useState<typeof data>(undefined)
+  if (data && data !== loadedDraft) {
+    setLoadedDraft(data)
     setTickerEnabled(data.tickerEnabled)
     setAiEnabled(data.aiEnabled)
     setAutoVerify(data.autoVerify)
     setPlatformShare(data.platformShare)
     setBrandShare(data.brandShare)
     setReferrerShare(data.referrerShare)
-  }, [data])
+  }
 
   const save = useMutation({
     mutationFn: () =>

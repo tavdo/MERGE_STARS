@@ -1,4 +1,4 @@
-import { writeFileSync, mkdirSync, readFileSync } from 'fs'
+import { writeFileSync, mkdirSync } from 'fs'
 import { mergeLocales } from '../src/i18n/mergeLocales'
 import en from '../src/i18n/locales/en'
 import ru from '../src/i18n/locales/ru'

@@ -1,4 +1,4 @@
-import assistantLogo from '@/assets/assistant-logo.png'
+import MergeMasterLogo from './MergeMasterLogo'
 
 type SiteLogoProps = {
   className?: string
@@ -13,11 +13,9 @@ const SIZE_CLASS = {
 
 export default function SiteLogo({ className = '', size = 'md' }: SiteLogoProps) {
   return (
-    <img
-      src={assistantLogo}
-      alt=""
+    <MergeMasterLogo
       className={`site-logo ${SIZE_CLASS[size]} ${className}`.trim()}
-      aria-hidden
+      decorative
     />
   )
 }

@@ -13,14 +13,8 @@ import { CatalogItem } from './catalog-item.entity';
 
 export type CatalogVisibility = 'PUBLIC' | 'PRIVATE';
 
-export type CatalogCategory =
-  | 'jewelry'
-  | 'accessories'
-  | 'souvenirs'
-  | 'sanitaryware'
-  | 'stationery'
-  | 'construction'
-  | 'more';
+export type { CatalogCategory } from '../../modules/catalog/catalog-categories';
+import type { CatalogCategory } from '../../modules/catalog/catalog-categories';
 
 @Entity('catalog_collections')
 export class CatalogCollection {

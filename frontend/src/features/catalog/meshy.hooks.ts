@@ -47,7 +47,7 @@ export const MESHY_STYLE_PROMPTS: Record<string, string> = {
 }
 
 const apiBase = (
-  import.meta.env.VITE_API_URL || (import.meta.env.PROD ? '/api' : 'http://localhost:3000')
+  import.meta.env.VITE_API_URL || '/api'
 ).replace(/\/$/, '')
 
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms))

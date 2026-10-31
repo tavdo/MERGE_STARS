@@ -351,7 +351,7 @@ export default {
   },
   nav: {
     mergeCoin: "MERGE COIN",
-    faq: "FAQ",
+    faq: "ხშირად დასმული კითხვები",
     trust: "ნდობის ცენტრი",
     legalClassification: "სამართლებრივი კლასიფიკაცია",
   },
@@ -364,7 +364,7 @@ export default {
     },
   },
   faq: {
-    kicker: "FAQ",
+    kicker: "ხშირად დასმული კითხვები",
   },
   contact: {
     emailPlaceholder: "your@email.com",
@@ -374,7 +374,7 @@ export default {
   },
   pages: {
     support: {
-      faq: "FAQ",
+      faq: "ხშირად დასმული კითხვები",
     },
   },
   deliveryStatuses: {

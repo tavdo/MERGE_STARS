@@ -7,6 +7,7 @@ export interface CoinApplication {
   quantity: number
   metalPurity: number
   coinValue: number
+  priceQuotedAt?: string | null
   status: string
   submittedAt: string
   updatedAt?: string
@@ -21,6 +22,7 @@ export interface CoinApplication {
 }
 
 export interface SubmitApplicationPayload {
+  brandHouseName: string
   coinType: string
   quantity: number
   metalPurity?: number
@@ -36,8 +38,8 @@ export interface SubmitApplicationPayload {
   financingTermMonths?: number
   deliveryAddress?: string
   additionalNotes?: string
-  catalogItemId?: string
   configuratorSessionId?: string
+  catalogItemId?: string
 }
 
 export const coinsApi = {

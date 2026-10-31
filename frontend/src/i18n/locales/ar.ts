@@ -10,26 +10,10 @@ export default {
     ka: 'الجورجية',
     ar: 'العربية',
   },
-  seo: {
-    pages: {
-      livingMuseum: {
-        title: 'المتحف الحي للعلامات | صائغ العلامات — MERGE STARS',
-        description:
-          'المتحف الحي MERGE STARS — Brand House، التوأم الرقمي، FIT TO ME، Create My Version، حمض نووي الفسيفساء MERGE والإنتاج الرقمي→المادي على CORE mergestars.com.',
-      },
-      brandRoom: {
-        title: 'Brand Room | علامات أعضاء MERGE STARS',
-        description: 'كتالوجات العلامات العامة والمجوهرات والإكسسوارات والتصاميم من أعضاء MERGE STARS.',
-      },
-    },
-  },
   nav: {
     home: 'الرئيسية',
     howItWorks: 'كيف يعمل',
     mergeCoin: 'MERGE COIN',
-    filament: 'الخيوط ثلاثية الأبعاد',
-    brandRoom: 'Brand Room',
-    livingMuseum: 'المتحف الحي',
     prices: 'الأسعار',
     apply: 'قدّم طلبًا',
     faq: 'الأسئلة الشائعة',

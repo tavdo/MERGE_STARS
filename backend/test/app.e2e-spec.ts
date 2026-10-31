@@ -4,6 +4,8 @@ import * as request from 'supertest';
 import { DataSource } from 'typeorm';
 import { HealthController } from '../src/modules/health/health.controller';
 import { MailService } from '../src/modules/mail/mail.service';
+import { MetalsService } from '../src/modules/metals/metals.service';
+import { RedisService } from '../src/modules/redis/redis.service';
 
 describe('Health (e2e)', () => {
   let app: INestApplication;
@@ -18,7 +20,15 @@ describe('Health (e2e)', () => {
         },
         {
           provide: MailService,
-          useValue: { isConfigured: () => false },
+          useValue: { mailMode: () => 'dev-log' },
+        },
+        {
+          provide: MetalsService,
+          useValue: { getLive: () => [{ metal: 'silver', priceUsd: 1 }] },
+        },
+        {
+          provide: RedisService,
+          useValue: { ping: async () => false, status: () => 'disabled' },
         },
       ],
     }).compile();
@@ -26,7 +36,11 @@ describe('Health (e2e)', () => {
     app = moduleFixture.createNestApplication();
     app.setGlobalPrefix('api');
     app.useGlobalPipes(
-      new ValidationPipe({ whitelist: true, transform: true, forbidNonWhitelisted: false }),
+      new ValidationPipe({
+        whitelist: true,
+        transform: true,
+        forbidNonWhitelisted: false,
+      }),
     );
     await app.init();
   });

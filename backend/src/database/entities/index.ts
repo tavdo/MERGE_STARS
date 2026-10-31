@@ -1,3 +1,18 @@
+import { ProductPassport } from './product-passport.entity';
+import { CoinConfiguratorProduct } from './coin-configurator-product.entity';
+import { CoinConfiguratorSession } from './coin-configurator-session.entity';
+import { CoinPackageConfig } from './coin-package-config.entity';
+import { AiTrainingItem } from './ai-training-item.entity';
+import { BrandRoomPick } from './brand-room-pick.entity';
+import {
+  FitProfile,
+  DesignProposal,
+  ProductInteraction,
+} from '../../modules/experience/experience.entity';
+import {
+  MaterialLabEvent,
+  MaterialLabFile,
+} from '../../modules/material-lab/material-lab.entity';
 import { User } from './user.entity';
 import { CoinApplication } from './coin-application.entity';
 import { Order } from './order.entity';
@@ -11,20 +26,24 @@ import { Notification } from './notification.entity';
 import { KycDocument } from './kyc-document.entity';
 import { CatalogCollection } from './catalog-collection.entity';
 import { CatalogItem } from './catalog-item.entity';
-import { BrandRoomPick } from './brand-room-pick.entity';
 import { BrandLineProfile } from './brand-line-profile.entity';
 import { PlatformSettings } from './platform-settings.entity';
 import { PhoneVerificationCode } from './phone-verification-code.entity';
 import { WalletTransaction } from './wallet-transaction.entity';
 import { CatalogOrder } from './catalog-order.entity';
-import { AiTrainingItem } from './ai-training-item.entity';
-import { CoinPackageConfig } from './coin-package-config.entity';
-import { CoinConfiguratorSession } from './coin-configurator-session.entity';
-import { CoinConfiguratorProduct } from './coin-configurator-product.entity';
-
-import { ProductPassport } from './product-passport.entity';
 
 export const entities = [
+  BrandRoomPick,
+  AiTrainingItem,
+  CoinPackageConfig,
+  CoinConfiguratorSession,
+  CoinConfiguratorProduct,
+  ProductPassport,
+  FitProfile,
+  DesignProposal,
+  ProductInteraction,
+  MaterialLabEvent,
+  MaterialLabFile,
   User,
   CoinApplication,
   Order,
@@ -38,20 +57,20 @@ export const entities = [
   KycDocument,
   CatalogCollection,
   CatalogItem,
-  BrandRoomPick,
   BrandLineProfile,
   PlatformSettings,
   PhoneVerificationCode,
   WalletTransaction,
   CatalogOrder,
-  AiTrainingItem,
-  CoinPackageConfig,
-  CoinConfiguratorSession,
-  CoinConfiguratorProduct,
-  ProductPassport,
 ];
 
 export {
+  BrandRoomPick,
+  AiTrainingItem,
+  CoinPackageConfig,
+  CoinConfiguratorSession,
+  CoinConfiguratorProduct,
+  ProductPassport,
   User,
   CoinApplication,
   Order,
@@ -65,15 +84,9 @@ export {
   KycDocument,
   CatalogCollection,
   CatalogItem,
-  BrandRoomPick,
   BrandLineProfile,
   PlatformSettings,
   PhoneVerificationCode,
   WalletTransaction,
   CatalogOrder,
-  AiTrainingItem,
-  CoinPackageConfig,
-  CoinConfiguratorSession,
-  CoinConfiguratorProduct,
-  ProductPassport,
 };

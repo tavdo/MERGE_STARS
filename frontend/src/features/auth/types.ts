@@ -1,3 +1,5 @@
+import type { Role } from '@/shared/types/api.types'
+
 export interface LoginPayload {
   identifier: string   // email or phone
   password: string
@@ -50,7 +52,7 @@ export interface AuthUser {
   mergeId: string
   founderId: string | null
   brandLineId: string | null
-  roles: string[]
+  roles: Role[]
   status: string
   kycStatus: string
 }

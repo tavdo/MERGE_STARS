@@ -1,4 +1,14 @@
-import { Body, Controller, Get, Post, Query, UseGuards, UsePipes, ValidationPipe } from '@nestjs/common';
+
+import {
+  Body,
+  Controller,
+  Get,
+  Post,
+  Query,
+  UseGuards,
+  UsePipes,
+  ValidationPipe,
+} from '@nestjs/common';
 import { IsNumber, IsOptional, IsString, Min } from 'class-validator';
 import { Type } from 'class-transformer';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
@@ -33,12 +43,6 @@ export class WalletController {
     return this.wallet.getMe(user.id, limit ? Number(limit) : 30);
   }
 
-  @Post('wallet/activate')
-  @UseGuards(JwtAuthGuard)
-  activate(@CurrentUser() user: User) {
-    return this.wallet.activate(user.id, 'user');
-  }
-
   @Post('admin/wallet/credit')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('admin', 'manager')
@@ -50,5 +54,11 @@ export class WalletController {
       note: dto.note,
       createdBy: admin.id,
     });
+  }
+
+@Post('wallet/activate')
+  @UseGuards(JwtAuthGuard)
+  activate(@CurrentUser() user: User) {
+    return this.wallet.activate(user.id, 'user');
   }
 }

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { useLocation } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import AIChatPanel from './ai/AIChatPanel'
@@ -17,9 +17,11 @@ export default function AIAssistantWidget() {
     pathname.startsWith('/admin') ||
     pathname === '/login'
 
-  useEffect(() => {
+  const [lastHiddenRoute, setLastHiddenRoute] = useState(hiddenOnRoute)
+  if (hiddenOnRoute !== lastHiddenRoute) {
+    setLastHiddenRoute(hiddenOnRoute)
     if (hiddenOnRoute) setOpen(false)
-  }, [hiddenOnRoute])
+  }
 
   if (hiddenOnRoute) return null
 

@@ -10,7 +10,11 @@ import { AdminController } from './admin.controller';
 import { AdminAnalyticsService } from './admin-analytics.service';
 
 @Module({
-  imports: [CoinsModule, UsersModule, TypeOrmModule.forFeature([User, Order, CoinApplication, BrandLineProfile])],
+  imports: [
+    CoinsModule,
+    UsersModule,
+    TypeOrmModule.forFeature([User, Order, CoinApplication, BrandLineProfile]),
+  ],
   controllers: [AdminController],
   providers: [AdminAnalyticsService],
 })

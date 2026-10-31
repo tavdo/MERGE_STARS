@@ -273,7 +273,6 @@ export default {
   },
   collections: {
     meshyStyles: {
-      case: 'علبة',
       jewelry: 'مجوهرات',
       luxuryCoin: 'عملة فاخرة',
       watch: 'ساعة',

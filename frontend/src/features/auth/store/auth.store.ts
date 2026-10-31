@@ -1,5 +1,5 @@
 import { create } from 'zustand'
-import { persist } from 'zustand/middleware'
+import { persist, createJSONStorage } from 'zustand/middleware'
 import type { Role } from '@/shared/types/api.types'
 
 interface AuthUser {
@@ -14,7 +14,7 @@ interface AuthUser {
 interface AuthStore {
   accessToken: string | null
   user: AuthUser | null
-  setSession: (token: string, user: AuthUser) => void
+  setSession: (token: string, user: AuthUser, rememberMe?: boolean) => void
   clearSession: () => void
 }
 
@@ -23,9 +23,25 @@ export const useAuthStore = create<AuthStore>()(
     (set) => ({
       accessToken: null,
       user: null,
-      setSession: (accessToken, user) => set({ accessToken, user }),
+      setSession: (accessToken, user, rememberMe) => {
+        if (rememberMe !== undefined) localStorage.setItem('merge-stars-remember', String(rememberMe))
+        set({ accessToken, user })
+      },
       clearSession: () => set({ accessToken: null, user: null }),
     }),
-    { name: 'merge-stars-auth' },
+    {
+      name: 'merge-stars-auth',
+      storage: createJSONStorage(() => ({
+        getItem: (name) => sessionStorage.getItem(name) ?? localStorage.getItem(name),
+        setItem: (name, value) => {
+          const persistent = localStorage.getItem('merge-stars-remember') === 'true'
+          const storage = persistent ? localStorage : sessionStorage
+          const other = persistent ? sessionStorage : localStorage
+          storage.setItem(name, value)
+          other.removeItem(name)
+        },
+        removeItem: (name) => { localStorage.removeItem(name); sessionStorage.removeItem(name) },
+      })),
+    },
   ),
 )

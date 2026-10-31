@@ -1,0 +1,52 @@
+@scope (body:has(.living-museum)) {
+  .personal-museum{min-height:100svh;background:#090b0e;color:#eee}
+  .personal-museum-header{display:flex;flex-wrap:wrap;gap:16px;align-items:center;padding:24px;border-bottom:1px solid #454a50}
+  .personal-museum-header h1{font-size:24px;flex-basis:100%;overflow-wrap:anywhere}
+  .personal-museum-header a{display:inline-flex;align-items:center;gap:6px;color:#d3c499}
+  .personal-museum-header span{font-size:12px;color:#a5cbd2}
+  .personal-exhibits{max-width:1200px;margin:auto;padding:24px}
+  .personal-exhibits h2{font-size:22px;margin:24px 0}
+  .personal-exhibits h2 span{font-size:14px;color:#a5cbd2}
+  .personal-exhibits h3{font-size:18px;overflow-wrap:anywhere}
+  .personal-exhibits .museum-record-grid article{padding:12px;border:1px solid #454a50;border-radius:4px}
+  .personal-exhibits .museum-record-grid img{width:100%;height:180px;object-fit:contain}
+  .personal-exhibits p,.personal-exhibits dl{font-size:14px;line-height:1.7;overflow-wrap:anywhere}
+  .personal-version-list>article{padding:20px 0;border-bottom:1px solid #454a50}
+  .personal-version-list article>span{font-size:12px;color:#a5cbd2}
+  .personal-exhibits button,.personal-museum-status button{display:inline-flex;gap:6px;align-items:center;padding:9px;color:inherit;border:1px solid #555c65;border-radius:4px;background:transparent;cursor:pointer}
+  .personal-exhibits button:disabled{opacity:.4;cursor:default}
+  .personal-exhibits form{display:flex;flex-wrap:wrap;gap:12px;padding:20px 0}
+  .personal-exhibits form label{display:flex;gap:10px;align-items:start;max-width:100%;font-size:14px}
+  .personal-version-form label{flex-basis:100%;flex-direction:column}
+  .personal-version-form input,.personal-version-form textarea{background:#171b20;color:#eee;padding:10px;border:1px solid #555c65;width:100%;max-width:600px;border-radius:4px}
+  .personal-museum-status{padding:24px;max-width:1200px;margin:auto}
+  .museum-brand-room{max-width:1200px;margin:auto;padding:40px 24px;min-height:100svh;background:#090b0e;color:#eee}
+  .museum-brand-room>header{display:flex;gap:24px;align-items:center;padding:32px 0;border-bottom:1px solid #454a50;margin-bottom:24px}
+  .museum-brand-room>header img{width:100px;height:100px;object-fit:contain}
+  .museum-brand-room h1{font-size:28px;overflow-wrap:anywhere}
+  .museum-catalog{padding:16px 0;min-width:0}
+  .museum-catalog-filters{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:20px}
+  .museum-catalog-filters label{display:flex;align-items:center;gap:8px;flex:1;min-width:150px}
+  .museum-catalog-filters input,.museum-catalog-filters select{min-width:0;width:100%;padding:10px;background:#171b20;color:#eee;border:1px solid #555c65;border-radius:4px}
+  .museum-catalog-filters select{width:auto;max-width:100%}
+  .museum-catalog button{cursor:pointer;color:inherit;background:transparent;border:1px solid #555c65;border-radius:4px;padding:8px;display:inline-flex;align-items:center;gap:6px}
+  .museum-catalog button:disabled{opacity:.4;cursor:default}
+  .museum-record-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,220px),1fr));gap:16px}
+  .museum-record-grid article{border:1px solid #454a50;border-radius:4px;overflow:hidden}
+  .museum-record-grid .museum-record-open{display:flex;flex-direction:column;align-items:stretch;width:100%;text-align:left;border:0;border-radius:0;padding:12px}
+  .museum-record-open img{width:100%;aspect-ratio:4/3;object-fit:contain;background:#171b20;margin-bottom:8px}
+  .museum-record-open small{color:#b1bdc9;font-size:12px}
+  .museum-image-unavailable{display:grid;place-items:center;min-height:120px;background:#171b20;color:#b1bdc9;font-size:12px}
+  .museum-record-actions{display:flex;flex-wrap:wrap;gap:10px;padding:12px;font-size:12px;align-items:center}
+  .museum-record-actions a{display:inline-flex;align-items:center;gap:6px;overflow-wrap:anywhere;color:#d3c499}
+  .museum-record-detail>img{width:100%;height:320px;object-fit:contain}
+  .museum-record-detail dl,.museum-compare dl{font-size:13px;line-height:1.7;overflow-wrap:anywhere}
+  .museum-record-detail dt,.museum-compare dt{color:#9ba9b6;margin-top:12px}
+  .museum-compare{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,200px),1fr));gap:16px}
+  .museum-compare article{position:relative;border-top:1px solid #555c65;padding:12px 0;min-width:0}
+  .museum-compare h3{font-size:18px;padding-right:32px}
+  .museum-compare img{width:100%;height:180px;object-fit:contain;background:#171b20}
+  .museum-compare article>button{position:absolute;right:0;top:8px}
+  .museum-catalog h3{font-size:20px;overflow-wrap:anywhere}
+  .museum-catalog :focus-visible{outline:2px solid #a5cbd2;outline-offset:3px}
+}

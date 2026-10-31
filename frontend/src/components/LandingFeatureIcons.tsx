@@ -1,4 +1,3 @@
-/* eslint-disable react-refresh/only-export-components */
 import BrandIcon from './BrandIcon'
 import { FEATURE_ICONS, type FeatureIconKey } from '@/assets/brandIcons'
 

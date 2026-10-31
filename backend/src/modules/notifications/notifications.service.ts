@@ -1,8 +1,4 @@
-import {
-  Injectable,
-  Logger,
-  OnModuleInit,
-} from '@nestjs/common';
+import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import {
@@ -49,7 +45,7 @@ export class NotificationsService implements OnModuleInit {
     await this.notifications.save(row);
     const view = notificationView(row);
     try {
-      this.gateway?.emitToUser(input.userId, 'notification:new', view);
+      await this.gateway?.emitToUser(input.userId, 'notification:new', view);
     } catch (err) {
       this.logger.warn(`WS emit failed: ${String(err)}`);
     }

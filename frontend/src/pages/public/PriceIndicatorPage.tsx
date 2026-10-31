@@ -1,87 +1,26 @@
-import { useState, useEffect } from 'react'
+import { useQuery } from '@tanstack/react-query'
+import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import Navbar from '../../components/Navbar'
 import Footer from '../../components/Footer'
-import { useLiveMetalPrices } from '@/features/coins/hooks/useLiveMetalPrice'
-
+import { api } from '@/lib/axios'
+import type { ApiResponse } from '@/shared/types/api.types'
+import type { LiveMetalPrice } from '@/features/coins/api/metals.api'
+type Reference = { ruleVersion: string; silverMinor: number | null; goldMinor: number | null; metals: LiveMetalPrice[] }
 export default function PriceIndicatorPage() {
-  const { t } = useTranslation()
-  const metals = useLiveMetalPrices()
-
-  const silver = metals?.find((m) => m.metal === 'silver')
-  const gold = metals?.find((m) => m.metal === 'gold')
-  const silverSpot = silver?.priceUsd ?? 1.09
-  const goldSpot = gold?.priceUsd ?? 139.1
-  const [lastUpdated, setLastUpdated] = useState(t('prices.justNow'))
-  const indicator = (silverSpot * 1000 * 2).toFixed(2)
-  const methodologySteps = t('prices.methodologySteps', { returnObjects: true }) as string[]
-  const disclaimerItems = t('prices.disclaimerItems', { returnObjects: true }) as string[]
-
-  useEffect(() => {
-    if (metals) setLastUpdated(t('prices.justNow'))
-  }, [metals, t])
-
-  return (
-    <div style={{ background: 'transparent', minHeight: '100vh' }}>
-      <Navbar />
-      <div style={{ paddingTop: '110px' }}>
-        <section style={{ textAlign: 'center', padding: '80px 32px 60px', maxWidth: '700px', margin: '0 auto' }}>
-          <p style={{ fontSize: '11px', fontWeight: 700, letterSpacing: '0.3em', color: '#c9a84c', marginBottom: '16px' }}>{t('prices.reference')}</p>
-          <h1 style={{ fontSize: 'clamp(28px,4vw,48px)', fontWeight: 900, color: '#fff', marginBottom: '16px', lineHeight: 1.1 }}>
-            {t('prices.title')}<br /><span className="gold-text">{t('prices.titleGold')}</span>
-          </h1>
-          <p style={{ fontSize: '13px', color: 'rgba(255,255,255,0.4)', lineHeight: 1.7 }}>{t('prices.intro')}</p>
-        </section>
-
-        <section style={{ maxWidth: '700px', margin: '0 auto', padding: '0 32px 30px' }}>
-          <div className="gold-card" style={{ padding: '22px', borderRadius: '4px' }}>
-            <h3 style={{ fontSize: '11px', fontWeight: 800, letterSpacing: '0.2em', color: '#c9a84c', marginBottom: '12px' }}>{t('prices.methodology')}</h3>
-            {methodologySteps.map((line) => (
-              <p key={line} style={{ fontSize: '12px', color: 'rgba(255,255,255,0.55)', margin: '6px 0' }}>{line}</p>
-            ))}
-            <p style={{ fontSize: '12px', color: 'rgba(255,255,255,0.45)', marginTop: '14px', lineHeight: 1.65 }}>{t('prices.methodologyNote')}</p>
-          </div>
-        </section>
-
-        <section style={{ maxWidth: '700px', margin: '0 auto', padding: '0 32px 60px' }}>
-          <div className="gold-card" style={{ padding: '48px', borderRadius: '4px', textAlign: 'center' }}>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', marginBottom: '32px' }}>
-              <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#22c55e', display: 'inline-block' }} className="animate-pulse" />
-              <span style={{ fontSize: '11px', color: '#22c55e', fontWeight: 600, letterSpacing: '0.15em' }}>{t('prices.liveUpdated', { time: lastUpdated })}</span>
-            </div>
-            <p style={{ fontSize: '11px', color: 'rgba(255,255,255,0.4)', letterSpacing: '0.2em', marginBottom: '8px' }}>{t('prices.silverSpot')}</p>
-            <p style={{ fontSize: '42px', fontWeight: 900, color: '#fff', marginBottom: '24px' }}>
-              ${(silverSpot * 1000).toFixed(2)}<span style={{ fontSize: '16px', color: 'rgba(255,255,255,0.4)', marginLeft: '4px' }}>/kg</span>
-            </p>
-            <p style={{ fontSize: '11px', color: 'rgba(255,255,255,0.4)', letterSpacing: '0.2em', marginBottom: '8px' }}>{t('landing.metalGold')}</p>
-            <p style={{ fontSize: '28px', fontWeight: 900, color: '#fff', marginBottom: '32px' }}>
-              ${(goldSpot * 1000).toFixed(0)}<span style={{ fontSize: '14px', color: 'rgba(255,255,255,0.4)', marginLeft: '4px' }}>/kg</span>
-            </p>
-            <div style={{ height: '1px', background: 'linear-gradient(90deg,transparent,rgba(201,168,76,0.3),transparent)', margin: '0 0 32px' }} />
-            <p style={{ fontSize: '11px', color: 'rgba(255,255,255,0.4)', letterSpacing: '0.2em', marginBottom: '8px' }}>{t('prices.formula')}</p>
-            <p style={{ fontSize: '15px', color: 'rgba(255,255,255,0.6)', marginBottom: '32px' }}>{t('prices.formulaText')}</p>
-            <p style={{ fontSize: '11px', color: 'rgba(255,255,255,0.4)', letterSpacing: '0.2em', marginBottom: '12px' }}>{t('prices.indicatorLabel')}</p>
-            <p style={{ fontSize: '64px', fontWeight: 900 }} className="gold-text">${indicator}</p>
-            <p style={{ fontSize: '12px', color: 'rgba(255,255,255,0.35)', marginTop: '8px' }}>{t('prices.usdIndicative')}</p>
-            <div style={{ marginTop: '32px', padding: '16px', background: 'rgba(245,158,11,0.05)', border: '1px solid rgba(245,158,11,0.15)', borderRadius: '2px' }}>
-              <p style={{ fontSize: '11px', color: 'rgba(255,255,255,0.35)', lineHeight: 1.6 }}>{t('prices.sourceNote')}</p>
-            </div>
-          </div>
-        </section>
-
-        <section style={{ maxWidth: '700px', margin: '0 auto', padding: '0 32px 80px' }}>
-          <div style={{ padding: '32px', background: '#0f0f0f', border: '1px solid rgba(255,255,255,0.06)', borderRadius: '4px' }}>
-            <h3 style={{ fontSize: '12px', fontWeight: 700, letterSpacing: '0.2em', color: '#c9a84c', marginBottom: '16px' }}>{t('prices.disclaimerTitle')}</h3>
-            {disclaimerItems.map((item, i) => (
-              <div key={i} style={{ display: 'flex', gap: '12px', padding: '8px 0', borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
-                <span style={{ color: '#c9a84c', flexShrink: 0, fontSize: '12px', marginTop: '2px' }}>•</span>
-                <p style={{ fontSize: '13px', color: 'rgba(255,255,255,0.5)', lineHeight: 1.6 }}>{item}</p>
-              </div>
-            ))}
-          </div>
-        </section>
-      </div>
-      <Footer />
-    </div>
-  )
+  const { i18n } = useTranslation()
+  const ka = i18n.language.startsWith('ka')
+  const [now, setNow] = useState(Date.now)
+  useEffect(() => { const timer = setInterval(() => setNow(Date.now()), 1000); return () => clearInterval(timer) }, [])
+  const { data } = useQuery({ queryKey: ['brand-line-reference'], queryFn: () => api.get<ApiResponse<Reference>>('/metals/brand-line-reference').then(r => r.data.data), refetchInterval: 30000 })
+  const fresh = (metal: string) => data?.metals.some(m => m.metal === metal && Date.parse(m.validUntil) > now)
+  const money = (value: number | null | undefined, valid: boolean | undefined) => value != null && valid ? new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(value / 100) : (ka ? 'ფასი დაუდასტურებელია' : 'Price unverified')
+  return <div style={{ background: '#080808', color: '#f4eee0', minHeight: '100vh' }}><Navbar /><main style={{ maxWidth: 900, margin: 'auto', padding: '160px 24px 80px' }}>
+    <h1>{ka ? 'Brand Line-ის ფასდადგენა' : 'Brand Line pricing'}</h1>
+    <p>{ka ? 'საცნობარო ფასი 1 კგ საფასო ერთეულისთვის. პროდუქტის ფიზიკური წონა და ლითონის შემცველობა ცალკე მოწმდება.' : 'Reference for one pricing kg. Physical product weight and precious-metal content are verified separately.'}</p>
+    {[['Silver Line', '2 × Ag LIVE/kg', money(data?.silverMinor, fresh('silver'))], ['Gold Line', '1 × Au LIVE/kg', money(data?.goldMinor, fresh('gold'))], ['Premium Line', ka ? 'ფორმულა დამტკიცებას ელოდება' : 'Formula pending approval', ka ? 'ფასი დაუდასტურებელია' : 'Premium Line pricing pending verification.']].map(([name, formula, price]) => <section key={name} style={{ border: '1px solid #b28d43', padding: 24, marginTop: 24 }}><h2>{name}</h2><p>{formula}</p><strong>{price}</strong></section>)}
+    {data?.metals.filter(m => Date.parse(m.validUntil) > now).map(m => <p key={m.metal}>{m.metal}: {m.pricePerKgUsd} USD/kg · {m.source} · {new Date(m.sourceTimestamp).toLocaleString()}</p>)}
+    <p style={{ marginTop: 32 }}>{ka ? 'საბოლოო შეთავაზებას სჭირდება Brand House-ის პროდუქტის დამტკიცებული მონაცემები, საფასო წონა და დაფიქსირებული ფასი. ეს გვერდი შეკვეთას არ ქმნის.' : 'A final offer requires verified Brand House product data, pricing weight and a price lock. This page does not create an order.'}</p>
+    <small>{data?.ruleVersion}</small>
+  </main><Footer /></div>
 }

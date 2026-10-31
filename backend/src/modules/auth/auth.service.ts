@@ -7,7 +7,7 @@ import {
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { DeepPartial, EntityManager, Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt';
 import { randomBytes, randomInt } from 'crypto';
 import { User, userPublicView } from '../../database/entities/user.entity';
@@ -21,6 +21,7 @@ import { NotificationsService } from '../notifications/notifications.service';
 import { SmsService } from '../sms/sms.service';
 import { PlatformSettingsService } from '../settings/platform-settings.service';
 import { LoginDto, RegisterDto } from './dto/auth.dto';
+import { jwtSecret } from '../../config/security';
 
 @Injectable()
 export class AuthService {
@@ -60,24 +61,25 @@ export class AuthService {
     return this.jwt.sign(
       { sub: user.id, email: user.email },
       {
-        secret: process.env.JWT_SECRET ?? 'merge-stars-dev-secret-change-me',
+        secret: jwtSecret(),
         expiresIn: (process.env.JWT_ACCESS_TTL ?? '15m') as `${number}m`,
       },
     );
   }
 
-  private async createRefreshToken(userId: string) {
+  private async createRefreshToken(userId: string, manager?: EntityManager) {
+    const repo = manager
+      ? manager.getRepository(RefreshToken)
+      : this.refreshTokens;
     const token = randomBytes(48).toString('hex');
     const days = Number(process.env.JWT_REFRESH_DAYS ?? 7);
     const expiresAt = new Date(Date.now() + days * 86400000);
-    await this.refreshTokens.save(
-      this.refreshTokens.create({ userId, token, expiresAt }),
-    );
+    await repo.save(repo.create({ userId, token, expiresAt }));
     return token;
   }
 
-  private async nextUserIds() {
-    const rows = await this.users.find({ select: { mergeId: true } });
+  private async nextUserIds(repo = this.users) {
+    const rows = await repo.find({ select: { mergeId: true } });
     let max = 0;
     for (const row of rows) {
       const match = /^MERGE-(\d+)$/.exec(row.mergeId);
@@ -92,6 +94,23 @@ export class AuthService {
     };
   }
 
+  private async createMember(data: DeepPartial<User>) {
+    return this.users.manager.transaction(async (manager) => {
+      // Covers both Google and password registrations, across server processes.
+      await manager.query('SELECT pg_advisory_xact_lock($1)', [732001]);
+      const repo = manager.getRepository(User);
+      if (await repo.findOne({ where: { email: data.email as string } }))
+        throw new ConflictException('Email already registered');
+      if (
+        data.phone &&
+        (await repo.findOne({ where: { phone: data.phone as string } }))
+      )
+        throw new ConflictException('Phone already registered');
+      const ids = await this.nextUserIds(repo);
+      return repo.save(repo.create({ ...data, ...ids }));
+    });
+  }
+
   async sendVerificationCode(email: string) {
     const normalized = email.trim().toLowerCase();
     const existing = await this.users.findOne({ where: { email: normalized } });
@@ -104,7 +123,9 @@ export class AuthService {
       order: { createdAt: 'DESC' },
     });
     if (recent && Date.now() - recent.createdAt.getTime() < 60_000) {
-      throw new BadRequestException('Please wait 60 seconds before requesting a new code');
+      throw new BadRequestException(
+        'Please wait 60 seconds before requesting a new code',
+      );
     }
 
     await this.emailCodes.delete({ email: normalized });
@@ -121,7 +142,12 @@ export class AuthService {
     }
 
     await this.emailCodes.save(
-      this.emailCodes.create({ email: normalized, code, expiresAt, used: false }),
+      this.emailCodes.create({
+        email: normalized,
+        code,
+        expiresAt,
+        used: false,
+      }),
     );
     return { ok: true, message: 'Verification code sent' };
   }
@@ -142,7 +168,9 @@ export class AuthService {
   async sendPhoneVerificationCode(phone: string) {
     const normalized = phone.trim();
     if (!/^\+[1-9]\d{7,14}$/.test(normalized)) {
-      throw new BadRequestException('Enter phone in international format, e.g. +9955…');
+      throw new BadRequestException(
+        'Enter phone in international format, e.g. +9955…',
+      );
     }
 
     const recent = await this.phoneCodes.findOne({
@@ -150,7 +178,9 @@ export class AuthService {
       order: { createdAt: 'DESC' },
     });
     if (recent && Date.now() - recent.createdAt.getTime() < 60_000) {
-      throw new BadRequestException('Please wait 60 seconds before requesting a new code');
+      throw new BadRequestException(
+        'Please wait 60 seconds before requesting a new code',
+      );
     }
 
     await this.phoneCodes.delete({ phone: normalized });
@@ -166,7 +196,12 @@ export class AuthService {
     }
 
     await this.phoneCodes.save(
-      this.phoneCodes.create({ phone: normalized, code, expiresAt, used: false }),
+      this.phoneCodes.create({
+        phone: normalized,
+        code,
+        expiresAt,
+        used: false,
+      }),
     );
     return { ok: true, message: 'Verification code sent' };
   }
@@ -178,19 +213,27 @@ export class AuthService {
       order: { createdAt: 'DESC' },
     });
     if (!row || row.expiresAt < new Date()) {
-      throw new BadRequestException('Invalid or expired phone verification code');
+      throw new BadRequestException(
+        'Invalid or expired phone verification code',
+      );
     }
     row.used = true;
     await this.phoneCodes.save(row);
   }
 
-  async googleLogin(idToken: string, referralCode?: string, referralSource?: string) {
+  async googleLogin(
+    idToken: string,
+    referralCode?: string,
+    referralSource?: string,
+  ) {
     const clientId = process.env.GOOGLE_CLIENT_ID?.trim();
     if (!clientId) {
       throw new ServiceUnavailableException('Google sign-in is not configured');
     }
 
-    const res = await fetch(`https://oauth2.googleapis.com/tokeninfo?id_token=${encodeURIComponent(idToken)}`);
+    const res = await fetch(
+      `https://oauth2.googleapis.com/tokeninfo?id_token=${encodeURIComponent(idToken)}`,
+    );
     if (!res.ok) throw new UnauthorizedException('Invalid Google token');
 
     const data = (await res.json()) as {
@@ -202,7 +245,11 @@ export class AuthService {
       sub?: string;
     };
 
-    if (data.aud !== clientId || data.email_verified !== 'true' || !data.email) {
+    if (
+      data.aud !== clientId ||
+      data.email_verified !== 'true' ||
+      !data.email
+    ) {
       throw new UnauthorizedException('Google account could not be verified');
     }
 
@@ -210,23 +257,18 @@ export class AuthService {
     let user = await this.users.findOne({ where: { email } });
 
     if (!user) {
-      const ids = await this.nextUserIds();
-      user = this.users.create({
+      user = await this.createMember({
         email,
         phone: null,
         passwordHash: await this.hashPassword(randomBytes(24).toString('hex')),
         firstName: data.given_name?.trim() || 'Google',
         lastName: data.family_name?.trim() || 'User',
         personalId: null,
-        mergeId: ids.mergeId,
-        founderId: ids.founderId,
-        brandLineId: ids.brandLineId,
         roles: ['user'],
         status: 'active',
         kycStatus: 'pending',
         termsAcceptedAt: new Date(),
       });
-      await this.users.save(user);
       await this.referrals.attachReferral(user, referralCode, referralSource);
     }
 
@@ -272,15 +314,13 @@ export class AuthService {
       if (!dto.phoneVerificationCode?.trim()) {
         throw new BadRequestException('Phone verification code is required');
       }
-      await this.consumePhoneVerificationCode(phone, dto.phoneVerificationCode.trim());
+      await this.consumePhoneVerificationCode(
+        phone,
+        dto.phoneVerificationCode.trim(),
+      );
     }
 
-    const ids = await this.nextUserIds();
-    if (await this.users.findOne({ where: { mergeId: ids.mergeId } })) {
-      throw new ConflictException('Could not allocate user ID, try again');
-    }
-
-    const user = this.users.create({
+    const user = await this.createMember({
       email,
       phone,
       passwordHash: await this.hashPassword(dto.password),
@@ -288,22 +328,24 @@ export class AuthService {
       lastName: dto.lastName.trim(),
       // Filled later by KYC review/OCR from the uploaded identity card.
       personalId: null,
-      mergeId: ids.mergeId,
-      founderId: ids.founderId,
-      brandLineId: ids.brandLineId,
       roles: ['user'],
       status: 'active',
-      kycStatus: (await this.platformSettings.get()).autoVerify ? 'verified' : 'pending',
+      kycStatus: (await this.platformSettings.get()).autoVerify
+        ? 'verified'
+        : 'pending',
       termsAcceptedAt: new Date(),
     });
 
-    await this.users.save(user);
-    await this.referrals.attachReferral(user, dto.referralCode, dto.referralSource);
+    await this.referrals.attachReferral(
+      user,
+      dto.referralCode,
+      dto.referralSource,
+    );
     await this.notifications.create({
       userId: user.id,
       type: 'welcome',
       title: 'Welcome to MERGE STARS',
-      body: `Your account ${ids.mergeId} is ready. Complete KYC to unlock full platform access.`,
+      body: `Your account ${user.mergeId} is ready. Complete KYC to unlock full platform access.`,
     });
     const accessToken = this.signAccessToken(user);
     const refreshToken = await this.createRefreshToken(user.id);
@@ -324,7 +366,10 @@ export class AuthService {
       .orWhere('u.phone = :phone', { phone: dto.identifier?.trim() })
       .getOne();
 
-    if (!user || !(await this.comparePassword(dto.password, user.passwordHash))) {
+    if (
+      !user ||
+      !(await this.comparePassword(dto.password, user.passwordHash))
+    ) {
       throw new UnauthorizedException('Invalid credentials');
     }
     if (user.status !== 'active') {
@@ -350,7 +395,9 @@ export class AuthService {
         order: { createdAt: 'DESC' },
       });
       if (recent && Date.now() - recent.createdAt.getTime() < 60_000) {
-        throw new BadRequestException('Please wait 60 seconds before requesting a new code');
+        throw new BadRequestException(
+          'Please wait 60 seconds before requesting a new code',
+        );
       }
 
       await this.resetTokens.delete({ email: normalized });
@@ -358,7 +405,12 @@ export class AuthService {
       const expiresAt = new Date(Date.now() + 15 * 60_000);
 
       await this.resetTokens.save(
-        this.resetTokens.create({ email: normalized, token: code, expiresAt, used: false }),
+        this.resetTokens.create({
+          email: normalized,
+          token: code,
+          expiresAt,
+          used: false,
+        }),
       );
 
       try {
@@ -370,7 +422,10 @@ export class AuthService {
       }
     }
 
-    return { ok: true, message: 'If that email is registered, a reset code was sent' };
+    return {
+      ok: true,
+      message: 'If that email is registered, a reset code was sent',
+    };
   }
 
   async resetPassword(token: string, password: string, email?: string) {
@@ -407,17 +462,30 @@ export class AuthService {
   }
 
   async refresh(refreshToken: string) {
-    const row = await this.refreshTokens.findOne({ where: { token: refreshToken } });
-    if (!row || row.expiresAt < new Date()) {
-      throw new UnauthorizedException('Refresh token expired');
-    }
-    const user = await this.users.findOne({ where: { id: row.userId } });
-    if (!user) throw new UnauthorizedException('User not found');
+    return this.refreshTokens.manager.transaction(async (manager) => {
+      const tokens = manager.getRepository(RefreshToken);
+      const row = await tokens.findOne({
+        where: { token: refreshToken },
+        lock: { mode: 'pessimistic_write' },
+      });
+      if (!row || row.expiresAt < new Date()) {
+        throw new UnauthorizedException('Refresh token expired');
+      }
+      const user = await manager
+        .getRepository(User)
+        .findOne({ where: { id: row.userId } });
+      if (!user || user.status !== 'active')
+        throw new UnauthorizedException('Account disabled');
 
-    await this.refreshTokens.delete({ id: row.id });
-    const accessToken = this.signAccessToken(user);
-    const newRefresh = await this.createRefreshToken(user.id);
-    return { accessToken, refreshToken: newRefresh, user: userPublicView(user) };
+      await tokens.delete({ id: row.id });
+      const accessToken = this.signAccessToken(user);
+      const newRefresh = await this.createRefreshToken(user.id, manager);
+      return {
+        accessToken,
+        refreshToken: newRefresh,
+        user: userPublicView(user),
+      };
+    });
   }
 
   async logout(refreshToken?: string) {

@@ -2,9 +2,11 @@ import { TypeOrmModuleOptions } from '@nestjs/typeorm';
 import { entities } from './entities';
 
 export function buildTypeOrmOptions(): TypeOrmModuleOptions {
-  const synchronize = process.env.DB_SYNC !== 'false';
+  const synchronize = process.env.DB_SYNC === 'true';
   const ssl =
-    process.env.DB_SSL === 'true' ? { rejectUnauthorized: false as const } : false;
+    process.env.DB_SSL === 'true'
+      ? { rejectUnauthorized: false as const }
+      : false;
 
   const shared = {
     type: 'postgres' as const,

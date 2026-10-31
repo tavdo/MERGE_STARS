@@ -1,12 +1,44 @@
 name: CI
 
 on:
+  workflow_call:
   pull_request:
     branches: [main]
   push:
     branches: [main]
 
 jobs:
+  database:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: merge_stars
+          POSTGRES_PASSWORD: test-only
+          POSTGRES_DB: merge_stars_test
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd "pg_isready -U merge_stars -d merge_stars_test"
+          --health-interval 5s --health-timeout 5s --health-retries 10
+    env:
+      DB_HOST: localhost
+      DB_PORT: 5432
+      DB_USER: merge_stars
+      DB_PASSWORD: test-only
+      DB_NAME: merge_stars_test
+      DB_SYNC: 'false'
+      RUN_DATABASE_CHECKS: 'true'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm ci
+        working-directory: backend
+      - run: node checks/postgres-integration.cjs
+
   build:
     runs-on: ubuntu-latest
     timeout-minutes: 20
@@ -16,7 +48,7 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '22'
           cache: npm
           cache-dependency-path: |
             backend/package-lock.json
@@ -27,6 +59,9 @@ jobs:
         run: |
           npm ci
           npm run build
+          npm run lint
+          npm test -- --runInBand
+          npm run test:e2e -- --runInBand
 
       - name: Frontend install & build
         working-directory: frontend
@@ -35,3 +70,6 @@ jobs:
         run: |
           npm ci
           npm run build
+          npm run lint
+      - name: Frontend session regression tests
+        run: node checks/frontend-session-tests.cjs

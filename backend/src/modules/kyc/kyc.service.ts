@@ -27,7 +27,8 @@ const IMAGE_MIME = new Set(['image/jpeg', 'image/png', 'image/webp']);
 
 @Injectable()
 export class KycService {
-  private readonly uploadRoot = process.env.UPLOAD_DIR ?? join(process.cwd(), 'uploads');
+  private readonly uploadRoot =
+    process.env.UPLOAD_DIR ?? join(process.cwd(), 'uploads');
 
   constructor(
     @InjectRepository(KycDocument)
@@ -56,18 +57,19 @@ export class KycService {
       throw new BadRequestException('File too large (max 10 MB)');
     }
     if (ID_DOCUMENT_TYPES.has(documentType) && !IMAGE_MIME.has(file.mimetype)) {
-      throw new BadRequestException('Identity card sides must be JPEG, PNG, or WEBP');
+      throw new BadRequestException(
+        'Identity card sides must be JPEG, PNG, or WEBP',
+      );
     }
 
     const dir = this.userDir(userId);
     await mkdir(dir, { recursive: true });
     const storedName = `${randomUUID()}-${file.originalname.replace(/[^\w.\-()]+/g, '_')}`;
     const filePath = join(dir, storedName);
-    await writeFile(filePath, file.buffer);
-
     const existing = ID_DOCUMENT_TYPES.has(documentType)
       ? await this.docs.findOne({ where: { userId, documentType } })
       : null;
+    await writeFile(filePath, file.buffer);
     const previousPath = existing?.filePath;
     const doc = existing ?? this.docs.create({ userId });
     doc.originalName = file.originalname;
@@ -76,7 +78,12 @@ export class KycService {
     doc.filePath = filePath;
     doc.documentType = documentType;
     doc.status = 'pending';
-    await this.docs.save(doc);
+    try {
+      await this.docs.save(doc);
+    } catch (error) {
+      await unlink(filePath).catch(() => undefined);
+      throw error;
+    }
     if (previousPath && previousPath !== filePath) {
       await unlink(previousPath).catch(() => undefined);
     }

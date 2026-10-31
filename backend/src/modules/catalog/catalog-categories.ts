@@ -7,14 +7,20 @@ export const CATALOG_CATEGORIES = [
   'stationery',
   'construction',
   'more',
-] as const
+  'eyewear', 'watches', 'fashion', 'shoes', 'bags', 'furniture', 'lighting',
+  'decor', 'art', 'music', 'technology', 'transport', 'children', 'strollers', 'toys', 'dolls',
+] as const;
 
-export type CatalogCategory = (typeof CATALOG_CATEGORIES)[number]
+export type CatalogCategory = (typeof CATALOG_CATEGORIES)[number];
 
-export function isCatalogCategory(value: string | null | undefined): value is CatalogCategory {
-  return !!value && (CATALOG_CATEGORIES as readonly string[]).includes(value)
+export function isCatalogCategory(
+  value: string | null | undefined,
+): value is CatalogCategory {
+  return !!value && (CATALOG_CATEGORIES as readonly string[]).includes(value);
 }
 
-export function normalizeCatalogCategory(value: string | null | undefined): CatalogCategory {
-  return isCatalogCategory(value) ? value : 'more'
+export function normalizeCatalogCategory(
+  value: string | null | undefined,
+): CatalogCategory {
+  return isCatalogCategory(value) ? value : 'more';
 }

@@ -39,6 +39,8 @@ export class CatalogCommerce1753000000000 implements MigrationInterface {
 
   public async down(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query(`DROP TABLE IF EXISTS "catalog_orders"`);
-    await queryRunner.query(`ALTER TABLE "catalog_items" DROP COLUMN IF EXISTS "price_usd"`);
+    await queryRunner.query(
+      `ALTER TABLE "catalog_items" DROP COLUMN IF EXISTS "price_usd"`,
+    );
   }
 }

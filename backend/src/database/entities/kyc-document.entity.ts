@@ -34,7 +34,12 @@ export class KycDocument {
   @Column({ name: 'file_path' })
   filePath: string;
 
-  @Column({ name: 'document_type', type: 'varchar', length: 32, default: 'other' })
+  @Column({
+    name: 'document_type',
+    type: 'varchar',
+    length: 32,
+    default: 'other',
+  })
   documentType: KycDocumentType;
 
   @Column({ default: 'pending' })

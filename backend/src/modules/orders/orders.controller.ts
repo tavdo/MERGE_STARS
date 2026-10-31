@@ -1,4 +1,13 @@
-import { Body, Controller, Get, Param, Post, UseGuards, UsePipes, ValidationPipe } from '@nestjs/common';
+import { Param } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Post,
+  UseGuards,
+  UsePipes,
+  ValidationPipe,
+} from '@nestjs/common';
 import { IsIn, IsOptional, IsString } from 'class-validator';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { CurrentUser } from '../../common/decorators/current-user.decorator';
@@ -30,12 +39,6 @@ export class OrdersController {
     return this.orders.getLatestDelivery(user.id);
   }
 
-  @Get('awaiting-earnings')
-  @UseGuards(JwtAuthGuard)
-  awaitingEarnings(@CurrentUser() user: User) {
-    return this.orders.listAwaitingEarnings(user.id);
-  }
-
   @Post()
   @UseGuards(JwtAuthGuard)
   @UsePipes(new ValidationPipe({ whitelist: true, transform: true }))
@@ -47,7 +50,13 @@ export class OrdersController {
     );
   }
 
-  @Post(':id/pay-earnings')
+@Get('awaiting-earnings')
+  @UseGuards(JwtAuthGuard)
+  awaitingEarnings(@CurrentUser() user: User) {
+    return this.orders.listAwaitingEarnings(user.id);
+  }
+
+@Post(':id/pay-earnings')
   @UseGuards(JwtAuthGuard)
   payWithEarnings(@CurrentUser() user: User, @Param('id') id: string) {
     return this.orders.payWithEarnings(user, id);

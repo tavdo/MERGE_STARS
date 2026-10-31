@@ -1,5 +1,3 @@
-import arFilament from './ar-public-filament'
-
 export default {
   faq: {
     kicker: 'الأسئلة الشائعة',
@@ -120,5 +118,4 @@ export default {
     loadingCoin: 'جارٍ تحميل عملة MERGE STARS',
     coinEmblem: 'شعار عملة MERGE STARS الذهبية',
   },
-  ...arFilament,
 } as const

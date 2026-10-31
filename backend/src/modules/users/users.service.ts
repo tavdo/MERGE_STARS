@@ -1,3 +1,5 @@
+import { userDisplayName } from '../../database/entities/user.entity';
+import { mergeSocialLinks, sanitizeSocialLinks, socialLinksPublicView } from '../../common/social-links';
 import {
   BadRequestException,
   ConflictException,
@@ -9,20 +11,15 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt';
-import { mkdir, writeFile } from 'fs/promises';
+import { mkdir, unlink, writeFile } from 'fs/promises';
 import { join } from 'path';
 import { randomInt, randomUUID } from 'crypto';
-import { User, userDisplayName, userPublicView } from '../../database/entities/user.entity';
+import { User, userPublicView } from '../../database/entities/user.entity';
 import { EmailVerificationCode } from '../../database/entities/email-verification-code.entity';
 import { RefreshToken } from '../../database/entities/refresh-token.entity';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { MailService } from '../mail/mail.service';
 import { NotificationsService } from '../notifications/notifications.service';
-import {
-  mergeSocialLinks,
-  sanitizeSocialLinks,
-  socialLinksPublicView,
-} from '../../common/social-links';
 
 const KYC_STATUSES = new Set(['pending', 'verified', 'rejected']);
 
@@ -116,13 +113,23 @@ export class UsersService {
     const user = await this.findById(userId);
     const dir = this.avatarDir(userId);
     await mkdir(dir, { recursive: true });
-    const ext = file.mimetype === 'image/png' ? 'png' : file.mimetype === 'image/webp' ? 'webp' : 'jpg';
+    const ext =
+      file.mimetype === 'image/png'
+        ? 'png'
+        : file.mimetype === 'image/webp'
+          ? 'webp'
+          : 'jpg';
     const storedName = `${randomUUID()}.${ext}`;
     const filePath = join(dir, storedName);
     await writeFile(filePath, file.buffer);
 
     user.avatarUrl = storedName;
-    await this.users.save(user);
+    try {
+      await this.users.save(user);
+    } catch (error) {
+      await unlink(filePath).catch(() => undefined);
+      throw error;
+    }
     return userPublicView(user);
   }
 
@@ -134,7 +141,11 @@ export class UsersService {
     const filePath = join(this.avatarDir(userId), user.avatarUrl);
     const ext = user.avatarUrl.split('.').pop()?.toLowerCase();
     const mimeType =
-      ext === 'png' ? 'image/png' : ext === 'webp' ? 'image/webp' : 'image/jpeg';
+      ext === 'png'
+        ? 'image/png'
+        : ext === 'webp'
+          ? 'image/webp'
+          : 'image/jpeg';
     return { filePath, mimeType };
   }
 
@@ -241,7 +252,12 @@ export class UsersService {
     }
 
     await this.emailCodes.save(
-      this.emailCodes.create({ email: normalized, code, expiresAt, used: false }),
+      this.emailCodes.create({
+        email: normalized,
+        code,
+        expiresAt,
+        used: false,
+      }),
     );
 
     return { ok: true, message: 'Verification code sent to new email' };
@@ -320,7 +336,10 @@ export class UsersService {
       .createQueryBuilder('u')
       .where(`NOT (u.roles::jsonb ? 'admin')`)
       .getCount();
-    const progressPct = Math.min(100, Math.round((registeredUsers / goal) * 100));
+    const progressPct = Math.min(
+      100,
+      Math.round((registeredUsers / goal) * 100),
+    );
 
     return {
       registeredUsers,

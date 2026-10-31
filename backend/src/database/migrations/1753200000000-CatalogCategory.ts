@@ -15,7 +15,9 @@ export class CatalogCategory1753200000000 implements MigrationInterface {
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
-    await queryRunner.query(`DROP INDEX IF EXISTS "IDX_catalog_collections_category"`);
+    await queryRunner.query(
+      `DROP INDEX IF EXISTS "IDX_catalog_collections_category"`,
+    );
     await queryRunner.query(`
       ALTER TABLE "catalog_collections" DROP COLUMN IF EXISTS "category"
     `);

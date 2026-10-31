@@ -1,3 +1,4 @@
+
 import {
   BadRequestException,
   ForbiddenException,
@@ -346,26 +347,48 @@ export class CatalogService {
     return { ok: true };
   }
 
-  async uploadImage(userId: string, itemId: string, file: Express.Multer.File | undefined) {
-    if (!file?.buffer?.length) throw new BadRequestException('Image file is required');
+  async uploadImage(
+    userId: string,
+    itemId: string,
+    file: Express.Multer.File | undefined,
+  ) {
+    if (!file?.buffer?.length)
+      throw new BadRequestException('Image file is required');
     if (!IMAGE_MIME.has(file.mimetype)) {
       throw new BadRequestException('Allowed: JPEG, PNG, WebP, GIF');
     }
-    if (file.size > IMAGE_MAX) throw new BadRequestException('Image too large (max 10 MB)');
+    if (file.size > IMAGE_MAX)
+      throw new BadRequestException('Image too large (max 10 MB)');
 
     const item = await this.ownedItem(userId, itemId);
     const dir = this.itemDir(itemId);
     await mkdir(dir, { recursive: true });
     const ext =
-      file.mimetype === 'image/png' ? 'png' : file.mimetype === 'image/webp' ? 'webp' : file.mimetype === 'image/gif' ? 'gif' : 'jpg';
+      file.mimetype === 'image/png'
+        ? 'png'
+        : file.mimetype === 'image/webp'
+          ? 'webp'
+          : file.mimetype === 'image/gif'
+            ? 'gif'
+            : 'jpg';
     const stored = `img-${randomUUID()}.${ext}`;
-    await writeFile(join(dir, stored), file.buffer);
+    const destination = join(dir, stored);
+    await writeFile(destination, file.buffer);
     item.imageUrl = stored;
-    await this.items.save(item);
+    try {
+      await this.items.save(item);
+    } catch (error) {
+      await unlink(destination).catch(() => undefined);
+      throw error;
+    }
     return catalogItemView(item);
   }
 
-  async uploadModel3d(userId: string, itemId: string, file: Express.Multer.File | undefined) {
+  async uploadModel3d(
+    userId: string,
+    itemId: string,
+    file: Express.Multer.File | undefined,
+  ) {
     if (!file) throw new BadRequestException('3D model file is required');
     const ext = file.originalname.split('.').pop()?.toLowerCase() ?? '';
     if (!MODEL_MIME.has(file.mimetype) && !MODEL_EXT.has(ext)) {
@@ -377,14 +400,15 @@ export class CatalogService {
       throw new BadRequestException('Model too large (max 1 GB)');
     }
 
-    const item = await this.ownedItem(userId, itemId);
-    const dir = this.itemDir(itemId);
-    await mkdir(dir, { recursive: true });
-    const format = ext || 'glb';
-    const stored = `model-${randomUUID()}.${format}`;
-    const dest = join(dir, stored);
-
+    let destination: string | undefined;
     try {
+      const item = await this.ownedItem(userId, itemId);
+      const dir = this.itemDir(itemId);
+      await mkdir(dir, { recursive: true });
+      const format = ext || 'glb';
+      const stored = `model-${randomUUID()}.${format}`;
+      const dest = join(dir, stored);
+      destination = dest;
       if (file.path) {
         await rename(file.path, dest);
       } else if (file.buffer?.length) {
@@ -392,15 +416,15 @@ export class CatalogService {
       } else {
         throw new BadRequestException('3D model file is required');
       }
+      item.model3dUrl = stored;
+      item.model3dFormat = format;
+      await this.items.save(item);
+      return catalogItemView(item);
     } catch (err) {
       if (file.path) await unlink(file.path).catch(() => undefined);
+      if (destination) await unlink(destination).catch(() => undefined);
       throw err;
     }
-
-    item.model3dUrl = stored;
-    item.model3dFormat = format;
-    await this.items.save(item);
-    return catalogItemView(item);
   }
 
   private resolveStoredPath(itemId: string, stored: string) {
@@ -820,5 +844,27 @@ export class CatalogService {
   async listBrandRoomPicksForPublic(userId: string) {
     const rows = await this.listBrandRoomCatalog(userId);
     return rows.filter((r) => r.available);
+  }
+
+async museumPage(input: Record<string, string>) {
+    const page = Math.min(100000, Math.max(0, Math.floor(Number(input.page) || 0)));
+    const limit = 24;
+    const query = this.items.createQueryBuilder('item')
+      .innerJoinAndSelect('item.collection', 'collection')
+      .leftJoinAndSelect('collection.user', 'owner')
+      .leftJoin(BrandLineProfile, 'brand', 'brand.userId = collection.userId')
+      .where('collection.visibility = :visibility', { visibility: 'PUBLIC' })
+      .andWhere('item.status = :status', { status: 'ACTIVE' });
+    if (input.category) query.andWhere('collection.category = :category', { category: input.category.slice(0, 32) });
+    if (input.brand) query.andWhere('(owner.brandLineId = :brand OR owner.mergeId = :brand)', { brand: input.brand.slice(0, 120) });
+    if (input.material) query.andWhere('item.metalType = :material', { material: input.material.slice(0, 120) });
+    if (input.q?.trim()) query.andWhere("(item.title ILIKE :search OR collection.title ILIKE :search OR brand.name ILIKE :search OR owner.firstName ILIKE :search OR owner.lastName ILIKE :search)", { search: `%${input.q.trim().slice(0, 120).replace(/[%_\\]/g, '\\$&')}%` });
+    const [rows, total] = await query.orderBy('item.createdAt', 'DESC').addOrderBy('item.id', 'DESC').skip(page * limit).take(limit).getManyAndCount();
+    const profiles = await this.brandProfilesByUserIds(rows.map(row => row.collection.userId));
+    return { items: rows.map(row => ({
+      ...catalogItemView(row),
+      collection: { ...catalogCollectionView(row.collection, 0), ...this.publicOwnerMeta(row.collection.user, profiles.get(row.collection.userId)) },
+      lifecycle: 'CONCEPT', verification: 'UNAVAILABLE',
+    })), page, pageSize: limit, total, hasMore: (page + 1) * limit < total };
   }
 }

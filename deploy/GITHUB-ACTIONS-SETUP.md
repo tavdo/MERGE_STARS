@@ -57,7 +57,9 @@ Must look like:
 
 ## Automatic deploy (no manual SSH)
 
-After secrets are set, every **push to `main`** runs on the server:
+In this handoff, deployment is manual: use **Actions -> Deploy to VPS -> Run workflow**
+after configuring secrets and reviewing the server backup and deployment plan.
+Pushing to `main` runs CI only. The manually requested deployment runs:
 
 1. `git pull` (reset to latest)
 2. `bootstrap.sh` — nginx + systemd (first time only)

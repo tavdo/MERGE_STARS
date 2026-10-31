@@ -1,6 +1,13 @@
-# 🌌 MERGE ⭐ STARS
+# MERGE STARS - Developer Handoff
+
+**Start with [DEVELOPER_HANDOFF.md](DEVELOPER_HANDOFF.md).** This repository contains
+the current local frontend, backend, concept assets and Linux deployment tooling.
+Historical architecture and marketing descriptions below are not verification
+that every integration is live. Production deployment is manual by default.
 
 **Luxury Creative Technology Infrastructure — v1.0**
+
+მიმდინარე მოწყობისა და შესწორებების დეტალური გზამკვლევი: [BUILD_DETAILS.md](BUILD_DETAILS.md). რეალური ბაზისა და გაშვების შემოწმების ნაბიჯებიც იქ არის აღწერილი.
 
 > This is not a website. This is a Digital Manufacturing Ecosystem, an AI-assisted 3D Creation Platform, and the foundation of a Future Physical-Digital Identity Network.
 
@@ -50,8 +57,8 @@ The `developer` role is limited to **2 seats** and grants access to:
 ### First-time setup on the server
 
 ```bash
-git clone https://github.com/tavdo/MERGE_STARS.git
-cd MERGE_STARS
+git clone https://github.com/mergestars01/mergestars.git
+cd mergestars
 cp .env.example .env
 # edit .env — set FRONTEND_URL=https://yourdomain.com
 
