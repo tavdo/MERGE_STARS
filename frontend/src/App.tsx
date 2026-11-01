@@ -103,7 +103,7 @@ function AppRoutes() {
   const luxuryCursor = useLuxuryCursorEnabled()
   const adminZone = useAdminZone()
   const { pathname } = useLocation()
-  const experienceZone = !pathname.startsWith('/dashboard') && !pathname.startsWith('/admin') && pathname !== '/login'
+  const experienceZone = pathname === '/' || ['/museum', '/living-museum', '/my-museum', '/my-saved', '/my-world', '/fit-profile', '/digital-twin', '/my-designs', '/pulse', '/notifications', '/chat', '/track', '/object', '/collection', '/material-lab', '/create', '/calculate', '/materials', '/fit-to-me', '/houses', '/brand-house', '/for-brands', '/request-brand', '/exhibit', '/about'].some(route => pathname === route || pathname.startsWith(route + '/'))
 
   return (
     <>
