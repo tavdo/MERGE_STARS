@@ -1,8 +1,216 @@
-import { Link } from 'react-router-dom'
+import { useState } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import DashboardLayout from '../../components/DashboardLayout'
+import { coinsApi } from '@/features/coins/api/coins.api'
+import { ordersApi } from '@/features/orders/api/orders.api'
+import { walletApi } from '@/features/wallet/api/wallet.api'
+
+type Method = 'full' | 'earnings'
+
+const money = (n: number) =>
+  n.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+
 export default function PaymentPage() {
-  const { i18n } = useTranslation()
-  const ka = i18n.language.startsWith('ka')
-  return <DashboardLayout titleKey="payment"><div className="max-w-xl space-y-5"><h1>{ka ? 'Brand House-ის შეთავაზება' : 'Brand House offer'}</h1><p>{ka ? 'გადახდისთვის საჭიროა დადასტურებული შეთავაზება: პროდუქტის მონაცემები, საფასო წონა, მოქმედი ფასის წყარო, წესის ვერსია და შესრულების პირობები.' : 'Payment requires a verified offer: product data, pricing weight, current price source, rule version and fulfillment terms.'}</p><p>{ka ? 'ძველი განაცხადის სავარაუდო ფასი საბოლოო შეთავაზებას არ წარმოადგენს. მოთხოვნა გამოგზავნე ტექნიკური შეფასებისთვის.' : 'An estimated legacy application price is not a final offer. Submit a request for technical review.'}</p><Link to="/apply" className="luxury-btn-glass">{ka ? 'მოთხოვნის გაგზავნა' : 'Submit a request'}</Link><Link to="/dashboard/orders" className="block">{ka ? 'არსებული შეკვეთები' : 'Existing orders'}</Link></div></DashboardLayout>
+  const { t } = useTranslation()
+  const navigate = useNavigate()
+  const qc = useQueryClient()
+  const [method, setMethod] = useState<Method>('full')
+
+  const { data: app, isLoading } = useQuery({
+    queryKey: ['application-latest'],
+    queryFn: () => coinsApi.getLatestApplication().then((r) => r.data.data),
+  })
+
+  const { data: wallet } = useQuery({
+    queryKey: ['wallet-me'],
+    queryFn: () => walletApi.me(10).then((r) => r.data.data),
+  })
+
+  const createOrder = useMutation({
+    mutationFn: () => ordersApi.create(app!.id, method),
+    onSuccess: (res) => {
+      void qc.invalidateQueries({ queryKey: ['wallet-me'] })
+      void qc.invalidateQueries({ queryKey: ['orders'] })
+      const order = res.data.data
+      navigate(order?.awaitingEarnings ? '/dashboard/wallet' : '/dashboard/orders')
+    },
+  })
+
+  const coinValue = app ? Number(app.coinValue) : 0
+  const earningsBalance = wallet?.balance ?? 0
+  const walletActivated = wallet?.activated ?? false
+  const canPayEarnings = earningsBalance >= coinValue && coinValue > 0
+  const shortfall = Math.max(0, coinValue - earningsBalance)
+
+  if (isLoading) {
+    return (
+      <DashboardLayout titleKey="payment">
+        <p className="text-neutral-500 text-sm">{t('common.loading', { defaultValue: 'Loading…' })}</p>
+      </DashboardLayout>
+    )
+  }
+
+  if (!app) {
+    return (
+      <DashboardLayout titleKey="payment">
+        <div className="max-w-lg space-y-4">
+          <p className="apply-lead">{t('payment.noApplication', { defaultValue: 'Submit a coin application before payment.' })}</p>
+          <Link to="/apply" className="luxury-btn-glass">{t('orders.newOrder')}</Link>
+        </div>
+      </DashboardLayout>
+    )
+  }
+
+  const methodCard = (id: Method, title: string, desc: string, note: string, noteColor: string, disabled?: boolean) => (
+    <div
+      className="gold-card"
+      style={{
+        padding: '20px',
+        borderRadius: '4px',
+        cursor: disabled ? 'not-allowed' : 'pointer',
+        borderColor: method === id ? '#c9a84c' : undefined,
+        opacity: disabled ? 0.55 : 1,
+      }}
+      onClick={() => { if (!disabled) setMethod(id) }}
+    >
+      <div style={{ display: 'flex', gap: '12px', alignItems: 'flex-start' }}>
+        <div style={{ width: '20px', height: '20px', borderRadius: '50%', border: `2px solid ${method === id ? '#c9a84c' : 'rgba(255,255,255,0.2)'}`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: '2px' }}>
+          {method === id && <div style={{ width: '10px', height: '10px', borderRadius: '50%', background: '#c9a84c' }} />}
+        </div>
+        <div>
+          <p style={{ fontSize: '13px', fontWeight: 700, color: '#fff', marginBottom: '4px' }}>{title}</p>
+          <p style={{ fontSize: '12px', color: 'rgba(255,255,255,0.5)' }}>{desc}</p>
+          <p style={{ fontSize: '11px', color: noteColor, marginTop: '8px', fontWeight: 600 }}>{note}</p>
+        </div>
+      </div>
+    </div>
+  )
+
+  return (
+    <DashboardLayout titleKey="payment">
+      <div style={{ maxWidth: '900px' }}>
+        <div style={{ marginBottom: '32px' }}>
+          <p style={{ fontSize: '11px', fontWeight: 700, letterSpacing: '0.3em', color: '#c9a84c', marginBottom: '8px' }}>{t('payment.kicker')}</p>
+          <h1 style={{ fontSize: '24px', fontWeight: 900, color: '#fff' }}>{t('payment.orderLabel', { id: app.id })}</h1>
+          <p style={{ fontSize: '12px', color: 'rgba(255,255,255,0.45)', marginTop: '8px' }}>{app.coinType}</p>
+        </div>
+
+        <div style={{ padding: '16px 20px', background: 'rgba(245,158,11,0.06)', border: '1px solid rgba(245,158,11,0.2)', borderRadius: '4px', marginBottom: '24px', display: 'flex', gap: '12px', alignItems: 'flex-start' }}>
+          <span style={{ fontSize: '18px' }}>🔒</span>
+          <div>
+            <p style={{ fontSize: '12px', fontWeight: 700, color: '#f59e0b', marginBottom: '4px' }}>{t('payment.productionLock')}</p>
+            <p style={{ fontSize: '12px', color: 'rgba(255,255,255,0.5)', lineHeight: 1.6 }}>{t('payment.lockBody')}</p>
+          </div>
+        </div>
+
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(300px,1fr))', gap: '24px' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+            <p style={{ fontSize: '11px', fontWeight: 700, letterSpacing: '0.2em', color: 'rgba(255,255,255,0.5)' }}>{t('payment.selectMethod')}</p>
+            {methodCard(
+              'full',
+              t('payment.fullPayment'),
+              t('payment.fullPaymentDesc', { amount: coinValue.toLocaleString() }),
+              t('payment.noFees'),
+              '#22c55e',
+            )}
+            {methodCard(
+              'earnings',
+              t('payment.payWithEarnings'),
+              t('payment.payWithEarningsDesc', { balance: money(earningsBalance) }),
+              canPayEarnings
+                ? t('payment.earningsEnough')
+                : walletActivated
+                  ? t('payment.earningsAccruing', { need: money(shortfall) })
+                  : t('payment.earningsWillActivate'),
+              canPayEarnings ? '#22c55e' : '#c9a84c',
+            )}
+          </div>
+
+          <div className="gold-card" style={{ padding: '28px', borderRadius: '4px' }}>
+            <p style={{ fontSize: '11px', fontWeight: 700, letterSpacing: '0.2em', color: '#c9a84c', marginBottom: '20px' }}>
+              {method === 'full' ? t('payment.fullSummary') : t('payment.earningsSummary')}
+            </p>
+            {method === 'full' ? (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                {[
+                  { label: t('payment.coinValue'), value: `$${coinValue.toLocaleString()}.00` },
+                  { label: t('payment.paymentMethod'), value: t('payment.bankTransfer') },
+                  { label: t('payment.totalDue'), value: `$${coinValue.toLocaleString()}.00` },
+                ].map((r) => (
+                  <div key={r.label} style={{ display: 'flex', justifyContent: 'space-between', padding: '10px 0', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
+                    <span style={{ fontSize: '12px', color: 'rgba(255,255,255,0.4)' }}>{r.label}</span>
+                    <span style={{ fontSize: '12px', fontWeight: 700, color: '#fff' }}>{r.value}</span>
+                  </div>
+                ))}
+                <button
+                  type="button"
+                  className="gold-btn w-full justify-center mt-5"
+                  disabled={createOrder.isPending}
+                  onClick={() => createOrder.mutate()}
+                >
+                  {createOrder.isPending ? '…' : t('payment.proceed')}
+                </button>
+              </div>
+            ) : (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                {[
+                  { label: t('payment.coinValue'), value: `$${coinValue.toLocaleString()}.00` },
+                  { label: t('payment.earningsBalance'), value: `$${money(earningsBalance)}` },
+                  { label: t('payment.paymentMethod'), value: t('payment.payWithEarnings') },
+                  canPayEarnings
+                    ? { label: t('payment.balanceAfter'), value: `$${money(earningsBalance - coinValue)}` }
+                    : { label: t('payment.earningsRemaining'), value: `$${money(shortfall)}` },
+                ].map((r) => (
+                  <div key={r.label} style={{ display: 'flex', justifyContent: 'space-between', padding: '10px 0', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
+                    <span style={{ fontSize: '12px', color: 'rgba(255,255,255,0.4)' }}>{r.label}</span>
+                    <span style={{ fontSize: '12px', fontWeight: 700, color: '#fff' }}>{r.value}</span>
+                  </div>
+                ))}
+                {!canPayEarnings && (
+                  <div style={{ padding: '14px 16px', marginTop: '16px', background: 'rgba(201,168,76,0.07)', border: '1px solid rgba(201,168,76,0.22)', borderRadius: '4px' }}>
+                    <p style={{ fontSize: '12px', fontWeight: 700, color: '#c9a84c', marginBottom: '6px' }}>
+                      {walletActivated ? t('payment.walletActive') : t('payment.walletActivates')}
+                    </p>
+                    <p style={{ fontSize: '12px', color: 'rgba(255,255,255,0.5)', lineHeight: 1.6 }}>
+                      {t('payment.earningsReserveBody', { need: money(shortfall) })}
+                    </p>
+                  </div>
+                )}
+                {createOrder.isError && (
+                  <p style={{ fontSize: '12px', color: '#f87171', marginTop: '12px' }}>
+                    {(createOrder.error as { response?: { data?: { message?: string } } })?.response?.data?.message
+                      || t('payment.earningsPayFailed')}
+                  </p>
+                )}
+                <button
+                  type="button"
+                  className="gold-btn w-full justify-center mt-5"
+                  disabled={createOrder.isPending}
+                  onClick={() => createOrder.mutate()}
+                >
+                  {createOrder.isPending
+                    ? '…'
+                    : canPayEarnings
+                      ? t('payment.payFromEarnings')
+                      : t('payment.activateWallet')}
+                </button>
+                <Link
+                  to="/dashboard/wallet"
+                  className="no-underline"
+                  style={{ display: 'block', textAlign: 'center', fontSize: '11px', color: '#c9a84c', marginTop: '12px' }}
+                >
+                  {t('payment.openWallet')}
+                </Link>
+                <p style={{ fontSize: '10px', color: 'rgba(255,255,255,0.25)', textAlign: 'center', marginTop: '10px', lineHeight: 1.6 }}>
+                  {canPayEarnings ? t('payment.earningsNote') : t('payment.earningsPendingNote')}
+                </p>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    </DashboardLayout>
+  )
 }

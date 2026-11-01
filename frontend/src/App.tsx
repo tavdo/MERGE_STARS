@@ -1,3 +1,10 @@
+import SeoHead from './components/SeoHead'
+import SiteBackground from './components/SiteBackground'
+import SiteLayout from './components/SiteLayout'
+const PrivacyPage = lazy(() => import('./pages/public/PrivacyPage'))
+const TermsPage = lazy(() => import('./pages/public/TermsPage'))
+const ContactPage = lazy(() => import('./pages/public/ContactPage'))
+const FAQPage = lazy(() => import('./pages/public/FAQPage'))
 import { lazy, Suspense } from 'react'
 import { useTranslation } from 'react-i18next'
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom'
@@ -102,14 +109,15 @@ function AppRoutes() {
     <>
       {luxuryCursor && <LuxuryCursor />}
       {!adminZone && !experienceZone && <AIAssistantWidget />}
+      <SeoHead />
       <CookieConsent />
       <Suspense fallback={<div role="status" className="page-hero"><div className="animate-pulse h-6 w-48 bg-neutral-800 mx-auto mb-4 rounded" />{t('common.loading')}</div>}>
       <Routes>
         {/* Public */}
         <Route path="/material-lab/demo-admin" element={<MaterialLabAdmin demo />} />
-        {['/my-saved', '/my-world', '/fit-profile', '/digital-twin/local-draft', '/my-designs', '/pulse', '/notifications', '/chat', '/track', '/object/:slug/:id', '/collection/:slug', '/material-lab', '/material-lab/passport/:batchId', '/create', '/calculate', '/materials', '/digital-twin', '/fit-to-me', '/houses', '/brand-house', '/for-brands', '/request-brand', '/production-request', '/passport', '/exhibit/:id', '/about'].map(path => <Route key={path} path={path} element={<MergeExperience />} />)}
+        {['/my-saved', '/my-world', '/fit-profile', '/digital-twin/local-draft', '/my-designs', '/pulse', '/notifications', '/chat', '/track', '/object/:slug/:id', '/collection/:slug', '/material-lab', '/material-lab/passport/:batchId', '/create', '/calculate', '/materials', '/digital-twin', '/fit-to-me', '/houses', '/brand-house', '/for-brands', '/request-brand', '/passport', '/exhibit/:id', '/about'].map(path => <Route key={path} path={path} element={<MergeExperience />} />)}
         <Route path="/my-museum" element={<PersonalMuseum />} />
-        <Route path="/"                element={<LivingMuseum />} />
+        <Route path="/"                element={<div className="museum-home"><SiteLayout><LivingMuseum /></SiteLayout></div>} />
         <Route path="/transparency" element={<div className="living-museum"><MuseumTransparency /></div>} />
         <Route path="/living-museum" element={<LivingMuseum />} /><Route path="/museum" element={<LivingMuseum />} />
         <Route path="/how-it-works" element={<HowItWorksPage />} />
@@ -117,16 +125,16 @@ function AppRoutes() {
         <Route path="/filament" element={<FilamentTechnologyPage />} />
         <Route path="/price-indicator" element={<PriceIndicatorPage />} />
         <Route path="/verification" element={<Navigate to="/material-lab" replace />} />
-        <Route path="/faq"             element={<MergeExperience />} />
-        <Route path="/contact"         element={<MergeExperience />} />
-        <Route path="/terms"                  element={<MergeExperience />} />
+        <Route path="/faq" element={<FAQPage />} />
+        <Route path="/contact" element={<ContactPage />} />
+        <Route path="/terms" element={<TermsPage />} />
         <Route path="/terms-and-conditions"  element={<Navigate to="/terms" replace />} />
-        <Route path="/privacy"         element={<MergeExperience />} />
+        <Route path="/privacy" element={<PrivacyPage />} />
         <Route path="/referral-policy" element={<ReferralPolicyPage />} />
         <Route path="/trust" element={<TrustCenterPage />} />
         <Route path="/legal-classification" element={<LegalClassificationPage />} />
         <Route path="/collections" element={<CollectionsBrowsePage />} />
-        <Route path="/collections/:slug" element={<MergeExperience />} />
+        <Route path="/collections/:slug" element={<CollectionsBrowsePage />} />
         <Route path="/brand-room" element={<BrandRoomPage />} />
         <Route path="/b/:brandLineId"      element={<BrandPublicPage />} />
         <Route path="/u/:mergeId"          element={<MemberPublicPage mode="member" />} />
@@ -160,7 +168,7 @@ function AppRoutes() {
           <Route path="/dashboard/ai"            element={<AIAssistantPage />} />
           <Route path="/apply"              element={<ApplicationPage />} />
           <Route path="/production-request" element={<ApplicationPage />} />
-          <Route path="/calculator"         element={<Navigate to="/apply" replace />} />
+          <Route path="/calculator"         element={<Navigate to="/fill-coin" replace />} />
           <Route path="/status"             element={<StatusPage />} />
         </Route>
 
@@ -208,6 +216,7 @@ function AppRoutes() {
 export default function App() {
   return (
     <BrowserRouter>
+      <SiteBackground />
       <AppRoutes />
     </BrowserRouter>
   )

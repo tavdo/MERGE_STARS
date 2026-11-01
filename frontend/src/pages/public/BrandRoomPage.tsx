@@ -158,7 +158,7 @@ function CategoryStrip({
             className={`br-cat${active === key ? ' is-active' : ''}`}
             onClick={() => onSelect(active === key ? null : key)}
           >
-            <BrandIcon src={CATEGORY_ICONS[key as CategoryIconKey] || CATEGORY_ICONS.more} className="br-cat-icon" />
+            <BrandIcon src={CATEGORY_ICONS[key as CategoryIconKey]} className="br-cat-icon" />
             <span>{t(`landing.categories.${key}`)}</span>
             <em>{count}</em>
           </button>
@@ -190,13 +190,13 @@ export default function BrandRoomPage() {
     Record<CatalogCategory, number>
   >
 
-  const { data: brands = [], isLoading: brandsLoading, isError: brandsError } = useQuery({
+  const { data: brands = [], isLoading: brandsLoading } = useQuery({
     queryKey: ['brand-room'],
     queryFn: () => brandApi.listPublic().then((r) => r.data.data),
     enabled: !activeCategory,
   })
 
-  const { data: catalogs = [], isLoading: catalogsLoading, isError: catalogsError } = useQuery({
+  const { data: catalogs = [], isLoading: catalogsLoading } = useQuery({
     queryKey: ['catalog-public', activeCategory],
     queryFn: () => catalogApi.listPublic(activeCategory!).then((r) => r.data.data),
     enabled: !!activeCategory,
@@ -207,7 +207,6 @@ export default function BrandRoomPage() {
   const spotlight = featured[0]
   const restFeatured = featured.slice(1)
   const isLoading = activeCategory ? catalogsLoading : brandsLoading
-  const isError = activeCategory ? catalogsError : brandsError
   const totalDesigns = featured.reduce((n, b) => n + b.activeProducts, 0)
 
   return (
@@ -253,8 +252,6 @@ export default function BrandRoomPage() {
         <div id="br-directory" className="br-body">
           {isLoading ? (
             <p className="br-empty">{t('common.loading')}</p>
-          ) : isError ? (
-            <p className="br-empty" role="alert">{t('brandRoom.loadError', { defaultValue: 'The catalog could not be loaded. Please try again when the service is available.' })}</p>
           ) : activeCategory ? (
             catalogs.length === 0 ? (
               <p className="br-empty">

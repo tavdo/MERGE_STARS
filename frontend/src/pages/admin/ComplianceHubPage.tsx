@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useSearchParams } from 'react-router-dom'
 import AdminLayout from '../../components/AdminLayout'
@@ -67,9 +68,14 @@ export default function ComplianceHubPage() {
   const { t } = useTranslation()
   const [searchParams, setSearchParams] = useSearchParams()
   const tab = parseTab(searchParams.get('tab'))
-  const active = tab
+  const [active, setActive] = useState<Tab>(tab)
+
+  useEffect(() => {
+    setActive(tab)
+  }, [tab])
 
   const selectTab = (next: Tab) => {
+    setActive(next)
     setSearchParams({ tab: next }, { replace: true })
   }
 

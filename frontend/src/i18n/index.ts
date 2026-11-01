@@ -69,13 +69,13 @@ function applyDocumentLanguage(lng: string) {
 
 void i18n.use(initReactI18next).init({
   resources: {
-    en: { translation: mergeLocales(restored.en, en, enPages, enFill, enMergeCoin, paymentApproval.en) },
-    ru: { translation: mergeLocales(restored.ru, ru, ruPages, ruFill, ruMergeCoin, paymentApproval.ru) },
-    fr: { translation: mergeLocales(restored.fr, fr, frPages, frFill, frMergeCoin, paymentApproval.fr) },
-    de: { translation: mergeLocales(restored.de, de, dePages, deFill, deMergeCoin, paymentApproval.de) },
-    tr: { translation: mergeLocales(restored.tr, tr, trPages, trFill, trMergeCoin, paymentApproval.tr) },
-    ka: { translation: mergeLocales(restored.ka, ka, kaPages, kaFill, kaMergeCoin, paymentApproval.ka) },
-    ar: { translation: mergeLocales(restored.ar, ar, arPages, arFill, arMergeCoin, paymentApproval.ar) },
+    en: { translation: mergeLocales(en, enPages, enFill, enMergeCoin, paymentApproval.en, restored.en) },
+    ru: { translation: mergeLocales(ru, ruPages, ruFill, ruMergeCoin, paymentApproval.ru, restored.ru) },
+    fr: { translation: mergeLocales(fr, frPages, frFill, frMergeCoin, paymentApproval.fr, restored.fr) },
+    de: { translation: mergeLocales(de, dePages, deFill, deMergeCoin, paymentApproval.de, restored.de) },
+    tr: { translation: mergeLocales(tr, trPages, trFill, trMergeCoin, paymentApproval.tr, restored.tr) },
+    ka: { translation: mergeLocales(ka, kaPages, kaFill, kaMergeCoin, paymentApproval.ka, restored.ka) },
+    ar: { translation: mergeLocales(ar, arPages, arFill, arMergeCoin, paymentApproval.ar, restored.ar) },
   },
   lng: saved,
   fallbackLng: 'en',

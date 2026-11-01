@@ -9,7 +9,7 @@ export default function LegalClassificationPage() {
   const sections = t('legalClassification.sections', { returnObjects: true }) as Section[]
 
   return (
-    <div style={{ background: '#080808', minHeight: '100vh' }}>
+    <div style={{ background: 'transparent', minHeight: '100vh' }}>
       <Navbar />
       <div style={{ paddingTop: '110px' }}>
         <section style={{ textAlign: 'center', padding: '80px 32px 60px', maxWidth: '700px', margin: '0 auto' }}>

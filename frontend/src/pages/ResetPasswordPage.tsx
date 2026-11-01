@@ -43,7 +43,7 @@ export default function ResetPasswordPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center px-6" style={{ background: '#080808' }}>
+    <div className="min-h-screen flex items-center justify-center px-6" style={{ background: 'transparent' }}>
       <div className="w-full max-w-md">
         <h1 className="text-center text-[11px] font-bold tracking-[0.3em] mb-8" style={{ color: '#c9a84c' }}>
           {t('authPanel.resetTitle', { defaultValue: 'NEW PASSWORD' })}

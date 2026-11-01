@@ -53,3 +53,9 @@ Release d1c0f96e2b114aad15f51e1ee7b9d7081a964b40 is live at https://mergestars.c
 - Backups and rollback script: /var/backups/merge-stars/pre-d1c0f96/. rollback.sh restores the previous application; additive migrations are retained.
 
 The deployment does not merge the integration branch into main. External AI generation, live pricing, payments and physical fulfillment require their configured providers and separate end-to-end verification; this deployment does not certify those services.
+
+## Original website preservation update
+
+The original public, account, and admin pages are restored from the original project baseline. The museum is the landing content at `/`, within the original navbar and footer. FAQ, contact, terms, privacy, collection links, pricing, the application form, and payment screens use their original page components. `/calculator` again opens the original configurator. The new experience pages remain additional routes.
+
+The original global stylesheet takes precedence. Museum CSS selectors are scoped to `.living-museum` so entering the museum cannot reset typography and controls on the original website. Original translation resources take precedence for the original page namespaces. The application form retains the small compatibility field required by the current backend.
