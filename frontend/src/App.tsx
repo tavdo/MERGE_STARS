@@ -1,3 +1,4 @@
+const MuseumWorkspaceV78 = lazy(() => import('./museum-v78/WorkspaceV78'))
 import SeoHead from './components/SeoHead'
 import SiteBackground from './components/SiteBackground'
 import SiteLayout from './components/SiteLayout'
@@ -31,7 +32,7 @@ const MaterialLabAdmin = lazy(() => import('./material-lab/MaterialLabAdmin'))
 const MergeExperience = lazy(() => import('./experience/MergeExperience'))
 const LivingMuseum = lazy(() => import('./museum-v78/MuseumV78'))
 const PersonalMuseum = lazy(() => import('./living-museum/PersonalMuseum'))
-const MuseumTransparency = lazy(() => import('./living-museum/Transparency'))
+const MuseumTransparency = lazy(() => import('./museum-v78/TransparencyV78'))
 const LoginPage = lazy(() => import('./pages/LoginPage'))
 const ForgotPasswordPage = lazy(() => import('./pages/ForgotPasswordPage'))
 const ResetPasswordPage = lazy(() => import('./pages/ResetPasswordPage'))
@@ -145,6 +146,7 @@ function AppRoutes() {
 
         {/* Authenticated — user area */}
         <Route element={<AuthGuard />}>
+          <Route path="/dashboard/merge-ai" element={<MuseumWorkspaceV78 />} />
           <Route path="/fill-coin" element={<CoinConfiguratorPage />} />
 
           <Route path="/dashboard/fill-coin"  element={<CoinConfiguratorPage />} />
