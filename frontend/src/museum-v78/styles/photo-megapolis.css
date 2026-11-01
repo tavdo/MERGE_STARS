@@ -1,0 +1,151 @@
+/* The actual supplied frame is the main scene. Its architecture and avatar
+   remain original pixels; this mode is explicitly photographic, not a mesh. */
+.museum-v78 .photo-megapolis{position:relative;background:#10151b;border:1px solid #bfa47655;border-radius:8px;overflow:hidden;color:#f4e8ce;margin:0 auto;max-width:1800px}
+.museum-v78 .photo-megapolis[data-active=false]{display:none!important}
+.museum-v78 .photo-viewport{position:relative;display:flex;align-items:center;justify-content:center;height:calc(100svh - 152px);min-height:540px;overflow:hidden;background:radial-gradient(ellipse at 50% 55%,#313b46,#0d1219 75%);outline-offset:-3px}
+.museum-v78 .photo-composition{position:relative;flex-shrink:0;width:min(100%,calc((100svh - 152px)*1.5));aspect-ratio:3/2;container-type:inline-size;transform-origin:center;will-change:transform;isolation:isolate}
+.museum-v78 .photo-original{display:block;width:100%!important;height:100%!important;object-fit:contain;pointer-events:none;user-select:none}
+.museum-v78 .photo-megapolis .photo-motion-canvas{position:absolute;inset:0;width:100%!important;height:100%!important;display:block;pointer-events:none;z-index:1}
+.museum-v78 .photo-artwork-masks{position:absolute;inset:0;pointer-events:none;z-index:2}
+.museum-v78 .photo-artwork-masks>div{position:absolute;background:#10161e;border:1px solid #aa915e66;border-radius:8px}
+.museum-v78 .photo-artwork-masks>[data-mask=header]{border-radius:0;border-width:0 0 1px}
+.museum-v78 .photo-glass{background:#0e151df5;border:1px solid #b7a06c99;border-radius:8px;box-shadow:0 7px 25px #0004;color:#ede1c9}
+.museum-v78 .photo-megapolis button{cursor:pointer;font-family:inherit}
+.museum-v78 .photo-megapolis button:disabled{cursor:not-allowed;opacity:.45}
+.museum-v78 .photo-megapolis button:focus-visible{outline:2px solid #ffe3a0;outline-offset:3px}
+.museum-v78 .photo-header{position:absolute;inset:0 0 auto;height:6.8%;z-index:5;display:flex;align-items:center;gap:2%;padding:0 1.5%;background:linear-gradient(110deg,#131b25,#101720);border-bottom:1px solid #bea57477}
+.museum-v78 .photo-header>.company-wordmark{display:flex;align-items:center;gap:10px;flex-shrink:0;width:18%;color:#dec293!important}
+.museum-v78 .photo-header .company-mark{width:clamp(26px,3.6cqw,52px);height:auto;object-fit:contain}
+.museum-v78 .photo-header .company-wordmark strong{font-family:Georgia,serif;font-weight:400;font-size:clamp(16px,2.25cqw,31px);letter-spacing:.15em;white-space:nowrap}
+.museum-v78 .photo-header .company-wordmark strong>span{display:block;font-size:.38em;letter-spacing:.6em;text-align:center;margin-top:2px}
+.museum-v78 .photo-header .company-wordmark small{display:none}
+.museum-v78 .photo-header>nav{display:flex;align-self:stretch;justify-content:space-around;flex:1;gap:1%;min-width:0}
+.museum-v78 .photo-header>nav>button{padding:0 6px;background:none;border:0;color:#e8e1d6;font-family:Georgia,serif;font-size:clamp(8px,.86cqw,13px);white-space:nowrap}
+.museum-v78 .photo-header>nav>button[aria-current=page]{color:#f0d49e;border-bottom:2px solid #e6c78e;background:linear-gradient(transparent,#c9a66315)}
+.museum-v78 .photo-identity{padding:7px;border:1px solid #c1a875aa;background:#111923;border-radius:50%;color:#dfc99b;display:flex;align-items:center;justify-content:center}
+.museum-v78 .photo-house-hotspots{position:absolute;inset:0;z-index:3;pointer-events:none}
+.museum-v78 .photo-house-hotspots>button{position:absolute;transform:translate(-50%,-50%);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;background:none;border:0;color:#fff3d9;font-family:Georgia,serif;font-size:clamp(8px,1.05cqw,16px);letter-spacing:.035em;white-space:nowrap;pointer-events:auto;padding:7px 5px 2px;text-shadow:0 1px 5px #000}
+.museum-v78 .photo-house-hotspots>button>span{padding:4px 10px;background:#10171ded;border:1px solid #c4a66d99;border-radius:3px;box-shadow:0 2px 12px #0003}
+.museum-v78 .photo-house-hotspots>button svg{color:#f9df9f;filter:drop-shadow(0 0 4px #382307)}
+.museum-v78 .photo-house-hotspots>button:hover>span{background:#e9cd91;color:#24201b;text-shadow:none}
+.museum-v78 .photo-house-hotspots>button[data-photo-destination=museum]>span{background:#d7c9a3ed;color:#29251f;border-color:#baa274;text-shadow:none;font-size:clamp(9px,1.1cqw,17px);padding:4px 9px}
+.museum-v78 .photo-tools{position:absolute;left:93.8%;top:12.1%;width:6.1%;height:49.9%;z-index:4;display:flex;flex-direction:column;padding:1% .1%;justify-content:space-around}
+.museum-v78 .photo-tools>button{display:flex;align-items:center;flex-direction:column;justify-content:center;gap:6px;padding:5px 0;background:none;border:0;color:#e8d7b6;font-family:Georgia,serif;font-size:clamp(5px,.64cqw,10px)}
+.museum-v78 .photo-tools>button svg{width:clamp(18px,2.1cqw,31px);height:clamp(18px,2.1cqw,31px);stroke-width:1.15}
+.museum-v78 .photo-tools>button:hover{color:#fff3d5;background:#cdb17612}
+.museum-v78 .photo-prices{position:absolute;left:.9%;top:78.2%;width:14.5%;height:9.3%;z-index:4;display:flex;flex-direction:column;justify-content:center;align-items:flex-start;gap:6px;padding:.9%;text-align:left}
+.museum-v78 .photo-prices>span{display:flex;align-items:center;justify-content:space-between;width:100%;font-family:Georgia,serif;font-size:clamp(6px,.69cqw,10px);white-space:nowrap}
+.museum-v78 .photo-prices>strong{font:clamp(8px,1cqw,15px) Georgia,serif;color:#e3c58c;letter-spacing:.04em}
+.museum-v78 .photo-prices>small{font-size:clamp(6px,.65cqw,10px);color:#acaeaf}
+.museum-v78 .photo-create{position:absolute;left:80.2%;top:74.3%;width:19.7%;height:15.5%;z-index:4;display:flex;flex-direction:column;padding:.9% 1%}
+.museum-v78 .photo-create>strong{display:flex;align-items:center;justify-content:center;gap:7px;font:clamp(9px,1cqw,16px) Georgia,serif;padding-bottom:6%;border-bottom:1px solid #b49a6377;white-space:nowrap}
+.museum-v78 .photo-create>div{display:flex;flex:1;align-items:center;padding-top:5%}
+.museum-v78 .photo-create button{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:7px;width:33.33%;height:100%;border:0;background:none;color:#ecdab8;font:clamp(6px,.65cqw,10px)/1.4 Georgia,serif;letter-spacing:.03em}
+.museum-v78 .photo-create button+button{border-left:1px solid #b49a6355}
+.museum-v78 .photo-create button>svg{width:clamp(20px,2.2cqw,34px);height:clamp(20px,2.2cqw,34px);stroke-width:1.1}
+.museum-v78 .photo-create button:hover{color:#fff3d3;background:#cdb17610}
+.museum-v78 .photo-filmstrip{position:absolute;left:8.8%;top:89.6%;width:80.7%;height:10.1%;z-index:4;display:flex;align-items:stretch;gap:7px;padding:.55% .75%;overflow-x:auto;scrollbar-width:thin;scrollbar-color:#bba271 #11171c}
+.museum-v78 .photo-filmstrip>button{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;flex:0 0 7.2%;min-width:62px;background:#26313a66;border:1px solid #aa915e66;border-radius:4px;color:#ddc79b;padding:5px 4px;font:clamp(6px,.66cqw,10px) Georgia,serif;white-space:nowrap}
+.museum-v78 .photo-filmstrip .company-mark{object-fit:contain;height:50%;width:auto;max-width:40px;min-height:22px}
+.museum-v78 .photo-filmstrip>button:first-child{border-color:#ebc574;background:#c0a16814;min-width:88px}
+.museum-v78 .photo-filmstrip>button>img:not(.company-mark){display:block;height:65%;width:100%;object-fit:cover;object-position:center}
+.museum-v78 .photo-filmstrip>button:hover{background:#d7bd7f22;border-color:#eed4a2}
+.museum-v78 .photo-mode-caption{position:absolute;left:17%;bottom:11.1%;z-index:4;padding:5px 9px;background:#111923dd;border:1px solid #d1b57a44;border-radius:3px;color:#e6dabf;font-size:clamp(6px,.6cqw,9px);display:flex;gap:6px;align-items:center}
+.museum-v78 .photo-live-dot{display:block;flex-shrink:0;width:5px;height:5px;border-radius:50%;background:#d5bc87;box-shadow:0 0 7px #dfca98}
+.museum-v78 .photo-view-controls{display:flex;align-items:center;justify-content:space-between;gap:10px;min-height:45px;padding:6px 14px;background:#10161f;border-top:1px solid #b9a17355;font-size:10px;color:#c5bcab}
+.museum-v78 .photo-view-controls>div{display:flex;align-items:center;gap:9px}.museum-v78 .photo-view-controls button{display:flex;align-items:center;justify-content:center;gap:7px;min-width:30px;min-height:30px;padding:6px 8px;color:#e5d4ad;background:#1c2631;border:1px solid #b19a6555;border-radius:3px}
+.museum-v78 .photo-view-controls>span{font-size:10px;text-align:center}.museum-v78 .photo-view-controls>button{font-size:10px}
+.museum-v78 .photo-status,.museum-v78 .photo-recovery,.museum-v78 .photo-load-state{display:flex;align-items:center;justify-content:space-between;gap:13px;margin:0;padding:13px 18px;background:#171e28;color:#e4cfaa;font-size:11px;line-height:1.7;border-top:1px solid #d0b57744}.museum-v78 .photo-status button,.museum-v78 .photo-recovery button,.museum-v78 .photo-load-state button{color:#f5dfaa;background:none;border:0;text-decoration:underline;white-space:nowrap}
+.museum-v78 .photo-mobile-tools{display:none}
+.museum-v78 .photo-map-tabs{display:flex;gap:8px;margin:15px 0}.museum-v78 .photo-map-tabs button,.museum-v78 .photo-settings-actions button{display:flex;align-items:center;gap:8px;padding:11px 14px;background:#14202a;border:1px solid #b5a06e55;border-radius:4px;color:#c9c2b1;font-size:12px}.museum-v78 .photo-map-tabs button[aria-pressed=true]{border-color:#dec58c;color:#f2dba9}
+.museum-v78 .photo-map-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px;max-height:57svh;overflow:auto;margin:18px 0}.museum-v78 .photo-map-grid>button{display:flex;align-items:center;gap:14px;padding:17px 15px;border:1px solid #b4a17155;border-radius:5px;background:linear-gradient(130deg,#17232e,#101921);color:#e3d5b8;text-align:left;min-height:85px}.museum-v78 .photo-map-grid>button>small{font:17px Georgia,serif;color:#9e8760}.museum-v78 .photo-map-grid>button>span{display:flex;flex-direction:column;gap:7px;flex:1}.museum-v78 .photo-map-grid strong{font:12px Georgia,serif;letter-spacing:.05em}.museum-v78 .photo-map-grid em{font:10px/1.6 inherit;font-style:normal;color:#a6afb4}.museum-v78 .photo-map-grid>button>svg{flex-shrink:0}.museum-v78 .photo-map-grid>button:hover{border-color:#e2c68d;background:#24313d}
+.museum-v78 .photo-settings-actions{display:flex;flex-wrap:wrap;gap:9px;margin:20px 0}.museum-v78 .photo-settings-actions+ p{font-size:13px;line-height:1.9;color:#d4caba}
+.museum-v78 .photo-megapolis:fullscreen{border:0;border-radius:0;background:#10151b;max-width:none;width:100%;height:100%}.museum-v78 .photo-megapolis:fullscreen .photo-viewport{height:calc(100svh - 45px);min-height:0}.museum-v78 .photo-megapolis:fullscreen .photo-composition{width:min(100%,calc((100svh - 45px)*1.5))}
+.museum-v78 .city-host:not(.city-host-entry) .megapolis{padding:0 1vw}
+.museum-v78 .megapolis-world[hidden]{display:none!important}
+.museum-v78 .megapolis[data-entrance-state=INSIDE]>.fine-note,.museum-v78 .megapolis[data-entrance-state=INSIDE]>.notice{max-width:1200px;margin:15px auto;font-size:11px}
+@media(max-width:850px){.museum-v78 .photo-viewport{min-height:520px;height:calc(100svh - 210px);overflow:auto;justify-content:flex-start;scrollbar-width:none}.museum-v78 .photo-composition{width:max(100%,900px);margin:auto}.museum-v78 .photo-view-controls{flex-wrap:wrap;padding:8px}.museum-v78 .photo-view-controls>span{display:none}.museum-v78 .photo-mode-caption{font-size:8px}.museum-v78 .photo-mobile-tools{display:flex;align-items:center;justify-content:space-between;gap:5px;padding:9px;background:#10161f;border-top:1px solid #b9a17355}.museum-v78 .photo-mobile-tools button{display:flex;align-items:center;justify-content:center;gap:7px;min-height:42px;padding:8px 10px;border:1px solid #b6a06c66;border-radius:3px;color:#e8d2a6;background:#19232e;font-size:10px}.museum-v78 .photo-mobile-tools button:nth-child(3){background:#dec48e;color:#1b242d}.museum-v78 .photo-map-grid{grid-template-columns:1fr}.museum-v78 .photo-map-grid>button{min-height:73px}.museum-v78 .photo-megapolis:fullscreen .photo-composition{width:max(100%,900px)}.museum-v78 .photo-megapolis:fullscreen .photo-viewport{height:calc(100svh - 105px)}.museum-v78 .photo-view-controls>div>button{min-height:35px;min-width:35px}}
+@media(prefers-reduced-motion:reduce){.museum-v78 .photo-composition{will-change:auto}.museum-v78 .photo-megapolis *{scroll-behavior:auto!important}}
+
+/* The new artwork has no account card. Keep the waterfalls and floating city
+   visible; the account actions live in the profile dialog instead. */
+.museum-v78 .photo-account-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.museum-v78 .photo-account-actions>button{min-height:65px;text-align:left;line-height:1.6}
+.museum-v78 .photo-account-actions .company-mark{width:20px;height:20px;object-fit:contain}
+.museum-v78 .photo-header>nav{gap:0}.museum-v78 .photo-header>nav>button{padding:0 4px;font-size:clamp(7px,.79cqw,12px)}
+@media(max-width:600px){.museum-v78 .photo-account-actions{grid-template-columns:1fr}.museum-v78 .photo-mobile-tools{gap:4px}.museum-v78 .photo-mobile-tools>button{padding:8px 7px;font-size:9px}.museum-v78 .photo-mobile-tools>button[aria-label]{min-width:38px}}
+
+/* Two native UI Coin faces: exact identity asset and real CORE read status.
+   Their figures are DOM text, never values baked into an illustration. */
+.museum-v78 .coin-sky-prices{position:absolute;inset:0;z-index:4;pointer-events:none}
+.museum-v78 .coin-sky-card{--coin-bright:#ffe4a0;--coin-edge:#b88637;--coin-dark:#64481f;position:absolute;left:var(--coin-left);top:var(--coin-top);width:var(--coin-width);aspect-ratio:1;border:0!important;border-radius:50%;padding:0;container-type:inline-size;pointer-events:auto;color:var(--coin-bright);background:repeating-conic-gradient(from 0deg,var(--coin-edge) 0deg,var(--coin-bright) 1deg,var(--coin-dark) 2deg,var(--coin-edge) 3deg);box-shadow:0 6px 22px #000b,0 0 24px #cf9c3a36,inset 0 0 0 2px var(--coin-bright);transition:filter .2s,box-shadow .2s}
+.museum-v78 .coin-sky-card[data-coin-line=SILVER]{--coin-bright:#f2f5ff;--coin-edge:#9aa9bb;--coin-dark:#465463;box-shadow:0 6px 22px #000b,0 0 24px #b6d4e332,inset 0 0 0 2px var(--coin-bright)}
+.museum-v78 .coin-sky-card:before{content:"";position:absolute;inset:4%;border:1px solid var(--coin-bright);border-radius:50%;box-shadow:inset 0 0 0 3px var(--coin-dark),0 0 0 2px var(--coin-dark);pointer-events:none}
+.museum-v78 .coin-sky-card:after{content:"";position:absolute;left:43%;top:-4.5%;width:14%;height:9%;border:2px solid var(--coin-edge);border-radius:50%;background:#10161e;z-index:-1}
+.museum-v78 .coin-sky-face{position:absolute;inset:8%;border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.7cqw;padding:2%;background:radial-gradient(ellipse at 35% 18%,#3a3221,#141716 48%,#070e14 85%);border:1px solid var(--coin-edge);overflow:hidden;text-align:center;line-height:1.1}
+.museum-v78 .coin-sky-card[data-coin-line=SILVER] .coin-sky-face{background:radial-gradient(ellipse at 35% 18%,#34404c,#141b23 48%,#080d14 85%)}
+.museum-v78 .coin-sky-card .company-mark{width:7.5cqw!important;height:7.5cqw!important;min-height:0!important;object-fit:contain;flex-shrink:0}
+.museum-v78 .coin-sky-name{font:5cqw/1.1 Georgia,serif;letter-spacing:.04em;white-space:nowrap}
+.museum-v78 .coin-sky-basis{font:4cqw/1.1 Georgia,serif;color:var(--coin-bright);letter-spacing:.04em}
+.museum-v78 .coin-sky-price{display:flex;flex-direction:column;gap:.8cqw;align-items:center;justify-content:center;min-height:28cqw;width:95%;padding:1.2cqw 0;border-top:1px solid var(--coin-edge);border-bottom:1px solid var(--coin-edge);background:#01040880}
+.museum-v78 .coin-sky-price>span:first-child{font:4.3cqw/1.1 Georgia,serif;letter-spacing:.08em}
+.museum-v78 .coin-sky-price>strong{font:10.5cqw/1.05 Georgia,serif;color:var(--coin-bright);white-space:nowrap}
+.museum-v78 .coin-sky-included{font:2.8cqw/1.2 system-ui,sans-serif;color:#e5cf9d;letter-spacing:.015em;white-space:nowrap}
+.museum-v78 .coin-sky-card[data-coin-line=SILVER] .coin-sky-included{color:#cfdfed}
+.museum-v78 .coin-sky-metal{font:3.4cqw/1.2 system-ui,sans-serif;letter-spacing:.02em;display:flex;flex-direction:column;gap:.8cqw;color:#d6d7d8}
+.museum-v78 .coin-sky-metal>b{font:4.6cqw/1 Georgia,serif;color:var(--coin-bright);font-variant-numeric:tabular-nums;white-space:nowrap}
+.museum-v78 .coin-sky-metal small{font-size:3.6cqw}
+.museum-v78 .coin-sky-composition{font:3.4cqw/1.3 system-ui,sans-serif;white-space:nowrap}
+.museum-v78 .coin-sky-composition small{display:block;font:2.9cqw/1.4 system-ui,sans-serif;margin-top:.7cqw}
+.museum-v78 .coin-price-basis-label{font:10px/1.6 system-ui,sans-serif;letter-spacing:.09em;color:#d2bc8e}
+.museum-v78 .coin-material-summary,.museum-v78 .commission-coin-scenario{margin:20px 0;padding:22px;border:1px solid #b9a06d55;border-radius:9px;background:linear-gradient(135deg,#26313c88,#101923);color:#d6dce1}
+.museum-v78 .coin-material-summary h3,.museum-v78 .commission-coin-scenario h3{font:20px/1.4 Georgia,serif;color:#ead7b1;margin:9px 0 16px}
+.museum-v78 .coin-material-summary p,.museum-v78 .commission-coin-scenario p{font-size:12px;line-height:1.75;color:#bfcad4}
+.museum-v78 .coin-composition-bar{display:grid;grid-template-columns:1fr 2fr;border-radius:5px;overflow:hidden;margin:16px 0;font:11px/2.6 system-ui,sans-serif;text-align:center}
+.museum-v78 .coin-composition-bar span:first-child{background:#ccb37c;color:#17212c}.museum-v78 .coin-composition-bar span:last-child{background:#435564;color:#edf0f2}
+.museum-v78 .coin-material-summary dl,.museum-v78 .coin-scenario-breakdown{display:grid;gap:12px;margin:15px 0}
+.museum-v78 .coin-material-summary dl>div,.museum-v78 .coin-scenario-breakdown>div{display:flex;justify-content:space-between;gap:20px;font-size:12px;line-height:1.6}
+.museum-v78 .coin-material-summary dt,.museum-v78 .coin-scenario-breakdown dt{color:#a9b8c6}.museum-v78 .coin-material-summary dd,.museum-v78 .coin-scenario-breakdown dd{margin:0;text-align:right;color:#e5e0d5;max-width:58%;font-variant-numeric:tabular-nums}
+.museum-v78 .coin-material-status{display:block;font:9px/1.6 system-ui,sans-serif;letter-spacing:.08em;color:#dac8a0}
+.museum-v78 .coin-scenario-inputs{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:20px 0}
+.museum-v78 .coin-scenario-inputs label{display:flex;flex-direction:column;gap:8px;font-size:12px;line-height:1.5;min-width:0}.museum-v78 .coin-scenario-inputs label:first-child{grid-column:1/-1}
+.museum-v78 .coin-scenario-inputs input,.museum-v78 .coin-scenario-inputs select{width:100%;min-height:44px;padding:10px 12px;background:#0e1924;border:1px solid #8c795c88;border-radius:5px;color:#ece5d8;min-width:0;font:13px system-ui,sans-serif}
+.museum-v78 .coin-scenario-inputs small{font-size:10px;color:#a4b2c0}
+.museum-v78 .coin-scenario-result{display:flex;align-items:center;gap:20px;margin:23px 0;padding:18px;background:#3e4e5433;border:1px solid #cfb57c66;border-radius:7px}.museum-v78 .coin-scenario-result>strong{font:56px/1 Georgia,serif;color:#e6cb91}.museum-v78 .coin-scenario-result>span{font-size:13px;line-height:1.7}.museum-v78 .coin-scenario-result small{font-size:10px;color:#aabac8}
+.museum-v78 .coin-scenario-formula{font:11px/1.7 ui-monospace,monospace!important;overflow-wrap:anywhere}
+.museum-v78 .commission-coin-scenario details{padding:16px 0;font-size:12px;color:#dacaa7}.museum-v78 .commission-coin-scenario summary{cursor:pointer;line-height:1.6}.museum-v78 .commission-coin-scenario a{color:#dfc590}
+.museum-v78 .coin-price-breakdown dd small{display:block;font:9px/1.5 system-ui,sans-serif;text-align:right;color:#a8b7c6}
+@media(max-width:600px){.museum-v78 .coin-material-summary,.museum-v78 .commission-coin-scenario{padding:16px}.museum-v78 .coin-scenario-inputs{grid-template-columns:1fr}.museum-v78 .coin-material-summary dl>div,.museum-v78 .coin-scenario-breakdown>div{gap:12px;font-size:11px}.museum-v78 .coin-scenario-result{gap:14px}.museum-v78 .coin-scenario-result>strong{font-size:46px}}
+.museum-v78 .coin-sky-case-rule{font:600 3.4cqw/1.2 system-ui,sans-serif;letter-spacing:.06em}
+.museum-v78 .coin-sky-state{font:2.7cqw/1.2 system-ui,sans-serif;color:#c4c6c8;letter-spacing:.025em;white-space:nowrap}
+.museum-v78 .coin-sky-card:hover:not(:disabled){filter:brightness(1.15);box-shadow:0 6px 25px #000b,0 0 24px color-mix(in srgb,var(--coin-bright) 30%,transparent)}
+.museum-v78 .coin-live-dialog{max-width:850px!important;max-height:86svh;overflow:auto}
+.museum-v78 .coin-live-details>p{font-size:13px;line-height:1.7;color:#ddd5c7}
+.museum-v78 .coin-detail-lines{display:grid;grid-template-columns:1fr 1fr;gap:15px;margin:20px 0}
+.museum-v78 .coin-detail-lines article{padding:18px;border:1px solid #a98c4f88;background:linear-gradient(135deg,#292216,#111822);border-radius:8px}
+.museum-v78 .coin-detail-lines article[data-coin-line=SILVER]{border-color:#9badbc88;background:linear-gradient(135deg,#222e3b,#111822)}
+.museum-v78 .coin-detail-lines h3{font:18px Georgia,serif;color:#f2d699;margin:0 0 18px}
+.museum-v78 .coin-detail-lines article[data-coin-line=SILVER] h3{color:#e1e9f3}
+.museum-v78 .coin-detail-lines dl{display:grid;gap:12px;margin:0}.museum-v78 .coin-detail-lines dl>div{display:grid;gap:4px}.museum-v78 .coin-detail-lines dt{font-size:10px;color:#aeb6bf;text-transform:uppercase;letter-spacing:.06em}.museum-v78 .coin-detail-lines dd{font-size:12px;line-height:1.5;color:#f0e8da;margin:0;overflow-wrap:anywhere}
+.museum-v78 .coin-detail-actions{display:flex;flex-wrap:wrap;gap:10px}.museum-v78 .coin-detail-actions button{border:1px solid #af985f;background:#192632;color:#eddbb6;border-radius:4px;padding:12px 16px;min-height:44px}
+.museum-v78 .photo-mobile-coin-layer{display:none}
+@media(max-width:850px){.museum-v78 .photo-composition>.coin-sky-prices{display:none}.museum-v78 .photo-mobile-coin-layer{display:block;position:absolute;top:66px;left:0;right:0;z-index:6;pointer-events:none}.museum-v78 .photo-mobile-coin-layer>.coin-sky-prices{position:relative;display:flex;justify-content:space-between;gap:8px;padding:0 8px}.museum-v78 .photo-mobile-coin-layer .coin-sky-card{position:relative;left:auto;top:auto;width:clamp(140px,40vw,180px);flex-shrink:0}.museum-v78 .coin-detail-lines{grid-template-columns:1fr}}
+
+.museum-v78 .coin-market-tabs,.museum-v78 .coin-unit-tabs{display:flex;gap:8px}.museum-v78 .coin-market-tabs{margin:18px 0}.museum-v78 .coin-market-tabs button,.museum-v78 .coin-unit-tabs button{padding:10px 16px;min-height:44px;border:1px solid #947f5366;background:#121c27;color:#c7c5c1;border-radius:5px;cursor:pointer}.museum-v78 .coin-market-tabs button[aria-pressed=true],.museum-v78 .coin-unit-tabs button[aria-pressed=true]{color:#1d2025;background:#ddc18b;border-color:#e5cd9a}
+.museum-v78 .coin-market-hero{display:flex;flex-direction:column;align-items:center;text-align:center;gap:11px;padding:28px 20px;background:radial-gradient(ellipse at 50% 0,#6e54294a,transparent 75%),#111922;border:1px solid #b69a6055;border-radius:10px}.museum-v78 .coin-market-hero[data-coin-line=SILVER]{background:radial-gradient(ellipse at 50% 0,#7995b44a,transparent 75%),#111922;border-color:#94acc255}.museum-v78 .coin-market-hero .company-mark{width:44px;height:44px;object-fit:contain}.museum-v78 .coin-market-hero>span:first-of-type{font:16px Georgia,serif;letter-spacing:.08em;color:#e3ca98}.museum-v78 .coin-market-hero[data-coin-line=SILVER]>span:first-of-type{color:#d5e2ef}.museum-v78 .coin-market-hero>strong{font:clamp(34px,6vw,58px)/1.15 Georgia,serif;font-variant-numeric:tabular-nums;color:#f5e0b4;overflow-wrap:anywhere;max-width:100%}.museum-v78 .coin-market-hero[data-coin-line=SILVER]>strong{color:#e5edf6}.museum-v78 .coin-market-hero>p{font-size:12px;line-height:1.7;color:#c1c5cc;margin:0;max-width:460px}.museum-v78 .coin-indicative-badge{font-size:9px;letter-spacing:.08em;color:#d3bd8e;padding:6px 9px;border:1px solid #ab8d4a66;border-radius:4px}
+.museum-v78 .coin-market-quote{display:flex;align-items:center;justify-content:space-between;gap:18px;padding:22px 0 10px}.museum-v78 .coin-market-quote>div:first-child{display:flex;flex-direction:column;gap:8px}.museum-v78 .coin-market-quote span{font-size:10px;letter-spacing:.08em;color:#aeb9c5}.museum-v78 .coin-market-quote strong{font:25px Georgia,serif;color:#e7d6b5;font-variant-numeric:tabular-nums}.museum-v78 .coin-market-quote strong small{font:12px system-ui,sans-serif;color:#b1bcc8}.museum-v78 .coin-unit-tabs button{font-size:10px;padding:9px 12px}.museum-v78 .coin-market-unit-note{font-size:10px!important;line-height:1.6;color:#aeb9c5!important;margin:0 0 23px}
+.museum-v78 .coin-price-breakdown{border:1px solid #8a78514d;background:#111b25;border-radius:8px;padding:20px}.museum-v78 .coin-price-breakdown h3,.museum-v78 .coin-market-reference h3{font:12px/1.5 Georgia,serif;letter-spacing:.06em;color:#ddc89e;margin:0 0 16px}.museum-v78 .coin-price-breakdown dl{display:grid;gap:15px;margin:0}.museum-v78 .coin-price-breakdown dl>div{display:flex;justify-content:space-between;gap:18px;align-items:center}.museum-v78 .coin-price-breakdown dt{font-size:12px;line-height:1.6;color:#d0d4d8}.museum-v78 .coin-price-breakdown dt small{display:block;color:#9fb0bf;font-size:10px}.museum-v78 .coin-price-breakdown dd{margin:0;font:19px Georgia,serif;color:#ead5ab;white-space:nowrap;font-variant-numeric:tabular-nums}.museum-v78 .coin-breakdown-total{padding-top:16px;border-top:1px solid #af965666}.museum-v78 .coin-breakdown-total dt{font-size:10px}.museum-v78 .coin-breakdown-total dd{font-size:25px}.museum-v78 .coin-price-breakdown>p{font-size:11px;line-height:1.7;color:#aebccb;margin:17px 0 0}
+.museum-v78 .coin-market-source{margin:20px 0}.museum-v78 .coin-market-source dl{display:grid;grid-template-columns:1fr 1fr;gap:15px;margin:0}.museum-v78 .coin-market-source dt{font-size:10px;text-transform:uppercase;letter-spacing:.04em;color:#9fabb9}.museum-v78 .coin-market-source dd{margin:5px 0 0;font-size:12px;line-height:1.5;color:#d9d9d6;overflow-wrap:anywhere}
+.museum-v78 .coin-market-reference{padding:20px 0;border-top:1px solid #b49a5555}.museum-v78 .coin-market-reference p,.museum-v78 .coin-material-details p{font-size:12px;line-height:1.7;color:#b9c2ce}.museum-v78 .coin-market-reference>a{display:inline-block;padding:12px 15px;margin:3px 8px 8px 0;border:1px solid #b89b5d77;background:#182532;border-radius:5px;text-decoration:none;color:#e1c793;font-size:12px;min-height:44px}.museum-v78 .coin-market-reference>small{display:block;font-size:10px;line-height:1.7;color:#99a8b8}.museum-v78 .coin-material-details{padding:16px 0;margin-bottom:10px;border-top:1px solid #b49a5533}.museum-v78 .coin-material-details summary{font-size:12px;cursor:pointer;color:#cdbf9f}
+@media(max-width:600px){.museum-v78 .coin-market-quote{flex-direction:column;align-items:flex-start}.museum-v78 .coin-market-source dl{grid-template-columns:1fr}.museum-v78 .coin-price-breakdown{padding:15px}.museum-v78 .coin-price-breakdown dd{font-size:17px}.museum-v78 .coin-breakdown-total dd{font-size:21px}.museum-v78 .coin-market-hero{padding:24px 12px}.museum-v78 .coin-market-hero>strong{font-size:38px}}
+
+.museum-v78 .coin-feed-beat{position:absolute;inset:-2%;border:1px solid var(--coin-bright);border-radius:50%;opacity:0;pointer-events:none}
+.museum-v78 .coin-sky-card[data-coin-feed=received][data-motion=true]>.coin-feed-beat{animation:coin-feed-beat 1.4s ease-out 1}
+@keyframes coin-feed-beat{0%,38%,100%{opacity:0;transform:scale(1);box-shadow:0 0 0 transparent}17%,58%{opacity:.65;transform:scale(1.035);box-shadow:0 0 18px var(--coin-edge)}}
+.museum-v78 .coin-pulse-panel{padding:0 0 22px;margin-bottom:20px;border-bottom:1px solid #ad956355}.museum-v78 .coin-pulse-panel>h3{font:25px Georgia,serif;color:#ead5aa;margin:12px 0}.museum-v78 .coin-pulse-panel>p{font-size:12px;line-height:1.8;color:#bfc2c8}.museum-v78 .coin-pulse-pair>.coin-sky-prices{position:relative;display:flex;align-items:center;justify-content:center;gap:5%;padding:18px 0 10px}.museum-v78 .coin-pulse-pair .coin-sky-card{position:relative;left:auto;top:auto;width:min(43%,220px);flex-shrink:0}.museum-v78 .coin-pulse-expanded{margin-top:18px;padding-top:15px;border-top:1px solid #ad956355}
+@media(prefers-reduced-motion:reduce){.museum-v78 .coin-sky-card[data-coin-feed=received][data-motion=true]>.coin-feed-beat{animation:none}.museum-v78 .coin-sky-card{transition:none}}
+
+/* Pending contract labels must wrap on small screens like ordinary field text. */
+.museum-v78 .coin-market-hero>strong>small{font:12px/1.4 system-ui,sans-serif;white-space:nowrap}
+.museum-v78 .coin-offer-pending dd{white-space:normal;overflow-wrap:anywhere;max-width:52%;text-align:right;font:600 12px/1.6 system-ui,sans-serif}
+@media(max-width:600px){.museum-v78 .coin-offer-pending dl>div{flex-direction:column;align-items:flex-start;gap:5px}.museum-v78 .coin-offer-pending dd{max-width:100%;text-align:left;font-size:12px}}

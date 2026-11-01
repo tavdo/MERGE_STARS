@@ -1,0 +1,30 @@
+import * as THREE from 'three';
+import {buildStudyModel} from './museum-study-scene';
+import type {VisualStudy} from './museum-studies';
+import {disposeModelObjects} from './core-model-scene';
+
+type Face={v:Float32Array;color:[number,number,number];alpha:number;double:boolean;normal:THREE.Vector3;center:THREE.Vector3};
+// The compatibility renderer projects the same actual model geometry into a 2D canvas.
+// It is never a substituted photograph, AI reconstruction or a GPU-success claim.
+export function createSoftwareStudyStage(canvas:HTMLCanvasElement,visual:VisualStudy){
+ const context=canvas.getContext('2d');if(!context)throw Error('CANVAS_UNAVAILABLE');const ctx=context;
+ const scene=new THREE.Group(),display=new THREE.Group();scene.add(display);let model=buildStudyModel(visual),disposed=false,faces:Face[]=[];
+ const plinth=new THREE.Mesh(new THREE.CylinderGeometry(1.55,1.65,.12,48),new THREE.MeshStandardMaterial({color:'#18212b'}));plinth.position.y=-.08;scene.add(plinth);
+ const rim=new THREE.Mesh(new THREE.TorusGeometry(1.56,.012,6,48),new THREE.MeshStandardMaterial({color:'#b39a65'}));rim.rotation.x=Math.PI/2;rim.position.y=-.014;scene.add(rim);
+ const camera=new THREE.PerspectiveCamera(38,1,.05,100),orbit={yaw:.3,pitch:.13,distance:5.3},matrix=new THREE.Matrix4(),instance=new THREE.Matrix4(),world=new THREE.Matrix4(),p0=new THREE.Vector3(),p1=new THREE.Vector3(),p2=new THREE.Vector3(),light=new THREE.Vector3(-.4,.7,1).normalize();
+ function prepare(){const bounds=new THREE.Box3().setFromObject(model),size=bounds.getSize(new THREE.Vector3()),center=bounds.getCenter(new THREE.Vector3());model.position.sub(center);model.position.y+=size.y/2;display.clear();display.add(model);display.scale.setScalar(2.45/Math.max(size.x,size.y,size.z));scene.updateMatrixWorld(true);faces=[];
+  scene.traverse(object=>{const mesh=object as THREE.Mesh;if(!mesh.isMesh||!mesh.geometry)return;const position=mesh.geometry.getAttribute('position'),indices=mesh.geometry.index,material=(Array.isArray(mesh.material)?mesh.material[0]:mesh.material) as THREE.MeshStandardMaterial,color=(material.color??new THREE.Color('#bbbbbb')).clone().convertLinearToSRGB(),count=indices?indices.count:position.count,total=(mesh as THREE.InstancedMesh).isInstancedMesh?(mesh as THREE.InstancedMesh).count:1;
+   for(let n=0;n<total;n++){if((mesh as THREE.InstancedMesh).isInstancedMesh){(mesh as THREE.InstancedMesh).getMatrixAt(n,instance);world.multiplyMatrices(mesh.matrixWorld,instance);}else world.copy(mesh.matrixWorld);
+    for(let i=0;i<count;i+=3){p0.fromBufferAttribute(position,indices?indices.getX(i):i).applyMatrix4(world);p1.fromBufferAttribute(position,indices?indices.getX(i+1):i+1).applyMatrix4(world);p2.fromBufferAttribute(position,indices?indices.getX(i+2):i+2).applyMatrix4(world);const normal=p1.clone().sub(p0).cross(p2.clone().sub(p0)).normalize();if(normal.lengthSq()<.5)continue;faces.push({v:new Float32Array([...p0,...p1,...p2]),color:[color.r,color.g,color.b],alpha:material.transparent?Math.max(.25,material.opacity):1,double:material.side===THREE.DoubleSide,normal,center:p0.clone().add(p1).add(p2).multiplyScalar(1/3)});}
+   }
+  });
+ }
+ prepare();
+ function render(){if(disposed)return;const width=Math.max(1,canvas.clientWidth),height=Math.max(1,canvas.clientHeight),ratio=Math.min(window.devicePixelRatio||1,1.25);if(canvas.width!==Math.round(width*ratio)||canvas.height!==Math.round(height*ratio)){canvas.width=Math.round(width*ratio);canvas.height=Math.round(height*ratio);}ctx.setTransform(ratio,0,0,ratio,0,0);ctx.clearRect(0,0,width,height);const backdrop=ctx.createRadialGradient(width*.5,height*.5,10,width*.5,height*.5,width*.65);backdrop.addColorStop(0,'#202b36');backdrop.addColorStop(1,'#080c12');ctx.fillStyle=backdrop;ctx.fillRect(0,0,width,height);
+  camera.aspect=width/height;camera.updateProjectionMatrix();const distance=orbit.distance*Math.max(1,.82/camera.aspect);camera.position.set(Math.sin(orbit.yaw)*Math.cos(orbit.pitch)*distance,1.12+Math.sin(orbit.pitch)*distance,Math.cos(orbit.yaw)*Math.cos(orbit.pitch)*distance);camera.lookAt(0,1.15,0);camera.updateMatrixWorld();matrix.multiplyMatrices(camera.projectionMatrix,camera.matrixWorldInverse);
+  const drawn:{points:number[];depth:number;color:string;alpha:number}[]=[],point=new THREE.Vector3(),toward=new THREE.Vector3();
+  for(const face of faces){toward.copy(camera.position).sub(face.center);const front=face.normal.dot(toward);if(front<=0&&!face.double)continue;const points:number[]=[];let depth=0,visible=true;for(let i=0;i<9;i+=3){point.set(face.v[i],face.v[i+1],face.v[i+2]).applyMatrix4(matrix);if(point.z<=-1||point.z>=1){visible=false;break;}points.push((point.x+1)*width/2,(1-point.y)*height/2);depth+=point.z;}if(!visible)continue;const area=Math.abs((points[2]-points[0])*(points[5]-points[1])-(points[4]-points[0])*(points[3]-points[1]));if(area<.025)continue;const intensity=.31+.69*Math.max(0,face.normal.dot(light)*(front<0?-1:1));const c=face.color.map(v=>Math.min(255,Math.round(v*255*intensity)));drawn.push({points,depth:depth/3,color:`rgb(${c.join(',')})`,alpha:face.alpha});}
+  drawn.sort((a,b)=>b.depth-a.depth);for(const face of drawn){const p=face.points;ctx.globalAlpha=face.alpha;ctx.beginPath();ctx.moveTo(p[0],p[1]);ctx.lineTo(p[2],p[3]);ctx.lineTo(p[4],p[5]);ctx.closePath();ctx.fillStyle=face.color;ctx.fill();ctx.strokeStyle=face.color;ctx.lineWidth=.35;ctx.stroke();}ctx.globalAlpha=1;
+ }
+ return {mode:'SOFTWARE' as const,orbit,render,update(next:VisualStudy){if(disposed)return;display.remove(model);disposeModelObjects(model);model=buildStudyModel(next);prepare();},reset(){Object.assign(orbit,{yaw:.3,pitch:.13,distance:5.3});},async exportGLB(){const {GLTFExporter}=await import('three/addons/exporters/GLTFExporter.js');const result=await new GLTFExporter().parseAsync(model,{binary:true,onlyVisible:true});if(!(result instanceof ArrayBuffer))throw Error('EXPORT_FAILED');return result;},dispose(){if(disposed)return;disposed=true;disposeModelObjects(scene);faces=[];}};
+}

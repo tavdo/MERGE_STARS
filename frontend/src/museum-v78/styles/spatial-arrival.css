@@ -1,0 +1,6 @@
+.museum-v78 .spatial-arrival-coins { position:relative; padding:16px 20px; border-block:1px solid #b79b604d; background:#0c0c0f; color:#e8cf9d; }
+.museum-v78 .spatial-arrival-coins h3 { margin:0; text-align:center; font-size:14px; font-weight:500; }
+.museum-v78 .spatial-arrival-coins p { margin:4px 0 0; text-align:center; color:#bcbcc5; font-size:11px; line-height:1.6; }
+.museum-v78 .spatial-arrival-coins .coin-pulse-pair>.coin-sky-prices { padding:14px 0; }
+.museum-v78 .spatial-arrival-coins .coin-sky-card { width:200px; max-width:43%; }
+@media(max-width:600px) { .museum-v78 .spatial-arrival-coins { padding:14px 8px; }.museum-v78 .spatial-arrival-coins .coin-sky-card { width:165px; max-width:45%; } }

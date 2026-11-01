@@ -1,0 +1,15 @@
+"use client";
+import { useState } from 'react';
+import { CircleDollarSign, LockKeyhole } from 'lucide-react';
+export function OrderFundingPath() {
+  const [choice,setChoice]=useState<'NOW'|'DEFERRED'>('NOW');
+  return <section className="order-funding-path" aria-label="Official order payment paths" lang="en">
+    <div className="generation-heading"><CircleDollarSign size={23}/><div><span className="eyebrow">REAL ORDERS · FIRST 1,000</span><h3>Pay now or from available commissions</h3></div></div>
+    <p>Registration → authorized generation → automatic unpaid CORE order registration → PAY NOW or PAY LATER. Every successfully generated item must be registered with its own real CORE Order ID. The generation action includes the user's order authorization; a second post-generation order action is not required. A private design brief is not a generated item.</p>
+    <p>No upfront payment or wait for 1,000 registrations is required. If generation or CORE registration is unavailable, show REGISTRATION PENDING; do not claim an official order exists. A VERIFIED OFFER is required before payment, and production needs separate authorization.</p>
+    <div className="funding-choices" role="group" aria-label="View payment terms"><button aria-pressed={choice==='NOW'} onClick={()=>setChoice('NOW')}>PAY NOW<br/><small>Direct payment</small></button><button aria-pressed={choice==='DEFERRED'} onClick={()=>setChoice('DEFERRED')}>PAY LATER · FROM COMMISSION<br/><small>Deferred settlement</small></button></div>
+    <div className="funding-explanation" aria-live="polite">{choice==='NOW'?<><h4>Approved bank / payment provider</h4><p>The amount and currency must come from the CORE offer. Starting a payment does not mean PAID; verified provider evidence is required.</p></>:<><h4>Real AVAILABLE commission from customer sales</h4><p>The first 1,000 registrations qualify for deferred payment under the Founder specification; CORE confirms the actual cohort and entitlement. The charge is paid from real earned, verified AVAILABLE commissions / MERGE Coin credit, with a unique settlement record in CORE. CORE determines the Coin line, conversion, currency and LIVE snapshot.</p><p>The total brand allocation is 33% of the eligible product base, excluding VAT and the separate platform fee. If Source and Destination are different Houses, their existing 16.5% shares remain separate. Brand activity, generated unpaid orders, views and registrations do not create available money.</p><p>PENDING, RESERVED and NEGATIVE balances cannot settle the charge. Without AVAILABLE commission, the order remains deferred. Partial settlement requires the approved CORE rule.</p></>}</div>
+    <div className="item-coin-pending"><LockKeyhole size={17}/><span>CORE offer and settlement connection required</span></div>
+    <p className="fine-note">This screen explains the terms. No order or payment instruction was created here. Production requires verified settlement and CORE technical / rights authorization.</p>
+  </section>;
+}

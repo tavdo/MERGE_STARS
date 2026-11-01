@@ -1,3 +1,4 @@
+import { json } from 'express';
 import { NestFactory } from '@nestjs/core';
 import { ValidationPipe, Logger } from '@nestjs/common';
 import { IoAdapter } from '@nestjs/platform-socket.io';
@@ -31,6 +32,7 @@ async function bootstrap() {
   // Match frontend VITE_API_URL=/api and nginx proxy (full /api/... path)
   app.setGlobalPrefix('api');
 
+  app.use('/api/museum-v78/ai-manager', json({ limit: '1500kb' }));
   app.use(cookieParser());
   app.useGlobalPipes(
     new ValidationPipe({

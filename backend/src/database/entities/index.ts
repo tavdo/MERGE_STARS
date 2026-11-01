@@ -1,3 +1,4 @@
+import { MuseumRecord } from '../../modules/museum-v78/museum-record.entity';
 import { ProductPassport } from './product-passport.entity';
 import { CoinConfiguratorProduct } from './coin-configurator-product.entity';
 import { CoinConfiguratorSession } from './coin-configurator-session.entity';
@@ -33,6 +34,7 @@ import { WalletTransaction } from './wallet-transaction.entity';
 import { CatalogOrder } from './catalog-order.entity';
 
 export const entities = [
+  MuseumRecord,
   BrandRoomPick,
   AiTrainingItem,
   CoinPackageConfig,
@@ -65,6 +67,7 @@ export const entities = [
 ];
 
 export {
+  MuseumRecord,
   BrandRoomPick,
   AiTrainingItem,
   CoinPackageConfig,

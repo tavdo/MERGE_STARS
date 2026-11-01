@@ -1,3 +1,4 @@
+import { MuseumV78Module } from './modules/museum-v78/museum-v78.module';
 import { CoinConfiguratorModule } from './modules/coin-configurator/coin-configurator.module';
 import { MuseumCoreModule } from './modules/museum-core/museum-core.module';
 import { ExperienceModule } from './modules/experience/experience.module';
@@ -77,6 +78,7 @@ import { validateEnvironment } from './config/security';
     WalletModule,
     MaterialLabModule,
     ExperienceModule,
+    MuseumV78Module,
     CoinConfiguratorModule,
     MuseumCoreModule,
   ],

@@ -6,3 +6,6 @@ deploy/** text eol=lf
 *.png binary
 *.jpg binary
 *.webp binary
+
+# Preserve the exact exported Museum 78 asset bytes
+frontend/public/museum-v78/** -text

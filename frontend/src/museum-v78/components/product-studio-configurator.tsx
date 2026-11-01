@@ -1,0 +1,10 @@
+"use client";
+import {useState} from 'react';
+import {Check,SlidersHorizontal} from 'lucide-react';
+import type {CityHouseId} from '@/museum-v78/lib/megapolis-domain';
+import {applyProductConfiguration,productConfigurationFields,readProductConfiguration} from '@/museum-v78/lib/product-studio-configuration';
+export function ProductStudioConfigurator({houseId,description,onApply}:{houseId:CityHouseId;description:string;onApply:(description:string)=>void}){
+ const fields=productConfigurationFields(houseId),[values,setValues]=useState<Record<string,string>>(()=>readProductConfiguration(houseId,description)),[applied,setApplied]=useState(false);
+ const result=applyProductConfiguration(houseId,description,values);
+ return <section className="product-studio-configurator" aria-label="Product design configuration"><header><SlidersHorizontal size={20}/><div><span className="eyebrow">DESIGN · MATERIAL · DETAILS · PREVIEW</span><h3>Configure your design</h3></div></header><div className="product-configuration-fields">{fields.map(f=><label key={f.id}>{f.label}{f.options?<select aria-label={f.label} value={values[f.id]??''} onChange={e=>{setValues(v=>({...v,[f.id]:e.target.value}));setApplied(false);}}><option value="">Choose a preference</option>{f.options.map(v=><option key={v}>{v}</option>)}</select>:<input aria-label={f.label} maxLength={200} value={values[f.id]??''} onChange={e=>{setValues(v=>({...v,[f.id]:e.target.value}));setApplied(false);}}/>}</label>)}</div><button type="button" className="button outline" disabled={!result} onClick={()=>{if(result){onApply(result);setApplied(true);}}}><Check size={15}/>{applied?'Applied to private brief':'Apply to my design brief'}</button><p className="fine-note">These selections update your private configuration brief. Original manufacturer mechanisms, lenses, electronics and protected components remain attributed to their source. A real geometry change, fit result, generated model and order require the authorized CORE flow.</p></section>;
+}

@@ -29,7 +29,7 @@ const LivingMuseumExperienceRedirect = lazy(() => import('./pages/public/LivingM
 const DesignReviewPage = lazy(() => import('./pages/admin/DesignReviewPage'))
 const MaterialLabAdmin = lazy(() => import('./material-lab/MaterialLabAdmin'))
 const MergeExperience = lazy(() => import('./experience/MergeExperience'))
-const LivingMuseum = lazy(() => import('./living-museum/LivingMuseum'))
+const LivingMuseum = lazy(() => import('./museum-v78/MuseumV78'))
 const PersonalMuseum = lazy(() => import('./living-museum/PersonalMuseum'))
 const MuseumTransparency = lazy(() => import('./living-museum/Transparency'))
 const LoginPage = lazy(() => import('./pages/LoginPage'))

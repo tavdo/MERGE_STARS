@@ -1,0 +1,15 @@
+.museum-v78 .fashion-museum-directory { padding: 28px 0; border-block: 1px solid #94774766; margin-top: 24px; }
+.museum-v78 .fashion-museum-directory header { max-width: 660px; margin-bottom: 24px; }
+.museum-v78 .fashion-museum-directory h3 { font: 28px Georgia,serif; color: #efd7a3; margin: 10px 0; }
+.museum-v78 .fashion-museum-directory p { color: #bdbbb3; font-size: 13px; line-height: 1.7; }
+.museum-v78 .fashion-museum-directory > div { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 28px; }
+.museum-v78 .fashion-museum-directory nav { min-width: 0; }
+.museum-v78 .fashion-museum-directory h4 { font: 17px Georgia,serif; color: #e5cc94; padding-bottom: 14px; border-bottom: 1px solid #94774788; }
+.museum-v78 .fashion-museum-directory nav button { width: 100%; display: flex; justify-content: space-between; align-items: center; gap: 12px; min-height: 48px; padding: 12px 0; border-bottom: 1px solid #94774733; text-align: left; font-size: 13px; color: #e3dfd5; background: transparent; }
+.museum-v78 .fashion-museum-directory nav button span { min-width: 0; overflow-wrap: anywhere; }
+.museum-v78 .fashion-museum-directory nav button svg { flex-shrink: 0; color: #d2b478; }
+.museum-v78 .fashion-museum-directory nav button:hover { color: #ffe4ac; background: #b8903820; }
+.museum-v78 .fashion-museum-directory nav button:focus-visible { outline: 2px solid #e7c47c; outline-offset: 3px; }
+.museum-v78 .fashion-museum-directory nav button:disabled { opacity: .5; }
+.museum-v78 .fashion-museum-directory > p { margin-top: 20px; }
+@media(max-width:760px) { .museum-v78 .fashion-museum-directory > div { grid-template-columns: 1fr; gap: 24px; } .museum-v78 .fashion-museum-directory h3 { font-size: 24px; } }
