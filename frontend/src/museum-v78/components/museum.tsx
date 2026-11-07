@@ -27,7 +27,7 @@ import { MeasurementMap } from "@/museum-v78/components/measurement-map";
 import { displayBodyShape, emptyMeasurementDraft, type FitCategory, type BodyFieldId } from "@/museum-v78/lib/fit-measurements";
 import { ENTRANCE_DURATION } from "@/museum-v78/lib/megapolis-entrance";
 import { MuseumGate } from "@/museum-v78/components/museum-gate";
-import { CompanyMark, CompanyWordmark } from "@/museum-v78/components/company-identity";
+import { CompanyMark } from "@/museum-v78/components/company-identity";
 import { AscensionExhibits } from './ascension-exhibits';
 import { ascensionPresentationImage } from '@/museum-v78/lib/ascension-exhibits';
 import { MuseumImageDetail } from "@/museum-v78/components/museum-image-detail";
@@ -361,7 +361,7 @@ export default function Museum({ signedIn, sessionScope }: { signedIn: boolean; 
 
   return <main className={entered ? "museum-shell" : "entrance-shell"} style={entered?{animation:'none'}:undefined} data-world={worldMode}>
     <header className="topbar">
-      <button className="brand" aria-label="MERGE შესასვლელი" disabled={saving} onClick={leave}><CompanyWordmark /></button>
+      {entered && <button type="button" className="text-link" disabled={saving} onClick={leave}>MERGE შესასვლელი</button>}
       {entered ? <nav aria-label="მუზეუმის ნავიგაცია"><button disabled={saving} onClick={() => { returnToSpace(); setWorldMode("city"); }}>MEGAPOLIS</button><button disabled={saving} onClick={showGrandMuseum} className={panel === "none" && worldMode === "museum" ? "nav-active" : ""}>GRAND MUSEUM</button><button disabled={saving} onClick={() => setPanel("journey")}><Route size={15}/>MY JOURNEY</button><button disabled={saving} onClick={() => setPanel("commercial")}><CircleDollarSign size={15}/>ORDERS</button><a href="#visual-exhibition" onClick={() => setPanel("none")}>REFERENCES</a><button disabled={saving} onClick={() => { setPanel("collection"); void load(); }}>MY DESIGNS <span className="count">{String(drafts.length).padStart(2,"0")}</span></button><button disabled={saving} onClick={()=>setPanel("personal-ai")}><Sparkles size={15}/>MERGE AI</button><button className="pulse-nav" disabled={saving} onClick={() => setPanel("pulse")}><Activity size={15} />MERGE PULSE</button></nav> : <span className="header-caption">THE LIVING MUSEUM</span>}
       <button className="private-label" disabled={saving} onClick={() => setPanel("system")}><LockKeyhole size={14} /><span>PRIVATE · SYSTEM STATUS</span></button>
     </header>

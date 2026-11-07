@@ -6,6 +6,7 @@
 .museum-v78 .megapolis[data-entrance-state=CLOSED] .megapolis-world,.museum-v78 .megapolis[data-entrance-state=OPENING] .megapolis-world{height:100svh!important;min-height:700px!important;border:0!important;border-radius:0!important}
 .museum-v78 .megapolis[data-entrance-state=CLOSED] .megapolis-world>:not(canvas),.museum-v78 .megapolis[data-entrance-state=OPENING] .megapolis-world>:not(canvas){display:none!important}
 .museum-v78 .entrance-shell>.topbar{position:absolute;top:0;left:0;right:0;z-index:6;background:linear-gradient(#090d14cf,transparent);border:0}
+.museum-v78 .entrance-shell>.topbar .private-label{margin-inline-start:auto}
 .museum-v78 .entrance-shell .founder-entrance{background:transparent;pointer-events:none;height:100svh;min-height:700px;z-index:2}
 .museum-v78 .founder-entrance .founder-gate{position:absolute;inset:0;height:auto;pointer-events:auto}
 .museum-v78 .founder-gate .gate-portal{inset:0;min-height:100%;background:transparent}
