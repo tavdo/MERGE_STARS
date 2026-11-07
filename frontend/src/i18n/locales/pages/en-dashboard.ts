@@ -169,6 +169,8 @@ export default {
     pipeline: ['DRAFT', 'SUBMITTED', 'INVOICE', 'PAYMENT_PENDING', 'APPROVED', 'PRODUCTION', 'QC', 'READY', 'DELIVERED', 'COMPLETED'],
   },
   payment: {
+    verifiedOfferRequired: 'Payment is unavailable until a verified offer is issued.',
+    retryApplication: 'Could not load the application. Try again.',
     kicker: 'PAYMENT & FINANCING',
     title: 'Payment',
     productionLock: 'PRODUCTION LOCK',

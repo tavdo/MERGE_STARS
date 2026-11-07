@@ -120,7 +120,7 @@ export default function ApplicationPage() {
         quantity,
         metalPurity: 999.9,
         metalType,
-        coinValue: coinValue * quantity,
+        coinValue: coinValue ?? 0,
         notes: designNotes,
         firstName: firstName.trim(),
         lastName: lastName.trim(),
@@ -434,7 +434,7 @@ export default function ApplicationPage() {
                     { label: t('application.summaryQuantity'), value: `${quantity} KG` },
                     { label: t('application.summaryWeight'), value: t('application.grams', { n: quantity * 1000 }) },
                     { label: t('application.summaryPurity'), value: `${formatMetalFineness(DEFAULT_FINENESS_PER_MILLE, i18n.language)} ${t(`application.metals.${metalType}`)}` },
-                    { label: t('application.summaryValue'), value: `$${(coinValue * quantity).toLocaleString()}` },
+                    { label: t('application.summaryValue'), value: coinValue === null ? '—' : `$${coinValue.toLocaleString()}` },
                     {
                       label: t('application.summaryAiDesign'),
                       value: designSummary,
@@ -513,7 +513,7 @@ export default function ApplicationPage() {
               />
               <p className="dash-label mb-5">{t('application.orderPreview', { defaultValue: 'Order preview' })}</p>
               {[
-                { label: t('application.coinValue'), value: `$${(coinValue * quantity).toLocaleString()}.00` },
+                { label: t('application.coinValue'), value: coinValue === null ? '—' : `$${coinValue.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}` },
                 { label: t('application.summaryFinancing'), value: summaryFinancing },
               ].map((r) => (
                 <div key={r.label} className="preview-row">

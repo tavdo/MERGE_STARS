@@ -133,6 +133,8 @@ export default {
   coins: { activeCoin: 'აქტიური მონეტა', balance: 'ბალანსი', trackStatus: 'სტატუსი', coinDetails: 'დეტალები', exploreCoin: 'merge coin', coinName: 'MERGE SILVER COIN (1KG)', quantity: 'რაოდენობა', purity: 'სინჯი', inProduction: 'წარმოებაში' },
   orders: { kicker: 'შეკვეთების მართვა', title: 'ჩემი შეკვეთები', empty: 'შეკვეთები ჯერ არ არის.', newApplication: 'ახალი განაცხადი' },
   payment: {
+    verifiedOfferRequired: 'გადახდა შესაძლებელი იქნება დადასტურებული შეთავაზების მიღების შემდეგ.',
+    retryApplication: 'განაცხადი ვერ ჩაიტვირთა. სცადეთ ხელახლა.',
     kicker: 'გადახდა და ფინანსირება',
     title: 'გადახდა',
     productionLock: 'წარმოების ბლოკი',

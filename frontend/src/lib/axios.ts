@@ -1,10 +1,10 @@
 import axios from 'axios'
-import { useAuthStore } from '@/features/auth/store/auth.store'
+import { useAuthStore, type AuthUser } from '@/features/auth/store/auth.store'
 
 /** Prefer relative /api in production builds; never leave localhost as fallback on live. */
 const apiBase =
   import.meta.env.VITE_API_URL ||
-  (import.meta.env.PROD ? '/api' : 'http://localhost:3000')
+  '/api'
 
 export const api = axios.create({
   baseURL: apiBase,
@@ -15,50 +15,50 @@ export const api = axios.create({
 // Attach access token on every request; let the browser set multipart boundaries
 api.interceptors.request.use((config) => {
   const token = useAuthStore.getState().accessToken
-  if (token) config.headers.Authorization = `Bearer ${token}`
+  if (token && !config.headers.has('Authorization')) config.headers.Authorization = `Bearer ${token}`
   if (typeof FormData !== 'undefined' && config.data instanceof FormData) {
     delete config.headers['Content-Type']
   }
   return config
 })
 
-// Auto-refresh on 401
-let isRefreshing = false
-let queue: Array<(token: string) => void> = []
+// Share one refresh request per session, including failures.
+let refreshing: { previous: string; promise: Promise<string> } | null = null
 
 api.interceptors.response.use(
   (res) => res,
   async (error) => {
     const original = error.config
-    if (error.response?.status !== 401 || original._retry) {
-      return Promise.reject(error)
+    const previous = useAuthStore.getState().accessToken
+    if (!original || !previous || error.response?.status !== 401 || original._retry || original.url?.startsWith('/auth/')) {
+      throw error
     }
+    if (original.headers?.get('Authorization') !== `Bearer ${previous}`) throw error
     original._retry = true
-
-    if (isRefreshing) {
-      return new Promise((resolve) => {
-        queue.push((token) => {
-          original.headers.Authorization = `Bearer ${token}`
-          resolve(api(original))
+    if (!refreshing || refreshing.previous !== previous) {
+      const promise = api.post<{ data: { accessToken: string | null; user?: AuthUser } }>('/auth/refresh')
+        .then(({ data: { data } }) => {
+          if (useAuthStore.getState().accessToken !== previous) throw new Error('Session changed')
+          if (!data.accessToken || !data.user) throw new Error('Session expired')
+          useAuthStore.getState().setSession(data.accessToken, data.user)
+          return data.accessToken
         })
-      })
+        .finally(() => {
+          if (refreshing?.promise === promise) refreshing = null
+        })
+      refreshing = { previous, promise }
     }
-
-    isRefreshing = true
     try {
-      const { data } = await api.post<{ data: { accessToken: string } }>('/auth/refresh')
-      const newToken = data.data.accessToken
-      useAuthStore.getState().setSession(newToken, useAuthStore.getState().user!)
-      queue.forEach((cb) => cb(newToken))
-      queue = []
-      original.headers.Authorization = `Bearer ${newToken}`
+      const token = await refreshing.promise
+      if (useAuthStore.getState().accessToken !== token) throw new Error('Session changed')
+      original.headers.Authorization = `Bearer ${token}`
       return api(original)
-    } catch {
-      useAuthStore.getState().clearSession()
-      window.location.href = '/login'
-      return Promise.reject(error)
-    } finally {
-      isRefreshing = false
+    } catch (refreshError) {
+      if (useAuthStore.getState().accessToken === previous) {
+        useAuthStore.getState().clearSession()
+        window.location.href = window.location.pathname.startsWith('/admin') ? '/admin/login' : '/login'
+      }
+      throw refreshError
     }
-  }
+  },
 )

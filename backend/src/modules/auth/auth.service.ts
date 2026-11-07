@@ -1,3 +1,4 @@
+import { jwtSecret } from '../../config/security';
 import {
   BadRequestException,
   ConflictException,
@@ -60,7 +61,7 @@ export class AuthService {
     return this.jwt.sign(
       { sub: user.id, email: user.email },
       {
-        secret: process.env.JWT_SECRET ?? 'merge-stars-dev-secret-change-me',
+        secret: jwtSecret(),
         expiresIn: (process.env.JWT_ACCESS_TTL ?? '15m') as `${number}m`,
       },
     );

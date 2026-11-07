@@ -3,7 +3,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
 import AdminLayout from '../../components/AdminLayout'
 import { adminApi, type AdminUser } from '../../features/admin/api/admin.api'
-import { kycApi } from '@/features/kyc/api/kyc.api'
+import { kycApi, type KycDocumentItem } from '@/features/kyc/api/kyc.api'
 
 const KYC_COLORS: Record<string, { bg: string; color: string }> = {
   pending: { bg: 'rgba(245,158,11,0.1)', color: '#f59e0b' },
@@ -49,6 +49,18 @@ export default function AdminKYCPage() {
     queryKey: ['admin-kyc-docs', item?.id],
     queryFn: () => kycApi.adminList(item!.id).then((r) => r.data.data),
     enabled: !!item?.id,
+  })
+
+  const downloadDocument = useMutation({
+    mutationFn: async (doc: KycDocumentItem) => {
+      const { data } = await kycApi.adminFile(doc.id)
+      const url = URL.createObjectURL(data)
+      const link = document.createElement('a')
+      link.href = url
+      link.download = doc.originalName
+      link.click()
+      window.setTimeout(() => URL.revokeObjectURL(url), 1000)
+    },
   })
 
   const decide = (user: AdminUser, decision: 'verified' | 'rejected') => {
@@ -127,11 +139,11 @@ export default function AdminKYCPage() {
                 <p style={{ fontSize: '11px', color: 'rgba(255,255,255,0.25)' }}>No documents uploaded yet</p>
               ) : (
                 kycDocs.map((d) => (
-                  <a
+                  <button
                     key={d.id}
-                    href={kycApi.adminFileUrl(d.id)}
-                    target="_blank"
-                    rel="noreferrer"
+                    type="button"
+                    disabled={downloadDocument.isPending}
+                    onClick={() => downloadDocument.mutate(d)}
                     style={{ display: 'block', fontSize: '12px', color: '#c9a84c', padding: '6px 0', textDecoration: 'none' }}
                   >
                     📄{' '}
@@ -141,11 +153,12 @@ export default function AdminKYCPage() {
                         ? 'ID BACK'
                         : 'OTHER'}{' '}
                     — {d.originalName}
-                  </a>
+                  </button>
                 ))
               )}
             </div>
 
+            {downloadDocument.isError && <p role="alert">{t('admin.kycDownloadFailed')}</p>}
             <div style={{ display: 'flex', gap: '10px', marginTop: '20px' }}>
               <button
                 disabled={updateKyc.isPending}

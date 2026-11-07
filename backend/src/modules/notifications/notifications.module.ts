@@ -1,3 +1,4 @@
+import { jwtSecret } from '../../config/security';
 import { Module } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -9,9 +10,7 @@ import { NotificationsService } from './notifications.service';
 @Module({
   imports: [
     TypeOrmModule.forFeature([Notification]),
-    JwtModule.register({
-      secret: process.env.JWT_SECRET ?? 'merge-stars-dev-secret-change-me',
-    }),
+    JwtModule.registerAsync({ useFactory: () => ({ secret: jwtSecret() }) }),
   ],
   controllers: [NotificationsController],
   providers: [NotificationsService, NotificationsGateway],

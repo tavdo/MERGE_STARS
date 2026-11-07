@@ -1,3 +1,4 @@
+import { validateEnvironment } from './config/security';
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { APP_GUARD } from '@nestjs/core';
@@ -40,6 +41,7 @@ import { MuseumCoreModule } from './modules/museum-core/museum-core.module';
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
+      validate: validateEnvironment,
       // VPS: systemd loads repo root .env; local dev may use backend/.env
       envFilePath: ['.env', '../.env'],
     }),

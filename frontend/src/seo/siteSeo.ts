@@ -21,7 +21,7 @@ export const PUBLIC_SEO_ROUTES: Record<string, string> = {
   '/login': 'login',
 }
 
-export const NOINDEX_PREFIXES = ['/dashboard', '/admin', '/apply', '/fill-coin', '/status', '/calculator']
+export const NOINDEX_PREFIXES = ['/dashboard', '/admin', '/apply', '/fill-coin', '/status', '/calculator', '/login', '/register', '/forgot-password', '/reset-password', '/payment', '/wallet']
 
 export function canonicalUrl(pathname: string) {
   const path = pathname === '/' ? '' : pathname.replace(/\/$/, '')

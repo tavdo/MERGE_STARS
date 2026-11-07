@@ -33,11 +33,6 @@ export default function WalletPage() {
     onSuccess: invalidate,
   })
 
-  const settle = useMutation({
-    mutationFn: (orderId: string) => ordersApi.payWithEarnings(orderId),
-    onSuccess: invalidate,
-  })
-
   const balance = wallet?.balance ?? 0
   const activated = wallet?.activated ?? false
   const transactions = wallet?.transactions ?? []
@@ -130,7 +125,6 @@ export default function WalletPage() {
                     {pendingOrders.map((order) => {
                       const amount = Number(order.amount)
                       const covered = amount > 0 ? Math.min(100, (balance / amount) * 100) : 0
-                      const ready = balance >= amount && amount > 0
                       return (
                         <div key={order.id} className="wallet-pending-row">
                           <div style={{ flex: 1, minWidth: '12rem' }}>
@@ -142,28 +136,12 @@ export default function WalletPage() {
                               <i style={{ width: `${covered}%` }} />
                             </div>
                             <p className="wallet-pending-meta" style={{ marginTop: '0.4rem' }}>
-                              {ready
-                                ? t('wallet.readyToPay')
-                                : t('wallet.stillNeeded', { need: money(amount - balance) })}
+                              {t('payment.verifiedOfferRequired')}
                             </p>
                           </div>
-                          <button
-                            type="button"
-                            className="profile-btn-primary"
-                            disabled={!ready || settle.isPending}
-                            onClick={() => settle.mutate(order.id)}
-                          >
-                            {settle.isPending ? '…' : t('wallet.payNow')}
-                          </button>
                         </div>
                       )
                     })}
-                    {settle.isError && (
-                      <p className="profile-msg profile-msg--err">
-                        {(settle.error as { response?: { data?: { message?: string } } })?.response?.data?.message
-                          || t('wallet.payFailed')}
-                      </p>
-                    )}
                   </div>
                 )}
               </section>

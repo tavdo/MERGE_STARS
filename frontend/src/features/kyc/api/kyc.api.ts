@@ -35,5 +35,5 @@ export const kycApi = {
   adminList: (userId: string) =>
     api.get<ApiResponse<KycDocumentItem[]>>(`/admin/users/${userId}/kyc/documents`),
 
-  adminFileUrl: (docId: string) => `/api/admin/kyc/documents/${docId}/file`,
+  adminFile: (docId: string) => api.get<Blob>(`/admin/kyc/documents/${docId}/file`, { responseType: 'blob' }),
 }

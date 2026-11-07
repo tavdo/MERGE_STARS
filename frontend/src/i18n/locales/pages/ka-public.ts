@@ -80,6 +80,7 @@ export default {
     ],
   },
   prices: {
+    feedUnavailable: 'ვერცხლის მიმდინარე ფასი მიუწვდომელია',
     kicker: 'ფასები',
     title: 'MERGE COIN',
     titleGold: 'ფასის ინდიკატორი',

@@ -1,8 +1,9 @@
+import { queryClient } from '@/lib/queryClient'
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 import type { Role } from '@/shared/types/api.types'
 
-interface AuthUser {
+export interface AuthUser {
   id: string
   firstName: string
   lastName: string
@@ -20,11 +21,17 @@ interface AuthStore {
 
 export const useAuthStore = create<AuthStore>()(
   persist(
-    (set) => ({
+    (set, get) => ({
       accessToken: null,
       user: null,
-      setSession: (accessToken, user) => set({ accessToken, user }),
-      clearSession: () => set({ accessToken: null, user: null }),
+      setSession: (accessToken, user) => {
+        if (get().user?.id !== user.id) queryClient.clear()
+        set({ accessToken, user })
+      },
+      clearSession: () => {
+        queryClient.clear()
+        set({ accessToken: null, user: null })
+      },
     }),
     { name: 'merge-stars-auth' },
   ),

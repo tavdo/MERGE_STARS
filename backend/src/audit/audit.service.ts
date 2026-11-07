@@ -16,7 +16,7 @@ function makeEventId() {
 
 @Injectable()
 export class AuditService {
-  private readonly filePath = resolve(process.cwd(), 'data', 'audit.log.jsonl')
+  private readonly filePath = process.env.AUDIT_LOG_PATH ?? resolve(process.cwd(), 'data', 'audit.log.jsonl')
 
   private ensureDir() {
     const dir = dirname(this.filePath)

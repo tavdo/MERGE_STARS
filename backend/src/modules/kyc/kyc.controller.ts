@@ -2,6 +2,8 @@ import {
   Body,
   Controller,
   Get,
+  Header,
+  Next,
   Param,
   Post,
   Res,
@@ -11,8 +13,8 @@ import {
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { memoryStorage } from 'multer';
-import type { Response } from 'express';
-import { createReadStream } from 'fs';
+import type { NextFunction, Response } from 'express';
+import { resolve } from 'node:path';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { RolesGuard } from '../../common/guards/roles.guard';
 import { Roles } from '../../common/decorators/roles.decorator';
@@ -42,6 +44,7 @@ export class KycController {
   }
 
   @Get('users/me/kyc/documents')
+  @Header('Cache-Control', 'private, no-store')
   @UseGuards(JwtAuthGuard)
   myDocuments(@CurrentUser() user: User) {
     return this.kyc.listForUser(user.id);
@@ -53,17 +56,16 @@ export class KycController {
     @CurrentUser() user: User,
     @Param('id') id: string,
     @Res() res: Response,
+    @Next() next: NextFunction,
   ) {
     const doc = await this.kyc.getFileForUser(user.id, id);
-    res.setHeader('Content-Type', doc.mimeType);
-    res.setHeader(
-      'Content-Disposition',
-      `inline; filename="${encodeURIComponent(doc.originalName)}"`,
-    );
-    createReadStream(doc.filePath).pipe(res);
+    res.download(resolve(doc.filePath), doc.originalName, {
+      headers: { 'Cache-Control': 'private, no-store', 'X-Content-Type-Options': 'nosniff' },
+    }, (error) => { if (error) next(error); });
   }
 
   @Get('admin/users/:userId/kyc/documents')
+  @Header('Cache-Control', 'private, no-store')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('admin', 'manager')
   adminList(@Param('userId') userId: string) {
@@ -73,13 +75,10 @@ export class KycController {
   @Get('admin/kyc/documents/:id/file')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('admin', 'manager')
-  async adminDownload(@Param('id') id: string, @Res() res: Response) {
+  async adminDownload(@Param('id') id: string, @Res() res: Response, @Next() next: NextFunction) {
     const doc = await this.kyc.getFileForAdmin(id);
-    res.setHeader('Content-Type', doc.mimeType);
-    res.setHeader(
-      'Content-Disposition',
-      `inline; filename="${encodeURIComponent(doc.originalName)}"`,
-    );
-    createReadStream(doc.filePath).pipe(res);
+    res.download(resolve(doc.filePath), doc.originalName, {
+      headers: { 'Cache-Control': 'private, no-store', 'X-Content-Type-Options': 'nosniff' },
+    }, (error) => { if (error) next(error); });
   }
 }

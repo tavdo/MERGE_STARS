@@ -1,3 +1,4 @@
+import { useAuthStore } from '@/features/auth/store/auth.store'
 import { api } from '@/lib/axios'
 
 export type ChatMessage = { role: 'user' | 'ai'; text: string; ts: string }
@@ -42,17 +43,11 @@ export function getAIResponse(
   return responses.default
 }
 
-export async function tryAuditAI(action: string, meta?: Record<string, unknown>) {
+export async function tryAuditAI(action: string) {
+  if (!useAuthStore.getState().accessToken) return
   try {
-    await api.post('/audit/events', {
-      actor_role: 'CUSTOMER',
-      action,
-      object_id: null,
-      owner: 'system',
-      result: 'SUCCESS',
-      meta,
-    })
+    await api.post('/audit/events', { action })
   } catch {
-    // best-effort
+    // Best-effort telemetry must not interrupt the chat.
   }
 }

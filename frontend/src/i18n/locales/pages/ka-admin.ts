@@ -1,5 +1,6 @@
 export default {
   admin: {
+    kycDownloadFailed: 'დოკუმენტი ვერ ჩამოიტვირთა. სცადეთ ხელახლა.',
     panel: 'ადმინ პანელი', logout: 'გასვლა',
     login: {
       title: 'ადმინ პორტალი',

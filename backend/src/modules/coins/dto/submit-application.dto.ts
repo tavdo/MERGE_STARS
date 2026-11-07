@@ -7,6 +7,7 @@ import {
   IsString,
   MaxLength,
   Min,
+  Max,
 } from 'class-validator';
 
 export class SubmitApplicationDto {
@@ -26,7 +27,9 @@ export class SubmitApplicationDto {
   @IsString()
   metalType?: string;
 
-  @IsNumber()
+  @IsNumber({ maxDecimalPlaces: 2 })
+  @Min(0)
+  @Max(9999999999.99)
   coinValue: number;
 
   @IsOptional()

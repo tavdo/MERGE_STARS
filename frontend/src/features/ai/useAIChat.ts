@@ -24,7 +24,7 @@ export function useAIChat() {
       setMessages((m) => [...m, { role: 'user', text, ts }])
       setInput('')
       setLoading(true)
-      void tryAuditAI('AI_PROMPT', { prompt: text })
+      void tryAuditAI('AI_PROMPT')
 
       const history = messages
         .filter((m) => m.text !== '__WELCOME__')
@@ -38,12 +38,7 @@ export function useAIChat() {
         const response = data.data.text
         setProvider(data.data.provider)
         setMessages((m) => [...m, { role: 'ai', text: response, ts }])
-        void tryAuditAI('AI_RESPONSE', {
-          prompt: text,
-          response,
-          provider: data.data.provider,
-          needsClarification: data.data.needsClarification,
-        })
+        void tryAuditAI('AI_RESPONSE')
       } catch {
         const response =
           suggestionIndex !== undefined
@@ -51,7 +46,7 @@ export function useAIChat() {
             : clarificationReply(text)
         setProvider(suggestionIndex !== undefined ? 'fallback' : 'pending')
         setMessages((m) => [...m, { role: 'ai', text: response, ts }])
-        void tryAuditAI('AI_RESPONSE', { prompt: text, response, provider: 'offline' })
+        void tryAuditAI('AI_RESPONSE')
       } finally {
         setLoading(false)
       }

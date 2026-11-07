@@ -54,7 +54,6 @@ pids
 
 # Local dev data (SQLite / audit logs)
 data/*
-!data/users.mysql.sql
 
 # KYC uploads
 uploads/

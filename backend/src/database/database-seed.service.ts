@@ -12,7 +12,8 @@ export class DatabaseSeedService implements OnModuleInit {
 
   async onModuleInit() {
     const email = (process.env.SEED_ADMIN_EMAIL ?? 'admin@mergestars.com').toLowerCase();
-    const password = process.env.SEED_ADMIN_PASSWORD ?? 'Admin123!ChangeMe';
+    const configuredPassword = process.env.SEED_ADMIN_PASSWORD;
+    const password = configuredPassword ?? 'Admin123!ChangeMe';
 
     if (process.env.SEED_ADMIN_SYNC === 'true') {
       if (process.env.NODE_ENV === 'production') {
@@ -42,6 +43,10 @@ export class DatabaseSeedService implements OnModuleInit {
       return;
     }
 
+    if (process.env.NODE_ENV === 'production' && (!configuredPassword || configuredPassword.length < 16 || configuredPassword === 'Admin123!ChangeMe')) {
+      this.log.error('Set a strong SEED_ADMIN_PASSWORD before provisioning an empty production database');
+      return;
+    }
     const user = this.users.create({
       email,
       phone: null,

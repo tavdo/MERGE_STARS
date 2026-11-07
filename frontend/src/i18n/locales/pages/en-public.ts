@@ -87,6 +87,7 @@ export default {
     ],
   },
   prices: {
+    feedUnavailable: 'Current silver price unavailable',
     kicker: 'PRICING',
     title: 'MERGE COIN',
     titleGold: 'PRICE INDICATOR',

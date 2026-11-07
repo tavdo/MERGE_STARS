@@ -1,25 +1,18 @@
-import { useState, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import Navbar from '../../components/Navbar'
 import Footer from '../../components/Footer'
 import { useLiveMetalPrices } from '@/features/coins/hooks/useLiveMetalPrice'
 
 export default function PriceIndicatorPage() {
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
   const metals = useLiveMetalPrices()
 
   const silver = metals?.find((m) => m.metal === 'silver')
   const gold = metals?.find((m) => m.metal === 'gold')
-  const silverSpot = silver?.priceUsd ?? 1.09
-  const goldSpot = gold?.priceUsd ?? 139.1
-  const [lastUpdated, setLastUpdated] = useState(t('prices.justNow'))
-  const indicator = (silverSpot * 1000 * 2).toFixed(2)
+  const indicator = silver ? `$${(silver.pricePerKgUsd * 2).toFixed(2)}` : '—'
+  const sourceTime = silver ? new Date(silver.sourceTimestamp).toLocaleTimeString(i18n.language) : null
   const methodologySteps = t('prices.methodologySteps', { returnObjects: true }) as string[]
   const disclaimerItems = t('prices.disclaimerItems', { returnObjects: true }) as string[]
-
-  useEffect(() => {
-    if (metals) setLastUpdated(t('prices.justNow'))
-  }, [metals, t])
 
   return (
     <div style={{ background: 'transparent', minHeight: '100vh' }}>
@@ -46,22 +39,22 @@ export default function PriceIndicatorPage() {
         <section style={{ maxWidth: '700px', margin: '0 auto', padding: '0 32px 60px' }}>
           <div className="gold-card" style={{ padding: '48px', borderRadius: '4px', textAlign: 'center' }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', marginBottom: '32px' }}>
-              <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#22c55e', display: 'inline-block' }} className="animate-pulse" />
-              <span style={{ fontSize: '11px', color: '#22c55e', fontWeight: 600, letterSpacing: '0.15em' }}>{t('prices.liveUpdated', { time: lastUpdated })}</span>
+              <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: sourceTime ? '#22c55e' : '#a3a3a3', display: 'inline-block' }} className={sourceTime ? "animate-pulse" : undefined} />
+              <span style={{ fontSize: '11px', color: sourceTime ? '#22c55e' : '#a3a3a3', fontWeight: 600, letterSpacing: '0.15em' }}>{sourceTime ? t('prices.liveUpdated', { time: sourceTime }) : t('prices.feedUnavailable')}</span>
             </div>
             <p style={{ fontSize: '11px', color: 'rgba(255,255,255,0.4)', letterSpacing: '0.2em', marginBottom: '8px' }}>{t('prices.silverSpot')}</p>
             <p style={{ fontSize: '42px', fontWeight: 900, color: '#fff', marginBottom: '24px' }}>
-              ${(silverSpot * 1000).toFixed(2)}<span style={{ fontSize: '16px', color: 'rgba(255,255,255,0.4)', marginLeft: '4px' }}>/kg</span>
+              {silver ? `$${silver.pricePerKgUsd.toFixed(2)}` : '—'}<span style={{ fontSize: '16px', color: 'rgba(255,255,255,0.4)', marginLeft: '4px' }}>/kg</span>
             </p>
             <p style={{ fontSize: '11px', color: 'rgba(255,255,255,0.4)', letterSpacing: '0.2em', marginBottom: '8px' }}>{t('landing.metalGold')}</p>
             <p style={{ fontSize: '28px', fontWeight: 900, color: '#fff', marginBottom: '32px' }}>
-              ${(goldSpot * 1000).toFixed(0)}<span style={{ fontSize: '14px', color: 'rgba(255,255,255,0.4)', marginLeft: '4px' }}>/kg</span>
+              {gold ? `$${gold.pricePerKgUsd.toFixed(0)}` : '—'}<span style={{ fontSize: '14px', color: 'rgba(255,255,255,0.4)', marginLeft: '4px' }}>/kg</span>
             </p>
             <div style={{ height: '1px', background: 'linear-gradient(90deg,transparent,rgba(201,168,76,0.3),transparent)', margin: '0 0 32px' }} />
             <p style={{ fontSize: '11px', color: 'rgba(255,255,255,0.4)', letterSpacing: '0.2em', marginBottom: '8px' }}>{t('prices.formula')}</p>
             <p style={{ fontSize: '15px', color: 'rgba(255,255,255,0.6)', marginBottom: '32px' }}>{t('prices.formulaText')}</p>
             <p style={{ fontSize: '11px', color: 'rgba(255,255,255,0.4)', letterSpacing: '0.2em', marginBottom: '12px' }}>{t('prices.indicatorLabel')}</p>
-            <p style={{ fontSize: '64px', fontWeight: 900 }} className="gold-text">${indicator}</p>
+            <p style={{ fontSize: '64px', fontWeight: 900 }} className="gold-text">{indicator}</p>
             <p style={{ fontSize: '12px', color: 'rgba(255,255,255,0.35)', marginTop: '8px' }}>{t('prices.usdIndicative')}</p>
             <div style={{ marginTop: '32px', padding: '16px', background: 'rgba(245,158,11,0.05)', border: '1px solid rgba(245,158,11,0.15)', borderRadius: '2px' }}>
               <p style={{ fontSize: '11px', color: 'rgba(255,255,255,0.35)', lineHeight: 1.6 }}>{t('prices.sourceNote')}</p>

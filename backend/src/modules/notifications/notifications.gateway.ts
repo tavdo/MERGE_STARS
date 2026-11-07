@@ -1,3 +1,4 @@
+import { jwtSecret } from '../../config/security';
 import {
   WebSocketGateway,
   WebSocketServer,
@@ -41,7 +42,7 @@ export class NotificationsGateway implements OnGatewayConnection, OnGatewayInit 
     }
     try {
       const payload = this.jwt.verify<{ sub: string }>(token, {
-        secret: process.env.JWT_SECRET ?? 'merge-stars-dev-secret-change-me',
+        secret: jwtSecret(),
       });
       client.join(`user:${payload.sub}`);
       client.data.userId = payload.sub;

@@ -1,5 +1,6 @@
 export default {
   admin: {
+    kycDownloadFailed: 'Document download failed. Try again.',
     panel: 'ADMIN PANEL',
     logout: 'LOGOUT',
     login: {
