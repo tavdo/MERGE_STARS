@@ -8,9 +8,12 @@ import { User } from '../../database/entities/user.entity';
 import { CatalogController } from './catalog.controller';
 import { CatalogService } from './catalog.service';
 import { MeshyService } from './meshy.service';
+import { MetalsModule } from '../metals/metals.module';
+import { MuseumCoreController } from './museum-core.controller';
 
 @Module({
   imports: [
+    MetalsModule,
     TypeOrmModule.forFeature([
       CatalogCollection,
       CatalogItem,
@@ -19,7 +22,7 @@ import { MeshyService } from './meshy.service';
       User,
     ]),
   ],
-  controllers: [CatalogController],
+  controllers: [CatalogController, MuseumCoreController],
   providers: [CatalogService, MeshyService],
   exports: [CatalogService],
 })
