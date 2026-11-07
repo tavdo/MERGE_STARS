@@ -31,6 +31,7 @@ const DesignReviewPage = lazy(() => import('./pages/admin/DesignReviewPage'))
 const MaterialLabAdmin = lazy(() => import('./material-lab/MaterialLabAdmin'))
 const MergeExperience = lazy(() => import('./experience/MergeExperience'))
 const LivingMuseum = lazy(() => import('./museum-v78/MuseumV78'))
+const CoCreationPreview = lazy(() => import('./pages/CoCreationPreview'))
 const PersonalMuseum = lazy(() => import('./living-museum/PersonalMuseum'))
 const MuseumTransparency = lazy(() => import('./museum-v78/TransparencyV78'))
 const LoginPage = lazy(() => import('./pages/LoginPage'))
@@ -109,12 +110,13 @@ function AppRoutes() {
   return (
     <>
       {luxuryCursor && <LuxuryCursor />}
-      {!adminZone && !experienceZone && <AIAssistantWidget />}
+      {!adminZone && !experienceZone && pathname !== '/preview/co-creation' && <AIAssistantWidget />}
       <SeoHead />
       <CookieConsent />
       <Suspense fallback={<div role="status" className="page-hero"><div className="animate-pulse h-6 w-48 bg-neutral-800 mx-auto mb-4 rounded" />{t('common.loading')}</div>}>
       <Routes>
         {/* Public */}
+        <Route path="/preview/co-creation" element={<CoCreationPreview />} />
         <Route path="/material-lab/demo-admin" element={<MaterialLabAdmin demo />} />
         {['/my-saved', '/my-world', '/fit-profile', '/digital-twin/local-draft', '/my-designs', '/pulse', '/notifications', '/chat', '/track', '/object/:slug/:id', '/collection/:slug', '/material-lab', '/material-lab/passport/:batchId', '/create', '/calculate', '/materials', '/digital-twin', '/fit-to-me', '/houses', '/brand-house', '/for-brands', '/request-brand', '/passport', '/exhibit/:id', '/about'].map(path => <Route key={path} path={path} element={<MergeExperience />} />)}
         <Route path="/my-museum" element={<PersonalMuseum />} />

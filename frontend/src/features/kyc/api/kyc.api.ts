@@ -7,7 +7,7 @@ export interface KycDocumentItem {
   originalName: string
   mimeType: string
   size: number
-  documentType: 'id_front' | 'id_back' | 'other'
+  documentType: 'id_front' | 'id_back' | 'passport' | 'other'
   status: string
   createdAt: string
 }
@@ -18,7 +18,7 @@ export const kycApi = {
 
   upload: (
     file: File,
-    documentType: 'id_front' | 'id_back' | 'other' = 'other',
+    documentType: KycDocumentItem['documentType'] = 'other',
     accessToken?: string,
   ) => {
     const form = new FormData()
@@ -35,5 +35,6 @@ export const kycApi = {
   adminList: (userId: string) =>
     api.get<ApiResponse<KycDocumentItem[]>>(`/admin/users/${userId}/kyc/documents`),
 
-  adminFileUrl: (docId: string) => `/api/admin/kyc/documents/${docId}/file`,
+  adminFile: (docId: string) =>
+    api.get<Blob>(`/admin/kyc/documents/${docId}/file`, { responseType: 'blob' }),
 }

@@ -1,5 +1,11 @@
 export default {
   authPanel: {
+    documentChoice: 'Choose your identity document',
+    registerPassport: 'Register with passport',
+    registerIdCard: 'Register with ID card',
+    passportPage: 'Photo and personal details page',
+    passportHint: 'Upload the passport photo and personal details page. Uploading does not confirm identity verification.',
+    passportRequired: 'Upload the passport photo and personal details page',
     theNext: 'THE NEXT',
     eraOf: 'ERA OF',
     luxury: 'LUXURY',

@@ -257,6 +257,7 @@ export default {
     brandEmpty: 'No catalogs yet. Create your first collection.',
   },
   auth: {
+    registrationNotPayment: 'Creating an account does not confirm payment or activate a Coin. Any payment required for activation must be confirmed separately by the banking system.',
     login: 'Login',
     register: 'Register',
     step1: 'STEP 1 — PERSONAL INFO',

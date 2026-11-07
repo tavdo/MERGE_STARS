@@ -56,7 +56,7 @@ export default function MergeExperience() {
   const menuContext = `${location.pathname}:${language}`
   const [lastMenuContext, setLastMenuContext] = useState(menuContext)
   if (menuContext !== lastMenuContext) { setLastMenuContext(menuContext); setMenu(false) }
-  useEffect(() => { if (location.hash) { const anchor = document.getElementById(location.hash.slice(1)); if (anchor) anchor.scrollIntoView({ block: 'start' }); else window.scrollTo(0, 0) } else window.scrollTo(0, 0); document.documentElement.lang = language; document.title = `MERGE ⭐ STARS — ${language === 'ka' ? 'გარდაქმნის პროცესი' : 'The art of transformation'}` }, [location.pathname, location.search, location.hash, language])
+  useEffect(() => { if (location.hash) { const anchor = document.getElementById(location.hash.slice(1)); if (anchor) anchor.scrollIntoView({ block: 'start' }); else window.scrollTo(0, 0) } else window.scrollTo(0, 0); document.documentElement.lang = language }, [location.pathname, location.search, location.hash, language])
   void About
   void Houses
 

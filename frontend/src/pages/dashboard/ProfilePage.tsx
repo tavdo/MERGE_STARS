@@ -15,7 +15,7 @@ import { useAuthStore } from '@/features/auth/store/auth.store'
 import type { Role } from '@/shared/types/api.types'
 import { getApiErrorMessage } from '@/shared/utils/apiError'
 
-type IdSide = 'id_front' | 'id_back'
+type IdSide = Exclude<KycDocumentItem['documentType'], 'other'>
 
 const SOCIAL_PLACEHOLDERS: Record<SocialLinkKey, string> = {
   tiktok: 'https://www.tiktok.com/@…',
@@ -75,7 +75,7 @@ function KycDropzone({
           e.preventDefault()
           setDragging(false)
           const file = e.dataTransfer.files?.[0]
-          if (file) onPick(side, file)
+          if (file && !uploading) onPick(side, file)
         }}
       >
         {doc ? (
@@ -90,14 +90,14 @@ function KycDropzone({
                 ? t('common.loading', { defaultValue: 'Loading…' })
                 : t('pages.profile.kycDrop', { defaultValue: 'Drop file or browse' })}
             </span>
-            <span className="profile-dropzone-meta">JPEG · PNG · WEBP · PDF · max 10 MB</span>
+            <span className="profile-dropzone-meta">JPEG · PNG · WEBP · max 10 MB</span>
           </>
         )}
       </button>
       <input
         ref={inputRef}
         type="file"
-        accept=".pdf,image/jpeg,image/png,image/webp"
+        accept="image/jpeg,image/png,image/webp"
         className="sr-only"
         onChange={(e) => {
           const file = e.target.files?.[0]
@@ -153,6 +153,7 @@ export default function ProfilePage() {
 
   const frontDoc = kycDocs.find((d) => d.documentType === 'id_front')
   const backDoc = kycDocs.find((d) => d.documentType === 'id_back')
+  const passportDoc = kycDocs.find((d) => d.documentType === 'passport')
   const otherDocs = kycDocs.filter((d) => d.documentType === 'other')
 
   useEffect(() => {
@@ -673,9 +674,7 @@ export default function ProfilePage() {
                 <div className="profile-section-head">
                   <h2>KYC</h2>
                   <p>
-                    {t('pages.profile.kycHint', {
-                      defaultValue: 'Upload front and back of your ID (JPEG, PNG, WEBP or PDF — max 10 MB).',
-                    })}
+                    {t('authPanel.documentChoice')}
                   </p>
                 </div>
                 <div className="profile-kyc-grid">
@@ -691,6 +690,13 @@ export default function ProfilePage() {
                     label={t('pages.profile.kycBack', { defaultValue: 'ID back' })}
                     doc={backDoc}
                     uploading={kycUploadingSide === 'id_back'}
+                    onPick={pickKyc}
+                  />
+                  <KycDropzone
+                    side="passport"
+                    label={t('authPanel.passportPage')}
+                    doc={passportDoc}
+                    uploading={kycUploadingSide === 'passport'}
                     onPick={pickKyc}
                   />
                 </div>

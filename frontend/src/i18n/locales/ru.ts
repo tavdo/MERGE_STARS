@@ -33,6 +33,7 @@ export default {
     titles: { dashboard: 'Кабинет', profile: 'Профиль', coins: 'Мои монеты', investments: 'Product Registry', messages: 'Сообщения', settings: 'Настройки', support: 'Поддержка', brandLine: 'Бренд', qrIdentity: 'QR-идентичность', orders: 'Заказы', payment: 'Оплата', delivery: 'Доставка', referral: 'Рефералы', aiAssistant: 'AI-ассистент', application: 'Заявка на монету', status: 'Статус заявки' },
   },
   auth: {
+    registrationNotPayment: 'Создание аккаунта не подтверждает оплату и не активирует Coin. Платёж, необходимый для активации, должен отдельно подтверждаться банковской системой.',
     login: 'Вход', register: 'Регистрация', step1: 'ШАГ 1 — ЛИЧНЫЕ ДАННЫЕ', step2: 'ШАГ 2 — БЕЗОПАСНОСТЬ', step3: 'ШАГ 3 — СОГЛАСИЕ',
     firstName: 'ИМЯ', lastName: 'ФАМИЛИЯ', personalId: 'НОМЕР ID', phone: 'ТЕЛЕФОН', email: 'EMAIL', password: 'ПАРОЛЬ', confirmPassword: 'ПОДТВЕРДИТЕ ПАРОЛЬ', verificationCode: 'КОД', sendCode: 'ОТПРАВИТЬ КОД', nextStep: 'ДАЛЕЕ', back: 'НАЗАД', activate: 'АКТИВИРОВАТЬ MERGE COIN',
     agreeTerms: 'Я принимаю', termsLink: 'Условия использования', agreePrivacy: 'Я принимаю', privacyLink: 'Политику конфиденциальности',

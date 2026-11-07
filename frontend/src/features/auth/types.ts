@@ -39,8 +39,9 @@ export interface RegisterPayload {
 }
 
 export interface RegisterWithIdentityPayload extends RegisterPayload {
+  documentType: 'passport' | 'id_card'
   identityFront: File
-  identityBack: File
+  identityBack?: File
 }
 
 export interface AuthUser {

@@ -8,7 +8,7 @@ import {
 } from 'typeorm';
 import { User } from './user.entity';
 
-export type KycDocumentType = 'id_front' | 'id_back' | 'other';
+export type KycDocumentType = 'id_front' | 'id_back' | 'passport' | 'other';
 
 @Entity('kyc_documents')
 export class KycDocument {

@@ -1,6 +1,6 @@
 export const SITE_URL = 'https://mergestars.com'
 export const SITE_NAME = 'MERGE STARS'
-export const OG_IMAGE = `${SITE_URL}/apple-touch-icon.png`
+export const OG_IMAGE = `${SITE_URL}/museum/merge-master-logo-canonical.png`
 
 /** Route path → i18n key under `seo.pages.*` */
 export const PUBLIC_SEO_ROUTES: Record<string, string> = {
@@ -20,8 +20,6 @@ export const PUBLIC_SEO_ROUTES: Record<string, string> = {
   '/trust': 'trust',
   '/login': 'login',
 }
-
-export const NOINDEX_PREFIXES = ['/dashboard', '/admin', '/apply', '/fill-coin', '/status', '/calculator']
 
 export function canonicalUrl(pathname: string) {
   const path = pathname === '/' ? '' : pathname.replace(/\/$/, '')

@@ -51,6 +51,7 @@ export default function LoginPage() {
 
   const [firstName, setFirstName] = useState('')
   const [lastName, setLastName] = useState('')
+  const [documentType, setDocumentType] = useState<'passport' | 'id_card'>('id_card')
   const [identityFront, setIdentityFront] = useState<File | null>(null)
   const [identityBack, setIdentityBack] = useState<File | null>(null)
   const [phoneCode, setPhoneCode] = useState('+995')
@@ -124,10 +125,12 @@ export default function LoginPage() {
       setAuthError(t('authPanel.nameRequired', { defaultValue: 'First and last name are required' }))
       return
     }
-    if (!identityFront || !identityBack) {
+    if (!identityFront || (documentType === 'id_card' && !identityBack)) {
       setAuthError(
-        t('authPanel.identityBothRequired', {
-          defaultValue: 'Upload both the front and back sides of your identity card',
+        t(documentType === 'passport' ? 'authPanel.passportRequired' : 'authPanel.identityBothRequired', {
+          defaultValue: documentType === 'passport'
+            ? 'Upload the passport photo and personal details page'
+            : 'Upload both the front and back sides of your identity card',
         }),
       )
       return
@@ -183,8 +186,9 @@ export default function LoginPage() {
       {
         firstName: firstName.trim(),
         lastName: lastName.trim(),
+        documentType,
         identityFront: identityFront!,
-        identityBack: identityBack!,
+        identityBack: documentType === 'id_card' ? identityBack! : undefined,
         phone: `${phoneCode}${phone.replace(/\D/g, '')}`,
         email: email.trim().toLowerCase(),
         password: regPassword,
@@ -338,6 +342,17 @@ export default function LoginPage() {
 
             {step === 1 && (
               <div className="flex flex-col gap-4">
+                <fieldset>
+                  <legend className="auth-field-label mb-3">{t('authPanel.documentChoice', { defaultValue: 'Choose your identity document' })}</legend>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    {(['passport', 'id_card'] as const).map((kind) => (
+                      <label key={kind} className="flex items-center gap-3 rounded border p-4 cursor-pointer" style={{ borderColor: documentType === kind ? '#c9a84c' : '#444', color: '#f5d78e', background: documentType === kind ? 'rgba(201,168,76,.1)' : 'transparent' }}>
+                        <input type="radio" name="identity-document" value={kind} checked={documentType === kind} onChange={() => { setDocumentType(kind); setIdentityFront(null); setIdentityBack(null); setAuthError(null) }} />
+                        {t(kind === 'passport' ? 'authPanel.registerPassport' : 'authPanel.registerIdCard', { defaultValue: kind === 'passport' ? 'Register with passport' : 'Register with ID card' })}
+                      </label>
+                    ))}
+                  </div>
+                </fieldset>
                 <div className="auth-name-grid grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
                     <label className="auth-field-label">{t('auth.firstName')}</label>
@@ -350,21 +365,23 @@ export default function LoginPage() {
                 </div>
                 <div>
                   <label className="auth-field-label">
-                    {t('authPanel.identityCard', { defaultValue: 'IDENTITY CARD' })}
+                    {t(documentType === 'passport' ? 'authPanel.registerPassport' : 'authPanel.identityCard', { defaultValue: 'IDENTITY DOCUMENT' })}
                   </label>
                   <p className="text-[11px] mb-3" style={{ color: 'rgba(255,255,255,0.42)' }}>
-                    {t('authPanel.identityCardHint', {
-                      defaultValue: 'Upload a clear photo of both sides. Your personal number will be verified from the document.',
+                    {t(documentType === 'passport' ? 'authPanel.passportHint' : 'authPanel.identityCardHint', {
+                      defaultValue: documentType === 'passport'
+                        ? 'Upload a clear photo of the passport page with your photo and personal details.'
+                        : 'Upload a clear photo of both sides. Your personal number will be verified from the document.',
                     })}
                   </p>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     {([
-                      ['front', identityFront, 'identityFront', 'Front side'],
+                      ['front', identityFront, documentType === 'passport' ? 'passportPage' : 'identityFront', documentType === 'passport' ? 'Photo and personal details page' : 'Front side'],
                       ['back', identityBack, 'identityBack', 'Back side'],
-                    ] as const).map(([side, file, key, fallback]) => (
+                    ] as const).filter(([side]) => documentType === 'id_card' || side === 'front').map(([side, file, key, fallback]) => (
                       <label
                         key={side}
-                        className={`cursor-pointer rounded border px-4 py-4 min-h-[88px] flex flex-col justify-center transition-colors ${
+                        className={`cursor-pointer rounded border px-4 py-4 min-h-[88px] flex flex-col justify-center transition-colors focus-within:ring-2 focus-within:ring-[#c9a84c] ${
                           file
                             ? 'border-[rgba(201,168,76,0.65)] bg-[rgba(201,168,76,0.08)]'
                             : 'border-white/10 bg-white/[0.02] hover:border-[rgba(201,168,76,0.4)]'
@@ -381,7 +398,7 @@ export default function LoginPage() {
                         <input
                           type="file"
                           accept={ID_ACCEPT}
-                          className="hidden"
+                          className="sr-only"
                           onChange={(e) => {
                             selectIdentityFile(side, e.target.files?.[0])
                             e.target.value = ''
@@ -466,8 +483,9 @@ export default function LoginPage() {
                 </label>
                 <div className="flex gap-3 mt-4">
                   <button onClick={() => setStep(2)} className="gold-btn-outline flex-1 justify-center" style={{ borderRadius: '2px' }}>‹ {t('auth.back')}</button>
-                  <button type="button" disabled={!allChecked || register.isPending} onClick={handleRegister} className="gold-btn flex-1 justify-center" style={{ borderRadius: '2px', opacity: allChecked && !register.isPending ? 1 : 0.4, cursor: allChecked ? 'pointer' : 'not-allowed' }}>{register.isPending ? '…' : t('auth.activate')}</button>
+                  <button type="button" disabled={!allChecked || register.isPending} onClick={handleRegister} className="gold-btn flex-1 justify-center" style={{ borderRadius: '2px', opacity: allChecked && !register.isPending ? 1 : 0.4, cursor: allChecked ? 'pointer' : 'not-allowed' }}>{register.isPending ? '…' : t('authPanel.createAccount')}</button>
                 </div>
+                <p className="text-[12px] leading-5 mt-3" style={{ color: 'rgba(255,255,255,0.6)' }}>{t('auth.registrationNotPayment', { defaultValue: 'Creating an account does not confirm payment or activate a Coin.' })}</p>
               </div>
             )}
 

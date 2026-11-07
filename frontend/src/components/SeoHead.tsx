@@ -11,8 +11,8 @@ import {
   siteNavigationJsonLd,
   webPageJsonLd,
   webSiteJsonLd,
-  NOINDEX_PREFIXES,
 } from '@/seo/siteSeo'
+import publicPages from '@/seo/public-pages.json'
 
 const JSON_LD_ID = 'merge-stars-jsonld'
 
@@ -54,29 +54,32 @@ export default function SeoHead() {
   const { pathname } = useLocation()
 
   useEffect(() => {
-    const pageKey = PUBLIC_SEO_ROUTES[pathname]
-    const noindex = NOINDEX_PREFIXES.some((p) => pathname.startsWith(p))
+    const path = pathname.replace(/\/+$/, '') || '/'
+    const page = publicPages.find((entry) => entry.path === path)
+    const pageKey = PUBLIC_SEO_ROUTES[path]
+    const noindex = !page
 
-    const title = pageKey
+    const title = page && i18n.language === 'en' ? page.title : pageKey
       ? t(`seo.pages.${pageKey}.title`, { defaultValue: SITE_NAME })
-      : t('seo.defaultTitle', { defaultValue: `${SITE_NAME} | Luxury 3D Precious Metal Platform` })
+      : page?.title ?? SITE_NAME
 
-    const description = pageKey
+    const description = page && i18n.language === 'en' ? page.description : pageKey
       ? t(`seo.pages.${pageKey}.description`, {
           defaultValue: t('seo.defaultDescription', {
             defaultValue:
               'MERGE STARS — official luxury platform at mergestars.com. 3D precious-metal filament, MERGE Coin with QR digital passport. Not a mobile game or cryptocurrency.',
           }),
         })
-      : t('seo.defaultDescription', {
+      : page?.description ?? t('seo.defaultDescription', {
           defaultValue:
             'MERGE STARS — official luxury platform at mergestars.com. 3D precious-metal filament, MERGE Coin with QR digital passport. Not a mobile game or cryptocurrency.',
         })
 
-    const canonical = canonicalUrl(pathname)
+    const canonical = path === '/' ? `${canonicalUrl(path)}/` : canonicalUrl(path)
 
     document.title = title
-    upsertLink('canonical', canonical)
+    if (page) upsertLink('canonical', canonical)
+    else document.head.querySelector('link[rel="canonical"]')?.remove()
     upsertMeta('name', 'description', description)
     upsertMeta('name', 'title', title)
     upsertMeta('name', 'application-name', SITE_NAME)
@@ -96,7 +99,7 @@ export default function SeoHead() {
     upsertMeta('name', 'twitter:description', description)
     upsertMeta('name', 'twitter:image', OG_IMAGE)
 
-    if (pathname === '/' && !noindex) {
+    if (path === '/' && page) {
       const faqItems = t('seo.faq', { returnObjects: true }) as { q: string; a: string }[]
       const faqList = Array.isArray(faqItems)
         ? faqItems.map((item) => ({ question: item.q, answer: item.a }))
@@ -108,8 +111,8 @@ export default function SeoHead() {
         siteNavigationJsonLd(),
         ...(faqList.length ? [faqJsonLd(faqList)] : []),
       ])
-    } else if (!noindex && pageKey) {
-      setJsonLd([organizationJsonLd(description), webSiteJsonLd(description)])
+    } else if (page) {
+      setJsonLd([organizationJsonLd(description), webSiteJsonLd(description), webPageJsonLd(title, description, path)])
     } else {
       const el = document.getElementById(JSON_LD_ID)
       if (el) el.remove()

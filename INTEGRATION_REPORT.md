@@ -73,3 +73,11 @@ Local validation: both builds passed, all 84 backend tests passed, gate-to-city-
 Museum 78 staging verification passed on the server: original workflows plus draft/atelier/House save and restore, concurrent idempotency, conflict handling, parent lineage, two-account isolation, forged owner rejection, cross-origin rejection and consent validation. The migration is additive and repeatable on the restored production copy. The matching transparency page and authenticated /dashboard/merge-ai workspace are included; the original /dashboard/ai page remains available.
 
 Museum 78 is deployed on production (application commit 432b687). The public build and all 101 asset hashes were verified, original public routes remain available, production database health is up, and the private drafts endpoint rejects anonymous access. Existing 32 users and 40 catalog items were retained. Backup and rollback are stored on the server under /var/backups/merge-stars/pre-v78-7ce3012. Final schema review also adds indexes to both audit-event foreign keys; this does not alter records or application behavior.
+
+## November 7 upstream update
+
+Imported the application changes from upstream commits e0ba335 and b2881b7. The source handoff, SEO implementation notes, banking blockers and historical audit are available in the [upstream snapshot](https://github.com/mergestars01/mergestars/tree/b2881b701c3b8413e6316cc186d8bef7f00bb77f).
+
+The Museum remains the homepage and the co-creation concept has a separate route at `/preview/co-creation`. Registration accepts one passport image or both ID card sides. The profile can display and retry passport uploads and the admin queue can download them through the authenticated API. The existing KYC document column already supports the passport value.
+
+The frontend build generates 13 public HTML entry points and a sitemap. Nginx serves the noindex shell for other SPA routes. Client navigation uses the same index allowlist through the existing metadata component. Registration remains separate from payment and Coin activation.

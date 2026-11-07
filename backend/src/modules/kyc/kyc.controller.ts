@@ -2,6 +2,7 @@ import {
   Body,
   Controller,
   Get,
+  Header,
   Param,
   Post,
   Res,
@@ -42,6 +43,7 @@ export class KycController {
   }
 
   @Get('users/me/kyc/documents')
+  @Header('Cache-Control', 'private, no-store')
   @UseGuards(JwtAuthGuard)
   myDocuments(@CurrentUser() user: User) {
     return this.kyc.listForUser(user.id);
@@ -55,6 +57,8 @@ export class KycController {
     @Res() res: Response,
   ) {
     const doc = await this.kyc.getFileForUser(user.id, id);
+    res.setHeader('Cache-Control', 'private, no-store');
+    res.setHeader('X-Content-Type-Options', 'nosniff');
     res.setHeader('Content-Type', doc.mimeType);
     res.setHeader(
       'Content-Disposition',
@@ -64,6 +68,7 @@ export class KycController {
   }
 
   @Get('admin/users/:userId/kyc/documents')
+  @Header('Cache-Control', 'private, no-store')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('admin', 'manager')
   adminList(@Param('userId') userId: string) {
@@ -75,6 +80,8 @@ export class KycController {
   @Roles('admin', 'manager')
   async adminDownload(@Param('id') id: string, @Res() res: Response) {
     const doc = await this.kyc.getFileForAdmin(id);
+    res.setHeader('Cache-Control', 'private, no-store');
+    res.setHeader('X-Content-Type-Options', 'nosniff');
     res.setHeader('Content-Type', doc.mimeType);
     res.setHeader(
       'Content-Disposition',

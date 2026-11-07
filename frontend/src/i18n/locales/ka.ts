@@ -105,6 +105,7 @@ export default {
     manageAll: 'მართვა →',
   },
   auth: {
+    registrationNotPayment: 'ანგარიშის შექმნა არ ადასტურებს გადახდას ან Coin-ის აქტივაციას. აქტივაციისთვის საჭირო ჩარიცხვა შესაბამისმა საბანკო სისტემამ ცალკე უნდა დაადასტუროს.',
     login: 'შესვლა', register: 'რეგისტრაცია', step1: 'ნაბიჯი 1 — პირადი მონაცემები', step2: 'ნაბიჯი 2 — უსაფრთხოება', step3: 'ნაბიჯი 3 — შეთანხმება',
     firstName: 'სახელი', lastName: 'გვარი', personalId: 'პირადი ნომერი', phone: 'ტელეფონი', email: 'ელფოსტა', password: 'პაროლი', confirmPassword: 'დაადასტურეთ პაროლი', verificationCode: 'კოდი', sendCode: 'კოდის გაგზავნა', nextStep: 'შემდეგი', back: 'უკან', activate: 'MERGE COIN-ის აქტივაცია',
     agreeTerms: 'ვეთანხმები', termsLink: 'მომსახურების წესებსა და პირობებს', agreePrivacy: 'ვეთანხმები', privacyLink: 'პერსონალურ მონაცემთა დაცვის პოლიტიკას',
